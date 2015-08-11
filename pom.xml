@@ -41,6 +41,17 @@
             </roles>
             <timezone>Europe/Paris</timezone>
         </developer>
+        <developer>
+            <id>loicBillon</id>
+            <name>Loïc Billon</name>
+            <email>lbillon@osivia.com</email>
+            <organization>OSIVIA</organization>
+            <organizationUrl>http://www.osivia.com</organizationUrl>
+            <roles>
+                <role>Development</role>
+            </roles>
+            <timezone>Europe/Paris</timezone>
+        </developer>        
     </developers>
     
     
