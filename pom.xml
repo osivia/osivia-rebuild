@@ -41,8 +41,9 @@
             </roles>
             <timezone>Europe/Paris</timezone>
         </developer>
+        
         <developer>
-            <id>loicBillon</id>
+            <id>lbillon</id>
             <name>Loïc Billon</name>
             <email>lbillon@osivia.com</email>
             <organization>OSIVIA</organization>
@@ -91,6 +92,7 @@
             <name>OSIVIA releases</name>
             <url>http://www.osivia.org/nexus/content/repositories/osivia-releases</url>
         </repository>
+        
         <snapshotRepository>
             <id>osivia-snapshots</id>
             <name>OSIVIA snapshots</name>
