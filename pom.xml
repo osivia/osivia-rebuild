@@ -13,7 +13,7 @@
     
     
     <name>OSIVIA Portal - Parent</name>
-    <description>OSIVIA Portal modules POM parent.</description>
+    <description>OSIVIA Portal POM parent.</description>
     <url>http://www.osivia.org</url>
     <inceptionYear>2015</inceptionYear>
     
@@ -57,7 +57,7 @@
     
     
     <modules>
-        <module>tomcat-war</module>
+        <module>kernel</module>
     </modules>
     
     
@@ -102,34 +102,83 @@
     
     
     <properties>
-    
+        <springframework.version>4.2.0.RELEASE</springframework.version>
     </properties>
     
     
     <dependencyManagement>
         <dependencies>
         
-            <!-- Servlet -->
+            <!-- Javax -->
+            
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>3.1.0</version>
+                <scope>provided</scope>
             </dependency>
+            
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>javax.servlet.jsp-api</artifactId>
+                <version>2.3.0</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>javax.el-api</artifactId>
+                <version>3.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+                        
             
 
             <!-- Apache commons -->
+            
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.4</version>
+                <scope>compile</scope>
+                <optional>true</optional>
+            </dependency>
+            
+            <dependency>
+	            <groupId>commons-logging</groupId>
+	            <artifactId>commons-logging</artifactId>
+	            <version>1.2</version>
+	            <scope>compile</scope>
+	            <optional>true</optional>
             </dependency>
             
             
             <!-- Spring framework -->
+            
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
-                <version>4.2.0.RELEASE</version>
+                <version>${springframework.version}</version>
+                <scope>compile</scope>
+                <optional>true</optional>
+            </dependency>
+            
+            <dependency>
+	            <groupId>org.springframework</groupId>
+	            <artifactId>spring-web</artifactId>
+	            <version>${springframework.version}</version>
+	            <scope>compile</scope>
+	            <optional>true</optional>
+            </dependency>
+            
+            
+            <!-- Test -->
+        
+            <dependency>
+	            <groupId>junit</groupId>
+	            <artifactId>junit</artifactId>
+	            <version>4.12</version>
+	            <scope>test</scope>
             </dependency>
 
         </dependencies>
@@ -138,24 +187,55 @@
     
     <dependencies>
     
-        <!-- Servlet -->
+        <!-- Javax -->
+            
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+        </dependency>
     
     
         <!-- Apache commons -->
+        
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
         
-        
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+
+
         <!-- Spring framework -->
+            
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        
+        
+        <!-- Test -->
+        
+        <dependency>
+	        <groupId>junit</groupId>
+	        <artifactId>junit</artifactId>
         </dependency>
 
     </dependencies>
@@ -172,7 +252,6 @@
                         <encoding>UTF-8</encoding>
                         <source>1.7</source>
                         <target>1.7</target>
-                        
                     </configuration>
                 </plugin>
                 
@@ -209,11 +288,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
