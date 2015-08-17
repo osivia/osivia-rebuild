@@ -8,7 +8,6 @@ import org.jboss.portal.portlet.aspects.portlet.ConsumerCacheInterceptor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.osivia.portal.kernel.common.spring.PortalConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
