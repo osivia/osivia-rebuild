@@ -1,0 +1,112 @@
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <parent>
+        <groupId>org.osivia.portal</groupId>
+        <artifactId>parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.osivia.portal.kernel</groupId>
+    <artifactId>parent</artifactId>
+    <packaging>pom</packaging>
+
+
+    <name>OSIVIA Portal - Kernel parent</name>
+    <description>OSIVIA Portal kernel POM parent.</description>
+
+
+    <modules>
+        <module>common</module>
+        <module>tomcat</module>
+    </modules>
+    
+    
+    <properties>
+        <jboss-portlet-container.version>2.0.0</jboss-portlet-container.version>
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- JBoss portlet container -->
+
+            <dependency>
+                <groupId>org.jboss.portal.portlet</groupId>
+                <artifactId>portlet-portlet</artifactId>
+                <version>${jboss-portlet-container.version}</version>
+                <scope>compile</scope>
+                
+                <exclusions>
+
+                    <!-- Javax -->
+
+                    <exclusion>
+                        <groupId>javax.portlet</groupId>
+                        <artifactId>portlet-api</artifactId>
+                    </exclusion>
+
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
+
+                    <exclusion>
+                        <groupId>javax.servlet.jsp</groupId>
+                        <artifactId>jsp-api</artifactId>
+                    </exclusion>
+
+                    <!--<exclusion>
+                        <groupId>javax.ccpp</groupId>
+                        <artifactId>ccpp</artifactId>
+                    </exclusion>-->
+
+
+                    <!-- JBoss - ->
+
+                    <exclusion>
+                        <groupId>org.jboss.portal.common</groupId>
+                        <artifactId>common-portal</artifactId>
+                    </exclusion>
+
+                    <exclusion>
+                        <groupId>org.jboss.portal.web</groupId>
+                        <artifactId>web-web</artifactId>
+                    </exclusion> -->
+
+
+                    <!-- Other -->
+
+                    <!--<exclusion>
+                        <groupId>sun-jaxb</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                    </exclusion> -->
+
+                </exclusions>
+                
+            </dependency>
+            
+            <dependency>
+                <groupId>org.jboss.portal.portlet</groupId>
+                <artifactId>portlet-controller</artifactId>
+                <version>${jboss-portlet-container.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.portal.portlet</groupId>
+                <artifactId>portlet-mc</artifactId>
+                <version>${jboss-portlet-container.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

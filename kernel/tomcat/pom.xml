@@ -1,0 +1,86 @@
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    
+    <parent>
+        <groupId>org.osivia.portal.kernel</groupId>
+        <artifactId>parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>osivia-portal-kernel-tomcat</artifactId>
+    <packaging>war</packaging>
+    
+    
+    <name>OSIVIA Portal - Kernel Tomcat</name>
+    <description>OSIVIA Portal Tomcat kernel.</description>
+
+
+    <properties>
+        <tomcat.version>8.0.24</tomcat.version>
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+        
+            <!-- Kernel common lib -->
+            
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>osivia-portal-kernel-common</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+        
+        
+            <!-- Catalina -->
+            
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-catalina</artifactId>
+                <version>${tomcat.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        
+        </dependencies>
+    </dependencyManagement>
+    
+    
+    <dependencies>
+    
+        <!-- Kernel common lib -->
+            
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-portal-kernel-common</artifactId>
+        </dependency>
+    
+    
+        <!-- Catalina -->
+            
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+        </dependency>
+    
+    </dependencies>
+    
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>osivia</warName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>
