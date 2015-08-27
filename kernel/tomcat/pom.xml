@@ -2,22 +2,23 @@
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
-    
-    
+
+
     <parent>
         <groupId>org.osivia.portal.kernel</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>osivia-portal-kernel-parent</artifactId>
         <version>5.0.0-SNAPSHOT</version>
     </parent>
-    
-    <artifactId>osivia-portal-kernel-tomcat</artifactId>
-    <packaging>war</packaging>
-    
-    
-    <name>OSIVIA Portal - Kernel Tomcat</name>
-    <description>OSIVIA Portal Tomcat kernel.</description>
+
+    <groupId>org.osivia.portal.kernel.tomcat</groupId>
+    <artifactId>osivia-portal-tomcat-parent</artifactId>
+    <packaging>pom</packaging>
+
+
+    <name>OSIVIA Portal - Tomcat - Parent</name>
+    <description>OSIVIA Portal Tomcat POM parent.</description>
 
 
     <properties>
@@ -25,18 +26,24 @@
     </properties>
 
 
+    <modules>
+        <module>lib</module>
+        <module>web</module>
+    </modules>
+    
+    
     <dependencyManagement>
         <dependencies>
         
-            <!-- Kernel common lib -->
-            
+            <!-- OSIVIA Portal kernel -->
+
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.osivia.portal.kernel</groupId>
                 <artifactId>osivia-portal-kernel-common</artifactId>
                 <version>${project.version}</version>
-                <scope>compile</scope>
+                <scope>provided</scope>
             </dependency>
-        
+            
         
             <!-- Catalina -->
             
@@ -53,14 +60,23 @@
     
     <dependencies>
     
-        <!-- Kernel common lib -->
-            
+        <!-- Easymock (A SUPPRIMER) -->
+        
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>osivia-portal-kernel-common</artifactId>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>compile</scope>
         </dependency>
     
     
+        <!-- OSIVIA Portal kernel -->
+
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-common</artifactId>
+        </dependency>
+
+
         <!-- Catalina -->
             
         <dependency>
@@ -70,17 +86,5 @@
     
     </dependencies>
     
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <warName>osivia</warName>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
 </project>
+

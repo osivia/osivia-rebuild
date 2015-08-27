@@ -7,7 +7,7 @@
     
     
     <groupId>org.osivia.portal</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>osivia-portal-parent</artifactId>
     <version>5.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     
@@ -57,7 +57,10 @@
     
     
     <modules>
+        <module>api</module>
+        <module>services</module>
         <module>kernel</module>
+        <module>portlets</module>
     </modules>
     
     
@@ -102,6 +105,17 @@
     
     
     <properties>
+        <!-- Javax -->
+        <javax-servlet-api.version>3.1.0</javax-servlet-api.version>
+        <javax-servlet-jsp-api.version>2.3.0</javax-servlet-jsp-api.version>
+        <javax-el-api.version>3.0.0</javax-el-api.version>
+        <javax-portlet-api.version>2.0</javax-portlet-api.version>
+        <javax-jstl.version>1.2</javax-jstl.version>
+        
+        <!-- JBoss portlet container -->
+        <jboss-portlet-container.version>2.0.0</jboss-portlet-container.version>
+        
+        <!-- Spring framework -->
         <springframework.version>4.2.0.RELEASE</springframework.version>
     </properties>
     
@@ -114,25 +128,38 @@
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
-                <version>3.1.0</version>
+                <version>${javax-servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
             
             <dependency>
                 <groupId>javax.servlet.jsp</groupId>
                 <artifactId>javax.servlet.jsp-api</artifactId>
-                <version>2.3.0</version>
+                <version>${javax-servlet-jsp-api.version}</version>
                 <scope>provided</scope>
             </dependency>
             
             <dependency>
                 <groupId>javax.el</groupId>
                 <artifactId>javax.el-api</artifactId>
-                <version>3.0.0</version>
+                <version>${javax-el-api.version}</version>
                 <scope>provided</scope>
             </dependency>
-                        
             
+            <dependency>
+	            <groupId>javax.portlet</groupId>
+	            <artifactId>portlet-api</artifactId>
+	            <version>${javax-portlet-api.version}</version>
+	            <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>${javax-jstl.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
 
             <!-- Apache commons -->
             
@@ -140,16 +167,24 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.4</version>
-                <scope>compile</scope>
-                <optional>true</optional>
+                <scope>provided</scope>
             </dependency>
             
             <dependency>
-	            <groupId>commons-logging</groupId>
-	            <artifactId>commons-logging</artifactId>
-	            <version>1.2</version>
-	            <scope>compile</scope>
-	            <optional>true</optional>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.2</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            
+            <!-- JBoss portlet container -->
+            
+            <dependency>
+                <groupId>org.jboss.portal.portlet</groupId>
+                <artifactId>portlet-portlet</artifactId>
+                <version>${jboss-portlet-container.version}</version>
+                <scope>provided</scope>
             </dependency>
             
             
@@ -159,16 +194,28 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${springframework.version}</version>
-                <scope>compile</scope>
-                <optional>true</optional>
+                <scope>provided</scope>
             </dependency>
             
             <dependency>
 	            <groupId>org.springframework</groupId>
 	            <artifactId>spring-web</artifactId>
 	            <version>${springframework.version}</version>
-	            <scope>compile</scope>
-	            <optional>true</optional>
+	            <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+	            <groupId>org.springframework</groupId>
+	            <artifactId>spring-webmvc</artifactId>
+	            <version>${springframework.version}</version>
+	            <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+	            <groupId>org.springframework</groupId>
+	            <artifactId>spring-webmvc-portlet</artifactId>
+	            <version>${springframework.version}</version>
+	            <scope>provided</scope>
             </dependency>
             
             
@@ -178,6 +225,13 @@
 	            <groupId>junit</groupId>
 	            <artifactId>junit</artifactId>
 	            <version>4.12</version>
+	            <scope>test</scope>
+            </dependency>
+            
+            <dependency>
+	            <groupId>org.easymock</groupId>
+	            <artifactId>easymock</artifactId>
+	            <version>3.3.1</version>
 	            <scope>test</scope>
             </dependency>
 
@@ -203,6 +257,16 @@
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>javax.portlet</groupId>
+            <artifactId>portlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
     
     
         <!-- Apache commons -->
@@ -216,7 +280,15 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
-
+        
+        
+        <!-- JBoss portlet container -->
+            
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-portlet</artifactId>
+        </dependency>
+        
 
         <!-- Spring framework -->
             
@@ -230,12 +302,27 @@
             <artifactId>spring-web</artifactId>
         </dependency>
         
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+        </dependency>
+        
         
         <!-- Test -->
         
         <dependency>
 	        <groupId>junit</groupId>
 	        <artifactId>junit</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
         </dependency>
 
     </dependencies>
@@ -244,6 +331,8 @@
     <build>
         <pluginManagement>
             <plugins>
+            
+                <!-- Compiler -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -255,6 +344,7 @@
                     </configuration>
                 </plugin>
                 
+                <!-- Resources -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -264,6 +354,7 @@
                     </configuration>
                 </plugin>
             
+                <!-- WAR -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
@@ -276,6 +367,67 @@
                         </archive>
                     </configuration>
                 </plugin>
+                
+                <!-- LESS -->
+                <plugin>
+                    <groupId>org.lesscss</groupId>
+                    <artifactId>lesscss-maven-plugin</artifactId>
+                    <version>1.7.0.1.1</version>
+                    <configuration>
+                        <sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
+                        <outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
+                        <compress>true</compress>
+                        <includes>
+                            <include>*.less</include>
+                        </includes>
+                        <outputFileFormat>{fileName}.min.css</outputFileFormat>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <!-- AntRun -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                    
+                        <!-- JAR deployment -->
+                        <execution>
+                            <id>jar-deployment</id>
+                            <phase>none</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <copy file="${project.basedir}/target/${project.build.finalName}.jar" todir="${lib.path}" />
+                                </tasks>
+                            </configuration>
+                        </execution>
+                        
+                        <!-- WAR deployment -->
+                        <execution>
+                            <id>war-deployment</id>
+                            <phase>none</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <copy file="${project.basedir}/target/${project.build.finalName}.war" tofile="${web.path}/${project.artifactId}.war" />
+                                </tasks>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
             </plugins>
         </pluginManagement>
         
@@ -292,4 +444,15 @@
         </plugins>
     </build>
     
+    
+    <profiles>
+        <profile>
+            <id>tomcat</id>
+            <properties>
+                <lib.path>${tomcat.lib.path}</lib.path>
+                <web.path>${tomcat.web.path}</web.path>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>

@@ -1,0 +1,40 @@
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    
+    <parent>
+        <groupId>org.osivia.portal.kernel.tomcat</groupId>
+        <artifactId>osivia-portal-tomcat-parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>osivia-portal-tomcat-lib</artifactId>
+    <packaging>jar</packaging>
+    
+    
+    <name>OSIVIA Portal - Tomcat - Library</name>
+    <description>OSIVIA Portal Tomcat library.</description>
+
+
+    <build>
+        <plugins>
+        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jar-deployment</id>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+    
+</project>

@@ -1,0 +1,150 @@
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    
+    <parent>
+        <groupId>org.osivia.portal.kernel.tomcat</groupId>
+        <artifactId>osivia-portal-tomcat-parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>osivia-portal-tomcat-web</artifactId>
+    <packaging>war</packaging>
+    
+    
+    <name>OSIVIA Portal - Tomcat - WebApp</name>
+    <description>OSIVIA Portal Tomcat webapp.</description>
+
+
+    <properties>
+        <war.name>portal</war.name>
+    </properties>
+
+
+    <dependencies>
+    
+        <!-- OSIVIA Portal kernel -->
+        
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-common</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+    
+        <!-- OSIVIA Portal Tomcat lib -->
+            
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-portal-tomcat-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        
+        <!-- JBoss -->
+
+        <dependency>
+            <groupId>org.jboss.portal.common</groupId>
+            <artifactId>common-mc</artifactId>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.man</groupId>
+                    <artifactId>jboss-managed</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jaxb-api</artifactId>
+                    <groupId>javax.xml.bind</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>apache-xerces</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>dtdparser121</artifactId>
+                    <groupId>wutka-dtdparser</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-reflect</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-controller</artifactId>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-mc</artifactId>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>${war.name}</warName>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.lesscss</groupId>
+                <artifactId>lesscss-maven-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>bootstrap/bootstrap.less</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="${project.basedir}/target/${war.name}.war" todir="${web.path}" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+    
+</project>

@@ -1,13 +1,8 @@
 package org.osivia.portal.kernel.common.spring;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.jboss.portal.portlet.PortletInvoker;
-import org.jboss.portal.portlet.PortletInvokerInterceptor;
-import org.jboss.portal.portlet.aspects.portlet.ConsumerCacheInterceptor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.osivia.portal.kernel.common.configuration.PortalConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -34,14 +29,18 @@ public class PortalConfigurationTest {
     }
 
 
-    @Test
-    public void testApplicationContext() {
-        PortletInvokerInterceptor consumerPortletInvoker = (PortletInvokerInterceptor) applicationContext.getBean("ConsumerPortletInvoker",
-                PortletInvoker.class);
-        assertNotNull(consumerPortletInvoker);
-
-        ConsumerCacheInterceptor consumerCacheInterceptor = (ConsumerCacheInterceptor) consumerPortletInvoker.getNext();
-        assertNotNull(consumerCacheInterceptor);
-    }
+    // @Test
+    // public void testApplicationContext() {
+    // PortletInvokerInterceptor consumerPortletInvoker = (PortletInvokerInterceptor) applicationContext.getBean("ConsumerPortletInvoker",
+    // PortletInvoker.class);
+    // assertNotNull(consumerPortletInvoker);
+    //
+    // ConsumerCacheInterceptor consumerCacheInterceptor = (ConsumerCacheInterceptor) consumerPortletInvoker.getNext();
+    // assertNotNull(consumerCacheInterceptor);
+    //
+    //
+    // PortalControllerContextFactory factory = applicationContext.getBean(PortalControllerContextFactory.class);
+    // assertNotNull(factory);
+    // }
 
 }

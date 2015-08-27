@@ -8,105 +8,196 @@
 
     <parent>
         <groupId>org.osivia.portal</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>osivia-portal-parent</artifactId>
         <version>5.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.osivia.portal.kernel</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>osivia-portal-kernel-parent</artifactId>
     <packaging>pom</packaging>
 
 
-    <name>OSIVIA Portal - Kernel parent</name>
+    <name>OSIVIA Portal - Kernel - Parent</name>
     <description>OSIVIA Portal kernel POM parent.</description>
 
 
     <modules>
         <module>common</module>
-        <module>tomcat</module>
     </modules>
     
     
     <properties>
-        <jboss-portlet-container.version>2.0.0</jboss-portlet-container.version>
+        <jboss-portal-common.version>1.2.0</jboss-portal-common.version>
+        <jboss-portal-web.version>1.2.0</jboss-portal-web.version>
+        <jboss-reflect.version>2.0.0.Beta12</jboss-reflect.version>
     </properties>
-
+    
 
     <dependencyManagement>
         <dependencies>
-
-            <!-- JBoss portlet container -->
-
+        
+            <!-- OSIVIA Portal API -->
+            
             <dependency>
-                <groupId>org.jboss.portal.portlet</groupId>
-                <artifactId>portlet-portlet</artifactId>
-                <version>${jboss-portlet-container.version}</version>
-                <scope>compile</scope>
-                
+                <groupId>org.osivia.portal.api</groupId>
+                <artifactId>osivia-portal-api-common</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.osivia.portal.api</groupId>
+                <artifactId>osivia-portal-api-cms</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+
+            <!-- JBoss -->
+            
+            <dependency>
+                <groupId>org.jboss.portal.common</groupId>
+                <artifactId>common-common</artifactId>
+                <version>${jboss-portal-common.version}</version>
+                <scope>provided</scope>
                 <exclusions>
-
-                    <!-- Javax -->
-
                     <exclusion>
-                        <groupId>javax.portlet</groupId>
-                        <artifactId>portlet-api</artifactId>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
                     </exclusion>
-
+                </exclusions>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.jboss.portal.common</groupId>
+                <artifactId>common-portal</artifactId>
+                <version>${jboss-portal-common.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.jboss.portal.common</groupId>
+                <artifactId>common-mc</artifactId>
+                <version>${jboss-portal-common.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>apache-log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
                     <exclusion>
                         <groupId>javax.servlet</groupId>
                         <artifactId>servlet-api</artifactId>
                     </exclusion>
-
-                    <exclusion>
-                        <groupId>javax.servlet.jsp</groupId>
-                        <artifactId>jsp-api</artifactId>
-                    </exclusion>
-
-                    <!--<exclusion>
-                        <groupId>javax.ccpp</groupId>
-                        <artifactId>ccpp</artifactId>
-                    </exclusion>-->
-
-
-                    <!-- JBoss - ->
-
-                    <exclusion>
-                        <groupId>org.jboss.portal.common</groupId>
-                        <artifactId>common-portal</artifactId>
-                    </exclusion>
-
-                    <exclusion>
-                        <groupId>org.jboss.portal.web</groupId>
-                        <artifactId>web-web</artifactId>
-                    </exclusion> -->
-
-
-                    <!-- Other -->
-
-                    <!--<exclusion>
-                        <groupId>sun-jaxb</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                    </exclusion> -->
-
                 </exclusions>
-                
+            </dependency>
+            
+            <dependency>
+                <groupId>org.jboss.portal.web</groupId>
+                <artifactId>web-web</artifactId>
+                <version>${jboss-portal-web.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.jboss</groupId>
+                <artifactId>jboss-reflect</artifactId>
+                <version>${jboss-reflect.version}</version>
+                <scope>provided</scope>
             </dependency>
             
             <dependency>
                 <groupId>org.jboss.portal.portlet</groupId>
                 <artifactId>portlet-controller</artifactId>
                 <version>${jboss-portlet-container.version}</version>
-                <scope>compile</scope>
+                <scope>provided</scope>
             </dependency>
-
+    
             <dependency>
                 <groupId>org.jboss.portal.portlet</groupId>
                 <artifactId>portlet-mc</artifactId>
                 <version>${jboss-portlet-container.version}</version>
-                <scope>compile</scope>
+                <scope>provided</scope>
             </dependency>
 
         </dependencies>
     </dependencyManagement>
+    
+    
+    <dependencies>
+        
+        <!-- OSIVIA Portal API -->
+    
+        <dependency>
+            <groupId>org.osivia.portal.api</groupId>
+            <artifactId>osivia-portal-api-common</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.osivia.portal.api</groupId>
+            <artifactId>osivia-portal-api-cms</artifactId>
+        </dependency>
+        
+        
+        <!-- JBoss -->
+        
+        <dependency>
+            <groupId>org.jboss.portal.common</groupId>
+            <artifactId>common-common</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.portal.common</groupId>
+            <artifactId>common-portal</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.portal.common</groupId>
+            <artifactId>common-mc</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.portal.web</groupId>
+            <artifactId>web-web</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-reflect</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-controller</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-mc</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-portlet</artifactId>
+        </dependency>
+        
+    </dependencies>
+
+
+    <profiles>
+        <profile>
+            <id>tomcat</id>
+            <modules>
+                <module>tomcat</module>
+            </modules>
+        </profile>
+    </profiles>
+    
 </project>
+
