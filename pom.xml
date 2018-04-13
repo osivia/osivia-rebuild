@@ -113,7 +113,7 @@
         <javax-jstl.version>1.2</javax-jstl.version>
         
         <!-- JBoss portlet container -->
-        <jboss-portlet-container.version>2.0.0</jboss-portlet-container.version>
+        <jboss-portlet-container.version>2.0.9</jboss-portlet-container.version>
         
         <!-- Spring framework -->
         <springframework.version>4.2.0.RELEASE</springframework.version>
