@@ -21,4 +21,7 @@ public interface CMSService {
      */
     Document getDocument(ServletRequest servletRequest) throws CMSException;
 
+
+    String foo();
+
 }

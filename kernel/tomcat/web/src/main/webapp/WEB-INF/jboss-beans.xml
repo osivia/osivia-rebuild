@@ -25,7 +25,7 @@
 
    <bean name="PortletApplicationDeployer" class="org.jboss.portal.portlet.mc.PortletApplicationDeployer">
       <alias>PortletApplicationRegistry</alias>
-      <property name="servletContainer"><inject bean="ServletContainer"/></property>
+      <property name="servletContainerFactory"><inject bean="ServletContainerFactory"/></property>
       <property name="containerPortletInvoker"><inject bean="ContainerPortletInvoker"/></property>
    </bean>
 

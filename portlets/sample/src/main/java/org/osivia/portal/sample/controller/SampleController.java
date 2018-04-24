@@ -5,6 +5,9 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.osivia.portal.api.cms.service.CMSService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +22,16 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 @Controller
 @RequestMapping(value = "VIEW")
 public class SampleController {
+
+    /** Application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
+
+
+    /** CMS service. */
+    @Autowired
+    private CMSService cmsService;
+
 
     /**
      * Constructor.
@@ -66,6 +79,15 @@ public class SampleController {
     @ActionMapping(name = "add")
     public void add(ActionRequest request, ActionResponse response, @RequestParam(name = "count") String count) {
         response.setRenderParameter("count", count);
+    }
+
+
+    @ActionMapping("foo")
+    public void foo(ActionRequest request, ActionResponse response) {
+        // CMSService cmsService = this.applicationContext.getBean(CMSService.class);
+
+        String foo = cmsService.foo();
+        request.setAttribute("foo", foo);
     }
 
 }

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.osivia.portal.api.common.context.PortalControllerContext;
 import org.osivia.portal.api.common.context.PortalControllerContextFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Portal controller context factory implementation.
@@ -13,7 +14,7 @@ import org.osivia.portal.api.common.context.PortalControllerContextFactory;
  * @author Cédric Krommenhoek
  * @see PortalControllerContextFactory
  */
-// @Service
+@Service
 public class PortalControllerContextFactoryImpl implements PortalControllerContextFactory {
 
     /**

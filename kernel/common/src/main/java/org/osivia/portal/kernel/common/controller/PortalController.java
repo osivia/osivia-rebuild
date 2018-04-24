@@ -1,6 +1,5 @@
 package org.osivia.portal.kernel.common.controller;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -14,19 +13,14 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.exception.PortalException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.ServletContextAware;
 
 /**
  * Portal controller.
  *
  * @author Cédric Krommenhoek
- * @see ServletContextAware
  */
 @Controller
-public class PortalController implements ServletContextAware {
-
-    /** Servlet context. */
-    private ServletContext servletContext;
+public class PortalController {
 
     /** CMS service. */
     private CMSService cmsService;
@@ -68,15 +62,6 @@ public class PortalController implements ServletContextAware {
         PageContainer pageContainer = document.getPageContainer();
         Template template = pageContainer.getTemplate();
         return template.getLayout();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setServletContext(ServletContext servletContext) {
-        this.servletContext = servletContext;
     }
 
 }

@@ -36,7 +36,6 @@
         <dependencies>
         
             <!-- OSIVIA Portal kernel -->
-
             <dependency>
                 <groupId>org.osivia.portal.kernel</groupId>
                 <artifactId>osivia-portal-kernel-common</artifactId>
@@ -44,9 +43,21 @@
                 <scope>provided</scope>
             </dependency>
             
+            <!-- OSIVIA Portal services -->
+            <dependency>
+                <groupId>org.osivia.portal.services</groupId>
+                <artifactId>osivia-portal-services-common</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osivia.portal.services</groupId>
+                <artifactId>osivia-portal-services-cms</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
         
             <!-- Catalina -->
-            
             <dependency>
                 <groupId>org.apache.tomcat</groupId>
                 <artifactId>tomcat-catalina</artifactId>

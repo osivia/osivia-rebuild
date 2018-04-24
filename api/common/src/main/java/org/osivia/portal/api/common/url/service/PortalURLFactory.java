@@ -19,4 +19,7 @@ public interface PortalURLFactory {
      */
     PortalURL getPortalURL(ServletRequest request);
 
+
+    String foo();
+
 }

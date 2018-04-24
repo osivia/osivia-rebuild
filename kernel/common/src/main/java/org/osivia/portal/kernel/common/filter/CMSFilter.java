@@ -53,6 +53,8 @@ import org.osivia.portal.kernel.common.model.WindowResult;
 import org.osivia.portal.kernel.common.response.IntrospectionResponse;
 import org.osivia.portal.kernel.common.response.RenderResponse;
 import org.osivia.portal.services.common.model.WindowImpl;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * CMS filter.
@@ -62,10 +64,8 @@ import org.osivia.portal.services.common.model.WindowImpl;
  */
 public class CMSFilter implements Filter {
 
-    /** Servlet context. */
-    private ServletContext servletContext;
-    /** Portlet invoker. */
-    private PortletInvoker invoker;
+    /** Filter config. */
+    private FilterConfig filterConfig;
     /** CMS service. */
     private CMSService cmsService;
 
@@ -83,12 +83,7 @@ public class CMSFilter implements Filter {
      */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.servletContext = filterConfig.getServletContext();
-
-        this.invoker = (PortletInvoker) this.servletContext.getAttribute("ConsumerPortletInvoker");
-
-        // WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
-        // this.invoker = webApplicationContext.getBean("ConsumerPortletInvoker", PortletInvoker.class);
+        this.filterConfig = filterConfig;
 
 
         SortedSet<Window> windowsCol1 = new TreeSet<Window>();
@@ -164,6 +159,12 @@ public class CMSFilter implements Filter {
         PageContainer pageContainer = document.getPageContainer();
         Template template = pageContainer.getTemplate();
 
+        // Portlet invoker
+        ServletContext servletContext = this.filterConfig.getServletContext();
+        PortletInvoker invoker = (PortletInvoker) servletContext.getAttribute("ConsumerPortletInvoker");
+        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+        PortletInvoker invoker2 = webApplicationContext.getBean("ConsumerPortletInvoker", PortletInvoker.class);
+
         // Introspection phase
         IntrospectionResponse introspectionResponse = new IntrospectionResponse(response, template);
         chain.doFilter(request, introspectionResponse);
@@ -179,7 +180,7 @@ public class CMSFilter implements Filter {
         // Portlet controller
         PortletController portletController = new PortletController();
         // Portlet container context
-        PortalPortletControllerContext portletControllerContext = new PortalPortletControllerContext(request, response, this.invoker, windows);
+        PortalPortletControllerContext portletControllerContext = new PortalPortletControllerContext(request, response, invoker, windows);
         // Portlet page navigational state
         PortletPageNavigationalState pageNavigationalState = null;
 
@@ -278,7 +279,7 @@ public class CMSFilter implements Filter {
      */
     @Override
     public void destroy() {
-        this.servletContext = null;
+        this.filterConfig = null;
         this.cmsService = null;
     }
 

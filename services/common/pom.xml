@@ -23,7 +23,6 @@
     <dependencies>
     
         <!-- OSIVIA Portal API -->
-        
         <dependency>
             <groupId>org.osivia.portal.api</groupId>
             <artifactId>osivia-portal-api-common</artifactId>
