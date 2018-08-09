@@ -17,10 +17,12 @@
 
 <h1 class="h4">Onglet #1</h1>
 
+<p>  foo : ${foo} </p>
 
 <div class="input-group">
+
     <input type="text" value="${count}" class="form-control" disabled="disabled">
     <span class="input-group-btn">
-        <a href="${addURL}" class="btn btn-default">Ajouter</a>
+       <a href="${addURL}" class="btn btn-default">Ajouter</a>
     </span>
 </div>

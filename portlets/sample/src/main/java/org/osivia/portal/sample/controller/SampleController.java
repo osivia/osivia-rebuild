@@ -52,6 +52,9 @@ public class SampleController {
     @RenderMapping
     public String view1(RenderRequest request, RenderResponse response, @RequestParam(name = "count", defaultValue = "1") String count) {
         request.setAttribute("count", count);
+        
+        String foo = cmsService.foo();
+        request.setAttribute("foo", foo);
 
         return "view-1";
     }

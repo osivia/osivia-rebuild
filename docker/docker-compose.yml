@@ -36,12 +36,12 @@ services:
       - ./lib/spring/spring-webmvc-portlet-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-webmvc-portlet-4.2.0.RELEASE.jar
       - ./lib/portal/osivia-portal-api-common-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-api-common-5.0.0-SNAPSHOT.jar
       - ./lib/portal/osivia-portal-api-cms-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-api-cms-5.0.0-SNAPSHOT.jar
-#      - ./lib/portal/osivia-portal-services-common-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-services-common-5.0.0-SNAPSHOT.jar
-#      - ./lib/portal/osivia-portal-services-cms-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-services-cms-5.0.0-SNAPSHOT.jar
-#      - ./lib/portal/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar
-#      - ./webapps/portal.war:/usr/local/tomcat/webapps/portal.war
-      - ./webapps/osivia-portal-portlets-sample.war:/usr/local/tomcat/webapps/osivia-portal-portlets-sample.war
-      - ./webapps/samples-remotecontroller-portlet.war:/usr/local/tomcat/webapps/samples-remotecontroller-portlet.war
+      - ./lib/portal/osivia-portal-services-common-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-services-common-5.0.0-SNAPSHOT.jar
+      - ./lib/portal/osivia-portal-services-cms-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-services-cms-5.0.0-SNAPSHOT.jar
+      - ./lib/portal/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar
+      - ./webapp/portal.war:/usr/local/tomcat/webapps/portal.war
+      - ./webapp/osivia-portal-portlets-sample.war:/usr/local/tomcat/webapps/osivia-portal-portlets-sample.war
+      - ./webapp/samples-remotecontroller-portlet.war:/usr/local/tomcat/webapps/samples-remotecontroller-portlet.war
     entrypoint:
       - /usr/local/tomcat/bin/catalina.sh
       - jpda
