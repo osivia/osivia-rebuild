@@ -12,7 +12,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import org.jboss.logging.Logger;
-import org.jboss.security.NestableGroup;
+
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.SimplePrincipal;
 
@@ -89,11 +89,12 @@ public abstract class AbstractServerLoginModule implements LoginModule {
 				Group group = roleSets[g];
 				String name = group.getName();
 				Group subjectGroup = this.createGroup(name, principals);
-				if (subjectGroup instanceof NestableGroup) {
-					SimpleGroup tmp = new SimpleGroup("Roles");
-					((Group) subjectGroup).addMember(tmp);
-					subjectGroup = tmp;
-				}
+				// FIXME OSIVIA/MIG nested group ?
+//				if (subjectGroup instanceof NestableGroup) {
+//					SimpleGroup tmp = new SimpleGroup("Roles");
+//					((Group) subjectGroup).addMember(tmp);
+//					subjectGroup = tmp;
+//				}
 
 				Enumeration members = group.members();
 

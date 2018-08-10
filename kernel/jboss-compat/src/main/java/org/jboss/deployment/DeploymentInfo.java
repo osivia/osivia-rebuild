@@ -17,9 +17,8 @@ import java.util.jar.Manifest;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.jboss.logging.Logger;
-import org.jboss.mx.loading.LoaderRepositoryFactory;
-import org.jboss.mx.loading.RepositoryClassLoader;
-import org.jboss.mx.loading.LoaderRepositoryFactory.LoaderRepositoryConfig;
+
+
 import org.jboss.util.collection.ListSet;
 import org.jboss.util.file.Files;
 import org.w3c.dom.Document;
@@ -37,7 +36,6 @@ public class DeploymentInfo implements Serializable {
 	public String status;
 	public DeploymentState state;
 	public transient SubDeployer deployer;
-	public transient RepositoryClassLoader ucl;
 	public transient URLClassLoader localCl;
 	public transient URLClassLoader annotationsCl;
 	public final Collection classpath;
@@ -56,7 +54,7 @@ public class DeploymentInfo implements Serializable {
 	public boolean isDirectory;
 	public boolean sortedSubDeployments;
 	public ObjectName deployedObject;
-	public LoaderRepositoryConfig repositoryConfig;
+	public Object repositoryConfig;
 	private transient MBeanServer server;
 
 	public DeploymentInfo(URL url, DeploymentInfo parent, MBeanServer server) throws DeploymentException {
@@ -101,161 +99,36 @@ public class DeploymentInfo implements Serializable {
 	}
 
 	public void createClassLoaders() throws Exception {
-		if (this.localCl == null) {
-			this.localCl = new URLClassLoader(new URL[]{this.localUrl});
-		}
-
-		URL origUrl = this.url;
-
-		DeploymentInfo current;
-		for (current = this; current.parent != null; current = current.parent) {
-			;
-		}
-
-		origUrl = current.url;
-		this.repositoryConfig = current.repositoryConfig;
-		if (this.parent == null) {
-			if (this.repositoryConfig == null) {
-				this.repositoryConfig = new LoaderRepositoryConfig();
-			}
-
-			LoaderRepositoryFactory.createLoaderRepository(this.server, this.repositoryConfig);
-			log.debug("createLoaderRepository from config: " + this.repositoryConfig);
-			Object[] args = new Object[]{this.isXML ? null : this.localUrl, origUrl, Boolean.TRUE};
-			String[] sig = new String[]{"java.net.URL", "java.net.URL", "boolean"};
-			this.ucl = (RepositoryClassLoader) this.server.invoke(this.repositoryConfig.repositoryName,
-					"newClassLoader", args, sig);
-		} else {
-			LoaderRepositoryFactory.createLoaderRepository(this.server, this.repositoryConfig);
-			this.ucl = this.parent.ucl;
-			this.ucl.addURL(this.localUrl);
-		}
-
-		if (this.classpath.size() > 0) {
-			Iterator jars = this.classpath.iterator();
-
-			while (jars.hasNext()) {
-				URL jar = (URL) jars.next();
-				this.ucl.addURL(jar);
-			}
-		}
-
+		
 	}
 
-	public void setRepositoryInfo(LoaderRepositoryConfig config) throws Exception {
-		if (this.parent != null) {
-			log.warn("Only the root deployment can set the loader repository, ignoring config=" + config);
-		} else {
-			this.repositoryConfig = config;
-			if (this.ucl != null) {
-				this.ucl.unregister();
-				LoaderRepositoryFactory.createLoaderRepository(this.server, this.repositoryConfig);
-				log.debug("createLoaderRepository from config: " + this.repositoryConfig);
-				Object[] args = new Object[]{this.isXML ? null : this.localUrl, this.url, Boolean.TRUE};
-				String[] sig = new String[]{"java.net.URL", "java.net.URL", "boolean"};
-				this.ucl = (RepositoryClassLoader) this.server.invoke(this.repositoryConfig.repositoryName,
-						"newClassLoader", args, sig);
-			}
-
-		}
+	public void setRepositoryInfo(Object config) throws Exception {
+		
 	}
 
 	public void addLibraryJar(URL libJar) {
-		DeploymentInfo current;
-		for (current = this; current.parent != null; current = current.parent) {
-			;
-		}
-
-		if (current.ucl != null) {
-			current.ucl.addURL(libJar);
-		} else {
-			this.classpath.add(libJar);
-		}
-
+	
 	}
 
-	public LoaderRepositoryConfig getTopRepositoryConfig() {
-		LoaderRepositoryConfig topConfig = this.repositoryConfig;
-
-		for (DeploymentInfo info = this; info.parent != null; topConfig = info.repositoryConfig) {
-			info = info.parent;
-		}
-
-		return topConfig;
+	public Object getTopRepositoryConfig() {
+		return null;
+	
 	}
 
 	public Manifest getManifest() {
-		try {
-			if (this.manifest == null) {
-				File file = new File(this.localUrl.getFile());
-				if (file.isDirectory()) {
-					FileInputStream fis = new FileInputStream(new File(file, "META-INF/MANIFEST.MF"));
-					this.manifest = new Manifest(fis);
-					fis.close();
-				} else if (!this.isXML) {
-					this.manifest = (new JarFile(file)).getManifest();
-				}
-			}
-
-			return this.manifest;
-		} catch (Exception var3) {
-			return null;
-		}
+		return null;
 	}
 
 	public void cleanup() {
-		if (this.parent == null && this.ucl != null) {
-			this.ucl.unregister();
-		}
-
-		this.ucl = null;
-		if (this.repositoryConfig != null) {
-			LoaderRepositoryFactory.destroyLoaderRepository(this.server, this.repositoryConfig.repositoryName);
-		}
-
-		this.subDeployments.clear();
-		this.mbeans.clear();
-		this.context.clear();
-		if (this.localUrl != null && !this.localUrl.equals(this.url)) {
-			if (Files.delete(this.localUrl.getFile())) {
-				log.debug("Cleaned Deployment: " + this.localUrl);
-			} else {
-				log.debug("Could not delete " + this.localUrl + " restart will delete it");
-			}
-		} else {
-			log.debug("Not deleting localUrl, it is null or not a copy: " + this.localUrl);
-		}
-
-		this.localCl = null;
-		this.annotationsCl = null;
-		this.localUrl = null;
-		this.repositoryConfig = null;
-		this.watch = null;
-		this.parent = null;
-		this.manifest = null;
-		this.document = null;
-		this.metaData = null;
-		this.server = null;
-		this.classpath.clear();
-		this.state = DeploymentState.DESTROYED;
+		
 	}
 
 	public String getCanonicalName() {
-		String name = this.shortName;
-		if (this.parent != null) {
-			name = this.parent.getCanonicalName() + "/" + name;
-		}
-
-		return name;
+		return null;
 	}
 
 	private String getShortName(String name) {
-		if (name.endsWith("/")) {
-			name = name.substring(0, name.length() - 1);
-		}
-
-		name = name.substring(name.lastIndexOf("/") + 1);
-		return name;
+		return null;
 	}
 
 	public int hashCode() {

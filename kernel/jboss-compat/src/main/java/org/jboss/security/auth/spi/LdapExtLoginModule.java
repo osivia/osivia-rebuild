@@ -261,10 +261,10 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule {
 
 							try {
 								Attributes result2 = ctx.getAttributes(roleDN, returnAttribute);
-								Attribute roles2 = result2.get(this.roleNameAttributeID);
-								if (roles2 != null) {
-									for (int m = 0; m < roles2.size(); ++m) {
-										roleName = (String) roles2.get(m);
+								Attribute roles2B = result2.get(this.roleNameAttributeID);
+								if (roles2B != null) {
+									for (int m2 = 0; m2 < roles2B.size(); ++m2) {
+										roleName = (String) roles2B.get(m2);
 										this.addRole(roleName);
 									}
 								}

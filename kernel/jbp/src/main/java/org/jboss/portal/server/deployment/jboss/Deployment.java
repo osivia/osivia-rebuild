@@ -24,7 +24,7 @@ package org.jboss.portal.server.deployment.jboss;
 
 import org.jboss.deployment.DeploymentException;
 import org.jboss.logging.Logger;
-import org.jboss.mx.loading.RepositoryClassLoader;
+
 import org.jboss.portal.server.deployment.PortalWebApp;
 
 import javax.management.MBeanServer;
@@ -124,17 +124,5 @@ public class Deployment
       }
    }
 
-   /** Find the repository classloader reltated to the argument classloader. */
-   public static RepositoryClassLoader findRepositoryClassLoader(ClassLoader loader) throws DeploymentException
-   {
-      while (loader != null)
-      {
-         if (loader instanceof RepositoryClassLoader)
-         {
-            return (RepositoryClassLoader)loader;
-         }
-         loader = loader.getParent();
-      }
-      throw new DeploymentException("No repository class loader found");
-   }
+
 }

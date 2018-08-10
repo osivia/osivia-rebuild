@@ -11,19 +11,12 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.management.Notification;
-import org.jboss.deployment.SubDeployerSupport.ClassConfiguration;
-import org.jboss.deployment.SuffixOrderHelper.EnhancedSuffix;
-import org.jboss.mx.util.MBeanProxyExt;
 import org.jboss.system.ServiceMBeanSupport;
-import org.jboss.system.server.ServerConfig;
-import org.jboss.system.server.ServerConfigLocator;
-import org.jboss.system.server.ServerConfigUtil;
 import org.jboss.util.file.JarUtils;
 import org.jboss.util.stream.Streams;
 
 public abstract class SubDeployerSupport extends ServiceMBeanSupport implements SubDeployerExt, SubDeployerExtMBean {
-	protected static final String nativeSuffix;
-	protected static final String nativePrefix;
+
 	protected MainDeployerMBean mainDeployer;
 	protected File tempDeployDir;
 	protected String[] enhancedSuffixes;
@@ -31,16 +24,9 @@ public abstract class SubDeployerSupport extends ServiceMBeanSupport implements 
 	protected int relativeOrder = -1;
 	private File tempNativeDir;
 	private boolean loadNative = false;
-	protected static final ClassConfiguration CONFIGURATION = new ClassConfiguration();
 
 	protected void createService() throws Exception {
-		ServerConfig config = ServerConfigLocator.locate();
-		this.tempNativeDir = config.getServerNativeDir();
-		this.tempDeployDir = config.getServerTempDeployDir();
-		this.loadNative = ServerConfigUtil.isLoadNative();
-		this.mainDeployer = (MainDeployerMBean) MBeanProxyExt.create(MainDeployerMBean.class,
-				MainDeployerMBean.OBJECT_NAME, this.server);
-	}
+			}
 
 	protected void startService() throws Exception {
 		this.mainDeployer.addDeployer(this);
@@ -64,17 +50,7 @@ public abstract class SubDeployerSupport extends ServiceMBeanSupport implements 
 	}
 
 	public void setEnhancedSuffixes(String[] enhancedSuffixes) {
-		if (enhancedSuffixes != null) {
-			int len = enhancedSuffixes.length;
-			this.suffixes = new String[len];
-
-			for (int i = 0; i < len; ++i) {
-				EnhancedSuffix e = new EnhancedSuffix(enhancedSuffixes[i]);
-				this.suffixes[i] = e.suffix;
-			}
-		}
-
-		this.enhancedSuffixes = enhancedSuffixes;
+		
 	}
 
 	public String[] getEnhancedSuffixes() {
@@ -160,19 +136,7 @@ public abstract class SubDeployerSupport extends ServiceMBeanSupport implements 
 	}
 
 	protected boolean isDeployable(String name, URL url) {
-		if (url.getPath().indexOf("META-INF") != -1) {
-			return false;
-		} else {
-			String[] acceptedSuffixes = this.mainDeployer.getSuffixOrder();
-
-			for (int i = 0; i < acceptedSuffixes.length; ++i) {
-				if (name.endsWith(acceptedSuffixes[i])) {
-					return true;
-				}
-			}
-
-			return name.endsWith(nativeSuffix) && name.startsWith(nativePrefix);
-		}
+		return true;
 	}
 
 	protected void addDeployableFiles(DeploymentInfo di, File dir) throws DeploymentException {
@@ -223,40 +187,8 @@ public abstract class SubDeployerSupport extends ServiceMBeanSupport implements 
 	}
 
 	protected void deployUrl(DeploymentInfo di, URL url, String name) throws DeploymentException {
-		this.log.debug("nested deployment: " + url);
-
-		try {
-			if (name.endsWith(nativeSuffix) && name.startsWith(nativePrefix)) {
-				File destFile = new File(this.tempNativeDir, name);
-				this.log.info("Loading native library: " + destFile.toString());
-				File parent = destFile.getParentFile();
-				if (!parent.exists()) {
-					parent.mkdirs();
-				}
-
-				InputStream in = url.openStream();
-				OutputStream out = new FileOutputStream(destFile);
-				Streams.copyb(in, out);
-				out.flush();
-				out.close();
-				in.close();
-				if (this.loadNative) {
-					System.load(destFile.toString());
-				}
-			} else {
-				new DeploymentInfo(url, di, this.getServer());
-			}
-
-		} catch (Exception var8) {
-			throw new DeploymentException("Could not deploy sub deployment " + name + " of deployment " + di.url, var8);
-		}
+	
 	}
 
-	static {
-		String token = CONFIGURATION.getNativeLibToken();
-		String nativex = System.mapLibraryName(token);
-		int xPos = nativex.indexOf(token);
-		nativePrefix = nativex.substring(0, xPos);
-		nativeSuffix = nativex.substring(xPos + 3);
-	}
+
 }

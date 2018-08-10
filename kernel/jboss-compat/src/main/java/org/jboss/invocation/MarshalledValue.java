@@ -8,6 +8,8 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Arrays;
 
+// FIXME : OSIVIA/MIG MOCK
+
 public class MarshalledValue implements Externalizable {
 	private static final long serialVersionUID = -1527598981234110311L;
 	private byte[] serializedForm;
@@ -17,31 +19,11 @@ public class MarshalledValue implements Externalizable {
 	}
 
 	public MarshalledValue(Object obj) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		MarshalledValueOutputStream mvos = new MarshalledValueOutputStream(baos);
-		mvos.writeObject(obj);
-		mvos.flush();
-		this.serializedForm = baos.toByteArray();
-		mvos.close();
-		int hash = 0;
-
-		for (int i = 0; i < this.serializedForm.length; ++i) {
-			hash = 31 * hash + this.serializedForm[i];
-		}
-
-		this.hashCode = hash;
+		
 	}
 
 	public Object get() throws IOException, ClassNotFoundException {
-		if (this.serializedForm == null) {
-			return null;
-		} else {
-			ByteArrayInputStream bais = new ByteArrayInputStream(this.serializedForm);
-			MarshalledValueInputStream mvis = new MarshalledValueInputStream(bais);
-			Object retValue = mvis.readObject();
-			mvis.close();
-			return retValue;
-		}
+	return null;
 	}
 
 	public byte[] toByteArray() {

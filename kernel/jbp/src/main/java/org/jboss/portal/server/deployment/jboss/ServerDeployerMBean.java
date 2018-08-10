@@ -37,9 +37,7 @@ import java.util.Set;
  */
 public interface ServerDeployerMBean extends SubDeployerMBean
 {
-   /**
-    */
-   ServerDeployer getDeployer();
+
 
    /**
     */

@@ -27,8 +27,8 @@ import org.jboss.portal.security.AuthorizationDomainRegistry;
 import org.jboss.portal.security.PortalPermission;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
-import org.jboss.security.jacc.DelegatingPolicy;
-import org.jboss.security.jacc.SubjectPolicyContextHandler;
+
+
 
 import javax.security.jacc.PolicyContext;
 import java.security.Policy;
@@ -39,6 +39,9 @@ import java.util.Map;
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 8784 $
  */
+
+//FIXME OSIVIA/MIG : adherence trop importante à JBoss
+
 public class JACCPortalAuthorizationManagerFactory extends AbstractJBossService
    implements PortalAuthorizationManagerFactory
 {
@@ -81,34 +84,7 @@ public class JACCPortalAuthorizationManagerFactory extends AbstractJBossService
    /** Set the PolicyContext subject security handler and the delegating policy. */
    protected void startService() throws Exception
    {
-      // Set up the mandatory context handler
-      SubjectPolicyContextHandler handler = new SubjectPolicyContextHandler();
-// FIXME OSIVIA/MIG : registerHandler not supported
-//      PolicyContext.registerHandler(SubjectPolicyContextHandler.SUBJECT_CONTEXT_KEY, handler, true);
 
-      // Setup custom policy
-      Policy policy = Policy.getPolicy();
-      if (policy != null && policy instanceof DelegatingPolicy)
-      {
-         // Just update the permission types
-         log.debug("Found existing delegating policy, configuring it with with PortalPermission");
-         DelegatingPolicy dp = (DelegatingPolicy)policy;
-         dp.setExternalPermissionTypes(new Class[]{PortalPermission.class});
-      }
-      else
-      {
-         // New config
-         log.debug("No existing delegating policy in place, adding one configured with the PortalPermission class");
-         DelegatingPolicy dp = DelegatingPolicy.getInstance();
-         dp.setExternalPermissionTypes(new Class[]{PortalPermission.class});
-         Policy.setPolicy(dp);
-         policy = dp;
-      }
 
-      // Refresh
-      policy.refresh();
-
-      //JACC bypass
-      this.securityContext = new SecurityContext();
    }
 }

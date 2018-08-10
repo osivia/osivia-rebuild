@@ -40,29 +40,20 @@ import javax.management.modelmbean.ModelMBeanInfoSupport;
 import javax.management.modelmbean.ModelMBeanOperationInfo;
 import org.jboss.logging.Logger;
 import org.jboss.mx.interceptor.Interceptor;
-import org.jboss.mx.interceptor.ModelMBeanAttributeInterceptor;
-import org.jboss.mx.interceptor.ModelMBeanInfoInterceptor;
-import org.jboss.mx.interceptor.ModelMBeanInterceptor;
-import org.jboss.mx.interceptor.ModelMBeanOperationInterceptor;
-import org.jboss.mx.interceptor.NullInterceptor;
-import org.jboss.mx.interceptor.ObjectReferenceInterceptor;
-import org.jboss.mx.interceptor.PersistenceInterceptor;
-import org.jboss.mx.interceptor.PersistenceInterceptor2;
-import org.jboss.mx.modelmbean.ModelMBeanInvoker.1;
-import org.jboss.mx.modelmbean.ModelMBeanInvoker.2;
-import org.jboss.mx.persistence.NullPersistence;
-import org.jboss.mx.persistence.PersistenceManager;
+
+
+
+
 import org.jboss.mx.server.AbstractMBeanInvoker;
 import org.jboss.mx.server.Invocation;
 import org.jboss.mx.server.InvocationContext;
 import org.jboss.mx.server.MBeanInvoker;
-import org.jboss.mx.server.AbstractMBeanInvoker.OperationKey;
+
 import org.jboss.mx.util.JBossNotificationBroadcasterSupport;
 
-public abstract class ModelMBeanInvoker extends AbstractMBeanInvoker implements ModelMBean, ModelMBeanConstants {
+public abstract class ModelMBeanInvoker extends AbstractMBeanInvoker implements ModelMBean {
 	Logger log = Logger.getLogger(ModelMBeanInvoker.class.getName());
 	protected String resourceType = null;
-	protected PersistenceManager persistence = new NullPersistence();
 	protected JBossNotificationBroadcasterSupport notifier = new JBossNotificationBroadcasterSupport();
 	protected long notifierSequence = 1L;
 	protected long attrNotifierSequence = 1L;
@@ -216,279 +207,42 @@ public abstract class ModelMBeanInvoker extends AbstractMBeanInvoker implements 
 	}
 
 	public void load() throws MBeanException, InstanceNotFoundException {
-		if (this.info != null) {
-			this.persistence.load(this, this.info);
-		}
+
 	}
 
 	public void store() throws MBeanException, InstanceNotFoundException {
-		this.persistence.store(this.info);
+
 	}
 
 	public ObjectName invokePreRegister(MBeanServer server, ObjectName name) throws Exception {
-      if (this.info == null) {
-         throw new RuntimeErrorException(new Error("MBeanInfo has not been set."));
-      } else {
-         ModelMBeanInfo minfo = (ModelMBeanInfo)this.info;
-         Descriptor mbeanDescriptor = minfo.getMBeanDescriptor();
-         this.getMBeanInfoCtx = new InvocationContext();
-         this.getMBeanInfoCtx.setInvoker(this);
-         this.getMBeanInfoCtx.setDescriptor(mbeanDescriptor);
-         this.getMBeanInfoCtx.setDispatcher(new 1(this, "MBeanInfo Dispatcher", minfo));
-         String[] signature = new String[]{"java.lang.Object", "java.lang.String"};
-         OperationKey opKey = new OperationKey(this, "setManagedResource", signature);
-         InvocationContext ctx = new InvocationContext();
-         ctx.setInvoker(this);
-         ctx.setDispatcher(new 2(this, "SetMangedResource Dispatcher"));
-         this.operationContextMap.put(opKey, ctx);
-         if (this.getResource() == null) {
-            return name;
-         } else {
-            this.init(server, name);
-            return super.invokePreRegister(server, name);
-         }
-      }
+     return null;
    }
 
 	protected void init(MBeanServer server, ObjectName name) throws Exception {
-		ModelMBeanInfo minfo = (ModelMBeanInfo) this.info;
-		this.configureInterceptorStack(minfo, server, name);
-		this.initDispatchers();
-		Object resource = this.getResource();
-		if (resource != null) {
-			Descriptor mbeanDescriptor = minfo.getMBeanDescriptor();
-			String resClassName = this.getResource().getClass().getName();
-			mbeanDescriptor.setField("resourceClass", resClassName);
-			minfo.setMBeanDescriptor(mbeanDescriptor);
-		}
 
-		this.setValuesFromMBeanInfo();
-		this.initPersistence(server, name);
-		this.load();
 	}
 
 	protected void initPersistence(MBeanServer server, ObjectName name)
 			throws MBeanException, InstanceNotFoundException {
-		ModelMBeanInfo minfo = (ModelMBeanInfo) this.getMetaData();
 
-		Descriptor[] descriptors;
-		try {
-			descriptors = minfo.getDescriptors("mbean");
-		} catch (MBeanException var8) {
-			this.log.error("Failed to obtain MBEAN_DESCRIPTORs", var8);
-			return;
-		}
-
-		if (descriptors != null) {
-			String persistMgrName = null;
-
-			for (int i = 0; i < descriptors.length && persistMgrName == null; ++i) {
-				persistMgrName = (String) descriptors[i].getFieldValue("persistence-manager");
-			}
-
-			if (persistMgrName == null) {
-				this.log.trace("No persistence-manager descriptor found, null persistence will be used");
-			} else {
-				try {
-					this.persistence = (PersistenceManager) server.instantiate(persistMgrName);
-					this.log.debug("Loaded persistence mgr: " + persistMgrName);
-					Descriptor descriptor = minfo.getMBeanDescriptor();
-					descriptor.setField("objectname", name);
-					minfo.setMBeanDescriptor(descriptor);
-				} catch (Exception var7) {
-					this.log.error("Unable to instantiate the persistence manager:" + persistMgrName, var7);
-				}
-
-			}
-		}
 	}
 
 	protected void initOperationContexts(MBeanOperationInfo[] operations) {
-		super.initOperationContexts(operations);
-
-		for (int i = 0; i < operations.length; ++i) {
-			OperationKey key = new OperationKey(this, operations[i]);
-			InvocationContext ctx = (InvocationContext) this.operationContextMap.get(key);
-			ModelMBeanOperationInfo info = (ModelMBeanOperationInfo) operations[i];
-			ctx.setDescriptor(info.getDescriptor());
-		}
 
 	}
 
 	protected void initAttributeContexts(MBeanAttributeInfo[] attributes) {
-		super.initAttributeContexts(attributes);
-
-		for (int i = 0; i < attributes.length; ++i) {
-			ModelMBeanAttributeInfo info = (ModelMBeanAttributeInfo) attributes[i];
-			String name = info.getName();
-			InvocationContext ctx = (InvocationContext) this.attributeContextMap.get(name);
-			ctx.setDescriptor(info.getDescriptor());
-			ctx.setReadable(info.isReadable());
-			ctx.setWritable(info.isWritable());
-		}
-
+		
 	}
 
 	protected void configureInterceptorStack(ModelMBeanInfo info, MBeanServer server, ObjectName name)
 			throws Exception {
-		List defaultInterceptors = this.getInterceptors(this.getMBeanInfoCtx.getDescriptor());
-		List interceptors = null;
-		if (defaultInterceptors != null) {
-			interceptors = new ArrayList(defaultInterceptors);
-		}
-
-		if (interceptors == null) {
-			interceptors = this.getMBeanInfoCtx.getInterceptors();
-		}
-
-		String mbeanName = name != null ? name.toString() : info.getClassName();
-		((List) interceptors).add(new ModelMBeanInfoInterceptor(mbeanName));
-		this.getMBeanInfoCtx.setInterceptors((List) interceptors);
-		Iterator it = this.attributeContextMap.entrySet().iterator();
-
-		Entry entry;
-		InvocationContext ctx;
-		Object list;
-		while (it.hasNext()) {
-			entry = (Entry) it.next();
-			ctx = (InvocationContext) entry.getValue();
-			list = this.getInterceptors(ctx.getDescriptor());
-			if (list == null) {
-				if (defaultInterceptors != null) {
-					list = new ArrayList(defaultInterceptors);
-				} else {
-					list = new ArrayList();
-				}
-			}
-
-			((List) list).add(new PersistenceInterceptor());
-			((List) list).add(new ModelMBeanAttributeInterceptor());
-			ctx.setInterceptors((List) list);
-		}
-
-		it = this.operationContextMap.entrySet().iterator();
-
-		while (it.hasNext()) {
-			entry = (Entry) it.next();
-			ctx = (InvocationContext) entry.getValue();
-			list = this.getInterceptors(ctx.getDescriptor());
-			if (list == null && defaultInterceptors != null) {
-				list = new ArrayList(defaultInterceptors);
-			}
-
-			if (this.dynamicResource) {
-				if (list == null) {
-					list = new ArrayList();
-				}
-
-				((List) list).add(new ModelMBeanOperationInterceptor());
-			}
-
-			if (list != null) {
-				((List) list).add(new NullInterceptor());
-				ctx.setInterceptors((List) list);
-			}
-		}
+	
 
 	}
 
 	protected List getInterceptors(Descriptor d) throws Exception {
-		if (d == null) {
-			return null;
-		} else {
-			Descriptor[] interceptorDescriptors = (Descriptor[]) ((Descriptor[]) d.getFieldValue("interceptors"));
-			if (interceptorDescriptors == null) {
-				return null;
-			} else {
-				ArrayList interceptors = new ArrayList();
-				ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-				for (int i = 0; i < interceptorDescriptors.length; ++i) {
-					Descriptor desc = interceptorDescriptors[i];
-					String code = (String) desc.getFieldValue("code");
-					if (!code.equals(ModelMBeanInterceptor.class.getName())
-							&& !code.equals(ObjectReferenceInterceptor.class.getName())
-							&& !code.equals(PersistenceInterceptor2.class.getName())) {
-						Class interceptorClass = loader.loadClass(code);
-						Interceptor interceptor = null;
-						Class[] ctorSig = new Class[]{MBeanInvoker.class};
-
-						try {
-							Constructor ctor = interceptorClass.getConstructor(ctorSig);
-							Object[] ctorArgs = new Object[]{this};
-							interceptor = (Interceptor) ctor.newInstance(ctorArgs);
-						} catch (Throwable var23) {
-							this.log.debug("Could not invoke CTOR(MBeanInvoker) for '" + interceptorClass
-									+ "', trying default CTOR: " + var23.getMessage());
-							interceptor = (Interceptor) interceptorClass.newInstance();
-						}
-
-						interceptors.add(interceptor);
-						String[] names = desc.getFieldNames();
-						HashMap propertyMap = new HashMap();
-						if (names.length > 1) {
-							BeanInfo beanInfo = Introspector.getBeanInfo(interceptorClass);
-							PropertyDescriptor[] props = beanInfo.getPropertyDescriptors();
-
-							int n;
-							String name;
-							for (n = 0; n < props.length; ++n) {
-								name = props[n].getName();
-								propertyMap.put(name, props[n]);
-							}
-
-							for (n = 0; n < names.length; ++n) {
-								name = names[n];
-								if (!name.equals("code")) {
-									String text = (String) desc.getFieldValue(name);
-									PropertyDescriptor pd = (PropertyDescriptor) propertyMap.get(name);
-									if (pd == null) {
-										throw new IntrospectionException("No PropertyDescriptor for attribute:" + name);
-									}
-
-									Method setter = pd.getWriteMethod();
-									if (setter != null) {
-										Class ptype = pd.getPropertyType();
-										PropertyEditor editor = PropertyEditorManager.findEditor(ptype);
-										if (editor == null) {
-											throw new IntrospectionException(
-													"Cannot convert string to interceptor attribute:" + name);
-										}
-
-										editor.setAsText(text);
-										Object[] args = new Object[]{editor.getValue()};
-										setter.invoke(interceptor, args);
-									}
-								}
-							}
-						}
-					} else {
-						this.log.debug("Ignoring obsolete legacy interceptor: " + code);
-					}
-				}
-
-				if (interceptors.size() == 0) {
-					interceptors = null;
-				}
-
-				return interceptors;
-			}
-		}
-	}
-
-	protected void setValuesFromMBeanInfo() throws JMException {
-		Iterator it = this.attributeContextMap.entrySet().iterator();
-
-		while (it.hasNext()) {
-			Entry entry = (Entry) it.next();
-			String key = (String) entry.getKey();
-			InvocationContext ctx = (InvocationContext) entry.getValue();
-			Object value = ctx.getDescriptor().getFieldValue("value");
-			if (value != null) {
-				this.setAttribute(new Attribute(key, value));
-			}
-		}
-
+		return null;
 	}
 
 	protected boolean isSupportedResourceType(Object resource, String resourceType) {
@@ -496,17 +250,7 @@ public abstract class ModelMBeanInvoker extends AbstractMBeanInvoker implements 
 	}
 
 	protected void override(Invocation invocation) throws MBeanException {
-		if (this.dynamicResource && this.info != null) {
-			Descriptor current = invocation.getDescriptor();
-			if (current != null) {
-				ModelMBeanInfo mminfo = (ModelMBeanInfo) this.info;
-				Descriptor descriptor = mminfo.getDescriptor((String) current.getFieldValue("name"),
-						(String) current.getFieldValue("descriptorType"));
-				if (descriptor != null) {
-					invocation.setDescriptor(descriptor);
-				}
-			}
-		}
+		
 
 	}
 }

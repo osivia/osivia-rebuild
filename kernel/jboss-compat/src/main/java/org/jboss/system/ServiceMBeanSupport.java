@@ -9,7 +9,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import org.jboss.deployment.DeploymentInfo;
-import org.jboss.deployment.SARDeployerMBean;
+
 import org.jboss.logging.Logger;
 import org.jboss.mx.util.JBossNotificationBroadcasterSupport;
 import org.jboss.util.Classes;
@@ -56,10 +56,7 @@ public class ServiceMBeanSupport extends JBossNotificationBroadcasterSupport
 	}
 
 	public DeploymentInfo getDeploymentInfo() throws JMException {
-		Object[] args = new Object[]{this.serviceName};
-		String[] sig = new String[]{this.serviceName.getClass().getName()};
-		DeploymentInfo sdi = (DeploymentInfo) this.server.invoke(SARDeployerMBean.OBJECT_NAME, "getService", args, sig);
-		return sdi;
+		return null;
 	}
 
 	public MBeanServer getServer() {
@@ -79,50 +76,19 @@ public class ServiceMBeanSupport extends JBossNotificationBroadcasterSupport
 	}
 
 	public void create() throws Exception {
-		if (this.serviceName != null && this.isJBossInternalLifecycleExposed) {
-			this.server.invoke(ServiceController.OBJECT_NAME, "create", new Object[]{this.serviceName},
-					SERVICE_CONTROLLER_SIG);
-		} else {
-			this.jbossInternalCreate();
-		}
+
 
 	}
 
 	public void start() throws Exception {
-		if (this.serviceName != null && this.isJBossInternalLifecycleExposed) {
-			this.server.invoke(ServiceController.OBJECT_NAME, "start", new Object[]{this.serviceName},
-					SERVICE_CONTROLLER_SIG);
-		} else {
-			this.jbossInternalStart();
-		}
-
 	}
 
 	public void stop() {
-		try {
-			if (this.serviceName != null && this.isJBossInternalLifecycleExposed) {
-				this.server.invoke(ServiceController.OBJECT_NAME, "stop", new Object[]{this.serviceName},
-						SERVICE_CONTROLLER_SIG);
-			} else {
-				this.jbossInternalStop();
-			}
-		} catch (Throwable var2) {
-			this.log.warn("Error in stop " + this.jbossInternalDescription(), var2);
-		}
-
+	
 	}
 
 	public void destroy() {
-		try {
-			if (this.serviceName != null && this.isJBossInternalLifecycleExposed) {
-				this.server.invoke(ServiceController.OBJECT_NAME, "destroy", new Object[]{this.serviceName},
-						SERVICE_CONTROLLER_SIG);
-			} else {
-				this.jbossInternalDestroy();
-			}
-		} catch (Throwable var2) {
-			this.log.warn("Error in destroy " + this.jbossInternalDescription(), var2);
-		}
+	
 
 	}
 
@@ -239,45 +205,15 @@ public class ServiceMBeanSupport extends JBossNotificationBroadcasterSupport
 	}
 
 	public void postRegister(Boolean registrationDone) {
-		if (!registrationDone) {
-			this.log.info("Registration is not done -> stop");
-			this.stop();
-		} else {
-			this.state = 8;
-
-			try {
-				MBeanInfo info = this.server.getMBeanInfo(this.serviceName);
-				MBeanOperationInfo[] ops = info.getOperations();
-
-				for (int i = 0; i < ops.length; ++i) {
-					if (ops[i] != null && "jbossInternalLifecycle".equals(ops[i].getName())) {
-						this.isJBossInternalLifecycleExposed = true;
-						break;
-					}
-				}
-			} catch (Throwable var5) {
-				this.log.warn("Unexcepted error accessing MBeanInfo for " + this.serviceName, var5);
-			}
-		}
-
 	}
+	
+		
 
 	public void preDeregister() throws Exception {
 	}
 
 	public void postDeregister() {
-		try {
-			if (this.serviceName != null && this.isJBossInternalLifecycleExposed) {
-				this.server.invoke(ServiceController.OBJECT_NAME, "remove", new Object[]{this.serviceName},
-						SERVICE_CONTROLLER_SIG);
-			}
-		} catch (Throwable var2) {
-			this.log.warn("Unexpected error during removal. " + this.serviceName, var2);
-		}
-
-		this.server = null;
-		this.serviceName = null;
-		this.state = 7;
+		
 	}
 
 	protected long getNextNotificationSequenceNumber() {

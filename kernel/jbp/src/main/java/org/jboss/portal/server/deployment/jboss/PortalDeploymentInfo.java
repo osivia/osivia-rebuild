@@ -42,8 +42,7 @@ public class PortalDeploymentInfo extends DeploymentInfo
    /** The serialVersionUID */
    private static final long serialVersionUID = 4911467978162887964L;
 
-   /** . */
-   private final Logger log;
+
 
    /** The optional web application containing that deployment info. */
    public final PortalWebApp pwa;
@@ -62,7 +61,7 @@ public class PortalDeploymentInfo extends DeploymentInfo
    {
       super(url, parent, server);
       this.pwa = pwa;
-      this.log = Logger.getLogger(ServerDeployer.class.getName());
+
    }
 
    public PortalDeploymentInfo(URL url, PortalDeploymentInfo parent, MBeanServer server) throws DeploymentException

@@ -8,7 +8,7 @@ import javax.management.ObjectName;
 import org.jboss.mx.util.ObjectNameFactory;
 import org.jboss.system.ServiceMBean;
 
-public interface MainDeployerMBean extends ServiceMBean, DeployerMBean, MainDeployerConstants {
+public interface MainDeployerMBean extends ServiceMBean {
 	ObjectName OBJECT_NAME = ObjectNameFactory.create("jboss.system:service=MainDeployer");
 
 	boolean getCopyFiles();
