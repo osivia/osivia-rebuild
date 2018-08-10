@@ -44,7 +44,7 @@
     		<scope>provided</scope>
 		</dependency>
         
-           <dependency>
+    <dependency>
     	<groupId>javax.transaction</groupId>
     	<artifactId>jta</artifactId>
     	<version>1.0.1B</version>

@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.jboss.portal.portlet.session;
 
+
 import org.jboss.invocation.MarshalledValue;
 import org.jboss.logging.Logger;
 

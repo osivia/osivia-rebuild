@@ -8,19 +8,19 @@ import java.util.Set;
 public class PolicyConfig {
 	Map config = Collections.synchronizedMap(new HashMap());
 
-//	public void add(AuthenticationInfo authInfo) {
-//		this.config.put(authInfo.getName(), authInfo);
-//	}
-//
-//	public AuthenticationInfo get(String name) {
-//		AuthenticationInfo info = (AuthenticationInfo) this.config.get(name);
-//		return info;
-//	}
-//
-//	public AuthenticationInfo remove(String name) {
-//		AuthenticationInfo info = (AuthenticationInfo) this.config.remove(name);
-//		return info;
-//	}
+	public void add(AuthenticationInfo authInfo) {
+		this.config.put(authInfo.getName(), authInfo);
+	}
+
+	public AuthenticationInfo get(String name) {
+		AuthenticationInfo info = (AuthenticationInfo) this.config.get(name);
+		return info;
+	}
+
+	public AuthenticationInfo remove(String name) {
+		AuthenticationInfo info = (AuthenticationInfo) this.config.remove(name);
+		return info;
+	}
 
 	public void clear() {
 		this.config.clear();

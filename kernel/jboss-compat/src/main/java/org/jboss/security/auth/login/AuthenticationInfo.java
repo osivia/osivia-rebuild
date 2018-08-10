@@ -13,6 +13,8 @@ import javax.security.auth.login.AppConfigurationEntry;
 
 
 public class AuthenticationInfo {
-	
+	String getName()	{
+		return null;
+	}
 
 }
