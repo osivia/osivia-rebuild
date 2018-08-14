@@ -31,7 +31,7 @@
     <properties>
         <jboss-portal-common.version>1.2.5</jboss-portal-common.version>
         <jboss-portal-web.version>1.2.0</jboss-portal-web.version>
-        <jboss-reflect.version>2.0.0.Beta12</jboss-reflect.version>
+        <jboss-reflect.version>2.0.2.GA</jboss-reflect.version>
         <jboss-portal-portlet.version>2.0.9</jboss-portal-portlet.version>
     </properties>
     
@@ -141,7 +141,14 @@
                 <artifactId>portlet-mc</artifactId>
                 <version>${jboss-portlet-container.version}</version>
                 <scope>provided</scope>
-            </dependency>
+		    </dependency>
+		
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.5</version>
+				<scope>provided</scope>
+			</dependency>         
 
         </dependencies>
     </dependencyManagement>

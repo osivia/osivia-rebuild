@@ -16,6 +16,11 @@
         <load-on-startup>0</load-on-startup>
     </servlet>
     
+   
+   <listener>
+      <listener-class>org.jboss.portal.common.mc.bootstrap.WebBootstrap</listener-class>
+   </listener>
+
     
     <jsp-config>
         <taglib>

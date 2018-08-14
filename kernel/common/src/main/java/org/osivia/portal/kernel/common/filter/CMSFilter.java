@@ -22,9 +22,11 @@ import org.easymock.EasyMock;
 import org.jboss.portal.common.io.IOTools;
 import org.jboss.portal.common.io.SerializationFilter;
 import org.jboss.portal.common.util.Base64;
+import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.portlet.Portlet;
 import org.jboss.portal.portlet.PortletInvoker;
 import org.jboss.portal.portlet.PortletInvokerException;
+import org.jboss.portal.portlet.aspects.portlet.ConsumerCacheInterceptor;
 import org.jboss.portal.portlet.controller.PortletController;
 import org.jboss.portal.portlet.controller.impl.ControllerRequestFactory;
 import org.jboss.portal.portlet.controller.impl.ControllerRequestParameterNames;
@@ -83,7 +85,8 @@ public class CMSFilter implements Filter {
      */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
+    	
+         this.filterConfig = filterConfig;
 
 
         SortedSet<Window> windowsCol1 = new TreeSet<Window>();
@@ -161,7 +164,7 @@ public class CMSFilter implements Filter {
 
         // Portlet invoker
         ServletContext servletContext = this.filterConfig.getServletContext();
-        PortletInvoker invoker = (PortletInvoker) servletContext.getAttribute("ConsumerPortletInvoker");
+        PortletInvoker invoker = (PortletInvoker) servletContext.getAttribute("jboss.portal:service=ConsumerPortletInvoker");
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
         PortletInvoker invoker2 = webApplicationContext.getBean("ConsumerPortletInvoker", PortletInvoker.class);
 
@@ -257,6 +260,14 @@ public class CMSFilter implements Filter {
         }
 
 
+        if( request.getParameter("cmd") != null)
+	        try {
+				new CommandIntegration(request).service(request, response);
+			} catch (ControllerException e) {
+				throw new ServletException(e);
+			}
+        
+        
         List<WindowResult> windowResults = new ArrayList<WindowResult>(windows.size());
         for (Window window : windows) {
             Portlet portlet = portletControllerContext.getPortlet(window.getId());

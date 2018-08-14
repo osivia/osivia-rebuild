@@ -31,9 +31,24 @@
         <dependency>
             <groupId>org.osivia.portal.kernel</groupId>
             <artifactId>osivia-portal-kernel-common</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+         
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-jbp</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-jboss-compat</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+      
         <!-- OSIVIA Portal services -->
         <dependency>
             <groupId>org.osivia.portal.services</groupId>
@@ -105,7 +120,20 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        
+        <dependency>
+    		<groupId>log4j</groupId>
+    		<artifactId>log4j</artifactId>
+    		<version>1.2.17</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.jboss.logging</groupId>
+		    <artifactId>jboss-logging-log4j</artifactId>
+		    <version>2.1.2.GA</version>
 
+		</dependency>
+		
     </dependencies>
 
 
