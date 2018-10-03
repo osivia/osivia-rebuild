@@ -22,6 +22,8 @@
  ******************************************************************************/
 package org.jboss.portal.jems.as.system;
 
+import javax.annotation.PostConstruct;
+
 import org.jboss.logging.Logger;
 import org.jboss.system.ServiceMBeanSupport;
 
@@ -33,9 +35,19 @@ import org.jboss.system.ServiceMBeanSupport;
  */
 public class AbstractJBossService extends ServiceMBeanSupport
 {
+	
+	@PostConstruct 
+	protected void pc()	{
+		try {
+			startService();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}		
+	}
 
    public AbstractJBossService()
    {
+
    }
 
    public AbstractJBossService(final Class type)

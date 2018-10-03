@@ -398,7 +398,7 @@ public class InstanceContainerImpl extends AbstractJBossService
       return list;
    }
 
-   PortletInvocationResponse invoke(PortletInvocation invocation) throws PortletInvokerException
+  public PortletInvocationResponse invoke(PortletInvocation invocation) throws PortletInvokerException
    {
       PortletInterceptorStack stack = stackFactory.getInterceptorStack();
       if (stack.getLength() != 0)

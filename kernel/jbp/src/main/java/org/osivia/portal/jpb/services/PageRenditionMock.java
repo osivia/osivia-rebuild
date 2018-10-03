@@ -20,19 +20,49 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA         *
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
-package org.jboss.portal.core.impl.model.instance;
+package org.osivia.portal.jpb.services;
 
-import org.jboss.portal.core.model.instance.InstanceContainer;
+import org.jboss.portal.common.util.MarkupInfo;
+import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.theme.PageService;
+import org.jboss.portal.theme.PortalLayout;
+import org.jboss.portal.theme.PortalTheme;
+import org.jboss.portal.theme.page.PageResult;
+import org.jboss.portal.theme.render.RenderException;
+import org.jboss.portal.theme.render.RendererContext;
+import org.jboss.portal.theme.render.ThemeContext;
+import org.jboss.portal.web.ServletContextDispatcher;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
+ * Should not be a controller response, but it comes from legacy design.
+ *
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 8786 $
+ * @version $Revision: 10542 $
  */
-public interface JBossInstanceContainerContext extends InstanceContainerContext
+public class PageRenditionMock extends ControllerResponse
 {
 
-   InstanceContainer getContainer();
 
-   void setContainer(InstanceContainer container);
 
+   /** . */
+   private PageResult pageResult;
+
+
+
+   public PageRenditionMock(
+      PageResult markupResult)
+
+   {
+      this.pageResult = markupResult;
+
+   }
+
+
+   public PageResult getPageResult()
+   {
+      return pageResult;
+   }
 }

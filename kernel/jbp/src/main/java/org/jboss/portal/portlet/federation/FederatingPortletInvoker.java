@@ -20,19 +20,52 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA         *
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
-package org.jboss.portal.core.impl.model.instance;
+package org.jboss.portal.portlet.federation;
 
-import org.jboss.portal.core.model.instance.InstanceContainer;
+import org.jboss.portal.portlet.PortletInvoker;
+
+import java.util.Collection;
 
 /**
+ * A portlet invoker that federates other invokers.
+ *
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 8786 $
+ * @version $Revision: 5687 $
+ * @since 2.4
  */
-public interface JBossInstanceContainerContext extends InstanceContainerContext
+public interface FederatingPortletInvoker extends PortletInvoker
 {
+   /**
+    * Registers an invoker.
+    *
+    * @param federatedId the invoker id to register
+    * @param registeredInvoker the invoker to register
+    * @throws IllegalArgumentException if the invoker is null or already registered
+    */
+   FederatedPortletInvoker registerInvoker(String federatedId, PortletInvoker registeredInvoker) throws IllegalArgumentException;
 
-   InstanceContainer getContainer();
+   /**
+    * Return a portlet invoker registered or null if not found
+    *
+    * @param federatedId the id
+    * @return the invoker
+    * @throws IllegalArgumentException if the id is null
+    */
+   FederatedPortletInvoker getFederatedInvoker(String federatedId) throws IllegalArgumentException;
 
-   void setContainer(InstanceContainer container);
+   /**
+    * Return the registered portlet invokers.
+    *
+    * @return a collection that contains the portlet invokers
+    */
+   Collection<FederatedPortletInvoker> getFederatedInvokers();
 
+   /**
+    * Unregisters the invoker associated with the specified identifier.
+    *
+    * @param federatedId the identifier of the invoker to unregister
+    * @throws IllegalArgumentException if the identifier is null or no invoker is registered with this identifier
+    * @since 2.6
+    */
+   void unregisterInvoker(String federatedId);
 }

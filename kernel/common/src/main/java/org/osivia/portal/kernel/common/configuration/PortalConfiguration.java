@@ -32,6 +32,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
 /**
  * Portal configuration.
@@ -39,7 +40,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Cédric Krommenhoek
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.portal")
+@ComponentScan(basePackages = "org.osivia.portal,org.jboss.portal")
+@ImportResource("classpath*:spring-beans.xml")
 public class PortalConfiguration implements ApplicationContextAware {
 
     /** Application context. */
@@ -74,6 +76,8 @@ public class PortalConfiguration implements ApplicationContextAware {
         PortletApplicationDeployer portletApplicationDeployer = new PortletApplicationDeployer();
         portletApplicationDeployer.setServletContainerFactory(this.applicationContext.getBean("ServletContainerFactory", ServletContainerFactory.class));
         portletApplicationDeployer.setContainerPortletInvoker(this.applicationContext.getBean("ContainerPortletInvoker", ContainerPortletInvoker.class));
+        
+        portletApplicationDeployer.start();
 
         // Valve interceptor circular dependency
         ValveInterceptor valveInterceptor = this.applicationContext.getBean("ValveInterceptor", ValveInterceptor.class);

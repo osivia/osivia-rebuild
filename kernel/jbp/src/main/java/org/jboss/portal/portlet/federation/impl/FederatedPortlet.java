@@ -20,19 +20,70 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA         *
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
-package org.jboss.portal.core.impl.model.instance;
+package org.jboss.portal.portlet.federation.impl;
 
-import org.jboss.portal.core.model.instance.InstanceContainer;
+import org.jboss.portal.portlet.Portlet;
+import org.jboss.portal.portlet.PortletContext;
+import org.jboss.portal.portlet.federation.FederatedPortletInvoker;
+import org.jboss.portal.portlet.info.PortletInfo;
 
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 8786 $
+ * @version $Revision: 5448 $
  */
-public interface JBossInstanceContainerContext extends InstanceContainerContext
+public class FederatedPortlet implements Portlet
 {
 
-   InstanceContainer getContainer();
+   /** . */
+   final PortletContext compoundContext;
 
-   void setContainer(InstanceContainer container);
+   /** . */
+   final Portlet portlet;
 
+   /** . */
+   final FederatedPortletInvoker invoker;
+
+   public FederatedPortlet(FederatedPortletInvoker invoker, PortletContext compoundContext, Portlet portlet)
+   {
+      if (invoker == null)
+      {
+         throw new IllegalArgumentException("No null invoker accepted");
+      }
+      if (compoundContext == null)
+      {
+         throw new IllegalArgumentException("No null id accepted");
+      }
+      if (portlet == null)
+      {
+         throw new IllegalArgumentException("No null portlet accepted");
+      }
+      this.invoker = invoker;
+      this.compoundContext = compoundContext;
+      this.portlet = portlet;
+   }
+
+   public String getFederatedId()
+   {
+      return invoker.getId();
+   }
+
+   public PortletContext getContext()
+   {
+      return compoundContext;
+   }
+
+   public PortletInfo getInfo()
+   {
+      return portlet.getInfo();
+   }
+
+   public boolean isRemote()
+   {
+      return portlet.isRemote();
+   }
+
+   public String toString()
+   {
+      return "FederatedPortlet[context=" + compoundContext + ",portlet=" + portlet + "]";
+   }
 }

@@ -65,6 +65,7 @@ import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.w3c.dom.Element;
 
+import javax.annotation.PostConstruct;
 import javax.portlet.MimeResponse;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -133,6 +134,7 @@ public abstract class InternalContentProvider implements ContentRenderer
       this.registry = registry;
    }
 
+   @PostConstruct
    public void start() throws Exception
    {
       registeredContentType = ContentType.create(contentType);
@@ -280,16 +282,7 @@ public abstract class InternalContentProvider implements ContentRenderer
             supportedModes.remove(Mode.EDIT);
          }
 
-         //
-         InstancePermission perm = new InstancePermission(instance.getId(), InstancePermission.ADMIN_ACTION);
-         PortalAuthorizationManager pam = pamf.getManager();
-         boolean authorized = pam.checkPermission(perm);
-         if (!authorized)
-         {
-            // Remove the modes that we know only admin are authorized to use
-            supportedModes.remove(Mode.ADMIN);
-         }
-
+        
          //
          response = instance.invoke(invocation);
       }

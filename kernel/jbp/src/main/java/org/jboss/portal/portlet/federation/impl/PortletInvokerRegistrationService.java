@@ -20,19 +20,71 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA         *
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
-package org.jboss.portal.core.impl.model.instance;
+package org.jboss.portal.portlet.federation.impl;
 
-import org.jboss.portal.core.model.instance.InstanceContainer;
+import org.jboss.portal.portlet.federation.FederatingPortletInvoker;
+
+import javax.annotation.PostConstruct;
+
+import org.jboss.portal.portlet.PortletInvoker;
 
 /**
+ * Register any portlet invoker into a federating portlet invoker.
+ *
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 8786 $
+ * @version $Revision: 5448 $
+ * @since 2.4
  */
-public interface JBossInstanceContainerContext extends InstanceContainerContext
+public class PortletInvokerRegistrationService
 {
 
-   InstanceContainer getContainer();
+   /** The registration id. */
+   private String id;
 
-   void setContainer(InstanceContainer container);
+   /** The portlet invoker to register. */
+   private PortletInvoker portletInvoker;
 
+   /** The federating portlet invoker. */
+   private FederatingPortletInvoker federatingPortletInvoker;
+
+   public String getId()
+   {
+      return id;
+   }
+
+   public void setId(String id)
+   {
+      this.id = id;
+   }
+
+   public PortletInvoker getPortletInvoker()
+   {
+      return portletInvoker;
+   }
+
+   public void setPortletInvoker(PortletInvoker portletInvoker)
+   {
+      this.portletInvoker = portletInvoker;
+   }
+
+   public FederatingPortletInvoker getFederatingPortletInvoker()
+   {
+      return federatingPortletInvoker;
+   }
+
+   public void setFederatingPortletInvoker(FederatingPortletInvoker federatingPortletInvoker)
+   {
+      this.federatingPortletInvoker = federatingPortletInvoker;
+   }
+
+   @PostConstruct
+   public void start() throws Exception
+   {
+      federatingPortletInvoker.registerInvoker(id, portletInvoker);
+   }
+
+   public void stop() throws Exception
+   {
+      federatingPortletInvoker.unregisterInvoker(id);
+   }
 }

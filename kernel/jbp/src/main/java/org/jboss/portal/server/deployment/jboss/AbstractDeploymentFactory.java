@@ -28,6 +28,9 @@ import org.jboss.portal.common.util.Tools;
 
 import java.net.URL;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 10284 $
@@ -145,6 +148,7 @@ public abstract class AbstractDeploymentFactory implements DeploymentFactory, UR
    }
 
    /** Register the factory only if it is controlled by the service lifecycle. */
+   @PostConstruct
    public void start() throws Exception
    {
       if (registrationControlledByService)
@@ -154,6 +158,7 @@ public abstract class AbstractDeploymentFactory implements DeploymentFactory, UR
    }
 
    /** Unregister the factory only if it is controlled by the service lifecycle. */
+   @PreDestroy
    public void stop()
    {
       if (registrationControlledByService)

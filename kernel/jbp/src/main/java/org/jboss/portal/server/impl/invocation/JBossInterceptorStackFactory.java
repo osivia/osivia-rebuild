@@ -26,6 +26,8 @@ import org.jboss.portal.common.invocation.Interceptor;
 import org.jboss.portal.common.invocation.InterceptorStack;
 import org.jboss.portal.common.invocation.InterceptorStackFactory;
 import org.jboss.portal.jems.as.system.AbstractJBossService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import javax.management.ObjectName;
 import java.util.ArrayList;
@@ -38,7 +40,9 @@ import java.util.List;
  */
 public class JBossInterceptorStackFactory extends AbstractJBossService implements InterceptorStackFactory
 {
-
+    @Autowired
+    private ApplicationContext applicationContext;
+    
    /** . */
    protected List interceptorNames;
 
@@ -122,9 +126,9 @@ public class JBossInterceptorStackFactory extends AbstractJBossService implement
       Interceptor[] interceptors = new Interceptor[names.size()];
       for (int i = 0; i < names.size(); i++)
       {
-         ObjectName name = (ObjectName)names.get(i);
+         String name = (String) names.get(i);
          log.debug("Adding interceptor " + name + " to the stack");
-         interceptors[i] = (Interceptor)server.getAttribute(name, "ManagedResource");
+         interceptors[i] = (Interceptor) (applicationContext.getBean(name));
       }
 
       //

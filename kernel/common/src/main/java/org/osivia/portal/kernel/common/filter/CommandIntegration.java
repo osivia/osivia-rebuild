@@ -1,6 +1,7 @@
 package org.osivia.portal.kernel.common.filter;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.easymock.EasyMock;
 import org.jboss.portal.common.net.URLTools;
+import org.jboss.portal.common.net.media.MediaType;
+import org.jboss.portal.common.util.ContentInfo;
+import org.jboss.portal.common.util.MarkupInfo;
 import org.jboss.portal.core.controller.Controller;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -27,22 +31,27 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.web.WebRequest;
 import org.jboss.portal.web.endpoint.EndPointRequest;
 import org.jboss.portal.web.endpoint.EndPointServlet;
+import org.osivia.portal.jpb.services.RenderPageCommandMock;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
-public class CommandIntegration extends Controller {
+public class CommandIntegration  {
 	final HttpServletRequest request;
+	
+	Controller controller;
 
 	/** Describes a default servlet mapping. */
 	private static final int DEFAULT_SERVLET_MAPPING = 0;
 
 	private Server server;
 
-	public CommandIntegration(HttpServletRequest request) {
+	public CommandIntegration(HttpServletRequest request, Controller controller) {
 		super();
 		this.request = request;
 		
 		
 		server = EasyMock.createMock("server", Server.class);
+		this.controller = controller;
 
 	}
 
@@ -82,9 +91,13 @@ public class CommandIntegration extends Controller {
 		//
 		ServerRequest request = new ServerRequest(invocationCtx);
 		request.setServer(server);
+		Locale locales[] = new Locale[1];
+		locales[0] = Locale.FRENCH;
+		request.setLocales(locales);
 
 		//
 		ServerResponse response = new ServerResponse(request, invocationCtx);
+		response.setContentInfo(new MarkupInfo(MediaType.TEXT_HTML,"UTF-8"));
 
 		//
 		ServerInvocation invocation = new ServerInvocation(invocationCtx);
@@ -93,10 +106,10 @@ public class CommandIntegration extends Controller {
 
 		//
 
-		invocation.setHandler(new RequestControllerDispatcher(this));
+		invocation.setHandler(new RequestControllerDispatcher(controller));
 
 		// Create controller context
-		ControllerContext controllerContext = new ControllerContext(invocation, this);
+		ControllerContext controllerContext = new ControllerContext(invocation, controller);
 
 		// Invoke the chain that creates the initial command
 		// ControllerCommand cmd = commandFactory.doMapping(controllerContext,
@@ -104,11 +117,17 @@ public class CommandIntegration extends Controller {
 		// invocation.getServerContext().getPortalContextPath(),
 		// invocation.getServerContext().getPortalRequestPath());
 
-		PortalObjectId id = new PortalObjectId("", PortalObjectPath.ROOT_PATH);
-		ControllerCommand cmd = new RenderPageCommand(id);
+//		PortalObjectId pageId = new PortalObjectId("", PortalObjectPath.ROOT_PATH);
+//		ControllerCommand cmd = new RenderPageCommand(pageId);
 
+		PortalObjectPath page = new PortalObjectPath("/portalA/pageA", PortalObjectPath.CANONICAL_FORMAT);
+		PortalObjectId pageId = new PortalObjectId("", page);
+		ControllerCommand cmd = new RenderPageCommandMock(pageId);
 
-		return controllerContext.execute(cmd);
+		ControllerResponse result = controllerContext.execute(cmd);
+		
+		
+		return result;
 	}
 
 }

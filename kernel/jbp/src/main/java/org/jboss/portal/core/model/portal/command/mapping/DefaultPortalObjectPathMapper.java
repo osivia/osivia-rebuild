@@ -33,6 +33,9 @@ import org.jboss.portal.server.servlet.PathParser;
 
 import java.util.Iterator;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 8811 $
@@ -75,6 +78,7 @@ public class DefaultPortalObjectPathMapper implements PortalObjectPathMapper
       this.container = container;
    }
 
+   @PostConstruct
    public void start()
    {
       effectiveNamespace = namespace == null ? "" : namespace;
@@ -93,6 +97,7 @@ public class DefaultPortalObjectPathMapper implements PortalObjectPathMapper
       };
    }
 
+   @PreDestroy
    public void stop()
    {
       mapping = null;

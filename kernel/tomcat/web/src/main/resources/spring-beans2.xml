@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        
+   <!-- Server configuration service -->
+   <bean class="org.jboss.portal.server.config.ServerConfigService" id="portal:service=ServerConfig" >
+      
+      <property name="ConfigLocation" value="conf/config.xml" />
+   </bean>
+
+
+   <!-- Runtime context for running portlet container -->
+   <bean class="org.jboss.portal.web.jboss.JBossWebContext" id="portal:service=ServletContainerFactory" >
+      
+   </bean>
+
+   <!-- Portal security services-->
+   <bean class="org.jboss.portal.security.impl.JBossAuthorizationDomainRegistryImpl"
+          id="portal:service=AuthorizationDomainRegistry" >
+      
+   </bean>
+   
+      
+   <bean class="org.jboss.portal.security.impl.jacc.JACCPortalAuthorizationManagerFactory"
+          id="portal:service=PortalAuthorizationManagerFactory" >
+      
+      <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
+   </bean>
+   
+   
+   <bean class="org.jboss.portal.portlet.impl.security.JBossPortletSecurityService"
+          id="portal:service=PortletSecurityService" >
+      
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+      <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
+   </bean>
+
+   <!-- Server stack -->
+   <bean class="org.jboss.portal.server.aspects.server.SessionLockInterceptor"
+          id="portal:service=Interceptor,type=Server,name=SessionLock" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.server.TransactionInterceptor"
+          id="portal:service=Interceptor,type=Server,name=Transaction" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.impl.api.user.UserEventBridgeTriggerInterceptor"
+          id="portal:service=Interceptor,type=Server,name=UserEvent" >
+      
+   </bean>
+   <bean class="org.jboss.portal.server.aspects.server.SignOutInterceptor"
+          id="portal:service=Interceptor,type=Server,name=SessionInvalidator" >
+      
+      <property name="ServletContainerFactory" ref="portal:service=ServletContainerFactory"/>
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.server.UserInterceptor"
+          id="portal:service=Interceptor,type=Server,name=User" >
+      
+      <property name="CacheUser" value="true"/>
+      <!-- <depends>portal:service=Module,type=IdentityServiceController</depends> -->
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.server.LocaleInterceptor"
+          id="portal:service=Interceptor,type=Server,name=Locale" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.server.PortalContextPathInterceptor"
+          id="portal:service=Interceptor,type=Server,name=PortalContextPath" >
+      
+   </bean>
+   <bean class="org.jboss.portal.server.aspects.server.ContentTypeInterceptor"
+          id="portal:service=Interceptor,type=Server,name=ContentType" >
+      
+   </bean>
+   <bean
+      class="org.jboss.portal.core.aspects.server.IdentityCacheInterceptor"
+      id="portal:service=Interceptor,type=Server,name=IdentityCache"
+      
+      >
+      
+   </bean>
+   <bean class="org.jboss.portal.server.impl.invocation.JBossInterceptorStackFactory"
+          id="portal:service=InterceptorStackFactory,type=Server" >
+      
+      <property name="InterceptorNames">
+	     <list>
+           <ref bean="portal:service=Interceptor,type=Server,name=SessionLock"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=Transaction"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=IdentityCache"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=UserEvent"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=SessionInvalidator"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=User"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=Locale"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=PortalContextPath"/>
+           <ref bean="portal:service=Interceptor,type=Server,name=ContentType"/>
+		 </list>
+      </property>
+   </bean>
+
+
+
+
+   <!-- Command stack -->
+   <bean class="org.jboss.portal.core.aspects.controller.ControlInterceptor"
+          id="portal:service=Interceptor,type=Command,name=Control" >
+      
+      <property name="PortalControlPolicy" ref="portal:service=ControlPolicy,type=Portal"/>
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.controller.BackwardCompatibilityInterceptor"
+          id="portal:service=Interceptor,type=Command,name=BackwardCompatibility" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.controller.ResourceAcquisitionInterceptor"
+          id="portal:service=Interceptor,type=Command,name=ResourceAcquisition" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.controller.ajax.AjaxInterceptor"
+          id="portal:service=Interceptor,type=Command,name=Ajax" >
+   </bean>      
+     
+   <bean class="org.jboss.portal.core.aspects.controller.NavigationalStateInterceptor"
+          id="portal:service=Interceptor,type=Command,name=NavigationalState" >
+      
+   </bean>
+   <!-- 
+   		This interceptor cleans the Navigation state of windows when the user call a new page or refresh the page
+   -->
+   <bean
+      class="org.jboss.portal.core.aspects.controller.CleanNSInterceptor"
+      id="portal:service=Interceptor,type=Command,name=CleanNS"
+      
+      >
+      
+   </bean>
+   <bean
+      class="org.jboss.portal.core.aspects.controller.node.PortalNodeInterceptor"
+      id="portal:service=Interceptor,type=Command,name=PortalNode"
+      
+      >
+      
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.controller.PolicyEnforcementInterceptor"
+          id="portal:service=Interceptor,type=Command,name=PolicyEnforcement" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.controller.PageCustomizerInterceptor"
+          id="portal:service=Interceptor,type=Command,name=PageCustomizer" >
+      
+      <property name="TargetContextPath" value="/portal-core"/>
+      <property name="HeaderPath" value="/WEB-INF/jsp/header/header.jsp"/>
+      <property name="TabsPath" value="/WEB-INF/jsp/header/tabs.jsp"/>
+      <!-- Overrides the value of core.login.namespace in config.xml  --><!--  property name="LoginNamespace">dashboard</attribute -->
+      <property name="Config" ref="portal:service=ServerConfig"/>
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.controller.node.EventBroadcasterInterceptor"
+          id="portal:service=Interceptor,type=Command,name=EventBroadcaster" >
+      
+      <property name="ListenerRegistry" ref="portal:service=ListenerRegistry"/>
+   </bean>
+   <bean class="org.jboss.portal.server.impl.invocation.JBossInterceptorStackFactory"
+          id="portal:service=InterceptorStackFactory,type=Command" >
+      
+      <property name="InterceptorNames">
+      	<list>
+         <ref bean="portal:service=Interceptor,type=Command,name=ResourceAcquisition"/>
+         <ref bean="portal:service=Interceptor,type=Command,name=Ajax"/>
+         <!-- depends-list-element>portal:service=Interceptor,type=Command,name=CleanNS</depends-list-element -->
+         <ref bean="portal:service=Interceptor,type=Command,name=NavigationalState"/>
+         <ref bean="portal:service=Interceptor,type=Command,name=Control"/>
+         <ref bean="portal:service=Interceptor,type=Command,name=BackwardCompatibility"/>
+         <ref bean="portal:service=Interceptor,type=Command,name=PortalNode"/>
+         <ref bean="portal:service=Interceptor,type=Command,name=PolicyEnforcement"/>
+         <ref bean="portal:service=Interceptor,type=Command,name=PageCustomizer"/>
+         <ref bean="portal:service=Interceptor,type=Command,name=EventBroadcaster"/>
+         </list>
+      </property>
+   </bean>
+
+   <!-- Instance stack -->
+   <bean class="org.jboss.portal.portlet.aspects.portlet.ConsumerCacheInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=ConsumerCache" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.model.instance.InstanceSecurityInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=InstanceSecurity" >
+      
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.PortalSessionSynchronizationInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=PortalSessionSynchronization" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.model.instance.InstanceInvoker"
+          id="portal:service=Interceptor,type=Portlet,name=InstanceInvoker" >
+         <property name="PortletInvoker" ref="portal:service=PortletInvoker,type=Federating"/>
+      
+   </bean>
+
+<!-- 
+   <bean class="org.jboss.portal.portlet.impl.invocation.JBossPortletInterceptorStackFactory"
+          id="portal:service=InterceptorStackFactory,type=Instance" >
+      
+      <property name="InterceptorNames">
+	     <list>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=ConsumerCache"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=InstanceSecurity"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=PortalSessionSynchronization"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=InstanceInvoker"/>
+		 </list>
+      </property>
+   </bean>
+ -->
+ 
+   <!-- Producer stack -->
+   <bean class="org.jboss.portal.portlet.aspects.portlet.ValveInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=Valve" >
+      
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.ContextTrackerInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=ContextTracker" >
+      
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.SecureTransportInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=SecureTransport" >
+      
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.ContextDispatcherInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=ContextDispatcher" >
+      
+      <property name="ServletContainerFactory" ref="portal:service=ServletContainerFactory"/>
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.PortletSessionSynchronizationInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=PortletSessionSynchronization" >
+      
+   </bean>
+   <!-- 
+   <bean class="org.jboss.portal.portlet.bridge.BridgeInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=Bridge" >
+      
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.ProducerCacheInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=ProducerCache" >
+      
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.RequestAttributeConversationInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=RequestAttributeConversation" >
+      
+   </bean>
+   <bean class="org.jboss.portal.portlet.aspects.portlet.EventPayloadInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=EventPayload" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.portlet.TransactionInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=Transaction" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.portlet.HeaderInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=Header" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.portlet.AjaxInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=Ajax" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.portlet.BackwardCompatibilityInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=BackwardCompatibility" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.aspects.portlet.SignOutInterceptor"
+          id="portal:service=Interceptor,type=Portlet,name=SignOut" >
+      
+   </bean>
+   -->
+   
+<!-- 
+   <bean class="org.jboss.portal.portlet.container.ContainerPortletDispatcher"
+          id="portal:service=Dispatcher,type=Portlet,name=ContainerPortlet" >
+      
+   </bean>
+-->   
+   
+   <!--    
+   <bean class="org.jboss.portal.portlet.impl.invocation.JBossPortletInterceptorStackFactory"
+          id="portal:service=InterceptorStackFactory,type=Producer" >
+      
+      <property name="InterceptorNames">
+	     <list>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=Valve"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=SecureTransport"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=ContextDispatcher"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=ContextTracker"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=PortletSessionSynchronization"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=Bridge"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=BackwardCompatibility"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=Ajax"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=SignOut"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=ProducerCache"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=RequestAttributeConversation"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=EventPayload"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=Header"/>
+			 <ref bean="portal:service=Interceptor,type=Portlet,name=Transaction"/>
+			 <ref bean="portal:service=Dispatcher,type=Portlet,name=ContainerPortlet"/>
+		 </list>
+      </property>
+   </bean>
+   -->
+
+   <!-- Theme and layout services -->
+   <bean class="org.jboss.portal.theme.impl.ThemeServiceImpl" id="portal:service=ThemeService" >
+      
+      <property name="DefaultThemeName" value="renewal"/>
+   </bean>
+   <bean class="org.jboss.portal.theme.impl.LayoutServiceImpl" id="portal:service=LayoutService" >
+      
+      <property name="DefaultLayoutName" value="generic"/>
+      <property name="DefaultRenderSetName" value="divRenderer"/>
+   </bean>
+   <bean class="org.jboss.portal.theme.impl.PageServiceImpl" id="portal:service=PageService" >
+      
+      <property name="LayoutService" ref="portal:service=LayoutService"/>
+      <property name="ThemeService" ref="portal:service=ThemeService"/>
+   </bean>
+
+ 
+
+
+   <!--Identity-->
+   <bean class="org.jboss.portal.identity.service.IdentityEventManagerService"
+          id="portal:service=IdentityEventManager" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.identity.service.IdentityServiceControllerImpl"
+          id="portal:service=Module,type=IdentityServiceController" >
+
+      <property name="IdentityEventBroadcaster" ref="portal:service=IdentityEventManager"/>
+      <property name="JndiName" value="java:/portal/IdentityServiceController" />
+      <property name="RegisterMBeans" value="true" />
+      <property name="ConfigFile" value="conf/identity/identity-config.xml" />
+      <property name="DefaultConfigFile" value="conf/identity/standardidentity-config.xml" />
+   </bean>
+
+
+<!-- 
+   <bean class="org.jboss.security.auth.login.DynamicLoginConfig" id="portal:service=JAASLoginModule">
+      <property name="LoginConfigService" ref="jboss.security:service=XMLLoginConfig"/>
+      <property name="SecurityManagerService" ref="jboss.security:service=JaasSecurityManager"/>
+      <property name="AuthConfig" value="conf/login-config.xml" />
+   </bean>
+-->
+
+   <!-- a service to schedule activity of the users -->
+   <bean class="org.jboss.portal.core.identity.UsersActivityStatsServiceImpl"
+          id="portal:service=Module,type=UsersActivityStatsService" >
+      
+
+   </bean>
+
+ 
+
+   <!-- Listener registry -->
+   <bean class="org.jboss.portal.core.event.PortalEventListenerRegistryImpl" id="portal:service=ListenerRegistry"
+           >
+      
+   </bean>
+
+   <!-- The different containers -->
+
+
+   <bean class="org.osivia.portal.jpb.services.InstanceContainerImpl" id="portal:container=Instance"
+           >
+   <!--      
+      <property name="ContainerContext" ref="portal:service=InstanceContainerContext"/>
+      <property name="StackFactory" ref="portal:service=InterceptorStackFactory,type=Instance"/>
+      <property name="PortletInvoker" ref="portal:service=PortletInvoker,type=Federating"/>
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+      <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
+-->  
+   </bean>
+ 
+   <bean class="org.osivia.portal.jpb.services.PortalObjectContainer"
+          id="portal:container=PortalObject" >
+<!-- 
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+      <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
+      <property name="ContentProviderRegistry" ref="portal:service=ContentProviderRegistry"/>
+      <property name="SessionFactoryJNDIName" value="java:/portal/PortalObjectSessionFactory" />
+      <property name="CacheNaturalId" value="true" />
+      -->
+   </bean>
+
+   <!-- Coordination service -->
+
+   <bean class="org.jboss.portal.core.impl.coordination.CoordinationService"
+          id="portal:service=CoordinationService" >
+      
+	  
+  
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+   </bean>
+
+   <!-- Customization manager -->
+   <bean class="org.jboss.portal.core.impl.model.CustomizationManagerService" id="portal:service=CustomizationManager"
+           >
+      
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+      <property name="InstanceContainer" ref="portal:container=Instance"/>
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+      <!-- <depends>portal:service=Module,type=IdentityServiceController</depends> -->
+      <property name="DashboardContextId" value="dashboard" />
+   </bean>
+
+   <!-- The content provider framework -->
+   <bean class="org.jboss.portal.core.impl.model.content.ContentProviderRegistryService"
+          id="portal:service=ContentProviderRegistry" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.impl.model.content.portlet.InternalPortletContentProvider"
+          id="portal:service=ContentRenderer,type=portlet" >
+      
+      <property name="ContentType" value="portlet" />
+      <property name="Registry" ref="portal:service=ContentProviderRegistry"/>
+      <property name="CustomizationManager" ref="portal:service=CustomizationManager"/>
+      <property name="InstanceContainer" ref="portal:container=Instance"/>
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+   </bean>
+
+   <!-- Integrate identity -->
+   <bean class="org.jboss.portal.core.identity.DashboardBridge" id="portal:service=IdentityDashboardBridge"
+           >
+      
+      <property name="IdentityEventEmitter" ref="portal:service=IdentityEventManager"/>
+      <property name="CustomizationManager" ref="portal:service=CustomizationManager"/>
+   </bean>
+   <bean class="org.jboss.portal.core.identity.SecurityBridge" id="portal:service=IdentitySecurityBridge" >
+      
+      <property name="IdentityEventEmitter" ref="portal:service=IdentityEventManager"/>
+<!--   <property name="DynamicLoginConfig" ref="portal:service=JAASLoginModule"/> -->
+   </bean>
+
+   <!-- Command factories -->
+   <bean class="org.jboss.portal.core.controller.command.mapper.DelegatingCommandFactoryService"
+          id="portal:commandFactory=Delegating" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.model.portal.DefaultPortalCommandFactory"
+          id="portal:commandFactory=DefaultPortal" >
+      
+      <property name="NextFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="Container" ref="portal:container=PortalObject"/>
+   </bean>
+
+   <bean class="org.jboss.portal.core.model.portal.command.mapping.DefaultPortalObjectPathMapper"
+          id="portal:service=PortalObjectPathMapper,type=Default" >
+      
+      <property name="Container" ref="portal:container=PortalObject"/>
+      <property name="Namespace" value="" />
+   </bean>
+   <bean class="org.jboss.portal.core.model.portal.PortalObjectCommandFactory" id="portal:commandFactory=PortalObject"
+           >
+      
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Default"/>
+   </bean>
+
+   <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          id="portal:commandFactory=Delegate,path=portal" >
+      
+      <property name="Path" value="/portal" />
+      <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="DelegateFactory" ref="portal:commandFactory=PortalObject"/>
+   </bean>
+   <bean class="org.jboss.portal.core.controller.command.mapper.SignOutCommandFactoryService"
+          id="portal:commandFactory=SignOut" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          id="portal:commandFactory=Delegate,path=signout" >
+      
+      <property name="Path" value="/signout" />
+      <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="DelegateFactory" ref="portal:commandFactory=SignOut"/>
+   </bean>
+   <bean class="org.jboss.portal.core.model.portal.command.mapping.DashboardPortalObjectPathMapper"
+          id="portal:service=PortalObjectPathMapper,type=Dashboard" >
+      
+      <property name="CustomizationManager" ref="portal:service=CustomizationManager"/>
+      <property name="Container" ref="portal:container=PortalObject"/>
+   </bean>
+   <bean class="org.jboss.portal.core.model.portal.PortalObjectCommandFactory" id="portal:commandFactory=Dashboard"
+           >
+      
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Dashboard"/>
+   </bean>
+
+   <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          id="portal:commandFactory=Delegate,path=dashboard" >
+      
+      <property name="Path" value="/dashboard" />
+      <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="DelegateFactory" ref="portal:commandFactory=Dashboard"/>
+   </bean>
+   <bean class="org.jboss.portal.core.controller.ajax.AjaxCommandFactory" id="portal:commandFactory=Ajax" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          id="portal:commandFactory=Delegate,path=ajax" >
+      
+      <property name="Path" value="/ajax" />
+      <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="DelegateFactory" ref="portal:commandFactory=Ajax"/>
+   </bean>
+
+   <!-- URL factories -->
+   <bean class="org.jboss.portal.core.controller.command.mapper.DelegatingURLFactoryService"
+          id="portal:urlFactory=Delegating" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.model.portal.PortalObjectURLFactory"
+          id="portal:urlFactory=PortalObject,type=Default" >
+      
+      <property name="Namespace" value="" />
+      <property name="Path" value="/portal" />
+      <property name="Factory" ref="portal:urlFactory=Delegating"/>
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Default"/>
+   </bean>
+   <bean class="org.jboss.portal.core.controller.command.mapper.SignOutURLFactory" id="portal:urlFactory=SignOut"
+           >
+      
+      <property name="Path" value="/signout" />
+      <property name="Factory" ref="portal:urlFactory=Delegating"/>
+   </bean>
+   <bean class="org.jboss.portal.core.model.portal.PortalObjectURLFactory"
+          id="portal:urlFactory=PortalObject,type=Dashboard" >
+      
+      <property name="Namespace" value="dashboard" />
+      <property name="Path" value="/dashboard" />
+      <property name="Factory" ref="portal:urlFactory=Delegating"/>
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Dashboard"/>
+   </bean>
+
+   <bean class="org.jboss.portal.portlet.federation.impl.FederatingPortletInvokerService"
+          id="portal:service=PortletInvoker,type=Federating" >
+   </bean>
+
+
+   <!-- The classic response handler -->
+   <bean class="org.jboss.portal.core.controller.classic.ClassicResponseHandler"
+          id="portal:service=ResponseHandler,type=Classic" >
+      
+   </bean>
+
+   <!-- The ajax response handler -->
+   <bean class="org.jboss.portal.core.controller.ajax.AjaxResponseHandler"
+          id="portal:service=ResponseHandler,type=Ajax" >
+      
+      <property name="PageService" ref="portal:service=PageService"/>
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+   </bean>
+
+   <!-- The response handler selector -->
+   <bean class="org.jboss.portal.core.controller.handler.ResponseHandlerSelector"
+          id="portal:service=ResponseHandler,type=Selector" >
+      
+      <property name="ClassicResponseHandler" ref="portal:service=ResponseHandler,type=Classic"/>
+      <property name="AjaxResponseHandler" ref="portal:service=ResponseHandler,type=Ajax"/>
+   </bean>
+
+   <!-- -->
+   <bean class="org.jboss.portal.core.model.portal.control.page.DefaultPageControlPolicy"
+          id="portal:service=ControlPolicy,type=Page" >
+      
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+   </bean>
+   <bean class="org.jboss.portal.core.model.portal.control.portal.DefaultPortalControlPolicy"
+          id="portal:service=ControlPolicy,type=Portal" >
+      
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+   </bean>
+
+   <!-- The controller -->
+   <bean class="org.jboss.portal.core.controller.Controller" id="portal:service=Controller" >
+      
+      <property name="PageService" ref="portal:service=PageService"/>
+      <property name="CommandFactory" ref="portal:commandFactory=DefaultPortal"/>
+      <property name="URLFactory" ref="portal:urlFactory=Delegating"/>
+      <property name="StackFactory" ref="portal:service=InterceptorStackFactory,type=Command"/>
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+      <property name="InstanceContainer" ref="portal:container=Instance"/>
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+      <property name="CustomizationManager" ref="portal:service=CustomizationManager"/>
+      <property name="ContentRendererRegistry" ref="portal:service=ContentProviderRegistry"/>
+      <property name="ResponseHandler" ref="portal:service=ResponseHandler,type=Selector"/>
+      <property name="PageControlPolicy" ref="portal:service=ControlPolicy,type=Page"/>
+      <property name="ContentProviderRegistry" ref="portal:service=ContentProviderRegistry"/>
+      <property name="CoordinationManager" ref="portal:service=CoordinationService"/>
+      <property name="CoordinationConfigurator" ref="portal:service=CoordinationService"/>
+   </bean>
+
+   <!-- The controller factory -->
+   <bean class="org.jboss.portal.server.impl.RequestControllerFactoryImpl" id="portal:service=ControllerFactory"
+           >
+       <property name="Controller" ref="portal:service=Controller"/>
+   </bean>
+
+   <!-- -->
+   <bean class="org.jboss.portal.server.impl.ServerImpl" id="portal:service=Server" >
+      <property name="Config" ref="portal:service=ServerConfig"/>
+      <property name="ServletContainerFactory" ref="portal:service=ServletContainerFactory"/>
+   </bean>
+
+
+    
+</beans>

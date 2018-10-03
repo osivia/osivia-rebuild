@@ -20,92 +20,73 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA         *
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
-package org.jboss.portal.portlet.impl.invocation;
+package org.osivia.portal.jpb.services;
 
-import org.jboss.portal.jems.as.system.AbstractJBossService;
-import org.jboss.portal.portlet.PortletInvokerInterceptor;
+import org.jboss.portal.core.model.portal.Context;
+import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
+import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
 
-import javax.management.ObjectName;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 8784 $
+ * @version $Revision: 9134 $
  */
-public class JBossPortletInterceptorStackFactory extends AbstractJBossService implements PortletInterceptorStackFactory
+public class ContextImplMock extends PortalObjectImplMock implements Context
 {
 
-   /** . */
-   public List<PortletInvokerInterceptor> interceptors;
-
-
-   
-   /** . */
-   protected PortletInterceptorStack stack;
-
-   public JBossPortletInterceptorStackFactory()
+   public ContextImplMock()
    {
-	   interceptors = null;
-
+      this(true);
    }
 
-   public List<PortletInvokerInterceptor> getInterceptors()
+   public ContextImplMock(boolean hibernate)
    {
-      return interceptors;
+      super(hibernate);
    }
 
-   public void setInterceptors(List<PortletInvokerInterceptor> interceptors)
+   public Portal getPortal(String name)
    {
-      this.interceptors = interceptors;
-   }
-
-
-
-   public void startService() throws Exception
-   {
-      rebuild();
-   }
-
-   /** Rebuild the interceptor stack. */
-   public void rebuild() throws Exception
-   {
-
-
-
-      //
-      log.debug("Building interceptor stack " + getName());
-      PortletInvokerInterceptor[] portletInterceptors = new PortletInvokerInterceptor[interceptors.size()];
-      if (interceptors.size() == 1)
+      PortalObject child = getChild(name);
+      if (child instanceof Portal)
       {
-
-         PortletInvokerInterceptor a = (PortletInvokerInterceptor)interceptors.get(0);
-         portletInterceptors[0] = a;
+         return (Portal)child;
       }
-      for (int i = 0; i < interceptors.size()-1; i++)
+      return null;
+   }
+
+   public Portal createPortal(String name) throws DuplicatePortalObjectException
+   {
+	   return null;
+   }
+
+   public Portal getDefaultPortal()
+   {
+      PortalObject child = getDefaultChild();
+      if (child instanceof Portal)
       {
-
-         PortletInvokerInterceptor a = (PortletInvokerInterceptor) interceptors.get(i);
-
-         PortletInvokerInterceptor b = (PortletInvokerInterceptor) interceptors.get(i+1);
-         a.setNext(b);
-         portletInterceptors[i] = a;
-         portletInterceptors[i+1] = b;
+         return (Portal)child;
       }
-      
-      //
-      stack = new JBossPortletInterceptorStack(portletInterceptors);
-
+      if (child != null)
+      {
+         log.warn("Default child is not a portal " + child);
+      }
+      return null;
    }
 
-   public void stopService()
+
+   public int getType()
    {
-      this.stack = JBossPortletInterceptorStack.EMPTY_STACK;
+      return PortalObject.TYPE_CONTEXT;
    }
 
-   public PortletInterceptorStack getInterceptorStack()
+   protected PortalObjectImplMock cloneObject()
    {
-      return stack;
+      ContextImplMock clone = new ContextImplMock();
+      clone.setDeclaredPropertyMap(new HashMap(getDeclaredPropertyMap()));
+      clone.setListener(getListener());
+      clone.setDisplayName(getDisplayName());
+      return clone;
    }
 }

@@ -65,14 +65,13 @@
 	    <groupId>javax.security.jacc</groupId>
 	    <artifactId>javax.security.jacc-api</artifactId>
 	    <version>1.5</version>
-		<scope>provided</scope>	    
 	</dependency>
         
     <dependency>
     	<groupId>javax.transaction</groupId>
     	<artifactId>jta</artifactId>
     	<version>1.0.1B</version>
-		<scope>provided</scope>    	
+ 	
 	</dependency>
     
    	<dependency>

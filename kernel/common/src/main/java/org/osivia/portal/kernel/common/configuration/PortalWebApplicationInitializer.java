@@ -71,8 +71,8 @@ public class PortalWebApplicationInitializer extends AbstractAnnotationConfigDis
     public void onStartup(ServletContext servletContext) throws ServletException {
         super.onStartup(servletContext);
 
-        servletContext.addListener(new WebBootstrap());
-        // servletContext.addListener(new PortalListener());
+ //       servletContext.addListener(new WebBootstrap());
+        servletContext.addListener(new PortalListener());
     }
 
 }

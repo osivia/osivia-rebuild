@@ -20,19 +20,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA         *
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
-package org.jboss.portal.core.impl.model.instance;
+package org.jboss.portal.portlet.federation;
 
-import org.jboss.portal.core.model.instance.InstanceContainer;
+import org.jboss.portal.portlet.PortletInvoker;
 
 /**
+ * Provide access to a federated invoker.
+ *
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 8786 $
+ * @version $Revision: 5448 $
+ * @since 2.4
  */
-public interface JBossInstanceContainerContext extends InstanceContainerContext
+public interface FederatedPortletInvoker extends PortletInvoker
 {
+   /**
+    * Return the invoker id.
+    *
+    * @return the invoker id
+    */
+   String getId();
 
-   InstanceContainer getContainer();
-
-   void setContainer(InstanceContainer container);
-
+   /**
+    * Return the underlying portlet invoker.
+    *
+    * @return the underlying portlet invoker
+    * @since 2.6
+    */
+   PortletInvoker getPortletInvoker();
 }

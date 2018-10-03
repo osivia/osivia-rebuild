@@ -23,8 +23,6 @@
 package org.jboss.portal.server.servlet;
 
 import org.apache.log4j.Logger;
-import org.jboss.mx.util.MBeanProxy;
-import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.portal.common.invocation.InterceptorStackFactory;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.net.URLTools;
@@ -43,9 +41,10 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.web.WebRequest;
 import org.jboss.portal.web.endpoint.EndPointRequest;
 import org.jboss.portal.web.endpoint.EndPointServlet;
+import org.osivia.portal.api.common.services.Locator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -97,6 +96,9 @@ public class PortalServlet extends HttpServlet
       controllerFactoryName = getServletConfig().getInitParameter("controllerFactoryName");
    }
 
+   @Autowired
+   private ApplicationContext applicationContext;
+   
    /**
     *
     */
@@ -106,8 +108,7 @@ public class PortalServlet extends HttpServlet
       {
          try
          {
-            MBeanServer mbeanServer = MBeanServerLocator.locateJBoss();
-            server = (Server)MBeanProxy.get(Server.class, new ObjectName("portal:service=Server"), mbeanServer);
+            server = Locator.getService("portal:service=Server",Server.class);
          }
          catch (Exception e)
          {
@@ -125,8 +126,7 @@ public class PortalServlet extends HttpServlet
       {
          try
          {
-            MBeanServer mbeanServer = MBeanServerLocator.locateJBoss();
-            interceptorStack = (InterceptorStackFactory)MBeanProxy.get(InterceptorStackFactory.class, new ObjectName("portal:service=InterceptorStackFactory,type=Server"), mbeanServer);
+            interceptorStack = Locator.getService( "portal:service=InterceptorStackFactory,type=Server", InterceptorStackFactory.class);
          }
          catch (Exception e)
          {
@@ -144,8 +144,7 @@ public class PortalServlet extends HttpServlet
       {
          try
          {
-            MBeanServer mbeanServer = MBeanServerLocator.locateJBoss();
-            controllerFactory = (RequestControllerFactory)MBeanProxy.get(RequestControllerFactory.class, new ObjectName(controllerFactoryName), mbeanServer);
+            controllerFactory = (RequestControllerFactory)Locator.getService( controllerFactoryName, RequestControllerFactory.class);
          }
          catch (Exception e)
          {

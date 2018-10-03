@@ -22,6 +22,7 @@ import org.easymock.EasyMock;
 import org.jboss.portal.common.io.IOTools;
 import org.jboss.portal.common.io.SerializationFilter;
 import org.jboss.portal.common.util.Base64;
+import org.jboss.portal.core.controller.Controller;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.portlet.Portlet;
 import org.jboss.portal.portlet.PortletInvoker;
@@ -66,232 +67,240 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class CMSFilter implements Filter {
 
-    /** Filter config. */
-    private FilterConfig filterConfig;
-    /** CMS service. */
-    private CMSService cmsService;
+	/** Filter config. */
+	private FilterConfig filterConfig;
+	/** CMS service. */
+	private CMSService cmsService;
 
+	/**
+	 * Constructor.
+	 */
+	public CMSFilter() {
+		super();
+	}
 
-    /**
-     * Constructor.
-     */
-    public CMSFilter() {
-        super();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
 
+		this.filterConfig = filterConfig;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    	
-         this.filterConfig = filterConfig;
+		SortedSet<Window> windowsCol1 = new TreeSet<Window>();
 
+		WindowImpl window1 = new WindowImpl("window-1", "samples-remotecontroller-portlet", "RemoteControl");
+		window1.setOrder(1);
+		window1.setRegion("col1");
+		windowsCol1.add(window1);
 
-        SortedSet<Window> windowsCol1 = new TreeSet<Window>();
+		SortedSet<Window> windowsCol2 = new TreeSet<Window>();
 
-        WindowImpl window1 = new WindowImpl("window-1", "samples-remotecontroller-portlet", "RemoteControl");
-        window1.setOrder(1);
-        window1.setRegion("col1");
-        windowsCol1.add(window1);
+		WindowImpl window2 = new WindowImpl("window-2", "osivia-portal-portlets-sample", "Sample");
+		window2.setOrder(1);
+		window2.setRegion("col2");
+		windowsCol2.add(window2);
 
+		Template page = EasyMock.createMock("Page", Template.class);
+		EasyMock.expect(page.getPageContainer()).andStubReturn(page);
+		EasyMock.expect(page.getTemplate()).andStubReturn(page);
+		EasyMock.expect(page.getLayout()).andReturn("2-cols").anyTimes();
+		EasyMock.expect(page.getWindows("col1")).andReturn(windowsCol1).anyTimes();
+		EasyMock.expect(page.getWindows("col2")).andReturn(windowsCol2).anyTimes();
 
-        SortedSet<Window> windowsCol2 = new TreeSet<Window>();
+		this.cmsService = EasyMock.createMock("CMSService", CMSService.class);
+		try {
+			EasyMock.expect(this.cmsService.getDocument(EasyMock.anyObject(ServletRequest.class))).andStubReturn(page);
+		} catch (CMSException e) {
+			throw new ServletException(e);
+		}
 
-        WindowImpl window2 = new WindowImpl("window-2", "osivia-portal-portlets-sample", "Sample");
-        window2.setOrder(1);
-        window2.setRegion("col2");
-        windowsCol2.add(window2);
+		EasyMock.replay(page);
+		EasyMock.replay(this.cmsService);
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-        Template page = EasyMock.createMock("Page", Template.class);
-        EasyMock.expect(page.getPageContainer()).andStubReturn(page);
-        EasyMock.expect(page.getTemplate()).andStubReturn(page);
-        EasyMock.expect(page.getLayout()).andReturn("2-cols").anyTimes();
-        EasyMock.expect(page.getWindows("col1")).andReturn(windowsCol1).anyTimes();
-        EasyMock.expect(page.getWindows("col2")).andReturn(windowsCol2).anyTimes();
+		try {
+			this.doFilter(httpServletRequest, httpServletResponse, chain);
+		} catch (DocumentNotFoundException e) {
+			throw new ServletException("404", e);
+		} catch (CMSException e) {
+			throw new ServletException(e);
+		} catch (PortletInvokerException e) {
+			throw new ServletException(e);
+		}
+	}
 
-        this.cmsService = EasyMock.createMock("CMSService", CMSService.class);
-        try {
-            EasyMock.expect(this.cmsService.getDocument(EasyMock.anyObject(ServletRequest.class))).andStubReturn(page);
-        } catch (CMSException e) {
-            throw new ServletException(e);
-        }
+	/**
+	 * Filter.
+	 *
+	 * @param request
+	 *            HTTP servlet request
+	 * @param response
+	 *            HTTP servlet response
+	 * @param chain
+	 *            filter chain
+	 * @throws IOException
+	 * @throws ServletException
+	 * @throws CMSException
+	 * @throws PortletInvokerException
+	 */
+	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException, CMSException, PortletInvokerException {
+		
+		
+		
+		Document document = this.cmsService.getDocument(request);
+		PageContainer pageContainer = document.getPageContainer();
+		Template template = pageContainer.getTemplate();
 
+		// Portlet invoker
+		ServletContext servletContext = this.filterConfig.getServletContext();
+//		PortletInvoker invoker = (PortletInvoker) servletContext
+//				.getAttribute("jboss.portal:service=ConsumerPortletInvoker");
+		WebApplicationContext webApplicationContext = WebApplicationContextUtils
+				.getWebApplicationContext(servletContext);
+		PortletInvoker invoker2 = webApplicationContext.getBean("ConsumerPortletInvoker", PortletInvoker.class);
 
-        EasyMock.replay(page);
-        EasyMock.replay(this.cmsService);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-
-        try {
-            this.doFilter(httpServletRequest, httpServletResponse, chain);
-        } catch (DocumentNotFoundException e) {
-            throw new ServletException("404", e);
-        } catch (CMSException e) {
-            throw new ServletException(e);
-        } catch (PortletInvokerException e) {
-            throw new ServletException(e);
-        }
-    }
-
-
-    /**
-     * Filter.
-     *
-     * @param request HTTP servlet request
-     * @param response HTTP servlet response
-     * @param chain filter chain
-     * @throws IOException
-     * @throws ServletException
-     * @throws CMSException
-     * @throws PortletInvokerException
-     */
-    private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException, CMSException,
-            PortletInvokerException {
-        Document document = this.cmsService.getDocument(request);
-        PageContainer pageContainer = document.getPageContainer();
-        Template template = pageContainer.getTemplate();
-
-        // Portlet invoker
-        ServletContext servletContext = this.filterConfig.getServletContext();
-        PortletInvoker invoker = (PortletInvoker) servletContext.getAttribute("jboss.portal:service=ConsumerPortletInvoker");
-        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-        PortletInvoker invoker2 = webApplicationContext.getBean("ConsumerPortletInvoker", PortletInvoker.class);
-
-        // Introspection phase
-        IntrospectionResponse introspectionResponse = new IntrospectionResponse(response, template);
-        chain.doFilter(request, introspectionResponse);
-
-
-        // Windows
-        List<Window> windows = introspectionResponse.getWindows();
-
-        // Invocation type
-        String type = request.getParameter(URLParameterConstants.TYPE);
-
-
-        // Portlet controller
-        PortletController portletController = new PortletController();
-        // Portlet container context
-        PortalPortletControllerContext portletControllerContext = new PortalPortletControllerContext(request, response, invoker, windows);
-        // Portlet page navigational state
-        PortletPageNavigationalState pageNavigationalState = null;
-
-
-        if (URLParameterConstants.PORTLET_TYPE.equals(type)) {
-            ControllerRequestFactory factory = new ControllerRequestFactory(portletControllerContext.getPageNavigationalStateSerialization());
-            RequestDecoder decoder = new RequestDecoder(request);
-            ControllerRequest controllerRequest = factory.decode(decoder.getQueryParameters(), decoder.getBody());
-            ControllerResponse controllerResponse = portletController.process(portletControllerContext, controllerRequest);
-
-            if (controllerResponse instanceof PageUpdateResponse) {
-                PageUpdateResponse pageUpdateResponse = (PageUpdateResponse) controllerResponse;
-                pageNavigationalState = pageUpdateResponse.getPageNavigationalState();
-                request.setAttribute("bilto", portletControllerContext);
-            } else if (controllerResponse instanceof ResourceResponse) {
-                ResourceResponse resourceResponse = (ResourceResponse) controllerResponse;
-                PortletInvocationResponse portletInvocationResponse = resourceResponse.getResponse();
-
-                if (portletInvocationResponse instanceof ContentResponse) {
-                    ContentResponse contentResponse = (ContentResponse) portletInvocationResponse;
-
-                    if (contentResponse.getType() == ContentResponse.TYPE_EMPTY) {
-                        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                    } else {
-                        String contentType = contentResponse.getContentType();
-
-                        if (contentType != null) {
-                            response.setContentType(contentType);
-                        }
-
-                        if (contentResponse.getType() == ContentResponse.TYPE_BYTES) {
-                            ServletOutputStream out = response.getOutputStream();
-                            try {
-                                out.write(contentResponse.getBytes());
-                            } finally {
-                                IOTools.safeClose(out);
-                            }
-                        } else {
-                            Writer writer = response.getWriter();
-                            try {
-                                writer.write(contentResponse.getChars());
-                            } finally {
-                                writer.close();
-                            }
-                        }
-                    }
-                }
-
-                return;
-            } else if (controllerResponse instanceof PortletResponse) {
-                PortletResponse portletResponse = (PortletResponse) controllerResponse;
-                PortletInvocationResponse portletInvocationResponse = portletResponse.getResponse();
-
-                if (portletInvocationResponse instanceof ErrorResponse) {
-                    ErrorResponse errorResponse = (ErrorResponse) portletInvocationResponse;
-
-                    if (errorResponse.getCause() != null) {
-                        throw new ServletException("portlet_error", errorResponse.getCause());
-                    } else {
-                        throw new ServletException("portlet_error");
-                    }
-                } else if (portletInvocationResponse instanceof UnavailableResponse) {
-                    throw new ServletException("unavailable");
-                }
-            }
-        } else {
-            PortletPageNavigationalStateSerialization serialization = new PortletPageNavigationalStateSerialization(
-                    portletControllerContext.getStateControllerContext());
-            String blah = request.getParameter(ControllerRequestParameterNames.PAGE_NAVIGATIONAL_STATE);
-            if (blah != null) {
-                byte[] bytes = Base64.decode(blah, true);
-                pageNavigationalState = IOTools.unserialize(serialization, SerializationFilter.COMPRESSOR, bytes);
-            }
-        }
-
-
-        if( request.getParameter("cmd") != null)
-	        try {
-				new CommandIntegration(request).service(request, response);
-			} catch (ControllerException e) {
+		
+		
+		if (request.getParameter("cmd") != null)
+			try {
+				Controller controller = (Controller) webApplicationContext.getBean("portal:service=Controller");
+				org.jboss.portal.core.controller.ControllerResponse resp = new CommandIntegration(request, controller).service(request, response);
+				System.out.println(resp);
+			} catch (Exception e) {
 				throw new ServletException(e);
 			}
-        
-        
-        List<WindowResult> windowResults = new ArrayList<WindowResult>(windows.size());
-        for (Window window : windows) {
-            Portlet portlet = portletControllerContext.getPortlet(window.getId());
-            if (portlet != null) {
-                PortletInvocationResponse portletResponse = portletController.render(portletControllerContext, null, pageNavigationalState, window.getId());
-                WindowResult windowResult = new WindowResult(window, portletResponse);
-                windowResults.add(windowResult);
-            }
-        }
+		
+	
+		
+		
+		
+		// Introspection phase
+		IntrospectionResponse introspectionResponse = new IntrospectionResponse(response, template);
+		chain.doFilter(request, introspectionResponse);
+
+		// Windows
+		List<Window> windows = introspectionResponse.getWindows();
+
+		// Invocation type
+		String type = request.getParameter(URLParameterConstants.TYPE);
+
+		// Portlet controller
+		PortletController portletController = new PortletController();
+		// Portlet container context
+		PortalPortletControllerContext portletControllerContext = new PortalPortletControllerContext(request, response,
+				invoker2, windows);
+		// Portlet page navigational state
+		PortletPageNavigationalState pageNavigationalState = null;
+
+		if (URLParameterConstants.PORTLET_TYPE.equals(type)) {
+			ControllerRequestFactory factory = new ControllerRequestFactory(
+					portletControllerContext.getPageNavigationalStateSerialization());
+			RequestDecoder decoder = new RequestDecoder(request);
+			ControllerRequest controllerRequest = factory.decode(decoder.getQueryParameters(), decoder.getBody());
+			ControllerResponse controllerResponse = portletController.process(portletControllerContext,
+					controllerRequest);
+
+			if (controllerResponse instanceof PageUpdateResponse) {
+				PageUpdateResponse pageUpdateResponse = (PageUpdateResponse) controllerResponse;
+				pageNavigationalState = pageUpdateResponse.getPageNavigationalState();
+				request.setAttribute("bilto", portletControllerContext);
+			} else if (controllerResponse instanceof ResourceResponse) {
+				ResourceResponse resourceResponse = (ResourceResponse) controllerResponse;
+				PortletInvocationResponse portletInvocationResponse = resourceResponse.getResponse();
+
+				if (portletInvocationResponse instanceof ContentResponse) {
+					ContentResponse contentResponse = (ContentResponse) portletInvocationResponse;
+
+					if (contentResponse.getType() == ContentResponse.TYPE_EMPTY) {
+						response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+					} else {
+						String contentType = contentResponse.getContentType();
+
+						if (contentType != null) {
+							response.setContentType(contentType);
+						}
+
+						if (contentResponse.getType() == ContentResponse.TYPE_BYTES) {
+							ServletOutputStream out = response.getOutputStream();
+							try {
+								out.write(contentResponse.getBytes());
+							} finally {
+								IOTools.safeClose(out);
+							}
+						} else {
+							Writer writer = response.getWriter();
+							try {
+								writer.write(contentResponse.getChars());
+							} finally {
+								writer.close();
+							}
+						}
+					}
+				}
+
+				return;
+			} else if (controllerResponse instanceof PortletResponse) {
+				PortletResponse portletResponse = (PortletResponse) controllerResponse;
+				PortletInvocationResponse portletInvocationResponse = portletResponse.getResponse();
+
+				if (portletInvocationResponse instanceof ErrorResponse) {
+					ErrorResponse errorResponse = (ErrorResponse) portletInvocationResponse;
+
+					if (errorResponse.getCause() != null) {
+						throw new ServletException("portlet_error", errorResponse.getCause());
+					} else {
+						throw new ServletException("portlet_error");
+					}
+				} else if (portletInvocationResponse instanceof UnavailableResponse) {
+					throw new ServletException("unavailable");
+				}
+			}
+		} else {
+			PortletPageNavigationalStateSerialization serialization = new PortletPageNavigationalStateSerialization(
+					portletControllerContext.getStateControllerContext());
+			String blah = request.getParameter(ControllerRequestParameterNames.PAGE_NAVIGATIONAL_STATE);
+			if (blah != null) {
+				byte[] bytes = Base64.decode(blah, true);
+				pageNavigationalState = IOTools.unserialize(serialization, SerializationFilter.COMPRESSOR, bytes);
+			}
+		}
 
 
-        // Render phase
-        RenderResponse renderResponse = new RenderResponse(response, pageNavigationalState, windowResults);
-        chain.doFilter(request, renderResponse);
-    }
 
+		List<WindowResult> windowResults = new ArrayList<WindowResult>(windows.size());
+		for (Window window : windows) {
+			Portlet portlet = portletControllerContext.getPortlet(window.getId());
+			if (portlet != null) {
+				PortletInvocationResponse portletResponse = portletController.render(portletControllerContext, null,
+						pageNavigationalState, window.getId());
+				WindowResult windowResult = new WindowResult(window, portletResponse);
+				windowResults.add(windowResult);
+			}
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void destroy() {
-        this.filterConfig = null;
-        this.cmsService = null;
-    }
+		// Render phase
+		RenderResponse renderResponse = new RenderResponse(response, pageNavigationalState, windowResults);
+		chain.doFilter(request, renderResponse);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void destroy() {
+		this.filterConfig = null;
+		this.cmsService = null;
+	}
 
 }
