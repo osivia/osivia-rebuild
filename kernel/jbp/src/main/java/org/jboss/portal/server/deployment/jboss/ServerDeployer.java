@@ -1,4 +1,4 @@
-package org.osivia.portal.jpb.services;
+package org.jboss.portal.server.deployment.jboss;
 
 import org.apache.log4j.Logger;
 import org.jboss.deployment.DeploymentException;

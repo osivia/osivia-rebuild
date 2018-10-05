@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<themes>
+    <theme>
+        <name>demo-charte</name>
+        
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="/img/favicon.png" />
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="/css/demo.min.css" title="Demo" />
+        
+        <!-- JavaScript -->
+        <script type="text/javascript" src="/js/demo.js"></script>
+    </theme>
+</themes>

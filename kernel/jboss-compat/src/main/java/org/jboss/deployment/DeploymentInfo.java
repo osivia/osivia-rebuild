@@ -128,7 +128,9 @@ public class DeploymentInfo implements Serializable {
 	}
 
 	private String getShortName(String name) {
-		return null;
+	      if (name.endsWith("/")) name = name.substring(0, name.length() - 1);
+	      name = name.substring(name.lastIndexOf("/") + 1);
+	      return name;
 	}
 
 	public int hashCode() {

@@ -46,6 +46,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 /**
  * Implementaion of the layout server. <p>The layout server is a registry of all available layouts. The server also
  * allows access to all available render sets. Render sets can be independent (named), or children of a layout.
@@ -94,6 +97,7 @@ public class LayoutServiceImpl extends AbstractJBossService implements LayoutSer
    }
 
    /** @see org.jboss.system.Service#create() */
+   @PostConstruct
    protected void createService() throws Exception
    {
       log.debug("create LayoutServiceImpl ....");
@@ -106,6 +110,7 @@ public class LayoutServiceImpl extends AbstractJBossService implements LayoutSer
    }
 
    /** @see org.jboss.system.Service#destroy() */
+   @PreDestroy
    protected void destroyService()
    {
       log.debug("destroy LayoutServiceImpl ....");

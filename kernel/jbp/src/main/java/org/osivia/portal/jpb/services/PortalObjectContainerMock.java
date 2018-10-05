@@ -24,6 +24,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.security.spi.provider.AuthorizationDomain;
+import org.jboss.portal.theme.ThemeConstants;
 
 public class PortalObjectContainerMock implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
@@ -82,6 +83,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		ObjectNodeMock pageANode = new ObjectNodeMock(new PortalObjectId("", pageAPath), PAGE_A_NAME);
 		PageImplMock pageA = new PageImplMock();
 		pageA.setObjectNode(pageANode);
+		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT,"generic");
 		pageANode.setObject(pageA);
 		nodes.put(pageA.getId(), pageA);
 

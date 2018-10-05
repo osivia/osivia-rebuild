@@ -12,12 +12,7 @@
        <property name="ConfigLocation" value="conf/config.xml" />
    </bean>
    
-      <!-- Runtime context for running portlet container -->
-      <!-- 
-   <bean class="org.jboss.portal.web.jboss.JBossWebContext" id="portal:service=ServletContainerFactory" >
-   </bean>
-   -->
-   
+
    
 	<!-- Server stack -->
    <bean class="org.jboss.portal.server.aspects.server.SessionLockInterceptor"
@@ -367,11 +362,12 @@
    </bean>
    
    
-      <bean class="org.osivia.portal.jpb.services.ServerDeployer" id="portal:deployer=PortalWebApp">
+      <bean class="org.jboss.portal.server.deployment.jboss.ServerDeployer" id="portal:deployer=PortalWebApp">
       <!-- <depends>jboss.system:service=MainDeployer</depends> -->
       <!-- <depends>portal:container=PortalObject</depends> -->
       <!-- <depends>portal:container=Instance</depends> -->
       <property name="PortalServer" ref="portal:service=Server"/>
+      <property name="ServletContainerFactory" ref="ServletContainerFactory"/>
       <property name="AppDeployer" ref="PortletApplicationDeployer"/>
    </bean>
    
