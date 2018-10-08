@@ -26,12 +26,6 @@ public class DispatcherConfiguration extends WebMvcConfigurerAdapter {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void configureViewResolvers(ViewResolverRegistry registry) {
-        registry.jsp("/layouts/", "/index.jsp");
-    }
+
 
 }

@@ -48,7 +48,8 @@ public class PortalWebApplicationInitializer extends AbstractAnnotationConfigDis
      */
     @Override
     protected String[] getServletMappings() {
-        return new String[]{"/id/*"};
+        //return new String[]{"/id/*"};
+        return new String[]{};
     }
 
 
@@ -57,10 +58,11 @@ public class PortalWebApplicationInitializer extends AbstractAnnotationConfigDis
      */
     @Override
     protected Filter[] getServletFilters() {
-        Filter cmsFilter = new CMSFilter();
-        Filter errorFilter = new ErrorHandlingFilter();
-
-        return new Filter[]{cmsFilter, errorFilter};
+//        Filter cmsFilter = new CMSFilter();
+//        Filter errorFilter = new ErrorHandlingFilter();
+//
+//        return new Filter[]{cmsFilter, errorFilter};
+    	return new Filter[]{};
     }
 
 
