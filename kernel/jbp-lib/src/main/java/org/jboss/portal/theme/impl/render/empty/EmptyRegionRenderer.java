@@ -22,7 +22,10 @@
  ******************************************************************************/
 package org.jboss.portal.theme.impl.render.empty;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.logging.Logger;
+import org.jboss.portal.theme.ThemeScript;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
@@ -43,7 +46,8 @@ import java.util.Iterator;
 public class EmptyRegionRenderer extends AbstractObjectRenderer
    implements RegionRenderer
 {
-   private static Logger log = Logger.getLogger(EmptyRegionRenderer.class);
+	private static final Log log  = LogFactory.getLog(EmptyRegionRenderer.class);
+   
 
 
    public void renderHeader(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException

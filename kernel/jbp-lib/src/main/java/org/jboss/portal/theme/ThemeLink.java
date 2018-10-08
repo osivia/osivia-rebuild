@@ -22,7 +22,8 @@
  ******************************************************************************/
 package org.jboss.portal.theme;
 
-import org.jboss.logging.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * An implementation of a <code>ThemeLink</code>. <p>The theme link is responsible for producing the markup of a link
@@ -35,7 +36,8 @@ import org.jboss.logging.Logger;
 public final class ThemeLink
    implements ThemeElement
 {
-   private static final Logger log = Logger.getLogger(ThemeLink.class);
+	private static final Log log  = LogFactory.getLog(ThemeLink.class);
+
    private final String rel;
    private final String type;
    private final String href;

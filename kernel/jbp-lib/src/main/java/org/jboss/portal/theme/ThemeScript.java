@@ -22,7 +22,9 @@
  ******************************************************************************/
 package org.jboss.portal.theme;
 
-import org.jboss.logging.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
  * An implementation of a <code>ThemeScript</code>. <p>The script element is responsible for creating the markup that
@@ -36,7 +38,10 @@ import org.jboss.logging.Logger;
 public final class ThemeScript
    implements ThemeElement
 {
-   private static final Logger log = Logger.getLogger(ThemeScript.class);
+	
+	private static final Log log  = LogFactory.getLog(ThemeScript.class);
+
+
 
    private final String src;
    private final String type;

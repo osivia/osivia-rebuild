@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 /**
  * TODO: A description of this class.
  *
@@ -67,6 +70,7 @@ public class ThemeServiceImpl extends AbstractJBossService implements ThemeServi
    }
 
    /** @throws Exception  */
+   @PostConstruct
    protected void createService() throws Exception
    {
       log.debug("create ThemeServiceImpl ....");
@@ -74,7 +78,7 @@ public class ThemeServiceImpl extends AbstractJBossService implements ThemeServi
       themeNames = Collections.synchronizedMap(new HashMap());
       exactThemeNames = Collections.synchronizedMap(new HashMap());
    }
-
+   @PreDestroy
    protected void destroyService()
    {
       log.debug("destroy ThemeServiceImpl ....");

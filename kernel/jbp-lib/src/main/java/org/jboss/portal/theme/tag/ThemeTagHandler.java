@@ -22,7 +22,9 @@
  ******************************************************************************/
 package org.jboss.portal.theme.tag;
 
-import org.jboss.logging.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.jboss.portal.theme.LayoutConstants;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeElement;
@@ -55,7 +57,7 @@ public class ThemeTagHandler
 {
 
    /** . */
-   private static Logger log = Logger.getLogger(ThemeTagHandler.class);
+	private static final Log log  = LogFactory.getLog(ThemeTagHandler.class);
 
    /** . */
    private String themeName;

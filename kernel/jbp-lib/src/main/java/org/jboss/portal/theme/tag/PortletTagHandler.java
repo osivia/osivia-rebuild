@@ -22,9 +22,12 @@
  ******************************************************************************/
 package org.jboss.portal.theme.tag;
 
-import org.jboss.logging.Logger;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.NotYetImplemented;
 import org.jboss.portal.theme.LayoutConstants;
+import org.jboss.portal.theme.ThemeScript;
 import org.jboss.portal.theme.render.renderer.PageRendererContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +50,7 @@ import java.io.IOException;
  */
 public class PortletTagHandler extends SimpleTagSupport
 {
-   private static Logger log = Logger.getLogger(PortletTagHandler.class);
+	private static final Log log  = LogFactory.getLog(PortletTagHandler.class);
    private String windowName = null;
 
    /**

@@ -376,14 +376,18 @@
       <property name="LayoutService" ref="portal:service=LayoutService"/>
    </bean>
    
-   <!-- 
+
    <bean class="org.jboss.portal.theme.deployment.jboss.LayoutFeaturesDeploymentFactory"
           id="portal:deploymentFactory=LayoutFeatures" >
       <property name="Deployer" ref="portal:deployer=PortalWebApp"/>
       <property name="LayoutService" ref="portal:service=LayoutService"/>
    </bean>
-   -->
-   
+
+   <bean class="org.jboss.portal.theme.deployment.jboss.ThemeDeploymentFactory" id="portal:deploymentFactory=Theme">
+      
+      <property name="Deployer" ref="portal:deployer=PortalWebApp"/>
+      <property name="ThemeService" ref="portal:service=ThemeService"/>
+   </bean>
 
     
 </beans>

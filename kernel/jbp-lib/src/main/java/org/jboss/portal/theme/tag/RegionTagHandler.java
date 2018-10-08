@@ -22,7 +22,9 @@
  ******************************************************************************/
 package org.jboss.portal.theme.tag;
 
-import org.jboss.logging.Logger;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.theme.LayoutConstants;
 import org.jboss.portal.theme.Orientation;
 import org.jboss.portal.theme.impl.JSPRendererContext;
@@ -54,7 +56,8 @@ import java.util.Map;
 public class RegionTagHandler
    extends SimpleTagSupport
 {
-   private static Logger log = Logger.getLogger(RegionTagHandler.class);
+	private static final Log log  = LogFactory.getLog(RegionTagHandler.class);
+
    //default to vertical
 
    private Orientation regionOrientation;

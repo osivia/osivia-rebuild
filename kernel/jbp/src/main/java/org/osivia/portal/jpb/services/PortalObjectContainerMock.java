@@ -83,7 +83,8 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		ObjectNodeMock pageANode = new ObjectNodeMock(new PortalObjectId("", pageAPath), PAGE_A_NAME);
 		PageImplMock pageA = new PageImplMock();
 		pageA.setObjectNode(pageANode);
-		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT,"generic");
+		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT,"generic-2cols");
+		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME,"generic");		
 		pageANode.setObject(pageA);
 		nodes.put(pageA.getId(), pageA);
 
@@ -93,6 +94,8 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		WindowImplMock winA = new WindowImplMock();
 		winA.setContext(containerContext);
 		winA.setURI("sample-instance");
+		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-1");
+		
 		winA.setObjectNode(winANode);
 		winANode.setObject(winA);
 		nodes.put(winA.getId(), winA);
