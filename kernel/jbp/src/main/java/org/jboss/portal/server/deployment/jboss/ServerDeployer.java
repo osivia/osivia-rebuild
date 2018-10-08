@@ -21,6 +21,7 @@ import org.jboss.portal.server.deployment.jboss.PortalDeploymentInfoContext;
 import org.jboss.portal.server.deployment.jboss.ServerDeployerMBean;
 import org.jboss.portal.web.ServletContainerFactory;
 import org.jboss.portal.web.WebAppEvent;
+import org.jboss.portal.web.WebAppLifeCycleEvent;
 import org.jboss.portal.web.WebAppListener;
 
 
@@ -308,22 +309,41 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 
 	
 
-	// Web application
+	// Generic Web application
 	@Override
 	public void onEvent(WebAppEvent event) {
-		try	{
+
 		log.info(event);
-		//TODO : create Webapp and call deploy
-		Tomcat8WebApp pwa = new Tomcat8WebApp(event);
-		deploy(pwa);
-		
-		URL url = Deployment.findWEBINFURL(pwa.getURL());
-		processNestedDeployments(url);
-		create(url);
-		} catch(Exception e) {
-			log.error("Can't deploy application", e);
+		if (event instanceof WebAppLifeCycleEvent) {
+
+			WebAppLifeCycleEvent cycleEvent = (WebAppLifeCycleEvent) event;
+			if (cycleEvent.getType() == WebAppLifeCycleEvent.ADDED) {
+				try {
+					Tomcat8WebApp pwa = new Tomcat8WebApp(event);
+					deploy(pwa);
+
+					URL url = Deployment.findWEBINFURL(pwa.getURL());
+					processNestedDeployments(url);
+					create(url);
+				} catch (Exception e) {
+					log.error("Can't deploy application", e);
+				}
+
+				
+			}
+
+			if (cycleEvent.getType() == WebAppLifeCycleEvent.REMOVED) {
+				try {
+
+					Tomcat8WebApp pwa = new Tomcat8WebApp(event);
+					undeploy(pwa);
+				} catch (Exception e) {
+					log.error("Can't undeploy application", e);
+				}
+			}
+
 		}
-	
+
 	}
 
 	// Portets

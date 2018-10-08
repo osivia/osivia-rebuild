@@ -1,6 +1,9 @@
 package org.osivia.portal.jpb.services;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -17,30 +20,37 @@ import org.jboss.portal.portlet.impl.invocation.PortletInterceptorStack;
 import org.jboss.portal.portlet.impl.invocation.PortletInterceptorStackFactory;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
-import org.jboss.portal.security.impl.JBossAuthorizationDomainRegistry;
-import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
+
 import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 
 public class InstanceContainerImpl implements InstanceContainer {
 
-	private InstanceDefinitionImpl sampleDef;
 
+    private Map<String, InstanceDefinitionImpl> instances;
 	/** The container context. */
 	protected InstanceContainerContextImpl containerContext;
 	protected PortletInterceptorStackFactory stackFactory;
 	protected PortletInvoker portletInvoker;
 
-	@PostConstruct
-	void build() {
-		sampleDef = new InstanceDefinitionImpl(containerContext, "sample-instance",
-				"local./osivia-portal-portlets-sample.Sample");
-	}
+
 
 	@PostConstruct
 	protected void startService() throws Exception {
 
 		//
 		containerContext.setContainer(this);
+		instances = Collections.synchronizedMap(new HashMap());
+		
+		InstanceDefinitionImpl sampleDef = new InstanceDefinitionImpl(containerContext, "sample-instance",
+				"local./osivia-portal-portlets-sample.Sample");
+		
+		instances.put( sampleDef.getInstanceId(), sampleDef);
+		
+		InstanceDefinitionImpl sampleRemote = new InstanceDefinitionImpl(containerContext, "sample-remote",
+				"local./samples-remotecontroller-portlet.RemoteControl");		
+		
+		instances.put( sampleRemote.getInstanceId(), sampleRemote);		
+		
 	}
 
 	public InstanceContainerContext getContainerContext() {
@@ -70,7 +80,7 @@ public class InstanceContainerImpl implements InstanceContainer {
 	@Override
 	public InstanceDefinition getDefinition(String id) throws IllegalArgumentException {
 
-		return sampleDef;
+		return instances.get(id);
 	}
 
 	@Override

@@ -35,7 +35,9 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 	private static String PORTAL_A_NAME = "portalA";
 	private static String PAGE_A_NAME = "pageA";
 	private static String WINDOW_A_NAME = "winA";
-
+	private static String WINDOW_B_NAME = "winB";
+	private static String WINDOW_C_NAME = "winC";
+	
 	private ContentProviderRegistry contentProviderRegistry;
 
 	public ContentProviderRegistry getContentProviderRegistry() {
@@ -84,7 +86,8 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		PageImplMock pageA = new PageImplMock();
 		pageA.setObjectNode(pageANode);
 		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT,"generic-2cols");
-		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME,"generic");		
+		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME,"generic");	
+		
 		pageANode.setObject(pageA);
 		nodes.put(pageA.getId(), pageA);
 
@@ -95,10 +98,42 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		winA.setContext(containerContext);
 		winA.setURI("sample-instance");
 		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-1");
-		
+		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"0");		
 		winA.setObjectNode(winANode);
 		winANode.setObject(winA);
 		nodes.put(winA.getId(), winA);
+		
+		
+		
+		
+		PortalObjectPath winBPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + PAGE_A_NAME + "/" + WINDOW_B_NAME,
+				PortalObjectPath.CANONICAL_FORMAT);
+		ObjectNodeMock winBNode = new ObjectNodeMock(new PortalObjectId("", winBPath), WINDOW_B_NAME);
+		WindowImplMock winB = new WindowImplMock();
+		winB.setContext(containerContext);
+		winB.setURI("sample-remote");
+		winB.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-2");
+		winB.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"0");				
+		winB.setObjectNode(winBNode);
+		winBNode.setObject(winB);
+		nodes.put(winB.getId(), winB);
+		
+		
+		PortalObjectPath winCPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + PAGE_A_NAME + "/" + WINDOW_C_NAME,
+				PortalObjectPath.CANONICAL_FORMAT);
+		ObjectNodeMock winCNode = new ObjectNodeMock(new PortalObjectId("", winCPath), WINDOW_C_NAME);
+		WindowImplMock winC = new WindowImplMock();
+		winC.setContext(containerContext);
+		winC.setURI("sample-instance");
+		winC.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-2");
+		winC.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"1");			
+		winC.setObjectNode(winCNode);
+		winCNode.setObject(winC);
+		nodes.put(winC.getId(), winC);
+		
+		
+		
+		
 
 		// children
 
@@ -114,11 +149,13 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		pageANode.setParent(portalANode);
 		Map pageChildren = new HashMap();
 		pageChildren.put(WINDOW_A_NAME, winANode);
+		pageChildren.put(WINDOW_B_NAME, winBNode);
+		pageChildren.put(WINDOW_C_NAME, winCNode);		
 		pageANode.setChildren(pageChildren);
 
 		winANode.setParent(pageANode);
-		
-		
+		winBNode.setParent(pageANode);		
+		winCNode.setParent(pageANode);	
 		
 
 	}
