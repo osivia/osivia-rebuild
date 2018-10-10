@@ -96,7 +96,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		ObjectNodeMock winANode = new ObjectNodeMock(new PortalObjectId("", winAPath), WINDOW_A_NAME);
 		WindowImplMock winA = new WindowImplMock();
 		winA.setContext(containerContext);
-		winA.setURI("sample-instance");
+		winA.setURI("SampleInstance");
 		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-1");
 		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"0");		
 		winA.setObjectNode(winANode);
@@ -111,7 +111,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		ObjectNodeMock winBNode = new ObjectNodeMock(new PortalObjectId("", winBPath), WINDOW_B_NAME);
 		WindowImplMock winB = new WindowImplMock();
 		winB.setContext(containerContext);
-		winB.setURI("sample-remote");
+		winB.setURI("SampleRemote");
 		winB.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-2");
 		winB.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"0");				
 		winB.setObjectNode(winBNode);
@@ -124,7 +124,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		ObjectNodeMock winCNode = new ObjectNodeMock(new PortalObjectId("", winCPath), WINDOW_C_NAME);
 		WindowImplMock winC = new WindowImplMock();
 		winC.setContext(containerContext);
-		winC.setURI("sample-instance");
+		winC.setURI("SampleInstance");
 		winC.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-2");
 		winC.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"1");			
 		winC.setObjectNode(winCNode);

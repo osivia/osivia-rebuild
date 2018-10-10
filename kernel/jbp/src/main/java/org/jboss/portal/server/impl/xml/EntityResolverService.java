@@ -40,30 +40,20 @@ import java.util.Properties;
 public class EntityResolverService extends AbstractJBossService implements EntityResolver
 {
 
-   /** . */
-   private Element dtdMapping;
+
 
    /** . */
-   private Properties dtdMappingProps;
+   private Properties dtdMapping;
 
-   public Element getDTDMapping()
+   public Properties getDTDMapping()
    {
       return dtdMapping;
    }
 
-   public void setDTDMapping(Element dtdMapping)
+   public void setDTDMapping(Properties dtdMapping)
    {
       this.dtdMapping = dtdMapping;
 
-      //
-      if (this.dtdMapping != null)
-      {
-         dtdMappingProps = XMLTools.loadXMLProperties(dtdMapping);
-      }
-      else
-      {
-         dtdMappingProps = null;
-      }
    }
 
    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
@@ -76,7 +66,7 @@ public class EntityResolverService extends AbstractJBossService implements Entit
       }
 
       //
-      String dtdResourceName = (String)dtdMappingProps.get(publicId);
+      String dtdResourceName = (String)dtdMapping.get(publicId);
       if (dtdResourceName != null)
       {
 

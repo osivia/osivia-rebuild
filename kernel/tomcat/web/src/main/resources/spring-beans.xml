@@ -12,7 +12,19 @@
        <property name="ConfigLocation" value="conf/config.xml" />
    </bean>
    
-
+   <!-- DTD repository -->
+   <bean class="org.jboss.portal.server.impl.xml.EntityResolverService" id="portal:service=EntityResolver"
+           >
+      
+      <property name="DTDMapping">
+         <props>
+            <prop key="-//JBoss Portal//DTD JBoss Portlet 2.6//EN">dtd/jboss-portlet_2_6.dtd</prop>
+            <prop key="-//JBoss Portal//DTD JBoss App 2.6//EN">dtd/jboss-app_2_6.dtd</prop>
+            <prop key="-//JBoss Portal//DTD Portal Object 2.6//EN">dtd/portal-object_2_6.dtd</prop>
+            <prop key="-//JBoss Portal//DTD Portlet Instances 2.6//EN">dtd/portlet-instances_2_6.dtd</prop>
+         </props>
+      </property>
+   </bean>
    
 	<!-- Server stack -->
    <bean class="org.jboss.portal.server.aspects.server.SessionLockInterceptor"
@@ -370,6 +382,35 @@
       <property name="ServletContainerFactory" ref="ServletContainerFactory"/>
       <property name="AppDeployer" ref="PortletApplicationDeployer"/>
    </bean>
+   
+   
+      <bean class="org.jboss.portal.core.impl.portlet.info.CoreInfoBuilderFactory"
+          id="portal:service=InfoBuilderFactory,type=Core" >
+      
+   </bean>
+   
+   
+      <bean class="org.jboss.portal.core.deployment.jboss.PortletAppDeploymentFactory"
+          id="portal:deploymentFactory=PortletApp" >
+      
+      <!-- <depends>portal:service=PortletInvokerRegistration,id=local</depends> -->
+      <property name="Deployer" ref="portal:deployer=PortalWebApp"/>
+      <property name="CoreInfoBuilderFactory" ref="portal:service=InfoBuilderFactory,type=Core"/>
+      <property name="PortletContainerInvoker" ref="ContainerPortletInvoker"/>
+      <property name="Config" ref="portal:service=ServerConfig"/>
+      <!-- 
+      <property name="PortletSecurityService" ref="portal:service=PortletSecurityService"/>
+      -->
+      <property name="InstanceContainer" ref="portal:container=Instance"/>
+      <property name="JBossPortletEntityResolver" ref="portal:service=EntityResolver"/>
+      <property name="PortalObjectEntityResolver" ref="portal:service=EntityResolver"/>
+      <property name="PortletInstancesEntityResolver" ref="portal:service=EntityResolver"/>
+      <property name="StandardJBossApplicationMetaDataLocation" value="conf/standardjboss-portlet.xml" />
+      <!-- Set to false in clustered mode, otherwise set to true -->
+      <property name="CreateInstances" value="true" />
+   </bean>
+   
+   
    
    <bean class="org.jboss.portal.theme.deployment.jboss.LayoutDeploymentFactory" id="portal:deploymentFactory=Layout">
       <property name="Deployer" ref="portal:deployer=PortalWebApp"/>

@@ -269,13 +269,13 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	      //super.create(di);
 	   }
 
-	   public void start(DeploymentInfo di) throws DeploymentException
+	   public void start(URL url) throws DeploymentException
 	   {
-	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(di.url);
+	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(url);
 	      pdiCtx.start();
 
 	      //
-	      super.start(di);
+	      //super.start(di);
 	   }
 
 	   public void stop(DeploymentInfo di) throws DeploymentException
@@ -325,6 +325,7 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 					URL url = Deployment.findWEBINFURL(pwa.getURL());
 					processNestedDeployments(url);
 					create(url);
+					start(url);
 				} catch (Exception e) {
 					log.error("Can't deploy application", e);
 				}
