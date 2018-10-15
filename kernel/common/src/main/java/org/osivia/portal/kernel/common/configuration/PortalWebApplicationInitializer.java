@@ -5,8 +5,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.jboss.portal.common.mc.bootstrap.WebBootstrap;
-import org.osivia.portal.kernel.common.filter.CMSFilter;
-import org.osivia.portal.kernel.common.filter.ErrorHandlingFilter;
+
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**

@@ -62,6 +62,7 @@
         <module>kernel</module>
         <module>portlets</module>
 		<module>themes</module>
+		<module>distrib</module>		
     </modules>
     
     
@@ -112,12 +113,27 @@
         <javax-el-api.version>3.0.0</javax-el-api.version>
         <javax-portlet-api.version>2.0</javax-portlet-api.version>
         <javax-jstl.version>1.2</javax-jstl.version>
-        
+        <javax-activation.version>1.0.2</javax-activation.version>
+        <javax-security-jacc.version>1.5</javax-security-jacc.version>
+        <javax-ccpp.version>1.0</javax-ccpp.version>
+                
         <!-- JBoss portlet container -->
         <jboss-portlet-container.version>2.0.9</jboss-portlet-container.version>
+        <jboss-portal-web.version>1.2.0</jboss-portal-web.version>        
         
         <!-- Spring framework -->
         <springframework.version>4.2.0.RELEASE</springframework.version>
+        
+        <!-- Commons -->
+        <commons-lang3.version>3.4</commons-lang3.version>
+        <commons-logging.version>1.2</commons-logging.version>
+        
+        <!-- Others -->
+        <log4j.version>1.2.14</log4j.version>
+        <taglib-standard.version>1.1.2</taglib-standard.version>
+
+
+        
     </properties>
     
     
@@ -160,21 +176,41 @@
                 <version>${javax-jstl.version}</version>
                 <scope>provided</scope>
             </dependency>
-
-
+            
+          	<dependency>
+    			<groupId>javax.activation</groupId>
+    			<artifactId>activation</artifactId>
+    			<version>${javax-activation.version}</version>
+    			<scope>provided</scope>
+			</dependency>
+			
+	        <dependency>
+	    		<groupId>javax.security.jacc</groupId>
+	    		<artifactId>javax.security.jacc-api</artifactId>
+	    		<version>${javax-security-jacc.version}</version>
+	    		<scope>provided</scope>
+			</dependency>
+			
+			<dependency>
+    			<groupId>javax.ccpp</groupId>
+    			<artifactId>ccpp</artifactId>
+    			<version>${javax-ccpp.version}</version>
+ 				<scope>provided</scope>    			
+			</dependency>
+	
             <!-- Apache commons -->
             
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.4</version>
+                <version>${commons-lang3.version}</version>
                 <scope>provided</scope>
             </dependency>
             
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
-                <version>1.2</version>
+                <version>${commons-logging.version}</version>
                 <scope>provided</scope>
             </dependency>
             
@@ -188,15 +224,58 @@
                 <scope>provided</scope>
             </dependency>
             
+            <dependency>
+                <groupId>org.jboss.portal.web</groupId>
+                <artifactId>web-web</artifactId>
+                <version>${jboss-portal-web.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>            
+            
             
             <!-- Spring framework -->
             
+
+            
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>      
+            
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>   
+             
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${springframework.version}</version>
                 <scope>provided</scope>
             </dependency>
+                        
+           <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>  
+            
+             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>${springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>  
             
             <dependency>
 	            <groupId>org.springframework</groupId>
@@ -219,6 +298,22 @@
 	            <scope>provided</scope>
             </dependency>
             
+            <!-- taglibs -->
+            
+			<dependency>
+			    <groupId>taglibs</groupId>
+			    <artifactId>standard</artifactId>
+			    <version>${taglib-standard.version}</version>
+			     <scope>provided</scope>
+			</dependency>            
+         
+            
+            <dependency>
+			    <groupId>log4j</groupId>
+			    <artifactId>log4j</artifactId>
+			    <version>${log4j.version}</version>
+			    <scope>provided</scope>
+			</dependency>
             
             <!-- Test -->
         

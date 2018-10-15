@@ -1,0 +1,45 @@
+version: "3"
+services:
+  tomcat:
+    image: tomcat:8.0
+    environment:
+      - TZ=Europe/Paris
+      - JPDA_ADDRESS=8000
+      - JPDA_TRANSPORT=dt_socket
+    ports:
+      - 8000:8000
+      - 8080:8080
+    volumes:
+      - ./logs:/usr/local/tomcat/logs
+      - ./lib/jstl-1.2.jar:/usr/local/tomcat/lib/jstl-1.2.jar
+      - ./lib/commons/commons-lang3-3.4.jar:/usr/local/tomcat/lib/commons-lang3-3.4.jar
+      - ./lib/commons/commons-logging-1.2.jar:/usr/local/tomcat/lib/commons-logging-1.2.jar
+      - ./lib/jboss-portletcontainer/activation-1.0.2.jar:/usr/local/tomcat/lib/activation-1.0.2.jar
+      - ./lib/jboss-portletcontainer/ccpp-1.0.jar:/usr/local/tomcat/lib/ccpp-1.0.jar
+      - ./lib/jboss-portletcontainer/common-common-1.2.5.jar:/usr/local/tomcat/lib/common-common-1.2.0.jar
+      - ./lib/jboss-portletcontainer/common-portal-1.2.5.jar:/usr/local/tomcat/lib/common-portal-1.2.0.jar
+      - ./lib/jboss-portletcontainer/log4j-1.2.14.jar:/usr/local/tomcat/lib/log4j-1.2.14.jar
+      - ./lib/jboss-portletcontainer/portlet-api-2.0.jar:/usr/local/tomcat/lib/portlet-api-2.0.jar
+      - ./lib/jboss-portletcontainer/portlet-portlet-2.0.9.jar:/usr/local/tomcat/lib/portlet-portlet-2.0.9.jar
+      - ./lib/jboss-portletcontainer/resolver-2.9.1.jar:/usr/local/tomcat/lib/resolver-2.9.1.jar
+      - ./lib/jboss-portletcontainer/standard-1.1.2.jar:/usr/local/tomcat/lib/standard-1.1.2.jar
+      - ./lib/jboss-portletcontainer/web-web-1.2.0.jar:/usr/local/tomcat/lib/web-web-1.2.0.jar
+      - ./lib/jboss-portletcontainer/xercesImpl-2.9.1.jar:/usr/local/tomcat/lib/xercesImpl-2.9.1.jar
+      - ./lib/jboss-portletcontainer/xml-apis-2.9.1.jar:/usr/local/tomcat/lib/xml-apis-2.9.1.jar
+      - ./lib/spring/spring-aop-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-aop-4.2.0.RELEASE.jar
+      - ./lib/spring/spring-beans-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-beans-4.2.0.RELEASE.jar
+      - ./lib/spring/spring-context-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-context-4.2.0.RELEASE.jar
+      - ./lib/spring/spring-core-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-core-4.2.0.RELEASE.jar
+      - ./lib/spring/spring-expression-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-expression-4.2.0.RELEASE.jar
+      - ./lib/spring/spring-web-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-web-4.2.0.RELEASE.jar
+      - ./lib/spring/spring-webmvc-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-webmvc-4.2.0.RELEASE.jar
+      - ./lib/spring/spring-webmvc-portlet-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-webmvc-portlet-4.2.0.RELEASE.jar
+      - ./lib/portal/osivia-portal-kernel-jbp-lib-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-kernel-jbp-lib-5.0.0-SNAPSHOT.jar
+      - ./lib/portal/osivia-portal-api-common-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-api-common-5.0.0-SNAPSHOT.jar
+      - ./lib/portal/osivia-portal-api-cms-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-api-cms-5.0.0-SNAPSHOT.jar
+      - ./lib/portal/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar
+      - ./webapp:/usr/local/tomcat/webapps
+    entrypoint:
+      - /usr/local/tomcat/bin/catalina.sh
+      - jpda
+      - run

@@ -31,7 +31,6 @@
     
     <properties>
         <jboss-portal-common.version>1.2.5</jboss-portal-common.version>
-        <jboss-portal-web.version>1.2.0</jboss-portal-web.version>
         <jboss-reflect.version>2.0.2.GA</jboss-reflect.version>
         <jboss-portal-portlet.version>2.0.9</jboss-portal-portlet.version>
     </properties>
@@ -110,18 +109,6 @@
             </dependency>
             
             
-            <dependency>
-                <groupId>org.jboss.portal.web</groupId>
-                <artifactId>web-web</artifactId>
-                <version>${jboss-portal-web.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>*</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
             
             <dependency>
                 <groupId>org.jboss</groupId>
