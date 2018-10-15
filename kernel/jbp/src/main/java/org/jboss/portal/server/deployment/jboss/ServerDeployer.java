@@ -265,8 +265,7 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(url);
 	      pdiCtx.create();
 
-	      //
-	      //super.create(di);
+
 	   }
 
 	   public void start(URL url) throws DeploymentException
@@ -274,26 +273,22 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(url);
 	      pdiCtx.start();
 
-	      //
-	      //super.start(di);
+
 	   }
 
-	   public void stop(DeploymentInfo di) throws DeploymentException
+	   public void stop(URL url) throws DeploymentException
 	   {
-	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(di.url);
+	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(url);
 	      pdiCtx.stop();
 
-	      //
-	      super.stop(di);
+
 	   }
 
-	   public void destroy(DeploymentInfo di) throws DeploymentException
+	   public void destroy(URL url) throws DeploymentException
 	   {
-	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(di.url);
+	      PortalDeploymentInfoContext pdiCtx = (PortalDeploymentInfoContext)infoContexts.get(url);
 	      pdiCtx.destroy();
 
-	      //
-	      super.destroy(di);
 	   }
 
 	   protected void processNestedDeployments(URL url) throws DeploymentException
@@ -337,6 +332,10 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 				try {
 
 					Tomcat8WebApp pwa = new Tomcat8WebApp(event);
+					URL url = Deployment.findWEBINFURL(pwa.getURL());
+					stop(url);
+					destroy(url);				
+					
 					undeploy(pwa);
 				} catch (Exception e) {
 					log.error("Can't undeploy application", e);

@@ -121,6 +121,10 @@
       
    </bean>
    
+      <bean class="org.jboss.portal.core.aspects.controller.NavigationalStateInterceptor"
+          id="portal:service=Interceptor,type=Command,name=NavigationalState" >
+      
+   </bean>
    
    <bean class="org.jboss.portal.server.impl.invocation.JBossInterceptorStackFactory"
           id="portal:service=InterceptorStackFactory,type=Command" >
@@ -131,7 +135,9 @@
          <value>portal:service=Interceptor,type=Command,name=ResourceAcquisition</value>
 <!--         
          <ref bean="portal:service=Interceptor,type=Command,name=Ajax"/>
-         <ref bean="portal:service=Interceptor,type=Command,name=NavigationalState"/>
+         -->
+         <value>portal:service=Interceptor,type=Command,name=NavigationalState</value>
+<!--          
          <ref bean="portal:service=Interceptor,type=Command,name=Control"/>
          <ref bean="portal:service=Interceptor,type=Command,name=BackwardCompatibility"/>
          <ref bean="portal:service=Interceptor,type=Command,name=PortalNode"/>

@@ -41,11 +41,7 @@ public class InstanceContainerImpl implements InstanceContainer {
 		containerContext.setContainer(this);
 		instances = Collections.synchronizedMap(new HashMap());
 		
-//		InstanceDefinitionImpl sampleDef = new InstanceDefinitionImpl(containerContext, "SampleInstance",
-//				"local./osivia-portal-portlets-sample-5.0.0-SNAPSHOT.Sample");
-//		
-//		instances.put( sampleDef.getInstanceId(), sampleDef);
-		
+	
 		InstanceDefinitionImpl sampleRemote = new InstanceDefinitionImpl(containerContext, "SampleRemote",
 				"local./samples-remotecontroller-portlet.RemoteControl");		
 		
@@ -79,7 +75,6 @@ public class InstanceContainerImpl implements InstanceContainer {
 
 	@Override
 	public InstanceDefinition getDefinition(String id) throws IllegalArgumentException {
-
 		return instances.get(id);
 	}
 
@@ -110,7 +105,7 @@ public class InstanceContainerImpl implements InstanceContainer {
 	@Override
 	public void destroyDefinition(String id)
 			throws NoSuchInstanceException, PortletInvokerException, IllegalArgumentException {
-		// TODO Auto-generated method stub
+		instances.remove(id);
 
 	}
 
