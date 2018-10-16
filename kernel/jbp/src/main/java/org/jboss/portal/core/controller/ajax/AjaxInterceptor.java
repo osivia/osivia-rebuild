@@ -48,7 +48,7 @@ public class AjaxInterceptor extends ControllerInterceptor
     * Luca Stancapiano - 29 - 09 -2007 targetContextPath is used to assign a context path when default portal-ajax path
     * cannot to be used or if it is changed through context-root property into jboss-web.xml
     */
-   private String targetContextPath = "/portal-ajax";
+   private String targetContextPath = "/portal";
 
    public ControllerResponse invoke(ControllerCommand cmd) throws Exception, InvocationException
    {

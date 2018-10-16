@@ -218,7 +218,14 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc-portlet</artifactId>
           <scope>compile</scope>
-         </dependency>		
+         </dependency>
+         
+         <dependency>
+    		<groupId>javax.transaction</groupId>
+    		<artifactId>jta</artifactId>
+    		<version>1.0.1B</version>
+			<scope>compile</scope>    	
+		</dependency>
    
     </dependencies>
 

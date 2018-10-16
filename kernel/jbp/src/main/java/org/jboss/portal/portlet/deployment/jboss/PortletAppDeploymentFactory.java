@@ -44,6 +44,8 @@ import org.jboss.xb.binding.Unmarshaller;
 import org.jboss.xb.binding.UnmarshallerFactory;
 import org.xml.sax.EntityResolver;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.management.MBeanServer;
 import java.io.InputStream;
 import java.net.URL;
@@ -138,6 +140,7 @@ public class PortletAppDeploymentFactory extends AbstractDeploymentFactory
       return new PortletAppDeployment(url, pwa, bridgeToInvoker, mbeanServer, this);
    }
 
+   @PostConstruct
    public void start() throws Exception
    {
       //
@@ -173,6 +176,7 @@ public class PortletAppDeploymentFactory extends AbstractDeploymentFactory
       }
    }
 
+   @PreDestroy
    public void stop()
    {
       super.stop();

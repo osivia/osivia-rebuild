@@ -82,7 +82,7 @@ public class PortletAppDeployment extends org.jboss.portal.portlet.deployment.jb
       injectServices();
 
       //TODO MIGRATION : portlet
-      //super.start();
+      super.start();
 
       // Build instances objects related to the portlet life cycle
       if (factory.getCreateInstances())

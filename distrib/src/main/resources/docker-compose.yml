@@ -26,6 +26,7 @@ services:
       - ./lib/jboss-portletcontainer/web-web-1.2.0.jar:/usr/local/tomcat/lib/web-web-1.2.0.jar
       - ./lib/jboss-portletcontainer/xercesImpl-2.9.1.jar:/usr/local/tomcat/lib/xercesImpl-2.9.1.jar
       - ./lib/jboss-portletcontainer/xml-apis-2.9.1.jar:/usr/local/tomcat/lib/xml-apis-2.9.1.jar
+      - ./lib/jboss-portletcontainer/jta-1.0.1B.jar:/usr/local/tomcat/lib/jta-1.0.1B.jar      
       - ./lib/spring/spring-aop-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-aop-4.2.0.RELEASE.jar
       - ./lib/spring/spring-beans-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-beans-4.2.0.RELEASE.jar
       - ./lib/spring/spring-context-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-context-4.2.0.RELEASE.jar

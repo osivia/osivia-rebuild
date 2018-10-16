@@ -36,6 +36,7 @@
                 <include>xml-apis:xml-apis</include>  
                 <include>xml-resolver:xml-resolver</include>  
                 <include>taglibs:standard</include>  
+                <include>javax.transaction:jta</include>  
              </includes>
         </dependencySet> 
         <dependencySet>

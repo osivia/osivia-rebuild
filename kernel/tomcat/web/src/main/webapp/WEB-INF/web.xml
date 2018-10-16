@@ -89,6 +89,9 @@
       <url-pattern>/auth/*</url-pattern>
    </servlet-mapping>
 
-    
+	<!-- prevent insertion of jsessionid into urls -->
+    <session-config>
+    	<tracking-mode>COOKIE</tracking-mode>
+ 	</session-config> 
 
 </web-app>
