@@ -1,5 +1,7 @@
 package org.osivia.portal.kernel.common.configuration;
 
+import org.jboss.portal.core.aspects.portlet.AjaxInterceptor;
+import org.jboss.portal.core.aspects.portlet.HeaderInterceptor;
 import org.jboss.portal.portlet.PortletInvoker;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.CCPPInterceptor;
@@ -246,10 +248,23 @@ public class PortalConfiguration implements ApplicationContextAware {
     public PortletInvoker getContextDispatcherInterceptor() {
         ContextDispatcherInterceptor contextDispatcherInterceptor = new ContextDispatcherInterceptor();
         contextDispatcherInterceptor.setServletContainerFactory(this.applicationContext.getBean("ServletContainerFactory", ServletContainerFactory.class));
-        contextDispatcherInterceptor.setNext(this.applicationContext.getBean("ProducerCacheInterceptor", PortletInvoker.class));
+        contextDispatcherInterceptor.setNext(this.applicationContext.getBean("AjaxInterceptor", PortletInvoker.class));
         return contextDispatcherInterceptor;
     }
+    
 
+    /**
+     * Ajax interceptor.
+     *
+     * @return portlet invoker
+     */
+    @Bean(name = "AjaxInterceptor")
+    public PortletInvoker getAjaxInterceptor() {
+        AjaxInterceptor ajaxInterceptor = new AjaxInterceptor();
+        ajaxInterceptor.setNext(this.applicationContext.getBean("ProducerCacheInterceptor", PortletInvoker.class));
+        return ajaxInterceptor;
+    } 
+    
 
     /**
      * Producer cache interceptor.
@@ -298,10 +313,21 @@ public class PortalConfiguration implements ApplicationContextAware {
     @Bean(name = "EventPayloadInterceptor")
     public PortletInvoker getEventPayloadInterceptor() {
         EventPayloadInterceptor eventPayloadInterceptor = new EventPayloadInterceptor();
-        eventPayloadInterceptor.setNext(this.applicationContext.getBean("PortletContainerDispatcher", PortletInvoker.class));
+        eventPayloadInterceptor.setNext(this.applicationContext.getBean("HeaderInterceptor", PortletInvoker.class));
         return eventPayloadInterceptor;
     }
 
+    
+    
+    @Bean(name = "HeaderInterceptor")
+    public PortletInvoker getHeaderInterceptor() {
+    	HeaderInterceptor headerInterceptor = new HeaderInterceptor();
+    	headerInterceptor.setNext(this.applicationContext.getBean("PortletContainerDispatcher", PortletInvoker.class));
+        return headerInterceptor;
+    }
+
+    
+    
 
     /**
      * Portlet container dispatcher.

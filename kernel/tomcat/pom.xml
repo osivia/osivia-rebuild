@@ -29,6 +29,7 @@
     <modules>
         <module>lib</module>
         <module>web</module>
+		<module>assets</module>
     </modules>
     
     

@@ -91,6 +91,15 @@
              </includes>
              <outputFileNameMapping>portal.war</outputFileNameMapping>       
         </dependencySet>   
+        <dependencySet>
+            <outputDirectory>/webapp</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+ 			<includes>
+                <include>org.osivia.portal.kernel.tomcat:osivia-portal-tomcat-assets:war:${project.version}</include>
+             </includes>
+             <outputFileNameMapping>portal-assets.war</outputFileNameMapping>       
+        </dependencySet>           
     </dependencySets>
 
     <fileSets>

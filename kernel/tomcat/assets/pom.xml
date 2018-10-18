@@ -1,0 +1,95 @@
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <parent>
+        <groupId>org.osivia.portal.kernel.tomcat</groupId>
+        <artifactId>osivia-portal-tomcat-parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>osivia-portal-tomcat-assets</artifactId>
+    <packaging>war</packaging>
+
+
+    <name>OSIVIA Portal - Assets - WebApp</name>
+    <description>OSIVIA Portal Assets webapp.</description>
+
+
+    <properties>
+        <war.name>portal-assets</war.name>
+    </properties>
+
+
+   
+	<profiles>
+		<profile>
+			<id>copy-tomcat</id>
+		    <activation>
+		      <property>
+		        <name>web.path</name>
+		      </property>
+		    </activation>			
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<copy file="${project.basedir}/target/${war.name}.war"
+											todir="${web.path}" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>${war.name}</warName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.lesscss</groupId>
+                <artifactId>lesscss-maven-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>bootstrap/bootstrap.less</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <wtpversion>2.0</wtpversion>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

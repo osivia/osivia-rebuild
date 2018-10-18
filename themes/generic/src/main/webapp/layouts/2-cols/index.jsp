@@ -33,7 +33,7 @@
            
 
 <!-- TODO: Fix the auto jump in this tag -->
-<div id="footer-container" class="portal-copyright"><%= rb.getString("POWERED_BY") %>
+<div id="footer-container" class="portal-copyright">
 <a class="portal-copyright" href="http://www.jboss.com/products/jbossportal">JBoss Portal</a><br/>
 </div>
 

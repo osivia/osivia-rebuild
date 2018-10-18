@@ -25,6 +25,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 
 public class PortalObjectContainerMock implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
@@ -33,7 +34,9 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 	
 
 	private static String PORTAL_A_NAME = "portalA";
-	private static String PAGE_A_NAME = "pageA";
+	private static String PAGE_A_NAME = "pageA";	
+	private static String DEFAULT_PAGE_NAME = PAGE_A_NAME;	
+
 	private static String WINDOW_A_NAME = "winA";
 	private static String WINDOW_B_NAME = "winB";
 	private static String WINDOW_C_NAME = "winC";
@@ -63,7 +66,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		PortalObjectPath portalAPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
 		ObjectNodeMock portalANode = new ObjectNodeMock(new PortalObjectId("", portalAPath), PORTAL_A_NAME);
 		PortalImplMock portalA = new PortalImplMock();
-		portalA.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, PAGE_A_NAME);
+		portalA.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DEFAULT_PAGE_NAME);
 		portalA.setObjectNode(portalANode);
 		// states
 		Set<WindowState> states = new HashSet<>();
@@ -80,18 +83,62 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		portalANode.setObject(portalA);
 		nodes.put(portalA.getId(), portalA);
 
-		PortalObjectPath pageAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + PAGE_A_NAME,
+
+
+		// Context Children
+		Map contextChildren = new HashMap();
+		contextChildren.put(PORTAL_A_NAME, portalANode);
+		contextNode.setChildren(contextChildren);
+		
+		Map portalChildren = new HashMap();		
+		
+		
+		// Page A
+		
+
+		String pageAName = PAGE_A_NAME;
+		Map<String, String> pageProperties = new HashMap<>();
+		
+		pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT,"generic-2cols");
+		pageProperties.put(ThemeConstants.PORTAL_PROP_THEME,"generic");	
+				
+		portalChildren.put(pageAName, createPage(contextNode, portalANode, pageAName, pageProperties));
+
+		
+		
+		// Page B
+		
+		String pageBName = PAGE_A_NAME + "-ajax";
+		pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");
+				
+		portalChildren.put(pageBName, createPage(contextNode, portalANode, pageBName, pageProperties));
+
+	
+		// Children
+		portalANode.setChildren(portalChildren);
+
+	}
+
+	
+	
+	private ObjectNodeMock createPage(ObjectNodeMock contextNode, ObjectNodeMock portalANode, String pageName, Map<String, String> pageProperties) {
+		
+		
+		PortalObjectPath pageAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock pageANode = new ObjectNodeMock(new PortalObjectId("", pageAPath), PAGE_A_NAME);
+		ObjectNodeMock pageANode = new ObjectNodeMock(new PortalObjectId("", pageAPath), pageName);
 		PageImplMock pageA = new PageImplMock();
 		pageA.setObjectNode(pageANode);
-		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT,"generic-2cols");
-		pageA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME,"generic");	
+		
+		for(String key : pageProperties.keySet()) {
+			pageA.setDeclaredProperty(key, pageProperties.get(key));
+		}
+		
 		
 		pageANode.setObject(pageA);
 		nodes.put(pageA.getId(), pageA);
 
-		PortalObjectPath winAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + PAGE_A_NAME + "/" + WINDOW_A_NAME,
+		PortalObjectPath winAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_A_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
 		ObjectNodeMock winANode = new ObjectNodeMock(new PortalObjectId("", winAPath), WINDOW_A_NAME);
 		WindowImplMock winA = new WindowImplMock();
@@ -106,7 +153,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		
 		
 		
-		PortalObjectPath winBPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + PAGE_A_NAME + "/" + WINDOW_B_NAME,
+		PortalObjectPath winBPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_B_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
 		ObjectNodeMock winBNode = new ObjectNodeMock(new PortalObjectId("", winBPath), WINDOW_B_NAME);
 		WindowImplMock winB = new WindowImplMock();
@@ -119,7 +166,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		nodes.put(winB.getId(), winB);
 		
 		
-		PortalObjectPath winCPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + PAGE_A_NAME + "/" + WINDOW_C_NAME,
+		PortalObjectPath winCPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_C_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
 		ObjectNodeMock winCNode = new ObjectNodeMock(new PortalObjectId("", winCPath), WINDOW_C_NAME);
 		WindowImplMock winC = new WindowImplMock();
@@ -131,20 +178,8 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		winCNode.setObject(winC);
 		nodes.put(winC.getId(), winC);
 		
-		
-		
-		
 
 		// children
-
-		
-		Map contextChildren = new HashMap();
-		contextChildren.put(PORTAL_A_NAME, portalANode);
-		contextNode.setChildren(contextChildren);
-		
-		Map portalChildren = new HashMap();
-		portalChildren.put(PAGE_A_NAME, pageANode);
-		portalANode.setChildren(portalChildren);
 
 		pageANode.setParent(portalANode);
 		Map pageChildren = new HashMap();
@@ -155,9 +190,10 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 
 		winANode.setParent(pageANode);
 		winBNode.setParent(pageANode);		
-		winCNode.setParent(pageANode);	
+		winCNode.setParent(pageANode);
 		
-
+		
+		return pageANode;
 	}
 
 	@Override
