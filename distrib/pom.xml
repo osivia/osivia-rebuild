@@ -16,8 +16,11 @@
     <prerequisites>
         <maven>2.1.0</maven>
     </prerequisites>
-
-
+   
+    <properties>
+		<versionName>${project.version}</versionName>
+    </properties>
+    
     <dependencies>
 
         <!-- OSIVIA Portal -->
@@ -267,6 +270,9 @@
                                     </descriptors>
                                     <finalName>osivia-portal-distribution-${project.version}</finalName>
                                     <appendAssemblyId>false</appendAssemblyId>
+									<filters>
+							            <filter>src/main/assembly/filter.properties</filter>
+							          </filters>                                    
                                 </configuration>
                                 <goals>
                                     <goal>single</goal>

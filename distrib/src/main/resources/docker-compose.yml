@@ -35,10 +35,10 @@ services:
       - ./lib/spring/spring-web-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-web-4.2.0.RELEASE.jar
       - ./lib/spring/spring-webmvc-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-webmvc-4.2.0.RELEASE.jar
       - ./lib/spring/spring-webmvc-portlet-4.2.0.RELEASE.jar:/usr/local/tomcat/lib/spring-webmvc-portlet-4.2.0.RELEASE.jar
-      - ./lib/portal/osivia-portal-kernel-jbp-lib-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-kernel-jbp-lib-5.0.0-SNAPSHOT.jar
-      - ./lib/portal/osivia-portal-api-common-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-api-common-5.0.0-SNAPSHOT.jar
-      - ./lib/portal/osivia-portal-api-cms-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-api-cms-5.0.0-SNAPSHOT.jar
-      - ./lib/portal/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar:/usr/local/tomcat/lib/osivia-portal-tomcat-lib-5.0.0-SNAPSHOT.jar
+      - ./lib/portal/osivia-portal-kernel-jbp-lib-${versionName}.jar:/usr/local/tomcat/lib/osivia-portal-kernel-jbp-lib-${versionName}.jar
+      - ./lib/portal/osivia-portal-api-common-${versionName}.jar:/usr/local/tomcat/lib/osivia-portal-api-common-${versionName}.jar
+      - ./lib/portal/osivia-portal-api-cms-${versionName}.jar:/usr/local/tomcat/lib/osivia-portal-api-cms-${versionName}.jar
+      - ./lib/portal/osivia-portal-tomcat-lib-${versionName}.jar:/usr/local/tomcat/lib/osivia-portal-tomcat-lib-${versionName}.jar
       - ./webapp:/usr/local/tomcat/webapps
     entrypoint:
       - /usr/local/tomcat/bin/catalina.sh

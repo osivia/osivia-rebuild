@@ -109,7 +109,18 @@
 		<fileSet>
 			<outputDirectory>/</outputDirectory>
 			<directory>src/main/resources</directory>
+      		<excludes>
+        		<exclude>docker-compose.yml</exclude>
+      		</excludes>			
 		</fileSet>		
      </fileSets>
+	  <files>
+	    <file>
+	      <source>src/main/resources/docker-compose.yml</source>
+      
+	      <outputDirectory>/</outputDirectory>
+	      <filtered>true</filtered>
+	    </file>
+	  </files>     
 
 </assembly>
