@@ -111,6 +111,7 @@
 			<directory>src/main/resources</directory>
       		<excludes>
         		<exclude>docker-compose.yml</exclude>
+        		<exclude>webapp/samples-remotecontroller-portlet.war.remove_ext</exclude>
       		</excludes>			
 		</fileSet>		
      </fileSets>
@@ -119,6 +120,11 @@
 	      <source>src/main/resources/docker-compose.yml</source>
 	      <outputDirectory>/</outputDirectory>
 	      <filtered>true</filtered>
+	    </file>
+	    <file>
+	      <source>src/main/resources/webapp/samples-remotecontroller-portlet.war.remove_ext</source>
+	      <outputDirectory>/webapp</outputDirectory>
+		  <destName>samples-remotecontroller-portlet.war</destName>
 	    </file>
 	  </files>     
 
