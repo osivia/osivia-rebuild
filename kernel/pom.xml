@@ -26,6 +26,7 @@
         <module>jboss-compat</module>
         <module>jbp</module>
 		<module>jbp-lib</module>
+		<module>tomcat</module>
     </modules>
     
     
