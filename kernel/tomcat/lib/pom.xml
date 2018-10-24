@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.osivia.portal.kernel.tomcat</groupId>
         <artifactId>osivia-portal-tomcat-parent</artifactId>
-        <version>5.0.0-ALPHA-5</version>
+        <version>5.0.0-SNAPSHOT</version>
     </parent>
     
     <artifactId>osivia-portal-tomcat-lib</artifactId>
