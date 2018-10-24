@@ -468,9 +468,11 @@ public class PortletAppDeployment extends org.jboss.portal.portlet.deployment.jb
          securityConstraints = new SecurityConstraintsMetaData();
          securityConstraints.getConstraints().add(new RoleSecurityBinding("view", SecurityConstants.UNCHECKED_ROLE_NAME));
       }
-      AuthorizationDomain authDomain = instance.getContainer().getAuthorizationDomain();
-      DomainConfigurator domainConfigurator = authDomain.getConfigurator();
-      domainConfigurator.setSecurityBindings(instance.getId(), securityConstraints.getConstraints());
+
+      //TODO : migration autorisation
+//      AuthorizationDomain authDomain = instance.getContainer().getAuthorizationDomain();
+//      DomainConfigurator domainConfigurator = authDomain.getConfigurator();
+//      domainConfigurator.setSecurityBindings(instance.getId(), securityConstraints.getConstraints());
    }
 
    private void createInstance(InstanceMetaData metaData) throws PortletInvokerException, DuplicateInstanceException, SecurityConfigurationException
