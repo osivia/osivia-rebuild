@@ -116,8 +116,7 @@
      </fileSets>
 	  <files>
 	    <file>
-	      <source>src/main/resources/docker-compose.yml</source>
-      
+	      <source>/src/main/resources/docker-compose.yml</source>
 	      <outputDirectory>/</outputDirectory>
 	      <filtered>true</filtered>
 	    </file>
