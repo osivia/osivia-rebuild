@@ -13,7 +13,7 @@
     </parent>
 
     <groupId>org.osivia.portal.themes</groupId>
-    <artifactId>osivia-portal-portlets-parent</artifactId>
+    <artifactId>osivia-portal-themes-parent</artifactId>
     <packaging>pom</packaging>
 
 
