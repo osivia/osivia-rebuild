@@ -61,15 +61,42 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 		this.tracker = tracker;
 	}
 
+	private static ThreadLocal<DynamicCache> dynamicLocalCache = new ThreadLocal<DynamicCache>();
+
+	public static DynamicCache getDynamicCache() {
+
+		return dynamicLocalCache.get();
+	}
+
+	public static void clearCache() {
+		getDatas().clear();
+	}
+
+	public static void addToCache(PortalObjectId id, PortalObject value) {
+		getDatas().put(id, value);
+	}
+
+	private static Map<PortalObjectId, PortalObject> getDatas() {
+
+		DynamicCache dynamicCache = dynamicLocalCache.get();
+
+		if (dynamicCache == null) {
+			dynamicCache = new DynamicCache();
+			dynamicLocalCache.set(dynamicCache);
+		}
+
+		return dynamicCache.getDatas();
+
+	}
+
 	public void addDynaPortal() {
-		
-		
 
 		if (this.getTracker().getHttpSession().getAttribute("osivia.demo_portal") == null) {
 
 			// Add dynamic page to portalA
-			// http://localhost:8080/portal/portal/portalA/dyna -> http://localhost:8080/portal/portal/portalA/pageA
-			
+			// http://localhost:8080/portal/portal/portalA/dyna ->
+			// http://localhost:8080/portal/portal/portalA/pageA
+
 			PortalObjectId portalID = new PortalObjectId("",
 					new PortalObjectPath("/portalA", PortalObjectPath.CANONICAL_FORMAT));
 			PortalObjectId templateID = new PortalObjectId("",
@@ -83,7 +110,49 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 			addDynamicPage(pageBean);
 
 			this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
+
+			PortalObjectId dynaPageID = new PortalObjectId("",
+					new PortalObjectPath("/portalA/dyna", PortalObjectPath.CANONICAL_FORMAT));
+
+			PortalObject dynaPage = getObject(dynaPageID);
+
+			Map<String, String> properties = new HashMap<String, String>();
+			properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
+			properties.put(ThemeConstants.PORTAL_PROP_REGION, "col-2");
+
+			DynamicWindowBean windowBean = new DynamicWindowBean(dynaPageID, "dyna", "SampleInstance", properties,
+					null);
+
+			addDynamicWindow(windowBean);
 		}
+	}
+
+	private Object getNavigationalItem(String attribute) {
+		return this.getTracker().getHttpSession().getAttribute(attribute);
+	}
+
+	private void setNavigationalItem(String attribute, Object value) {
+		this.getTracker().getHttpSession().setAttribute(attribute, value);
+	}
+
+	public void addDynamicWindow(DynamicWindowBean newWindow) {
+
+		List<DynamicWindowBean> windows = this.getDynamicWindows();
+		List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
+
+		for (DynamicWindowBean window : windows) {
+			if (!window.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT)
+					.equals(newWindow.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT))) {
+				newWindows.add(window);
+			}
+		}
+
+		newWindows.add(newWindow);
+
+		setNavigationalItem("osivia.dynamic_windows", newWindows);
+
+		// On vide le cache
+		getDatas().clear();
 	}
 
 	public void addDynamicPage(DynamicPageBean newPage) {
@@ -112,20 +181,80 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 		}
 		newPages.add(newPage);
 
-		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
+		setNavigationalItem("osivia.dynamic_pages", newPages);
 	}
 
-	// TODO
-	public static void addToCache(PortalObjectId id, PortalObject value) {
-	}
 
-	// TODO
 	public List<DynamicWindowBean> getPageWindows(PortalObjectId pageId) {
-		return new ArrayList<>();
+		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
+
+		for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
+			if (windowBean.getPageId().equals(pageId)) {
+				windows.add(windowBean);
+			}
+		}
+  
+		return windows;
 	}
 
-	// TODO
+	public void removeDynamicWindow(String dynamicWindowId) {
+
+		List<DynamicWindowBean> windows = this.getDynamicWindows();
+		List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
+
+		for (DynamicWindowBean window : windows) {
+			if (!window.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT).equals(dynamicWindowId)) {
+				newWindows.add(window);
+			}
+		}
+		setNavigationalItem("osivia.dynamic_windows", newWindows);
+
+		// On vide le cache
+		getDatas().clear();
+
+	}
+
 	public void removeDynamicPage(String dynamicWindowId) {
+
+		List<DynamicPageBean> pages = this.getDynamicPages();
+		List<DynamicPageBean> newPages = new ArrayList<DynamicPageBean>();
+
+		for (DynamicPageBean page : pages) {
+			if (!page.getPageId().toString(PortalObjectPath.SAFEST_FORMAT).equals(dynamicWindowId)) {
+				newPages.add(page);
+			}
+		}
+		setNavigationalItem("osivia.dynamic_pages", newPages);
+
+		// Remove child windows
+
+		List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
+
+		for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
+			if (!windowBean.getPageId().equals(dynamicWindowId)) {
+				newWindows.add(windowBean);
+			}
+		}
+		setNavigationalItem("osivia.dynamic_windows", newWindows);
+
+		// On vide le cache
+		getDatas().clear();
+
+	}
+
+	public List<DynamicWindowBean> getDynamicWindows() {
+
+		List<DynamicWindowBean> windows = null;
+
+		if (this.getTracker().getHttpRequest() != null) {
+			windows = (List<DynamicWindowBean>) getNavigationalItem("osivia.dynamic_windows");
+		}
+
+		if (windows == null) {
+			windows = new ArrayList<DynamicWindowBean>();
+		}
+
+		return windows;
 	}
 
 	public ServerInvocation getInvocation() {
@@ -140,7 +269,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 		List<DynamicPageBean> pages = null;
 
 		if (this.getTracker().getHttpSession() != null) {
-			pages = (List<DynamicPageBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
+			pages = (List<DynamicPageBean>) getNavigationalItem("osivia.dynamic_pages");
 		}
 
 		if (pages == null) {
@@ -152,6 +281,16 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
 	@Override
 	public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
+
+		// get Cache Data
+		PortalObject cache = getDatas().get(id);
+
+		if (cache != null) {
+			return cache;
+		}
+
+		// just for test
+		// TODO : remove
 		addDynaPortal();
 
 		Object cmd = this.getTracker().getCurrentState();

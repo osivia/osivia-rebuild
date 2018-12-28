@@ -24,6 +24,7 @@ import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 
 
 public class ServerTrackerInterceptor extends ServerInterceptor {
@@ -58,10 +59,10 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 	@Override
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 	    
-
-
 		// réinitialisation des propriétes des windows
         PageProperties.init();
+        
+	    DynamicPortalObjectContainer.clearCache();
 
 		this.getTracker().init();
 

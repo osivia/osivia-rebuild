@@ -153,6 +153,8 @@ public abstract class DynamicWindow extends WindowImplMock {
 		id = new PortalObjectId("", new PortalObjectPath( page.getId().getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
 		properties = new HashMap<String, String>();
 		
+		setContext(context);
+		
 		setSessionWindow(true);
 		
 		dynamicWindowBean = dynaBean;

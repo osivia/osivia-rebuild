@@ -142,14 +142,6 @@ public final class DynamicTemplatePage extends TemplatePage {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return this.getId().toString();
-    }
-
 
     /**
      * Getter for pageBean.
