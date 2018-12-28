@@ -1,4 +1,4 @@
-This distribution is intended for developpment purpose under docker engine.
+This distribution is intended for development purpose under docker engine.
 
 - unzip the distribution file
 - launch docker : docker up -d

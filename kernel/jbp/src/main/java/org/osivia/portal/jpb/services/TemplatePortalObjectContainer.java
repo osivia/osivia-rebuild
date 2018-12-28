@@ -27,7 +27,7 @@ import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 
-public class PortalObjectContainerMock implements org.jboss.portal.core.model.portal.PortalObjectContainer {
+public class TemplatePortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
 	Map<PortalObjectId, PortalObject> nodes;
 	ContainerContext containerContext = new ContainerContext();
@@ -57,14 +57,14 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		nodes = new HashMap<>();
 		
 		PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock contextNode = new ObjectNodeMock(new PortalObjectId("", contextPath), "");
+		ObjectNodeMock contextNode = new ObjectNodeMock(new PortalObjectId("", contextPath), "", containerContext);
 		ContextImplMock context = new ContextImplMock();
 		context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, PORTAL_A_NAME);
 		context.setObjectNode(contextNode);
 		nodes.put(context.getId(),context);
 
 		PortalObjectPath portalAPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock portalANode = new ObjectNodeMock(new PortalObjectId("", portalAPath), PORTAL_A_NAME);
+		ObjectNodeMock portalANode = new ObjectNodeMock(new PortalObjectId("", portalAPath), PORTAL_A_NAME, containerContext);
 		PortalImplMock portalA = new PortalImplMock();
 		portalA.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DEFAULT_PAGE_NAME);
 		portalA.setObjectNode(portalANode);
@@ -126,7 +126,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		
 		PortalObjectPath pageAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock pageANode = new ObjectNodeMock(new PortalObjectId("", pageAPath), pageName);
+		ObjectNodeMock pageANode = new ObjectNodeMock(new PortalObjectId("", pageAPath), pageName, containerContext);
 		PageImplMock pageA = new PageImplMock();
 		pageA.setObjectNode(pageANode);
 		
@@ -140,7 +140,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 
 		PortalObjectPath winAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_A_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock winANode = new ObjectNodeMock(new PortalObjectId("", winAPath), WINDOW_A_NAME);
+		ObjectNodeMock winANode = new ObjectNodeMock(new PortalObjectId("", winAPath), WINDOW_A_NAME, containerContext);
 		WindowImplMock winA = new WindowImplMock();
 		winA.setContext(containerContext);
 		winA.setURI("SampleInstance");
@@ -155,7 +155,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		
 		PortalObjectPath winBPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_B_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock winBNode = new ObjectNodeMock(new PortalObjectId("", winBPath), WINDOW_B_NAME);
+		ObjectNodeMock winBNode = new ObjectNodeMock(new PortalObjectId("", winBPath), WINDOW_B_NAME, containerContext);
 		WindowImplMock winB = new WindowImplMock();
 		winB.setContext(containerContext);
 		winB.setURI("SampleRemote");
@@ -168,7 +168,7 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 		
 		PortalObjectPath winCPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_C_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock winCNode = new ObjectNodeMock(new PortalObjectId("", winCPath), WINDOW_C_NAME);
+		ObjectNodeMock winCNode = new ObjectNodeMock(new PortalObjectId("", winCPath), WINDOW_C_NAME, containerContext);
 		WindowImplMock winC = new WindowImplMock();
 		winC.setContext(containerContext);
 		winC.setURI("SampleInstance");
@@ -235,9 +235,9 @@ public class PortalObjectContainerMock implements org.jboss.portal.core.model.po
 	   {
 	      /**
 	       */
-	      public PortalObjectContainerMock getContainer()
+	      public TemplatePortalObjectContainer getContainer()
 	      {
-	         return PortalObjectContainerMock.this;
+	         return TemplatePortalObjectContainer.this;
 	      }
 
 	      public ContentType getDefaultContentType()

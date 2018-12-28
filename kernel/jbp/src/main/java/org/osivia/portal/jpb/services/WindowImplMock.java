@@ -56,7 +56,7 @@ public class WindowImplMock extends PortalObjectImplMock implements Window, Cont
    protected String uri;
 
    // Runtime fields
-   protected PortalObjectContainerMock.ContainerContext containerContext;
+   protected TemplatePortalObjectContainer.ContainerContext containerContext;
    protected ContentType contentType;
    protected ContentStateImpl contentState;
 
@@ -105,7 +105,7 @@ public class WindowImplMock extends PortalObjectImplMock implements Window, Cont
 
    public void setContext(Object context)
    {
-      this.containerContext = (PortalObjectContainerMock.ContainerContext)context;
+      this.containerContext = (TemplatePortalObjectContainer.ContainerContext)context;
    }
 
    public String getURI()

@@ -63,7 +63,7 @@ public class ObjectNodeMock implements ContextObject
    private Map<String, ObjectNodeSecurityConstraint> securityConstraints;
 
    // Runtime fields
-   private AbstractPortalObjectContainer.ContainerContext containerContext;
+   private TemplatePortalObjectContainer.ContainerContext containerContext;
    private static final String DASHBOARD = "dashboard";
 
    public ObjectNodeMock()
@@ -75,10 +75,11 @@ public class ObjectNodeMock implements ContextObject
       this.securityConstraints = null;
    }
 
-   public ObjectNodeMock(PortalObjectId path, String name)
+   public ObjectNodeMock(PortalObjectId path, String name,Object containerContext)
    {
       this.path = path;
       this.name = name;
+      this.containerContext = (TemplatePortalObjectContainer.ContainerContext)containerContext;
       this.children = new HashMap();
       this.securityConstraints = new HashMap<String, ObjectNodeSecurityConstraint>();
    }
@@ -87,7 +88,7 @@ public class ObjectNodeMock implements ContextObject
 
    public void setContext(Object context)
    {
-      this.containerContext = (AbstractPortalObjectContainer.ContainerContext)context;
+      this.containerContext = (TemplatePortalObjectContainer.ContainerContext)context;
    }
 
    public Long getKey()
@@ -153,7 +154,7 @@ public class ObjectNodeMock implements ContextObject
       this.children = children;
    }
 
-   public AbstractPortalObjectContainer.ContainerContext getContext()
+   public TemplatePortalObjectContainer.ContainerContext getContext()
    {
       return containerContext;
    }
