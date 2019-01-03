@@ -21,14 +21,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.jpb.services.PageImplMock;
+import org.osivia.portal.jpb.services.PageImplBase;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
 
 
 
 
 @SuppressWarnings("unchecked")
-public abstract class DynamicPage extends PageImplMock {
+public abstract class DynamicPage extends PageImplBase {
 
 	protected static final Log logger = LogFactory.getLog(DynamicPage.class);
 

@@ -35,19 +35,19 @@ import java.util.Set;
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 9134 $
  */
-public class PortalImplMock extends PortalObjectImplMock implements Portal
+public class PortalImplBase extends PortalObjectImplBase implements Portal
 {
 
    // Persistent state
    protected Set windowStates;
    protected Set modes;
 
-   public PortalImplMock()
+   public PortalImplBase()
    {
       this(true);
    }
 
-   public PortalImplMock(boolean hibernate)
+   public PortalImplBase(boolean hibernate)
    {
       super(hibernate);
       windowStates = hibernate ? null : new HashSet();
@@ -118,9 +118,9 @@ public class PortalImplMock extends PortalObjectImplMock implements Portal
       return null;
    }
 
-   protected PortalObjectImplMock cloneObject()
+   protected PortalObjectImplBase cloneObject()
    {
-      PortalImplMock clone = new PortalImplMock();
+      PortalImplBase clone = new PortalImplBase();
       clone.setWindowStates(new HashSet(getWindowStates()));
       clone.setModes(new HashSet(getModes()));
       clone.setDeclaredPropertyMap(new HashMap(getDeclaredPropertyMap()));

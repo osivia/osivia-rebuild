@@ -44,11 +44,11 @@ import java.util.Set;
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 12376 $
  */
-public class ObjectNodeMock implements ContextObject
+public class ObjectNodeImplBase implements ContextObject
 {
 
    /** . */
-   protected static final Logger log = Logger.getLogger(ObjectNodeMock.class);
+   protected static final Logger log = Logger.getLogger(ObjectNodeImplBase.class);
 
    /** . */
    protected static final boolean trace = log.isTraceEnabled();
@@ -57,16 +57,16 @@ public class ObjectNodeMock implements ContextObject
    private Long key;
    private PortalObjectId path;
    private String name;
-   private ObjectNodeMock parent;
+   private ObjectNodeImplBase parent;
    private Map children;
-   private PortalObjectImplMock object;
+   private PortalObjectImplBase object;
    private Map<String, ObjectNodeSecurityConstraint> securityConstraints;
 
    // Runtime fields
    private TemplatePortalObjectContainer.ContainerContext containerContext;
    private static final String DASHBOARD = "dashboard";
 
-   public ObjectNodeMock()
+   public ObjectNodeImplBase()
    {
       this.containerContext = null;
       this.path = null;
@@ -75,7 +75,7 @@ public class ObjectNodeMock implements ContextObject
       this.securityConstraints = null;
    }
 
-   public ObjectNodeMock(PortalObjectId path, String name,Object containerContext)
+   public ObjectNodeImplBase(PortalObjectId path, String name,Object containerContext)
    {
       this.path = path;
       this.name = name;
@@ -101,12 +101,12 @@ public class ObjectNodeMock implements ContextObject
       this.key = key;
    }
 
-   public PortalObjectImplMock getObject()
+   public PortalObjectImplBase getObject()
    {
       return object;
    }
 
-   public void setObject(PortalObjectImplMock object)
+   public void setObject(PortalObjectImplBase object)
    {
       this.object = object;
    }
@@ -134,12 +134,12 @@ public class ObjectNodeMock implements ContextObject
       this.name = name;
    }
 
-   public ObjectNodeMock getParent()
+   public ObjectNodeImplBase getParent()
    {
       return parent;
    }
 
-   public void setParent(ObjectNodeMock parent)
+   public void setParent(ObjectNodeImplBase parent)
    {
       this.parent = parent;
    }

@@ -34,7 +34,8 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 	
 
 	private static String PORTAL_A_NAME = "portalA";
-	private static String PAGE_A_NAME = "pageA";	
+	private static String PAGE_A_NAME = "pageA";
+	
 	private static String DEFAULT_PAGE_NAME = PAGE_A_NAME;	
 
 	private static String WINDOW_A_NAME = "winA";
@@ -57,15 +58,15 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 		nodes = new HashMap<>();
 		
 		PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock contextNode = new ObjectNodeMock(new PortalObjectId("", contextPath), "", containerContext);
-		ContextImplMock context = new ContextImplMock();
+		ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId("", contextPath), "", containerContext);
+		ContextImplBase context = new ContextImplBase();
 		context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, PORTAL_A_NAME);
 		context.setObjectNode(contextNode);
 		nodes.put(context.getId(),context);
 
 		PortalObjectPath portalAPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock portalANode = new ObjectNodeMock(new PortalObjectId("", portalAPath), PORTAL_A_NAME, containerContext);
-		PortalImplMock portalA = new PortalImplMock();
+		ObjectNodeImplBase portalANode = new ObjectNodeImplBase(new PortalObjectId("", portalAPath), PORTAL_A_NAME, containerContext);
+		PortalImplBase portalA = new PortalImplBase();
 		portalA.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DEFAULT_PAGE_NAME);
 		portalA.setObjectNode(portalANode);
 		// states
@@ -94,8 +95,6 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 		
 		
 		// Page A
-		
-
 		String pageAName = PAGE_A_NAME;
 		Map<String, String> pageProperties = new HashMap<>();
 		
@@ -107,12 +106,11 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 		
 		
 		// Page B
-		
 		String pageBName = PAGE_A_NAME + "-ajax";
 		pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");
 				
 		portalChildren.put(pageBName, createPage(contextNode, portalANode, pageBName, pageProperties));
-
+		
 	
 		// Children
 		portalANode.setChildren(portalChildren);
@@ -120,32 +118,36 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 	}
 
 	
+
 	
-	private ObjectNodeMock createPage(ObjectNodeMock contextNode, ObjectNodeMock portalANode, String pageName, Map<String, String> pageProperties) {
+	
+	private ObjectNodeImplBase createPage(ObjectNodeImplBase contextNode, ObjectNodeImplBase portalANode, String pageName, Map<String, String> pageProperties) {
 		
 		
 		PortalObjectPath pageAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock pageANode = new ObjectNodeMock(new PortalObjectId("", pageAPath), pageName, containerContext);
-		PageImplMock pageA = new PageImplMock();
+		ObjectNodeImplBase pageANode = new ObjectNodeImplBase(new PortalObjectId("", pageAPath), pageName, containerContext);
+		
+		PageImplBase pageA = new PageImplBase();
+		
 		pageA.setObjectNode(pageANode);
 		
 		for(String key : pageProperties.keySet()) {
 			pageA.setDeclaredProperty(key, pageProperties.get(key));
 		}
 		
-		
 		pageANode.setObject(pageA);
 		nodes.put(pageA.getId(), pageA);
 
-		PortalObjectPath winAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_A_NAME,
+                                                      
+		PortalObjectPath winAPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_C_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock winANode = new ObjectNodeMock(new PortalObjectId("", winAPath), WINDOW_A_NAME, containerContext);
-		WindowImplMock winA = new WindowImplMock();
+		ObjectNodeImplBase winANode = new ObjectNodeImplBase(new PortalObjectId("", winAPath), WINDOW_A_NAME, containerContext);
+		WindowImplBase winA = new WindowImplBase();
 		winA.setContext(containerContext);
 		winA.setURI("SampleInstance");
-		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-1");
-		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"0");		
+		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-2");
+		winA.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER,"1");			
 		winA.setObjectNode(winANode);
 		winANode.setObject(winA);
 		nodes.put(winA.getId(), winA);
@@ -155,8 +157,8 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 		
 		PortalObjectPath winBPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_B_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock winBNode = new ObjectNodeMock(new PortalObjectId("", winBPath), WINDOW_B_NAME, containerContext);
-		WindowImplMock winB = new WindowImplMock();
+		ObjectNodeImplBase winBNode = new ObjectNodeImplBase(new PortalObjectId("", winBPath), WINDOW_B_NAME, containerContext);
+		WindowImplBase winB = new WindowImplBase();
 		winB.setContext(containerContext);
 		winB.setURI("SampleRemote");
 		winB.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-2");
@@ -168,8 +170,8 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 		
 		PortalObjectPath winCPath = new PortalObjectPath("/" + PORTAL_A_NAME + "/" + pageName + "/" + WINDOW_C_NAME,
 				PortalObjectPath.CANONICAL_FORMAT);
-		ObjectNodeMock winCNode = new ObjectNodeMock(new PortalObjectId("", winCPath), WINDOW_C_NAME, containerContext);
-		WindowImplMock winC = new WindowImplMock();
+		ObjectNodeImplBase winCNode = new ObjectNodeImplBase(new PortalObjectId("", winCPath), WINDOW_C_NAME, containerContext);
+		WindowImplBase winC = new WindowImplBase();
 		winC.setContext(containerContext);
 		winC.setURI("SampleInstance");
 		winC.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION,"col-2");
@@ -198,7 +200,71 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 
 	@Override
 	public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
-		return nodes.get(id);
+		
+		PortalObject res = nodes.get(id);
+		
+		if( res == null) {
+			// Create portal
+			
+			String portalName = id.getPath().getName(0);
+			
+			PortalObjectPath portalPath = new PortalObjectPath("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
+			PortalObjectId portalID = new PortalObjectId("", portalPath);
+			
+			PortalObjectImplBase curPortalObject = (PortalObjectImplBase)nodes.get(id);
+			if( curPortalObject == null)	{
+				ObjectNodeImplBase portalNode = new ObjectNodeImplBase(portalID, portalName, containerContext);
+				
+				
+				PortalImplBase portal = new PortalImplBase();
+				portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DEFAULT_PAGE_NAME);
+				portal.setObjectNode(portalNode);
+				// states
+				Set<WindowState> states = new HashSet<>();
+				states.add(WindowState.NORMAL);
+				states.add(WindowState.MAXIMIZED);
+				portal.setWindowStates(states);
+				// modes
+				Set<Mode> modes = new HashSet<>();
+				modes.add(Mode.ADMIN);
+				modes.add(Mode.VIEW);
+				portal.setModes(modes);
+			
+				
+				portalNode.setObject(portal);
+				nodes.put(portal.getId(), portal);
+				curPortalObject = (PortalObjectImplBase) nodes.get(portal.getId());
+			}
+			
+			if( curPortalObject != null) {
+				// Pages
+				int iPage = 1;
+				ObjectNodeImplBase curPortalNode = curPortalObject.getObjectNode();
+				
+				
+				PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
+				PortalObjectId contextID = new PortalObjectId("", contextPath);
+				ContextImplBase context = (ContextImplBase) nodes.get(contextID);
+				
+				while(iPage < id.getPath().getLength()) {
+					String pageName = id.getPath().getName(iPage);
+					Map<String, String> cmsProperties = new HashMap<>();
+					
+					ObjectNodeImplBase pageNode = CMSPage.createCMSPage(this, containerContext,curPortalNode, pageName, cmsProperties );
+					
+					
+					iPage++;
+					curPortalNode = pageNode;
+				}
+			}
+			
+			res = nodes.get(id);
+
+			
+		}
+		
+		return res;
+		
 	}
 
 	@Override

@@ -1,43 +1,28 @@
 package org.osivia.portal.core.portalobjects;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-
-import org.jboss.portal.Mode;
-import org.jboss.portal.WindowState;
-import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
-import org.jboss.portal.core.impl.model.portal.ObjectNode;
-import org.jboss.portal.core.model.content.ContentType;
-import org.jboss.portal.core.model.content.spi.ContentProvider;
-import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
-import org.jboss.portal.core.model.content.spi.handler.ContentHandler;
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.ThemeConstants;
-import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.tracker.RequestContextUtil;
-import org.osivia.portal.jpb.services.ContextImplMock;
-import org.osivia.portal.jpb.services.PageImplMock;
-import org.osivia.portal.jpb.services.PortalImplMock;
+import org.osivia.portal.jpb.services.ContextImplBase;
+import org.osivia.portal.jpb.services.PageImplBase;
+import org.osivia.portal.jpb.services.PortalImplBase;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
-import org.osivia.portal.jpb.services.WindowImplMock;
 
 public class DynamicPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
@@ -96,7 +81,9 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 			// Add dynamic page to portalA
 			// http://localhost:8080/portal/portal/portalA/dyna ->
 			// http://localhost:8080/portal/portal/portalA/pageA
-
+			// http://localhost:8080/portal/portal/portalA/cms_page1
+			// http://localhost:8080/portal/portal/portalA/cms_page2
+			
 			PortalObjectId portalID = new PortalObjectId("",
 					new PortalObjectPath("/portalA", PortalObjectPath.CANONICAL_FORMAT));
 			PortalObjectId templateID = new PortalObjectId("",
@@ -114,7 +101,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 			PortalObjectId dynaPageID = new PortalObjectId("",
 					new PortalObjectPath("/portalA/dyna", PortalObjectPath.CANONICAL_FORMAT));
 
-			PortalObject dynaPage = getObject(dynaPageID);
+
 
 			Map<String, String> properties = new HashMap<String, String>();
 			properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
@@ -124,7 +111,26 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 					null);
 
 			addDynamicWindow(windowBean);
+			
+			
+			/* cms page */
+
+			addCMSWindow(portal, "cms_page2", "/osivia-site/col-1/col-2");
+			addCMSWindow(portal, "cms_page1", "/osivia-site/col-1");
+
+			this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
 		}
+	}
+	
+	private void addCMSWindow( PortalObject portal, String name, String cmsTemplatePath)	{
+		Map cmsProperties = new ConcurrentHashMap<String, String>();
+		
+		PortalObjectId cmsTemplateID = new PortalObjectId("",
+				new PortalObjectPath(cmsTemplatePath, PortalObjectPath.CANONICAL_FORMAT));
+		
+		DynamicPageBean cmsPageBean1 = new DynamicPageBean(portal, name, null, null, cmsTemplateID, cmsProperties);
+
+		addDynamicPage(cmsPageBean1);	
 	}
 
 	private Object getNavigationalItem(String attribute) {
@@ -299,7 +305,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
 			if (dynamicPageBean.getPageId().equals(id)) {
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
-				PageImplMock template = (PageImplMock) portalObjectContainer.getObject(templateId);
+				PageImplBase template = (PageImplBase) portalObjectContainer.getObject(templateId);
 				DynamicPage dynamicPage = DynamicTemplatePage.createPage(portalObjectContainer,
 						dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(),
 						template, null, this, dynamicPageBean, templateId);
@@ -313,7 +319,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 			if (dynamicPageBean.getPageId().getPath().equals(id.getPath().getParent())) {
 
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
-				PageImplMock template = (PageImplMock) portalObjectContainer.getObject(templateId);
+				PageImplBase template = (PageImplBase) portalObjectContainer.getObject(templateId);
 				DynamicTemplatePage dynamicPage = DynamicTemplatePage.createPage(portalObjectContainer,
 						dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(),
 						template, null, this, dynamicPageBean, templateId);
@@ -327,8 +333,8 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 		PortalObject object = portalObjectContainer.getObject(id);
 
 		// statics page compatibility
-		if (object instanceof PageImplMock) {
-			PageImplMock originalPage = ((PageImplMock) object);
+		if (object instanceof PageImplBase) {
+			PageImplBase originalPage = ((PageImplBase) object);
 
 			PortalObjectPath parentPath = originalPage.getId().getPath().getParent();
 			PortalObjectId parentId = new PortalObjectId("", parentPath);
@@ -341,12 +347,12 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 			return getObject(id);
 		}
 
-		if (object instanceof PortalImplMock) {
-			return new DynamicPortal(portalObjectContainer, (PortalImplMock) object, this);
+		if (object instanceof PortalImplBase) {
+			return new DynamicPortal(portalObjectContainer, (PortalImplBase) object, this);
 		}
 
-		if (object instanceof ContextImplMock) {
-			return new DynamicContext(portalObjectContainer, (ContextImplMock) object, this);
+		if (object instanceof ContextImplBase) {
+			return new DynamicContext(portalObjectContainer, (ContextImplBase) object, this);
 
 		}
 

@@ -36,12 +36,12 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.jpb.services.WindowImplMock;
+import org.osivia.portal.jpb.services.WindowImplBase;
 
 
 
 @SuppressWarnings("unchecked")
-public abstract class DynamicWindow extends WindowImplMock {
+public abstract class DynamicWindow extends WindowImplBase {
 
 
 	protected String name;

@@ -43,7 +43,7 @@ import java.util.Map.Entry;
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 11168 $
  */
-public class WindowImplMock extends PortalObjectImplMock implements Window, ContextObject
+public class WindowImplBase extends PortalObjectImplBase implements Window, ContextObject
 {
 
    public static final String PORTAL_PROP_WINDOW_CONTENT_TYPE = "portal.windowContentType";
@@ -60,7 +60,7 @@ public class WindowImplMock extends PortalObjectImplMock implements Window, Cont
    protected ContentType contentType;
    protected ContentStateImpl contentState;
 
-   public WindowImplMock()
+   public WindowImplBase()
    {
       super(true);
 
@@ -75,7 +75,7 @@ public class WindowImplMock extends PortalObjectImplMock implements Window, Cont
     * @param contentType the window content type
     * @throws IllegalArgumentException if the content type is null or the content URI is null
     */
-   public WindowImplMock(ContentType contentType, String contentURI) throws IllegalArgumentException
+   public WindowImplBase(ContentType contentType, String contentURI) throws IllegalArgumentException
    {
       super(false);
 
@@ -138,9 +138,9 @@ public class WindowImplMock extends PortalObjectImplMock implements Window, Cont
       return PortalObject.TYPE_WINDOW;
    }
 
-   protected PortalObjectImplMock cloneObject()
+   protected PortalObjectImplBase cloneObject()
    {
-      WindowImplMock clone = new WindowImplMock();
+      WindowImplBase clone = new WindowImplBase();
       clone.setURI(uri);
       clone.setDeclaredPropertyMap(new HashMap(getDeclaredPropertyMap()));
       clone.setListener(getListener());
@@ -166,12 +166,12 @@ public class WindowImplMock extends PortalObjectImplMock implements Window, Cont
 
       public String getURI()
       {
-         return WindowImplMock.this.uri;
+         return WindowImplBase.this.uri;
       }
 
       public void setURI(String uri)
       {
-         WindowImplMock.this.uri = uri;
+         WindowImplBase.this.uri = uri;
       }
 
       private void destroy()

@@ -23,7 +23,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
-import org.osivia.portal.jpb.services.PageImplMock;
+import org.osivia.portal.jpb.services.PageImplBase;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
 
 
@@ -56,7 +56,7 @@ public final class DynamicTemplatePage extends TemplatePage {
      * @return dynamic template page
      */
     public static DynamicTemplatePage createPage(TemplatePortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
-            PageImplMock template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid) {
+            PageImplBase template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid) {
         DynamicTemplatePage page = null;
         try {
             page = new DynamicTemplatePage(container, parentId, name, displayNames, template, theme, dynamicContainer, pageBean);
@@ -89,7 +89,7 @@ public final class DynamicTemplatePage extends TemplatePage {
      * @param pageBean dynamic page bean
      */
     private DynamicTemplatePage(TemplatePortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
-    		PageImplMock template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean) {
+    		PageImplBase template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean) {
         super(container, parentId, name, template, theme, dynamicContainer);
 
         this.pageBean = pageBean;

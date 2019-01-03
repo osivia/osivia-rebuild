@@ -32,16 +32,16 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
-import org.osivia.portal.jpb.services.ContextImplMock;
-import org.osivia.portal.jpb.services.PageImplMock;
-import org.osivia.portal.jpb.services.PortalImplMock;
-import org.osivia.portal.jpb.services.PortalObjectImplMock;
+import org.osivia.portal.jpb.services.ContextImplBase;
+import org.osivia.portal.jpb.services.PageImplBase;
+import org.osivia.portal.jpb.services.PortalImplBase;
+import org.osivia.portal.jpb.services.PortalObjectImplBase;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
 
 
 
 @SuppressWarnings("unchecked")
-public  class DynamicPortal extends PortalImplMock {
+public  class DynamicPortal extends PortalImplBase {
 	
 	protected static final Log log = LogFactory.getLog(DynamicPortal.class);
 
@@ -50,13 +50,13 @@ public  class DynamicPortal extends PortalImplMock {
 	
 	TemplatePortalObjectContainer container;
 	
-	PortalImplMock orig;
+	PortalImplBase orig;
 	List<Page> children;
 	Map<String, DynamicPage> dynamicChilds;
 	
 	protected String name;
 	
-	public DynamicPortal(TemplatePortalObjectContainer container, PortalImplMock orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
+	public DynamicPortal(TemplatePortalObjectContainer container, PortalImplBase orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
 		super();
 		
 		this.dynamicContainer = dynamicContainer;
@@ -85,7 +85,7 @@ public  class DynamicPortal extends PortalImplMock {
 				if(dynamicPage.getParentId().equals(getId()))	{
 					
 					try	{
-					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PageImplMock) container.getObject(dynamicPage.getTemplateId()), null, dynamicContainer, dynamicPage, dynamicPage.getTemplateId())	;
+					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PageImplBase) container.getObject(dynamicPage.getTemplateId()), null, dynamicContainer, dynamicPage, dynamicPage.getTemplateId())	;
 					
 
 					dynamicChilds.put(child.getName(), child);
@@ -180,7 +180,7 @@ public  class DynamicPortal extends PortalImplMock {
 
 	@Override
 	public PortalObject getParent() {
-		return new DynamicContext(container, (ContextImplMock) orig.getParent(), dynamicContainer);
+		return new DynamicContext(container, (ContextImplBase) orig.getParent(), dynamicContainer);
 	}
 	
 	@Override

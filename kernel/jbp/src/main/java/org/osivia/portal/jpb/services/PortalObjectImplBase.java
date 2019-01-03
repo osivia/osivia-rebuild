@@ -51,11 +51,11 @@ import java.util.TreeSet;
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 12653 $
  */
-public abstract class PortalObjectImplMock implements PortalObject
+public abstract class PortalObjectImplBase implements PortalObject
 {
 
    /** The logger. */
-   protected static final Logger log = Logger.getLogger(PortalObjectImplMock.class);
+   protected static final Logger log = Logger.getLogger(PortalObjectImplBase.class);
 
    /** . */
    protected static final int ALL_TYPES_MASK = CONTEXT_MASK | PORTAL_MASK | PAGE_MASK | WINDOW_MASK;
@@ -75,19 +75,19 @@ public abstract class PortalObjectImplMock implements PortalObject
    private Map displayNames;
 
    /** The node. */
-   private ObjectNodeMock objectNode;
+   private ObjectNodeImplBase objectNode;
 
    // Runtime fields
    private Map properties;
    private Map unmodifiableProperties;
    private SortedSet accessedChildren;
 
-   public PortalObjectImplMock()
+   public PortalObjectImplBase()
    {
       this(true);
    }
 
-   public PortalObjectImplMock(boolean initState)
+   public PortalObjectImplBase(boolean initState)
    {
       this.declaredPropertyMap = new HashMap();
       this.listener = null;
@@ -108,12 +108,12 @@ public abstract class PortalObjectImplMock implements PortalObject
       this.key = key;
    }
 
-   public ObjectNodeMock getObjectNode()
+   public ObjectNodeImplBase getObjectNode()
    {
       return objectNode;
    }
 
-   public void setObjectNode(ObjectNodeMock objectNode)
+   public void setObjectNode(ObjectNodeImplBase objectNode)
    {
       this.objectNode = objectNode;
    }
@@ -186,7 +186,7 @@ public abstract class PortalObjectImplMock implements PortalObject
       {
          throw new IllegalArgumentException("No null name accepted");
       }
-      return copy((PortalObjectImplMock)parent, name, deep);
+      return copy((PortalObjectImplBase)parent, name, deep);
    }
 
    public Collection getChildren()
@@ -259,8 +259,8 @@ public abstract class PortalObjectImplMock implements PortalObject
 
             for (Object object : children.values())
             {
-               ObjectNodeMock childNode = (ObjectNodeMock)object;
-               PortalObjectImplMock childObject = childNode.getObject();
+               ObjectNodeImplBase childNode = (ObjectNodeImplBase)object;
+               PortalObjectImplBase childObject = childNode.getObject();
                if (isMatchingMask(childObject, mask))
                {
                   count++;
@@ -333,8 +333,8 @@ public abstract class PortalObjectImplMock implements PortalObject
             {
                while (nextChild == null && iterator.hasNext())
                {
-                  ObjectNodeMock childNode = (ObjectNodeMock)iterator.next();
-                  PortalObjectImplMock childObject = childNode.getObject();
+                  ObjectNodeImplBase childNode = (ObjectNodeImplBase)iterator.next();
+                  PortalObjectImplBase childObject = childNode.getObject();
                   if (isMatchingMask(childObject, mask))
                   {
                      nextChild = childObject;
@@ -368,7 +368,7 @@ public abstract class PortalObjectImplMock implements PortalObject
       }
    }
 
-   private boolean isMatchingMask(PortalObjectImplMock object, int mask)
+   private boolean isMatchingMask(PortalObjectImplBase object, int mask)
    {
       return (mask == ALL_TYPES_MASK || (object.getMask() & mask) != 0);
    }
@@ -406,10 +406,10 @@ public abstract class PortalObjectImplMock implements PortalObject
    public PortalObject getChild(String name)
    {
       ParameterValidation.throwIllegalArgExceptionIfNull(name, "child name");
-      ObjectNodeMock childNode = (ObjectNodeMock)objectNode.getChildren().get(name);
+      ObjectNodeImplBase childNode = (ObjectNodeImplBase)objectNode.getChildren().get(name);
       if (childNode != null)
       {
-         PortalObjectImplMock childObject = childNode.getObject();
+         PortalObjectImplBase childObject = childNode.getObject();
 
          // Track it
          getAccessedChildren().add(childObject);
@@ -452,7 +452,7 @@ public abstract class PortalObjectImplMock implements PortalObject
       // Lazy compute properties
       if (properties == null)
       {
-         ObjectNodeMock parent = objectNode.getParent();
+         ObjectNodeImplBase parent = objectNode.getParent();
          if (parent == null)
          {
             this.properties = declaredPropertyMap;
@@ -549,7 +549,7 @@ public abstract class PortalObjectImplMock implements PortalObject
             {
                for (Iterator i = accessedChildren.iterator(); i.hasNext();)
                {
-                  PortalObjectImplMock child = (PortalObjectImplMock)i.next();
+                  PortalObjectImplBase child = (PortalObjectImplBase)i.next();
                   child.propagatePropertyUpdate(name, value, false);
                }
             }
@@ -584,9 +584,9 @@ public abstract class PortalObjectImplMock implements PortalObject
       {
          return true;
       }
-      if (obj instanceof PortalObjectImplMock)
+      if (obj instanceof PortalObjectImplBase)
       {
-         PortalObjectImplMock that = (PortalObjectImplMock)obj;
+         PortalObjectImplBase that = (PortalObjectImplBase)obj;
          return getId().equals(that.getId());
       }
       return false;
@@ -608,7 +608,7 @@ public abstract class PortalObjectImplMock implements PortalObject
       return getChild(portalName);
    }
 
-   protected abstract PortalObjectImplMock cloneObject();
+   protected abstract PortalObjectImplBase cloneObject();
 
    /** Overridable callback. */
    protected void destroy()

@@ -35,14 +35,14 @@ import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.server.ServerInvocation;
-import org.osivia.portal.jpb.services.ContextImplMock;
-import org.osivia.portal.jpb.services.PortalImplMock;
+import org.osivia.portal.jpb.services.ContextImplBase;
+import org.osivia.portal.jpb.services.PortalImplBase;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
 
 
 
 @SuppressWarnings("unchecked")
-public  class DynamicContext extends ContextImplMock {
+public  class DynamicContext extends ContextImplBase {
 	
 	protected static final Log log = LogFactory.getLog(DynamicContext.class);
 
@@ -51,12 +51,12 @@ public  class DynamicContext extends ContextImplMock {
 	
 	TemplatePortalObjectContainer container;
 	
-	ContextImplMock orig;
+	ContextImplBase orig;
 	List<DynamicPortal> children;
 	
 	protected String name;
 	
-	public DynamicContext(TemplatePortalObjectContainer container, ContextImplMock orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
+	public DynamicContext(TemplatePortalObjectContainer container, ContextImplBase orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
 		super();
 		
 		this.dynamicContainer = dynamicContainer;
@@ -115,7 +115,7 @@ public  class DynamicContext extends ContextImplMock {
 		
 			for( Object po: orig.getChildren())	{
 
-				children.add( new DynamicPortal(container, (PortalImplMock) po, dynamicContainer));
+				children.add( new DynamicPortal(container, (PortalImplBase) po, dynamicContainer));
 			}
 		}
 

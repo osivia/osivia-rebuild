@@ -22,10 +22,13 @@
  ******************************************************************************/
 package org.osivia.portal.jpb.services;
 
-import org.jboss.portal.core.model.portal.Context;
+import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
+import org.jboss.portal.core.model.portal.NoSuchPortalObjectException;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.Window;
 
 import java.util.HashMap;
 
@@ -33,60 +36,66 @@ import java.util.HashMap;
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 9134 $
  */
-public class ContextImplMock extends PortalObjectImplMock implements Context
-{
+public class PageImplBase extends PortalObjectImplBase implements Page {
 
-   public ContextImplMock()
-   {
-      this(true);
-   }
+	public PageImplBase() {
+		this(true);
+	}
 
-   public ContextImplMock(boolean hibernate)
-   {
-      super(hibernate);
-   }
+	public PageImplBase(boolean hibernate) {
+		super(hibernate);
+	}
 
-   public Portal getPortal(String name)
-   {
-      PortalObject child = getChild(name);
-      if (child instanceof Portal)
-      {
-         return (Portal)child;
-      }
-      return null;
-   }
+	public Portal getPortal() {
+		PortalObject object = this;
+		while (object != null && !(object instanceof Portal)) {
+			object = object.getParent();
+		}
+		return (Portal) object;
+	}
 
-   public Portal createPortal(String name) throws DuplicatePortalObjectException
-   {
-	   return null;
-   }
+	public Page getPage(String name) {
+		PortalObject child = getChild(name);
+		if (child instanceof Page) {
+			return (Page) child;
+		}
+		return null;
+	}
 
-   public Portal getDefaultPortal()
-   {
-      PortalObject child = getDefaultChild();
-      if (child instanceof Portal)
-      {
-         return (Portal)child;
-      }
-      if (child != null)
-      {
-         log.warn("Default child is not a portal " + child);
-      }
-      return null;
-   }
+	public Window getWindow(String name) {
+		PortalObject child = getChild(name);
+		if (child instanceof Window) {
+			return (Window) child;
+		}
+		return null;
+	}
 
+	public int getType() {
+		return PortalObject.TYPE_PAGE;
+	}
 
-   public int getType()
-   {
-      return PortalObject.TYPE_CONTEXT;
-   }
+	protected PortalObjectImplBase cloneObject() {
+		PageImplBase clone = new PageImplBase();
+		clone.setDeclaredPropertyMap(new HashMap(getDeclaredPropertyMap()));
+		clone.setListener(getListener());
+		clone.setDisplayName(getDisplayName());
+		return clone;
+	}
 
-   protected PortalObjectImplMock cloneObject()
-   {
-      ContextImplMock clone = new ContextImplMock();
-      clone.setDeclaredPropertyMap(new HashMap(getDeclaredPropertyMap()));
-      clone.setListener(getListener());
-      clone.setDisplayName(getDisplayName());
-      return clone;
-   }
+	@Override
+	public void destroyChild(String name) throws NoSuchPortalObjectException, IllegalArgumentException {
+	}
+
+	@Override
+	public Window createWindow(String name, ContentType contentType, String contentURI)
+			throws DuplicatePortalObjectException, IllegalArgumentException {
+
+		return null;
+	}
+
+	@Override
+	public Page createPage(String name) throws DuplicatePortalObjectException, IllegalArgumentException {
+
+		return null;
+	}
 }

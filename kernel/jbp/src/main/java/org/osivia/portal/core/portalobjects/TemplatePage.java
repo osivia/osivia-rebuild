@@ -33,9 +33,9 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.jpb.services.PageImplMock;
+import org.osivia.portal.jpb.services.PageImplBase;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
-import org.osivia.portal.jpb.services.WindowImplMock;
+import org.osivia.portal.jpb.services.WindowImplBase;
 
 
 /**
@@ -48,7 +48,7 @@ import org.osivia.portal.jpb.services.WindowImplMock;
 public class TemplatePage extends DynamicPage  {
 
     /** Template. */
-    private final PageImplMock template;
+    private final PageImplBase template;
     /** Parent portal object. */
     /** Template. */
     private final String theme;
@@ -76,7 +76,7 @@ public class TemplatePage extends DynamicPage  {
      * @param template template portal object
      * @param dynamicContainer dynamic portal object container
      */
-    protected TemplatePage(TemplatePortalObjectContainer container, PortalObjectId parentId, String name, PageImplMock template, String theme,  
+    protected TemplatePage(TemplatePortalObjectContainer container, PortalObjectId parentId, String name, PageImplBase template, String theme,  
             DynamicPortalObjectContainer dynamicContainer) {
         super();
 
@@ -85,7 +85,7 @@ public class TemplatePage extends DynamicPage  {
 
         this.containerContext = template.getObjectNode().getContext();
 
-        this.template = (PageImplMock) template;
+        this.template = (PageImplBase) template;
         this.theme = theme;
 
         this.parentId = parentId;
@@ -171,8 +171,8 @@ public class TemplatePage extends DynamicPage  {
                 Collection<?> childs = this.template.getChildren(PortalObject.WINDOW_MASK);
 
                 for (Object child : childs) {
-                    if (child instanceof WindowImplMock) {
-                        this.windows.add(new DynamicTemplateWindow(this, (WindowImplMock) child, ((WindowImplMock) child).getName(), this.containerContext,
+                    if (child instanceof WindowImplBase) {
+                        this.windows.add(new DynamicTemplateWindow(this, (WindowImplBase) child, ((WindowImplBase) child).getName(), this.containerContext,
                                 this.dynamicContainer));
                     }
 
@@ -197,8 +197,8 @@ public class TemplatePage extends DynamicPage  {
 
             for (Object po : this.template.getChildren()) {
 
-                if (po instanceof WindowImplMock) {
-                    this.children.add(new DynamicTemplateWindow(this, (WindowImplMock) po, ((WindowImplMock) po).getName(), this.containerContext,
+                if (po instanceof WindowImplBase) {
+                    this.children.add(new DynamicTemplateWindow(this, (WindowImplBase) po, ((WindowImplBase) po).getName(), this.containerContext,
                             this.dynamicContainer));
                 }
 
@@ -236,8 +236,8 @@ public class TemplatePage extends DynamicPage  {
         } else {
             PortalObject po = this.template.getChild(name);
 
-            if (po instanceof WindowImplMock) {
-                return new DynamicTemplateWindow(this, (WindowImplMock) po, ((WindowImplMock) po).getName(), this.containerContext, this.dynamicContainer);
+            if (po instanceof WindowImplBase) {
+                return new DynamicTemplateWindow(this, (WindowImplBase) po, ((WindowImplBase) po).getName(), this.containerContext, this.dynamicContainer);
             }
 
             return null;

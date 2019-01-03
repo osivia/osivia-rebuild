@@ -37,14 +37,14 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
-import org.osivia.portal.jpb.services.WindowImplMock;
+import org.osivia.portal.jpb.services.WindowImplBase;
 
 
 
 @SuppressWarnings("unchecked")
 public class DynamicTemplateWindow extends DynamicWindow {
 
-	protected WindowImplMock templateOrig;
+	protected WindowImplBase templateOrig;
 	private boolean templatedWindow = false;
 
 	private static Log logger = LogFactory.getLog(DynamicTemplateWindow.class);
@@ -72,7 +72,7 @@ public class DynamicTemplateWindow extends DynamicWindow {
 	
 	
 	/* Constructeur par ajout */
-	public DynamicTemplateWindow( TemplatePage page, WindowImplMock templateOrig, String name, Object context, DynamicPortalObjectContainer dynamicContainer)	{
+	public DynamicTemplateWindow( TemplatePage page, WindowImplBase templateOrig, String name, Object context, DynamicPortalObjectContainer dynamicContainer)	{
 		super();
 		
 		this.dynamicContainer = dynamicContainer;
