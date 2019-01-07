@@ -26,6 +26,7 @@ import org.jboss.portal.common.http.HttpRequest;
 
 public interface ITracker extends Serializable {
 	public void init();
+	public void remove();	
 	public Object getCurrentState();
 	public Stack getStack();
 	public void pushState( Object state);

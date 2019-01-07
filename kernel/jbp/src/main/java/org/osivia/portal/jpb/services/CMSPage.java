@@ -2,6 +2,7 @@ package org.osivia.portal.jpb.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -21,77 +22,72 @@ public class CMSPage extends PageImplBase {
 	protected Map<String, String> properties = null;
 
 	private PortalObjectPath pagePath;
-	private ObjectNodeImplBase parentNode;	
+
 	private String pageName;
 	ContainerContext containerContext;
 	TemplatePortalObjectContainer container;
+	private ObjectNodeImplBase parentNode;
 
-	public static ObjectNodeImplBase createCMSPage(TemplatePortalObjectContainer container,
-			ContainerContext containerContext, ObjectNodeImplBase parentNode, String pageName,
-			Map<String, String> pageProperties) {
-
-
-		CMSPage page = new CMSPage(container, containerContext, parentNode, pageName, pageProperties);
-
-
-
-		return page.getObjectNode();
+	public static void createCMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext,
+			PortalObjectId pageId) {
+		new CMSPage(container, containerContext, pageId);
 	}
 
-	private CMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext,
-			ObjectNodeImplBase parentNode, String pageName, Map<String, String> pageProperties) {
+	private CMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObjectId pageId) {
 		super();
-		
-		this.pagePath = new PortalObjectPath(
-				parentNode.getPath().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName,
-				PortalObjectPath.CANONICAL_FORMAT);
 
-		PortalObjectId pageId = new PortalObjectId("", pagePath);
+		PortalObjectId parentId = new PortalObjectId("", pageId.getPath().getParent());
+		PortalObjectImplBase parent = (PortalObjectImplBase) container.getObject(parentId);
+		
 
 		this.containerContext = containerContext;
 		this.container = container;
-		this.pageName = pageName;
-		this.parentNode = parentNode;
 		
+		this.parentNode = parent.getObjectNode();
+		this.pagePath = pageId.getPath();
+		this.pageName = pageId.getPath().getLastComponentName();
+
+
 		ObjectNodeImplBase pageNode = new ObjectNodeImplBase(pageId, pageName, containerContext);
-		this.setObjectNode(pageNode);		
-		
+		this.setObjectNode(pageNode);
+
 		pageNode.setObject(this);
 		container.nodes.put(this.getId(), this);
 
-		//  parent relations
+		// parent relations
 		pageNode.setParent(parentNode);
 		parentNode.getChildren().put(pageName, pageNode);
-		
 
 		// children relations
 		pageNode.setChildren(computeWindows());
-		
+
+		// TODO init form CMS
+		Map<String, String> pageProperties = new HashMap<String, String>();
+
 		for (String key : pageProperties.keySet()) {
 			setDeclaredProperty(key, pageProperties.get(key));
 		}
 	}
 
 	private Map<String, PortalObject> computeWindows() {
-		
+
 		Map windows = new ConcurrentHashMap<>();
 
-
 		/* Inherited Windows */
-		
+
 		PortalObject parent = parentNode.getObject();
-		
-		if( parent instanceof Page)  {
-		Collection<PortalObject> parentWindows = parent.getChildren(PortalObject.WINDOW_MASK);
-		for (PortalObject parentWindow : parentWindows) {
-			WindowImplBase parentWindowMock = (WindowImplBase) parentWindow;		
-			ObjectNodeImplBase dupWinNode = duplicateWindow(parentWindowMock, false);
-			if( dupWinNode != null)
-				windows.put(parentWindow.getName(), dupWinNode);			
-			
+
+		if (parent instanceof Page) {
+			Collection<PortalObject> parentWindows = parent.getChildren(PortalObject.WINDOW_MASK);
+			for (PortalObject parentWindow : parentWindows) {
+				WindowImplBase parentWindowMock = (WindowImplBase) parentWindow;
+				ObjectNodeImplBase dupWinNode = duplicateWindow(parentWindowMock, false);
+				if (dupWinNode != null)
+					windows.put(parentWindow.getName(), dupWinNode);
+
 			}
 		}
-		
+
 		/* Template Windows */
 
 		for (PortalObjectId templateID : getTemplatesID()) {
@@ -103,14 +99,14 @@ public class CMSPage extends PageImplBase {
 
 				if (tmplWindow instanceof WindowImplBase) {
 					ObjectNodeImplBase dupWinNode = duplicateWindow(tmplWindow, true);
-					if( dupWinNode != null)
+					if (dupWinNode != null)
 
 						windows.put(tmplWindow.getName(), dupWinNode);
 				}
 
 			}
 		}
-		
+
 		/* CMS Windows */
 
 		String windowName = "win-" + pageName;
@@ -119,7 +115,8 @@ public class CMSPage extends PageImplBase {
 				pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + windowName,
 				PortalObjectPath.CANONICAL_FORMAT);
 
-		ObjectNodeImplBase winNode = new ObjectNodeImplBase(new PortalObjectId("", winPath), windowName, containerContext);
+		ObjectNodeImplBase winNode = new ObjectNodeImplBase(new PortalObjectId("", winPath), windowName,
+				containerContext);
 		WindowImplBase win = new WindowImplBase();
 		win.setContext(containerContext);
 		win.setURI("SampleInstance");
@@ -129,8 +126,6 @@ public class CMSPage extends PageImplBase {
 		winNode.setObject(win);
 		container.nodes.put(win.getId(), win);
 		windows.put(windowName, winNode);
-
-	
 
 		return windows;
 
@@ -152,16 +147,12 @@ public class CMSPage extends PageImplBase {
 		for (String key : tmplWindowMock.getDeclaredPropertyMap().keySet()) {
 			dupWin.setDeclaredProperty(key, tmplWindowMock.getDeclaredPropertyMap().get(key));
 		}
-		
+
 		dupWin.setDeclaredProperty("osivia.window.injected", "1");
 		dupWinNode.setObject(dupWin);
 		container.nodes.put(dupWin.getId(), dupWin);
 		return dupWinNode;
 	}
-	
-	
-	
-	
 
 	@Override
 	public Map<String, String> getDeclaredProperties() {

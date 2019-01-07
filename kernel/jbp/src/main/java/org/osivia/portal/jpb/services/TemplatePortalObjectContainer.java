@@ -237,30 +237,10 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 			}
 			
 			if( curPortalObject != null) {
-				// Pages
-				int iPage = 1;
-				ObjectNodeImplBase curPortalNode = curPortalObject.getObjectNode();
-				
-				
-				PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-				PortalObjectId contextID = new PortalObjectId("", contextPath);
-				ContextImplBase context = (ContextImplBase) nodes.get(contextID);
-				
-				while(iPage < id.getPath().getLength()) {
-					String pageName = id.getPath().getName(iPage);
-					Map<String, String> cmsProperties = new HashMap<>();
-					
-					ObjectNodeImplBase pageNode = CMSPage.createCMSPage(this, containerContext,curPortalNode, pageName, cmsProperties );
-					
-					
-					iPage++;
-					curPortalNode = pageNode;
-				}
+				CMSPage.createCMSPage(this, containerContext, id );
 			}
 			
 			res = nodes.get(id);
-
-			
 		}
 		
 		return res;

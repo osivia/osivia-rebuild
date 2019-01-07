@@ -32,6 +32,8 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.jems.hibernate.ContextObject;
 import org.jboss.portal.security.RoleSecurityBinding;
 
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,8 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 12376 $
+ * cf. PersistentPortalObjectContainer ...
  */
 public class ObjectNodeImplBase implements ContextObject
 {
@@ -80,7 +81,7 @@ public class ObjectNodeImplBase implements ContextObject
       this.path = path;
       this.name = name;
       this.containerContext = (TemplatePortalObjectContainer.ContainerContext)containerContext;
-      this.children = new HashMap();
+      this.children = new ConcurrentHashMap();
       this.securityConstraints = new HashMap<String, ObjectNodeSecurityConstraint>();
    }
 

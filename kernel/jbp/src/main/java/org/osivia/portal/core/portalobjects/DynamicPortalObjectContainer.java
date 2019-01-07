@@ -56,6 +56,10 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 	public static void clearCache() {
 		getDatas().clear();
 	}
+	
+	public static void removeCache() {
+		 dynamicLocalCache.remove();
+	}
 
 	public static void addToCache(PortalObjectId id, PortalObject value) {
 		getDatas().put(id, value);

@@ -86,6 +86,11 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 			this.getTracker().popState();
 
 		}
+		
+	      PageProperties.remove();
+			this.getTracker().remove();      
+			DynamicPortalObjectContainer.removeCache();
+	      
 
 	}
 

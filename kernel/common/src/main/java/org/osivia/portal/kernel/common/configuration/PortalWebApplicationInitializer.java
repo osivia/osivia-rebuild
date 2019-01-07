@@ -73,7 +73,7 @@ public class PortalWebApplicationInitializer extends AbstractAnnotationConfigDis
         super.onStartup(servletContext);
 
  //       servletContext.addListener(new WebBootstrap());
-        servletContext.addListener(new PortalListener());
+//        servletContext.addListener(new PortalListener());
     }
 
 }

@@ -184,6 +184,11 @@ public class PageProperties {
 		localProperties.set(new PageProperties(new Hashtable<String, Map<String,String>>(), new Hashtable<String, String>()));
 
 	}
+    
+    public static void remove() {
+		localProperties.remove();
+
+	}
 
 
     /**

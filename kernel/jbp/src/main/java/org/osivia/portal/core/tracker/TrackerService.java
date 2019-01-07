@@ -144,7 +144,10 @@ public class TrackerService extends ServiceMBeanSupport implements ITracker, Ser
 
 	public void init() {
 		trackerBean.set(null);
-		
+	}
+	
+	public void remove() {
+		trackerBean.remove();
 	}
 	
 	
