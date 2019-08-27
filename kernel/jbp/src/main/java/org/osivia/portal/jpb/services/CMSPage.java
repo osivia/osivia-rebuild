@@ -12,6 +12,7 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer.ContainerContext;
@@ -44,8 +45,8 @@ public class CMSPage extends PageImplBase {
 		this.container = container;
 		
 		this.parentNode = parent.getObjectNode();
-		this.pagePath = pageId.getPath();
-		this.pageName = pageId.getPath().getLastComponentName();
+		this.pagePath = new PortalObjectPath(pageId.getPath().toString(), PortalObjectPath.CANONICAL_FORMAT);
+		this.pageName = pagePath.getLastComponentName();
 
 
 		ObjectNodeImplBase pageNode = new ObjectNodeImplBase(pageId, pageName, containerContext);
