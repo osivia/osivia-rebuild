@@ -62,6 +62,7 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 		ContextImplBase context = new ContextImplBase();
 		context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, PORTAL_A_NAME);
 		context.setObjectNode(contextNode);
+		contextNode.setObject(context);
 		nodes.put(context.getId(),context);
 
 		PortalObjectPath portalAPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
@@ -229,15 +230,24 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 				modes.add(Mode.ADMIN);
 				modes.add(Mode.VIEW);
 				portal.setModes(modes);
-			
-				
+		
 				portalNode.setObject(portal);
 				nodes.put(portal.getId(), portal);
 				curPortalObject = (PortalObjectImplBase) nodes.get(portal.getId());
-			}
-			
-			if( curPortalObject != null) {
-				CMSPage.createCMSPage(this, containerContext, id );
+				
+				PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
+				ObjectNodeImplBase contextNode = ((ContextImplBase) nodes.get(new PortalObjectId("", contextPath))).getObjectNode();
+				contextNode.getChildren().put(portalName, portalNode);
+				
+				portalNode.setParent(contextNode);
+				
+				// Pages
+				String path = "/" + portalName ;
+				path = path + "/col-1";
+				CMSPage.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath (path, PortalObjectPath.CANONICAL_FORMAT )));
+				path = path + "/col-2";
+				CMSPage.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath (path, PortalObjectPath.CANONICAL_FORMAT )));
+				
 			}
 			
 			res = nodes.get(id);

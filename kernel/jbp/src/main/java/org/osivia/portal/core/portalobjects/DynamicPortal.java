@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,11 +23,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
-import org.jboss.portal.core.impl.model.portal.ContextImpl;
-import org.jboss.portal.core.impl.model.portal.ObjectNode;
-import org.jboss.portal.core.impl.model.portal.PortalImpl;
-import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -35,180 +30,168 @@ import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.jpb.services.ContextImplBase;
 import org.osivia.portal.jpb.services.PageImplBase;
 import org.osivia.portal.jpb.services.PortalImplBase;
-import org.osivia.portal.jpb.services.PortalObjectImplBase;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
 
 
-
 @SuppressWarnings("unchecked")
-public  class DynamicPortal extends PortalImplBase {
-	
-	protected static final Log log = LogFactory.getLog(DynamicPortal.class);
+public class DynamicPortal extends PortalImplBase {
 
-	protected TemplatePortalObjectContainer.ContainerContext containerContext;
-	protected DynamicPortalObjectContainer dynamicContainer;
-	
-	TemplatePortalObjectContainer container;
-	
-	PortalImplBase orig;
-	List<Page> children;
-	Map<String, DynamicPage> dynamicChilds;
-	
-	protected String name;
-	
-	public DynamicPortal(TemplatePortalObjectContainer container, PortalImplBase orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
-		super();
-		
-		this.dynamicContainer = dynamicContainer;
-		this.container = container;
-		
-		containerContext = orig.getObjectNode().getContext();
-		setObjectNode(orig.getObjectNode());	
-		
-		this.orig = orig;
-		
-		
-		// Optimisation  : ajout cache
-		DynamicPortalObjectContainer.addToCache(orig.getId(), this);
-	}
-	
-	
-	
-	protected Map<String, DynamicPage> getDynamicChilds ()	{
-		
+    protected static final Log log = LogFactory.getLog(DynamicPortal.class);
 
-		if( dynamicChilds == null){
+    protected TemplatePortalObjectContainer.ContainerContext containerContext;
+    protected DynamicPortalObjectContainer dynamicContainer;
 
-			dynamicChilds = new HashMap<String, DynamicPage>();
-		
-			for( DynamicPageBean dynamicPage : dynamicContainer.getDynamicPages())	{
-				if(dynamicPage.getParentId().equals(getId()))	{
-					
-					try	{
-					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PageImplBase) container.getObject(dynamicPage.getTemplateId()), null, dynamicContainer, dynamicPage, dynamicPage.getTemplateId())	;
-					
+    TemplatePortalObjectContainer container;
 
-					dynamicChilds.put(child.getName(), child);
-					
-					} catch( Exception e){
-						throw new RuntimeException("Can't instantiate template " + dynamicPage.getTemplateId(), e);
-					}
-				}
-			}
-		}
-		
-		return dynamicChilds;
-	}
-	
-	@Override
-	public Collection getChildren() {
-		
-		if( children == null)	{
-		
-			children = new ArrayList<Page>();
-		
-		for( Object po: orig.getChildren())	{
+    PortalImplBase orig;
+    List<Page> children;
+    Map<String, DynamicPage> dynamicChilds;
 
-				children.add( (Page) po);
+    protected String name;
 
-			}
-		
-		children.addAll(getDynamicChilds ().values());
-		}
+    public DynamicPortal(TemplatePortalObjectContainer container, PortalImplBase orig, DynamicPortalObjectContainer dynamicContainer)
+            throws IllegalArgumentException {
+        super();
+
+        this.dynamicContainer = dynamicContainer;
+        this.container = container;
+
+        containerContext = orig.getObjectNode().getContext();
+        setObjectNode(orig.getObjectNode());
+
+        this.orig = orig;
 
 
-		return children;
-	}
-	
-	
-	@Override
-	public Collection getChildren(int wantedMask) {
-		if( wantedMask != PortalObject.PAGE_MASK)
-			return super.getChildren(wantedMask);
-		return getChildren();
-		
-	}
+        // Optimisation : ajout cache
+        DynamicPortalObjectContainer.addToCache(orig.getId(), this);
+    }
 
-	
-	
-	@Override
-	public PortalObject getChild(String name) {
-		
-		Page child = getDynamicChilds().get(name);
-		
-		if( child != null)
-			return child;
-		else 
-			return orig.getChild(name);
-	}
 
-	
+    protected Map<String, DynamicPage> getDynamicChilds() {
 
-	
 
-	@Override
-	public boolean equals(Object arg0) {
-		return orig.equals(arg0);
-	}
+        if (dynamicChilds == null) {
 
-	
+            dynamicChilds = new HashMap<String, DynamicPage>();
 
-	@Override
-	public org.jboss.portal.common.i18n.LocalizedString getDisplayName() {
-		return orig.getDisplayName();
-	}
+            for (DynamicPageBean dynamicPage : dynamicContainer.getDynamicPages()) {
+                if (dynamicPage.getParentId().equals(getId())) {
 
-	@Override
-	public Map getDisplayNames() {
-		return orig.getDisplayNames();
-	}
+                    try {
+                        DynamicPage child = DynamicTemplatePage.createPage(container, dynamicPage.getParentId(), dynamicPage.getName(),
+                                dynamicPage.getDisplayNames(), (PageImplBase) container.getObject(dynamicPage.getTemplateId()), null, dynamicContainer,
+                                dynamicPage, dynamicPage.getTemplateId());
 
-	@Override
-	public PortalObjectId getId() {
-		return orig.getId();
-	}
 
-	@Override
-	public String getName() {
-		return orig.getName();
-	}
-	
-	@Override
-	public Map getProperties() {
-		return orig.getProperties();
-	}
+                        dynamicChilds.put(child.getName(), child);
 
-	@Override
-	public PortalObject getParent() {
-		return new DynamicContext(container, (ContextImplBase) orig.getParent(), dynamicContainer);
-	}
-	
-	@Override
-	public void setDeclaredProperty(String name, String value) {
-			orig.setDeclaredProperty(name, value);
-	}
+                    } catch (Exception e) {
+                        throw new RuntimeException("Can't instantiate template " + dynamicPage.getTemplateId(), e);
+                    }
+                }
+            }
+        }
 
-	@Override
-	public String getDeclaredProperty(String name) {
-		return orig.getDeclaredProperty(name);
+        return dynamicChilds;
+    }
 
-	}
-	
-	@Override
-	public Map<String, String> getDeclaredProperties() {
-		return orig.getDeclaredProperties();
-	}
+    @Override
+    public Collection getChildren() {
 
-	
-	 public Set getSupportedWindowStates()
-	   {
-	      return orig.getSupportedWindowStates();
-	   }
-	  public Set getSupportedModes()
-	   {
-	      return orig.getSupportedModes();
-	   }
+        if (children == null) {
 
-	
+            children = new ArrayList<Page>();
+
+
+            children.addAll(getDynamicChilds().values());
+        }
+
+
+        return children;
+    }
+
+
+    @Override
+    public Collection getChildren(int wantedMask) {
+        if (wantedMask != PortalObject.PAGE_MASK)
+            return super.getChildren(wantedMask);
+        return getChildren();
+
+    }
+
+
+    @Override
+    public PortalObject getChild(String name) {
+
+        Page child = getDynamicChilds().get(name);
+
+        if (child != null)
+            return child;
+        else
+            return orig.getChild(name);
+    }
+
+
+    @Override
+    public boolean equals(Object arg0) {
+        return orig.equals(arg0);
+    }
+
+
+    @Override
+    public org.jboss.portal.common.i18n.LocalizedString getDisplayName() {
+        return orig.getDisplayName();
+    }
+
+    @Override
+    public Map getDisplayNames() {
+        return orig.getDisplayNames();
+    }
+
+    @Override
+    public PortalObjectId getId() {
+        return orig.getId();
+    }
+
+    @Override
+    public String getName() {
+        return orig.getName();
+    }
+
+    @Override
+    public Map getProperties() {
+        return orig.getProperties();
+    }
+
+    @Override
+    public PortalObject getParent() {
+        return new DynamicContext(container, (ContextImplBase) orig.getParent(), dynamicContainer);
+    }
+
+    @Override
+    public void setDeclaredProperty(String name, String value) {
+        orig.setDeclaredProperty(name, value);
+    }
+
+    @Override
+    public String getDeclaredProperty(String name) {
+        return orig.getDeclaredProperty(name);
+
+    }
+
+    @Override
+    public Map<String, String> getDeclaredProperties() {
+        return orig.getDeclaredProperties();
+    }
+
+
+    public Set getSupportedWindowStates() {
+        return orig.getSupportedWindowStates();
+    }
+
+    public Set getSupportedModes() {
+        return orig.getSupportedModes();
+    }
+
 
 }

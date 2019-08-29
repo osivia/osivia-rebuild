@@ -29,6 +29,18 @@ public class CMSPage extends PageImplBase {
 	TemplatePortalObjectContainer container;
 	private ObjectNodeImplBase parentNode;
 
+	
+	private String cmsID;
+	
+	
+	public String getCmsID() {
+		return cmsID;
+	}
+
+	public void setCmsID(String cmsID) {
+		this.cmsID = cmsID;
+	}
+
 	public static void createCMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext,
 			PortalObjectId pageId) {
 		new CMSPage(container, containerContext, pageId);
@@ -63,6 +75,8 @@ public class CMSPage extends PageImplBase {
 		pageNode.setChildren(computeWindows());
 
 		// TODO init form CMS
+		cmsID = "id_"+pageName;
+		
 		Map<String, String> pageProperties = new HashMap<String, String>();
 
 		for (String key : pageProperties.keySet()) {

@@ -28,6 +28,7 @@ import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
+import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
 import org.jboss.portal.core.model.portal.command.action.ImportPageToDashboardCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
@@ -74,6 +75,17 @@ public class PortalObjectCommandFactory extends AbstractCommandFactory
          return null;
       }
 
+      
+      // OSIVIA : PREFETCH PORTAL
+
+      String tokens[] = requestPath.split("/");
+      if( tokens.length >= 2)	{
+    	  PortalObjectId id =  PortalObjectId.parse("/"+tokens[1], PortalObjectPath.CANONICAL_FORMAT );
+    	  controllerContext.getController().getPortalObjectContainer().getObject(id);            
+      }
+      
+      
+      
       //
       Object target = mapper.getTarget(controllerContext, requestPath);
       ParameterMap queryParams = invocation.getServerContext().getQueryParameterMap();

@@ -1,6 +1,7 @@
 package org.osivia.portal.core.portalobjects;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -19,6 +21,7 @@ import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.tracker.RequestContextUtil;
+import org.osivia.portal.jpb.services.CMSPage;
 import org.osivia.portal.jpb.services.ContextImplBase;
 import org.osivia.portal.jpb.services.PageImplBase;
 import org.osivia.portal.jpb.services.PortalImplBase;
@@ -26,368 +29,382 @@ import org.osivia.portal.jpb.services.TemplatePortalObjectContainer;
 
 public class DynamicPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
-	protected TemplatePortalObjectContainer portalObjectContainer;
+    protected TemplatePortalObjectContainer portalObjectContainer;
 
-	public TemplatePortalObjectContainer getPortalObjectContainer() {
-		return portalObjectContainer;
-	}
+    public TemplatePortalObjectContainer getPortalObjectContainer() {
+        return portalObjectContainer;
+    }
 
-	public void setPortalObjectContainer(TemplatePortalObjectContainer portalObjectContainer) {
-		this.portalObjectContainer = portalObjectContainer;
-	}
+    public void setPortalObjectContainer(TemplatePortalObjectContainer portalObjectContainer) {
+        this.portalObjectContainer = portalObjectContainer;
+    }
 
-	private ITracker tracker;
+    private ITracker tracker;
 
-	public ITracker getTracker() {
-		return this.tracker;
-	}
+    public ITracker getTracker() {
+        return this.tracker;
+    }
 
-	public void setTracker(ITracker tracker) {
-		this.tracker = tracker;
-	}
+    public void setTracker(ITracker tracker) {
+        this.tracker = tracker;
+    }
 
-	private static ThreadLocal<DynamicCache> dynamicLocalCache = new ThreadLocal<DynamicCache>();
+    private static ThreadLocal<DynamicCache> dynamicLocalCache = new ThreadLocal<DynamicCache>();
 
-	public static DynamicCache getDynamicCache() {
+    public static DynamicCache getDynamicCache() {
 
-		return dynamicLocalCache.get();
-	}
+        return dynamicLocalCache.get();
+    }
 
-	public static void clearCache() {
-		getDatas().clear();
-	}
-	
-	public static void removeCache() {
-		 dynamicLocalCache.remove();
-	}
+    public static void clearCache() {
+        getDatas().clear();
+    }
 
-	public static void addToCache(PortalObjectId id, PortalObject value) {
-		getDatas().put(id, value);
-	}
+    public static void removeCache() {
+        dynamicLocalCache.remove();
+    }
 
-	private static Map<PortalObjectId, PortalObject> getDatas() {
+    public static void addToCache(PortalObjectId id, PortalObject value) {
+        getDatas().put(id, value);
+    }
 
-		DynamicCache dynamicCache = dynamicLocalCache.get();
+    private static Map<PortalObjectId, PortalObject> getDatas() {
 
-		if (dynamicCache == null) {
-			dynamicCache = new DynamicCache();
-			dynamicLocalCache.set(dynamicCache);
-		}
+        DynamicCache dynamicCache = dynamicLocalCache.get();
 
-		return dynamicCache.getDatas();
+        if (dynamicCache == null) {
+            dynamicCache = new DynamicCache();
+            dynamicLocalCache.set(dynamicCache);
+        }
 
-	}
+        return dynamicCache.getDatas();
 
-	public void addDynaPortal() {
+    }
 
-		if (this.getTracker().getHttpSession().getAttribute("osivia.demo_portal") == null) {
+    public void addDynaPortal() {
 
-			// Add dynamic page to portalA
-			// http://localhost:8080/portal/portal/portalA/dyna ->
-			// http://localhost:8080/portal/portal/portalA/pageA
-			// http://localhost:8080/portal/portal/portalA/cms_page1
-			// http://localhost:8080/portal/portal/portalA/cms_page2
-			
-			PortalObjectId portalID = new PortalObjectId("",
-					new PortalObjectPath("/portalA", PortalObjectPath.CANONICAL_FORMAT));
-			PortalObjectId templateID = new PortalObjectId("",
-					new PortalObjectPath("/portalA/pageA", PortalObjectPath.CANONICAL_FORMAT));
+        if (this.getTracker().getHttpSession().getAttribute("osivia.demo_portal") == null) {
 
-			PortalObject portal = portalObjectContainer.getObject(portalID);
+            // Add dynamic page to portalA
 
-			DynamicPageBean pageBean = new DynamicPageBean(portal, "dyna", null, null, templateID,
-					new HashMap<String, String>());
+            // http://localhost:8080/portal/portal/portalA/pageA
+            // http://localhost:8080/portal/portal/portalA/pageA-ajax
+            // http://localhost:8080/portal/portal/portalA/dyna            
+            // http://localhost:8080/portal/portal/site1/id-col1
+            // http://localhost:8080/portal/portal/site1/id-col2
 
-			addDynamicPage(pageBean);
+            PortalObjectId portalID = new PortalObjectId("", new PortalObjectPath("/portalA", PortalObjectPath.CANONICAL_FORMAT));
+            PortalObjectId templateID = new PortalObjectId("", new PortalObjectPath("/portalA/pageA", PortalObjectPath.CANONICAL_FORMAT));
 
-			this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
+            PortalObject portal = portalObjectContainer.getObject(portalID);
 
-			PortalObjectId dynaPageID = new PortalObjectId("",
-					new PortalObjectPath("/portalA/dyna", PortalObjectPath.CANONICAL_FORMAT));
+            DynamicPageBean pageBean = new DynamicPageBean(portal, "dyna", null, null, templateID, new HashMap<String, String>());
 
+            addDynamicPage(pageBean);
 
+            this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
 
-			Map<String, String> properties = new HashMap<String, String>();
-			properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
-			properties.put(ThemeConstants.PORTAL_PROP_REGION, "col-2");
+            PortalObjectId dynaPageID = new PortalObjectId("", new PortalObjectPath("/portalA/dyna", PortalObjectPath.CANONICAL_FORMAT));
 
-			DynamicWindowBean windowBean = new DynamicWindowBean(dynaPageID, "dyna", "SampleInstance", properties,
-					null);
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
+            properties.put(ThemeConstants.PORTAL_PROP_REGION, "col-2");
 
-			addDynamicWindow(windowBean);
-			
-			
-			/* cms page */
+            DynamicWindowBean windowBean = new DynamicWindowBean(dynaPageID, "dyna", "SampleInstance", properties, null);
 
-			addCMSWindow(portal, "cms_page2", "/osivia-site/col-1/col-2");
-			addCMSWindow(portal, "cms_page1", "/osivia-site/col-1");
+            addDynamicWindow(windowBean);
 
-			this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
-		}
-	}
-	
-	private void addCMSWindow( PortalObject portal, String name, String cmsTemplatePath)	{
-		Map cmsProperties = new ConcurrentHashMap<String, String>();
-		
-		PortalObjectId cmsTemplateID = new PortalObjectId("",
-				new PortalObjectPath(cmsTemplatePath, PortalObjectPath.CANONICAL_FORMAT));
-		
-		DynamicPageBean cmsPageBean1 = new DynamicPageBean(portal, name, null, null, cmsTemplateID, cmsProperties);
+            this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
+        }
+    }
 
-		addDynamicPage(cmsPageBean1);	
-	}
+    private void addCMSDynaPage(PortalObject portal, String name, String cmsTemplatePath) {
+        Map cmsProperties = new ConcurrentHashMap<String, String>();
 
-	private Object getNavigationalItem(String attribute) {
-		return this.getTracker().getHttpSession().getAttribute(attribute);
-	}
+        PortalObjectId cmsTemplateID = new PortalObjectId("", new PortalObjectPath(cmsTemplatePath, PortalObjectPath.CANONICAL_FORMAT));
 
-	private void setNavigationalItem(String attribute, Object value) {
-		this.getTracker().getHttpSession().setAttribute(attribute, value);
-	}
+        DynamicPageBean cmsPageBean1 = new DynamicPageBean(portal, name, null, null, cmsTemplateID, cmsProperties);
 
-	public void addDynamicWindow(DynamicWindowBean newWindow) {
+        addDynamicPage(cmsPageBean1);
+    }
 
-		List<DynamicWindowBean> windows = this.getDynamicWindows();
-		List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
+    private Object getNavigationalItem(String attribute) {
+        return this.getTracker().getHttpSession().getAttribute(attribute);
+    }
 
-		for (DynamicWindowBean window : windows) {
-			if (!window.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT)
-					.equals(newWindow.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT))) {
-				newWindows.add(window);
-			}
-		}
+    private void setNavigationalItem(String attribute, Object value) {
+        this.getTracker().getHttpSession().setAttribute(attribute, value);
+    }
 
-		newWindows.add(newWindow);
+    public void addDynamicWindow(DynamicWindowBean newWindow) {
 
-		setNavigationalItem("osivia.dynamic_windows", newWindows);
+        List<DynamicWindowBean> windows = this.getDynamicWindows();
+        List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
 
-		// On vide le cache
-		getDatas().clear();
-	}
+        for (DynamicWindowBean window : windows) {
+            if (!window.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT).equals(newWindow.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT))) {
+                newWindows.add(window);
+            }
+        }
 
-	public void addDynamicPage(DynamicPageBean newPage) {
+        newWindows.add(newWindow);
 
-		List<DynamicPageBean> pages = this.getDynamicPages();
-		List<DynamicPageBean> newPages = new ArrayList<DynamicPageBean>();
+        setNavigationalItem("osivia.dynamic_windows", newWindows);
 
-		int maxOrder = DynamicPageBean.DYNAMIC_PAGES_FIRST_ORDER - 1;
+        // On vide le cache
+        getDatas().clear();
+    }
 
-		// Reconstruction du tableau
+    public void addDynamicPage(DynamicPageBean newPage) {
 
-		for (DynamicPageBean page : pages) {
-			if (!page.getPageBusinessId().toString(PortalObjectPath.SAFEST_FORMAT)
-					.equals(newPage.getPageBusinessId().toString(PortalObjectPath.SAFEST_FORMAT))) {
-				newPages.add(page);
-				if (page.getOrder() > maxOrder) {
-					maxOrder = page.getOrder();
-				}
-			}
-		}
+        List<DynamicPageBean> pages = this.getDynamicPages();
+        List<DynamicPageBean> newPages = new ArrayList<DynamicPageBean>();
 
-		// Insertion nouvelle page
+        int maxOrder = DynamicPageBean.DYNAMIC_PAGES_FIRST_ORDER - 1;
 
-		if (newPage.getOrder() == -1) {
-			newPage.setOrder(maxOrder + 1);
-		}
-		newPages.add(newPage);
+        // Reconstruction du tableau
 
-		setNavigationalItem("osivia.dynamic_pages", newPages);
-	}
+        for (DynamicPageBean page : pages) {
+            if (!page.getPageBusinessId().toString(PortalObjectPath.SAFEST_FORMAT)
+                    .equals(newPage.getPageBusinessId().toString(PortalObjectPath.SAFEST_FORMAT))) {
+                newPages.add(page);
+                if (page.getOrder() > maxOrder) {
+                    maxOrder = page.getOrder();
+                }
+            }
+        }
 
+        // Insertion nouvelle page
 
-	public List<DynamicWindowBean> getPageWindows(PortalObjectId pageId) {
-		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
+        if (newPage.getOrder() == -1) {
+            newPage.setOrder(maxOrder + 1);
+        }
+        newPages.add(newPage);
 
-		for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
-			if (windowBean.getPageId().equals(pageId)) {
-				windows.add(windowBean);
-			}
-		}
-  
-		return windows;
-	}
+        setNavigationalItem("osivia.dynamic_pages", newPages);
+    }
 
-	public void removeDynamicWindow(String dynamicWindowId) {
+    public List<DynamicWindowBean> getPageWindows(PortalObjectId pageId) {
+        List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
 
-		List<DynamicWindowBean> windows = this.getDynamicWindows();
-		List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
+        for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
+            if (windowBean.getPageId().equals(pageId)) {
+                windows.add(windowBean);
+            }
+        }
 
-		for (DynamicWindowBean window : windows) {
-			if (!window.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT).equals(dynamicWindowId)) {
-				newWindows.add(window);
-			}
-		}
-		setNavigationalItem("osivia.dynamic_windows", newWindows);
+        return windows;
+    }
 
-		// On vide le cache
-		getDatas().clear();
+    public void removeDynamicWindow(String dynamicWindowId) {
 
-	}
+        List<DynamicWindowBean> windows = this.getDynamicWindows();
+        List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
 
-	public void removeDynamicPage(String dynamicWindowId) {
+        for (DynamicWindowBean window : windows) {
+            if (!window.getWindowId().toString(PortalObjectPath.SAFEST_FORMAT).equals(dynamicWindowId)) {
+                newWindows.add(window);
+            }
+        }
+        setNavigationalItem("osivia.dynamic_windows", newWindows);
 
-		List<DynamicPageBean> pages = this.getDynamicPages();
-		List<DynamicPageBean> newPages = new ArrayList<DynamicPageBean>();
+        // On vide le cache
+        getDatas().clear();
 
-		for (DynamicPageBean page : pages) {
-			if (!page.getPageId().toString(PortalObjectPath.SAFEST_FORMAT).equals(dynamicWindowId)) {
-				newPages.add(page);
-			}
-		}
-		setNavigationalItem("osivia.dynamic_pages", newPages);
+    }
 
-		// Remove child windows
+    public void removeDynamicPage(String dynamicWindowId) {
 
-		List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
+        List<DynamicPageBean> pages = this.getDynamicPages();
+        List<DynamicPageBean> newPages = new ArrayList<DynamicPageBean>();
 
-		for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
-			if (!windowBean.getPageId().equals(dynamicWindowId)) {
-				newWindows.add(windowBean);
-			}
-		}
-		setNavigationalItem("osivia.dynamic_windows", newWindows);
+        for (DynamicPageBean page : pages) {
+            if (!page.getPageId().toString(PortalObjectPath.SAFEST_FORMAT).equals(dynamicWindowId)) {
+                newPages.add(page);
+            }
+        }
+        setNavigationalItem("osivia.dynamic_pages", newPages);
 
-		// On vide le cache
-		getDatas().clear();
+        // Remove child windows
 
-	}
+        List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
 
-	public List<DynamicWindowBean> getDynamicWindows() {
+        for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
+            if (!windowBean.getPageId().equals(dynamicWindowId)) {
+                newWindows.add(windowBean);
+            }
+        }
+        setNavigationalItem("osivia.dynamic_windows", newWindows);
 
-		List<DynamicWindowBean> windows = null;
+        // On vide le cache
+        getDatas().clear();
 
-		if (this.getTracker().getHttpRequest() != null) {
-			windows = (List<DynamicWindowBean>) getNavigationalItem("osivia.dynamic_windows");
-		}
+    }
 
-		if (windows == null) {
-			windows = new ArrayList<DynamicWindowBean>();
-		}
+    public List<DynamicWindowBean> getDynamicWindows() {
 
-		return windows;
-	}
+        List<DynamicWindowBean> windows = null;
 
-	public ServerInvocation getInvocation() {
+        if (this.getTracker().getHttpRequest() != null) {
+            windows = (List<DynamicWindowBean>) getNavigationalItem("osivia.dynamic_windows");
+        }
 
-		ServerInvocation invocation = RequestContextUtil.getServerInvocation();
+        if (windows == null) {
+            windows = new ArrayList<DynamicWindowBean>();
+        }
 
-		return invocation;
-	}
+        return windows;
+    }
 
-	public List<DynamicPageBean> getDynamicPages() {
+    public ServerInvocation getInvocation() {
 
-		List<DynamicPageBean> pages = null;
+        ServerInvocation invocation = RequestContextUtil.getServerInvocation();
 
-		if (this.getTracker().getHttpSession() != null) {
-			pages = (List<DynamicPageBean>) getNavigationalItem("osivia.dynamic_pages");
-		}
+        return invocation;
+    }
 
-		if (pages == null) {
-			pages = new ArrayList<DynamicPageBean>();
-		}
+    public List<DynamicPageBean> getDynamicPages() {
 
-		return pages;
-	}
+        List<DynamicPageBean> pages = null;
 
-	@Override
-	public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
+        if (this.getTracker().getHttpSession() != null) {
+            pages = (List<DynamicPageBean>) getNavigationalItem("osivia.dynamic_pages");
+        }
 
-		// get Cache Data
-		PortalObject cache = getDatas().get(id);
+        if (pages == null) {
+            pages = new ArrayList<DynamicPageBean>();
+        }
 
-		if (cache != null) {
-			return cache;
-		}
+        return pages;
+    }
 
-		// just for test
-		// TODO : remove
-		addDynaPortal();
+    @Override
+    public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
 
-		Object cmd = this.getTracker().getCurrentState();
+        // get Cache Data
+        PortalObject cache = getDatas().get(id);
 
-		for (DynamicPageBean dynamicPageBean : this.getDynamicPages()) {
+        if (cache != null) {
+            return cache;
+        }
 
-			if (dynamicPageBean.getPageId().equals(id)) {
-				PortalObjectId templateId = dynamicPageBean.getTemplateId();
-				PageImplBase template = (PageImplBase) portalObjectContainer.getObject(templateId);
-				DynamicPage dynamicPage = DynamicTemplatePage.createPage(portalObjectContainer,
-						dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(),
-						template, null, this, dynamicPageBean, templateId);
+        // just for test
+        // TODO : remove
+        addDynaPortal();
 
-				return dynamicPage;
-			}
+        Object cmd = this.getTracker().getCurrentState();
 
-			// Accès à une window d'une page template
-			// Un template ne peut pas contenir de sous-page,
-			// il s'agit donc forcément d'une window
-			if (dynamicPageBean.getPageId().getPath().equals(id.getPath().getParent())) {
+        for (DynamicPageBean dynamicPageBean : this.getDynamicPages()) {
 
-				PortalObjectId templateId = dynamicPageBean.getTemplateId();
-				PageImplBase template = (PageImplBase) portalObjectContainer.getObject(templateId);
-				DynamicTemplatePage dynamicPage = DynamicTemplatePage.createPage(portalObjectContainer,
-						dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(),
-						template, null, this, dynamicPageBean, templateId);
-				String windowName = id.getPath().getLastComponentName();
+            if (dynamicPageBean.getPageId().equals(id)) {
+                PortalObjectId templateId = dynamicPageBean.getTemplateId();
+                PageImplBase template = (PageImplBase) portalObjectContainer.getObject(templateId);
+                DynamicPage dynamicPage = DynamicTemplatePage.createPage(portalObjectContainer, dynamicPageBean.getParentId(), dynamicPageBean.getName(),
+                        dynamicPageBean.getDisplayNames(), template, null, this, dynamicPageBean, templateId);
 
-				return dynamicPage.getChild(windowName);
+                return dynamicPage;
+            }
 
-			}
-		}
+            // Accès à une window d'une page template
+            // Un template ne peut pas contenir de sous-page,
+            // il s'agit donc forcément d'une window
+            if (dynamicPageBean.getPageId().getPath().equals(id.getPath().getParent())) {
 
-		PortalObject object = portalObjectContainer.getObject(id);
+                PortalObjectId templateId = dynamicPageBean.getTemplateId();
+                PageImplBase template = (PageImplBase) portalObjectContainer.getObject(templateId);
+                DynamicTemplatePage dynamicPage = DynamicTemplatePage.createPage(portalObjectContainer, dynamicPageBean.getParentId(),
+                        dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), template, null, this, dynamicPageBean, templateId);
+                String windowName = id.getPath().getLastComponentName();
 
-		// statics page compatibility
-		if (object instanceof PageImplBase) {
-			PageImplBase originalPage = ((PageImplBase) object);
+                return dynamicPage.getChild(windowName);
 
-			PortalObjectPath parentPath = originalPage.getId().getPath().getParent();
-			PortalObjectId parentId = new PortalObjectId("", parentPath);
+            }
+        }
 
-			Portal portal = (Portal) this.getObject(parentId);
-			DynamicPageBean pageBean = new DynamicPageBean(portal, originalPage.getName(),
-					"bus" + System.currentTimeMillis(), null, originalPage.getId(), new HashMap<String, String>());
+        PortalObject object = portalObjectContainer.getObject(id);
 
-			addDynamicPage(pageBean);
-			return getObject(id);
-		}
+        // statics page compatibility
+        if (object instanceof PageImplBase) {
+            PageImplBase originalPage = ((PageImplBase) object);
 
-		if (object instanceof PortalImplBase) {
-			return new DynamicPortal(portalObjectContainer, (PortalImplBase) object, this);
-		}
+            PortalObjectPath parentPath = originalPage.getId().getPath().getParent();
+            PortalObjectId parentId = new PortalObjectId("", parentPath);
 
-		if (object instanceof ContextImplBase) {
-			return new DynamicContext(portalObjectContainer, (ContextImplBase) object, this);
+            Portal portal = (Portal) this.getObject(parentId);
+            DynamicPageBean pageBean = new DynamicPageBean(portal, originalPage.getName(), "bus" + System.currentTimeMillis(), null, originalPage.getId(),
+                    new HashMap<String, String>());
 
-		}
+            addDynamicPage(pageBean);
+            return getObject(id);
+        }
 
-		return object;
-	}
+        if (object instanceof PortalImplBase) {
 
-	@Override
-	public <T extends PortalObject> T getObject(PortalObjectId id, Class<T> expectedType)
-			throws IllegalArgumentException {
-		return portalObjectContainer.getObject(id, expectedType);
-	}
+            /* create CMS PAGES */
 
-	@Override
-	public Context getContext() {
-		return getContext("");
-	}
+            // each page is stored by its id end references the real cms path
 
-	@Override
-	public Context getContext(String namespace) {
-		PortalObjectId id = new PortalObjectId(namespace, PortalObjectPath.ROOT_PATH);
-		return (Context) getObject(id);
-	}
+            // portal/XXXXXX/id-col2 ---> / XXXXXXXX/col1/col2
 
-	@Override
-	public Context createContext(String namespace) throws DuplicatePortalObjectException {
-		return null;
-	}
 
-	@Override
-	public AuthorizationDomain getAuthorizationDomain() {
-		return portalObjectContainer.getAuthorizationDomain();
-	}
+            PortalImplBase portal = (PortalImplBase) object;
+
+
+            Collection children = portal.getChildren();
+            for (Object o : children) {
+                Page page = (Page) o;
+                addCMSPage(portal, page);
+            }
+
+            return new DynamicPortal(portalObjectContainer, (PortalImplBase) object, this);
+        }
+
+        if (object instanceof ContextImplBase) {
+            return new DynamicContext(portalObjectContainer, (ContextImplBase) object, this);
+
+        }
+
+        return object;
+    }
+
+    private void addCMSPage(Portal portal, Page page) {
+        if (page instanceof CMSPage) {
+            addCMSDynaPage(portal, ((CMSPage) page).getCmsID(), page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+            // addCMSDynaPage(portal, "cms_page2", "/osivia-site/col-1/col-2");
+            Collection children = page.getChildren();
+            for (Object o : children) {
+                if (o instanceof Page) {
+                    Page subPage = (Page) o;
+                    addCMSPage(portal, subPage);
+                }
+            }
+        }
+    }
+
+    @Override
+    public <T extends PortalObject> T getObject(PortalObjectId id, Class<T> expectedType) throws IllegalArgumentException {
+        return portalObjectContainer.getObject(id, expectedType);
+    }
+
+    @Override
+    public Context getContext() {
+        return getContext("");
+    }
+
+    @Override
+    public Context getContext(String namespace) {
+        PortalObjectId id = new PortalObjectId(namespace, PortalObjectPath.ROOT_PATH);
+        return (Context) getObject(id);
+    }
+
+    @Override
+    public Context createContext(String namespace) throws DuplicatePortalObjectException {
+        return null;
+    }
+
+    @Override
+    public AuthorizationDomain getAuthorizationDomain() {
+        return portalObjectContainer.getAuthorizationDomain();
+    }
 
 }
