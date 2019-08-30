@@ -323,21 +323,6 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
         PortalObject object = portalObjectContainer.getObject(id);
 
-        // statics page compatibility
-        if (object instanceof PageImplBase) {
-            PageImplBase originalPage = ((PageImplBase) object);
-
-            PortalObjectPath parentPath = originalPage.getId().getPath().getParent();
-            PortalObjectId parentId = new PortalObjectId("", parentPath);
-
-            Portal portal = (Portal) this.getObject(parentId);
-            DynamicPageBean pageBean = new DynamicPageBean(portal, originalPage.getName(), "bus" + System.currentTimeMillis(), null, originalPage.getId(),
-                    new HashMap<String, String>());
-
-            addDynamicPage(pageBean);
-            return getObject(id);
-        }
-
         if (object instanceof PortalImplBase) {
 
             /* create CMS PAGES */
@@ -369,8 +354,15 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
     private void addCMSPage(Portal portal, Page page) {
         if (page instanceof CMSPage) {
-            addCMSDynaPage(portal, ((CMSPage) page).getCmsID(), page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
-            // addCMSDynaPage(portal, "cms_page2", "/osivia-site/col-1/col-2");
+            String pageDynamicName;
+            
+            if( "name".equals(portal.getDeclaredProperty("osivia.publication.nameType")))
+                pageDynamicName =  ((CMSPage) page).getName();
+            else
+                pageDynamicName = ((CMSPage) page).getCmsID();
+
+            addCMSDynaPage(portal,pageDynamicName, page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+
             Collection children = page.getChildren();
             for (Object o : children) {
                 if (o instanceof Page) {

@@ -17,21 +17,23 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer.ContainerContext;
 
-public class CMSPage extends PageImplBase {
+public  class  CMSPage extends PageImplBase {
 
 	/** Local properties. */
 	protected Map<String, String> properties = null;
-
 	private PortalObjectPath pagePath;
+    private String pageName;
+	
 
-	private String pageName;
-	ContainerContext containerContext;
+
+    ContainerContext containerContext;
 	TemplatePortalObjectContainer container;
 	private ObjectNodeImplBase parentNode;
-
+	
+	private CMSPageFactory factory;
 	
 	private String cmsID;
-	
+
 	
 	public String getCmsID() {
 		return cmsID;
@@ -41,14 +43,22 @@ public class CMSPage extends PageImplBase {
 		this.cmsID = cmsID;
 	}
 
-	public static void createCMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext,
-			PortalObjectId pageId) {
-		new CMSPage(container, containerContext, pageId);
-	}
+    public PortalObjectPath getPagePath() {
+        return pagePath;
+    }
 
-	private CMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObjectId pageId) {
+
+    
+    public String getPageName() {
+        return pageName;
+    }
+
+	public CMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObjectId pageId, Map<String, String> pageProperties, CMSPageFactory factory) {
 		super();
 
+
+		this.factory = factory;
+		
 		PortalObjectId parentId = new PortalObjectId("", pageId.getPath().getParent());
 		PortalObjectImplBase parent = (PortalObjectImplBase) container.getObject(parentId);
 		
@@ -76,13 +86,12 @@ public class CMSPage extends PageImplBase {
 
 		// TODO init form CMS
 		cmsID = "id_"+pageName;
-		
-		Map<String, String> pageProperties = new HashMap<String, String>();
 
 		for (String key : pageProperties.keySet()) {
 			setDeclaredProperty(key, pageProperties.get(key));
 		}
 	}
+
 
 	private Map<String, PortalObject> computeWindows() {
 
@@ -105,7 +114,7 @@ public class CMSPage extends PageImplBase {
 
 		/* Template Windows */
 
-		for (PortalObjectId templateID : getTemplatesID()) {
+		for (PortalObjectId templateID : factory.getTemplatesID(this)) {
 
 			PortalObject template = container.getObject(templateID);
 			Collection<PortalObject> tmplWindows = template.getChildren(PortalObject.WINDOW_MASK);
@@ -124,27 +133,40 @@ public class CMSPage extends PageImplBase {
 
 		/* CMS Windows */
 
-		String windowName = "win-" + pageName;
-
-		PortalObjectPath winPath = new PortalObjectPath(
-				pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + windowName,
-				PortalObjectPath.CANONICAL_FORMAT);
-
-		ObjectNodeImplBase winNode = new ObjectNodeImplBase(new PortalObjectId("", winPath), windowName,
-				containerContext);
-		WindowImplBase win = new WindowImplBase();
-		win.setContext(containerContext);
-		win.setURI("SampleInstance");
-		win.setObjectNode(winNode);
-		win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, pageName);
-		win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, "0");
-		winNode.setObject(win);
-		container.nodes.put(win.getId(), win);
-		windows.put(windowName, winNode);
+		factory.createCMSWindows(this, windows);
 
 		return windows;
 
 	}
+
+
+	
+  
+    protected void addWindow(Map windows, String windowName, String portletInstance, String region, String order) {
+
+        PortalObjectPath winPath = new PortalObjectPath(
+                pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + windowName,
+                PortalObjectPath.CANONICAL_FORMAT);
+
+        ObjectNodeImplBase winNode = new ObjectNodeImplBase(new PortalObjectId("", winPath), windowName,
+                containerContext);
+        WindowImplBase win = new WindowImplBase();
+        win.setContext(containerContext);
+        win.setURI(portletInstance);
+        win.setObjectNode(winNode);
+        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, region);
+        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, order);
+        winNode.setObject(win);
+        container.nodes.put(win.getId(), win);
+        
+        winNode.setParent(getObjectNode());
+        
+        
+        windows.put(windowName, winNode);
+    }
+    
+    
+
 
 	private ObjectNodeImplBase duplicateWindow(PortalObject tmplWindow, boolean injected) {
 		WindowImplBase tmplWindowMock = (WindowImplBase) tmplWindow;
@@ -174,12 +196,6 @@ public class CMSPage extends PageImplBase {
 		return properties;
 	}
 
-	private List<PortalObjectId> getTemplatesID() {
-		List<PortalObjectId> templateIds = new ArrayList<>();
-		PortalObjectPath mainTemplatePath = new PortalObjectPath("/portalA/pageA", PortalObjectPath.CANONICAL_FORMAT);
-		templateIds.add(new PortalObjectId("", mainTemplatePath));
-		return templateIds;
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -190,7 +206,7 @@ public class CMSPage extends PageImplBase {
 		if (this.properties == null) {
 			this.properties = new ConcurrentHashMap<>();
 			// Initialize from template
-			for (PortalObjectId templateID : getTemplatesID()) {
+			for (PortalObjectId templateID : factory.getTemplatesID( this)) {
 				PortalObject template = container.getObject(templateID);
 				properties.putAll(template.getProperties());
 			}
@@ -211,5 +227,14 @@ public class CMSPage extends PageImplBase {
 		return value;
 
 	}
+	
+	   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDeclaredProperty(String name, String value) {
+        this.getProperties().put(name, value);
+
+    }
 
 }
