@@ -1,0 +1,15 @@
+version: "3"
+services:
+  portal:
+    image: osivia/portal:5.0
+    environment:
+      - TZ=Europe/Paris
+      - JPDA_ADDRESS=8000
+      - JPDA_TRANSPORT=dt_socket
+    ports:
+      - 8000:8000
+      - 8080:8080
+    entrypoint:
+      - /usr/local/tomcat/bin/catalina.sh
+      - jpda
+      - run
