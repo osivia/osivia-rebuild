@@ -1,7 +1,7 @@
 FROM tomcat:8.0
 MAINTAINER Cédric Krommenhoek <ckrommenhoek@osivia.com>
 
-RUN apt-get update && apt-get install -y locales vim openssl \
+RUN apt-get update && apt-get install -y locales vim  \
 	&& localedef -i fr_FR -c -f UTF-8 -A /usr/share/locale/locale.alias fr_FR.UTF-8 \
 	&& apt-get purge -y \
     && rm -rf /var/lib/apt/lists/*
