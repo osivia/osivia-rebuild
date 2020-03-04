@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.core.tracker;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -23,6 +25,7 @@ import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -49,7 +52,14 @@ public class CommandTrackerInterceptor extends ControllerInterceptor{
 			
 		getTracker().pushState(cmd);		
 		
+		HttpServletRequest clientRequest = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+		clientRequest.setAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT, cmd.getControllerContext());
+		
 		ControllerResponse resp = (ControllerResponse) cmd.invokeNext();
+		
+		
+        clientRequest.removeAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
+
 
 		getTracker().popState();
 		

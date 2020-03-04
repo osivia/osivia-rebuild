@@ -37,13 +37,12 @@
             <scope>compile</scope>
         </dependency>
 
-        
+        <!-- OSIVIA Portal API -->
         <dependency>
-            <groupId>org.osivia.portal.services</groupId>
-            <artifactId>osivia-portal-services-common</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+            <groupId>org.osivia.portal.api</groupId>
+            <artifactId>osivia-portal-api-common</artifactId>
         </dependency>
+        
         
         <dependency>
             <groupId>org.osivia.portal.kernel</groupId>

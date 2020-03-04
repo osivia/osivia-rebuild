@@ -25,6 +25,29 @@
             <artifactId>osivia-portal-api-common</artifactId>
         </dependency>
         
+        <!-- JBP services -->
+        
+
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-jbp</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+         <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-jboss-compat</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>       
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-jbp-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>	        
+             
+        
     </dependencies>
 
 	
