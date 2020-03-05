@@ -2,10 +2,14 @@ package org.osivia.portal.sample.controller;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletContext;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.context.PortletContextAware;
 
 /**
  * Sample controller.
@@ -21,11 +26,18 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping(value = "VIEW")
-public class SampleController {
+public class SampleController implements PortletContextAware {
+
+        /** Portlet context. */
+        private PortletContext portletContext;
+    
 
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
+    
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
 
 
     /** CMS service. */
@@ -91,6 +103,20 @@ public class SampleController {
 
         String foo = cmsService.foo();
         request.setAttribute("foo", foo);
+    }
+    
+    
+    @ActionMapping("startWindow")
+    public void startWindow(ActionRequest request, ActionResponse response) throws PortalException {
+        // CMSService cmsService = this.applicationContext.getBean(CMSService.class);
+        PortalControllerContext portalCtx = new PortalControllerContext( portletContext, request, response);
+        portalUrlFactory.getStartPortletUrl(portalCtx, "SampleInstance", null);
+       
+    }
+    
+    @Override
+    public void setPortletContext(PortletContext portletContext) {
+        this.portletContext = portletContext;
     }
 
 }

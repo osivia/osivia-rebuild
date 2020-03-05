@@ -2,6 +2,7 @@ package org.osivia.portal.sample.configuration;
 
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.services.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,11 @@ public class SampleConfiguration {
     @Bean
     public CMSService getCMSService() {
         return Locator.getService(CMSService.class);
+    }
+    
+    @Bean
+    public IPortalUrlFactory getPortalURLFactory() {
+        return Locator.getService(IPortalUrlFactory.class);
     }
 
 }

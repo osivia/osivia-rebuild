@@ -21,6 +21,7 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.springframework.stereotype.Service;
 
 /**
  * Portal URL factory implementation.
@@ -30,6 +31,8 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
  * @author Jean-Sébastien Steux
  * @see IPortalUrlFactory
  */
+
+@Service
 public class PortalUrlFactory implements IPortalUrlFactory {
 
    

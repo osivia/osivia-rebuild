@@ -95,6 +95,11 @@
       <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
 -->
    </bean>
+   <bean class="org.osivia.portal.core.portlets.interceptors.ParametresPortletInterceptor"
+          id="osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor" >
+   </bean>
+   
+   
    <bean class="org.jboss.portal.portlet.aspects.portlet.PortalSessionSynchronizationInterceptor"
           id="portal:service=Interceptor,type=Portlet,name=PortalSessionSynchronization" >
       
@@ -112,6 +117,8 @@
       <property name="interceptors">
 	     <list>
 			 <ref bean="portal:service=Interceptor,type=Portlet,name=ConsumerCache"/>
+			 <ref bean="osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor"/>
+			 
 <!-- 			 
 			 <ref bean="portal:service=Interceptor,type=Portlet,name=InstanceSecurity"/>
 -->			 

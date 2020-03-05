@@ -10,6 +10,10 @@
     <portlet:param name="count" value="${count + 1}"/>
 </portlet:actionURL>
 
+<portlet:actionURL name="startWindow" var="startWindowURL">
+
+</portlet:actionURL>
+
 
 <c:set var="tab" value="1" scope="request" />
 <jsp:include page="nav.jsp" />
@@ -25,4 +29,11 @@
     <span class="input-group-btn">
        <a href="${addURL}" class="btn btn-default">Ajouter</a>
     </span>
+</div>    
+<div class="input-group">    
+     <span >
+       <a href="${startWindowURL}" class="btn btn-default">startWindow</a>
+    </span>
+   
+    
 </div>
