@@ -1,14 +1,19 @@
 package org.osivia.portal.sample.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.dynamic.IDynamicWindowService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -35,10 +40,11 @@ public class SampleController implements PortletContextAware {
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
+
+
     
     @Autowired
-    private IPortalUrlFactory portalUrlFactory;
-
+    private IDynamicWindowService dynamicWindowService;
 
     /** CMS service. */
     @Autowired
@@ -108,10 +114,10 @@ public class SampleController implements PortletContextAware {
     
     @ActionMapping("startWindow")
     public void startWindow(ActionRequest request, ActionResponse response) throws PortalException {
-        // CMSService cmsService = this.applicationContext.getBean(CMSService.class);
+
         PortalControllerContext portalCtx = new PortalControllerContext( portletContext, request, response);
-        portalUrlFactory.getStartPortletUrl(portalCtx, "SampleInstance", null);
-       
+        Map<String, String> properties = new HashMap<String, String>();
+        dynamicWindowService.startDynamicWindow(portalCtx, "col-2", "SampleInstance", properties);
     }
     
     @Override

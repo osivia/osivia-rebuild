@@ -46,6 +46,14 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>	        
+        
+       <dependency>
+	    	<groupId>org.jboss.portal.common</groupId>
+	    	<artifactId>common-common</artifactId>
+	    	<version>1.2.5</version>
+	    	<scope>provided</scope>
+		</dependency>
+		
              
         
     </dependencies>
