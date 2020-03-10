@@ -23,6 +23,7 @@
 
 package org.jboss.portal.core.controller.ajax;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -41,6 +42,7 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
@@ -62,6 +64,7 @@ import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
+import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationResponse;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateResponse;
 import org.jboss.portal.theme.page.PageResult;
@@ -74,9 +77,11 @@ import org.jboss.portal.web.ServletContextDispatcher;
 import javax.xml.namespace.QName;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -255,6 +260,19 @@ public class AjaxResponseHandler implements ResponseHandler
          if (!fullRefresh)
          {
             ArrayList<PortalObject> refreshedWindows = new ArrayList<PortalObject>();
+            
+            
+            //Add customs
+            List<PortalObjectId> requestDirtyWindowIds = (List<PortalObjectId>) controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.dynamic.dirtyWindows");
+            if( requestDirtyWindowIds != null)  {
+                for(PortalObjectId requestDirtyWindow : requestDirtyWindowIds)  {
+                    if( !dirtyWindowIds.contains(requestDirtyWindow))   {
+                        dirtyWindowIds.add(requestDirtyWindow);
+                    }
+                }
+            }
+            
+            
 
             for (Object dirtyWindowId : dirtyWindowIds)
             {
@@ -273,6 +291,22 @@ public class AjaxResponseHandler implements ResponseHandler
 
             //
             UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId());
+            
+            Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+            for( PortalObject window:windows)   {
+                String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
+                if(StringUtils.isNotEmpty( region)) {
+                     List<String> regionList = updatePage.getRegions().get(region);
+                     if( regionList == null)    {
+                         regionList = new ArrayList<String>();
+                         updatePage.getRegions().put(region, regionList);
+                     }
+                     regionList.add(window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                }
+             }
+            
+
+            
 
             // Call to the theme framework
             PageResult res = new PageResult(page.getName(), page.getProperties());

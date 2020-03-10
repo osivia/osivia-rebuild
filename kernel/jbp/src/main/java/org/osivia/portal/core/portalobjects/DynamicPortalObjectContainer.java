@@ -149,7 +149,16 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
         newWindows.add(newWindow);
 
+        // TODO : move to jbp conversation scopes
         setNavigationalItem("osivia.dynamic_windows", newWindows);
+        
+        // TODO MOVE TO JBP NavigationalStateContext
+        List<PortalObjectId> dirtyWindowIds = (List<PortalObjectId>) this.getTracker().getHttpRequest().getAttribute("osivia.dynamic.dirtyWindows");
+        if( dirtyWindowIds == null) {
+            dirtyWindowIds = new ArrayList<>();
+            this.getTracker().getHttpRequest().setAttribute("osivia.dynamic.dirtyWindows", dirtyWindowIds);
+        }
+        dirtyWindowIds.add(newWindow.getWindowId());
 
         // On vide le cache
         getDatas().clear();

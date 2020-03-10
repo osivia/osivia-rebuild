@@ -26,6 +26,7 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaResponse;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,14 +38,20 @@ public class UpdatePageStateResponse extends DynaResponse
 
    /** . */
    private Map fragments;
-
+   
    /** . */
+   private Map<String,List<String>> regions;
+
+   
+
+/** . */
    private String viewState;
 
    public UpdatePageStateResponse(String viewState)
    {
       this.viewState = viewState;
       this.fragments = new HashMap();
+      this.regions = new HashMap();
    }
 
    public String getViewState()
@@ -56,9 +63,19 @@ public class UpdatePageStateResponse extends DynaResponse
    {
       fragments.put(id, fragment);
    }
+   
+   public void addRegion(String name, List<String> windows)
+   {
+       regions.put(name, windows);
+   }
 
    public Map getFragments()
    {
       return Collections.unmodifiableMap(fragments);
    }
+   
+   public Map<String,List<String>> getRegions() {
+       return regions;
+   }
+
 }

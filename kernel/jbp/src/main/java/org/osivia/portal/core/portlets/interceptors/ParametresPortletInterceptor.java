@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPath.CanonicalFormat;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.portlet.PortletInvokerException;
@@ -58,11 +60,18 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             // Ajout de la window
             String windowId = invocation.getWindowContext().getId();
             if (windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR) {
+                PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
 
+                Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
+
+                attributes.put("osivia.window", window);
 
                 // Ajout du controleur
                 attributes.put("osivia.controller", controllerContext);
 
+                // Ajout la window
+                attributes.put("osivia.controller", controllerContext);
+                
 
                 // Set attributes
                 invocation.setRequestAttributes(attributes);

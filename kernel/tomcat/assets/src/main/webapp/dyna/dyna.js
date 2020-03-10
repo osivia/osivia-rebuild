@@ -204,6 +204,7 @@ function bilto(event)
             eval("resp =" + t.responseText + ";");
             if (resp.type == "update_markup")
             {
+             	
                // Iterate all changes
                for (var id in resp.fragments)
                {
@@ -228,14 +229,47 @@ function bilto(event)
                         copyInnerHTML(srcContainer, dstContainer, "dyna-portlet")
                         copyInnerHTML(srcContainer, dstContainer, "dyna-decoration")
                      }
-                     else
-                     {
-                        // Should log that somewhere
-                     }
+                    
                   }
                   else
                   {
-                     // Should log that somewhere
+                	  // It may be a new windows
+                	  // Check the regions ...
+                	  
+                      for (var regionName in resp.regions)	{
+                  		  for( var i=0; i< resp.regions[regionName].length; i++)	{
+                  		      var windowId = resp.regions[regionName][i];
+                  			  var matchingWindow  = document.getElementById(windowId);
+                  			  
+                  			  if( matchingWindow == null)	{
+                  				  // New window
+                  				  // <div class="dyna-window"><div id="cG9ydGFsQQ_e_e_dcGFnZUEtYWpheA_e_e_dd2luQXBhZ2VBLWFqYXg_e" class="partial-refresh-window">
+
+                  				  var divRegion =  document.getElementById(regionName);
+                  				  var newWindowDiv = document.createElement("div");
+                  				  newWindowDiv.className = "dyna-window";
+                  				  var partialWindowDiv = document.createElement("div");
+                  				  partialWindowDiv.id = windowId;
+                  				  partialWindowDiv.className = "partial-refresh-window";
+                  				  newWindowDiv.appendChild(partialWindowDiv);
+                  				  
+                  				  divRegion.appendChild(newWindowDiv);      
+
+                                 // Get markup fragment
+                                 var markup = resp.fragments[id];
+
+                                 // Create a temporary element and paste the innerHTML in it
+                                 var srcContainer = document.createElement("div");
+
+                                 // Insert the markup in the div
+                                 new Insertion.Bottom(srcContainer, markup);
+
+                                 // Copy the region content
+                                 copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window")
+
+                   			  }
+                  		  }
+                      }
                   }
                }
 

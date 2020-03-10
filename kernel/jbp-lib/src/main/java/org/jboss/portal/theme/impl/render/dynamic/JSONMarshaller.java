@@ -30,6 +30,7 @@ import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateRespon
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,6 +72,31 @@ public class JSONMarshaller
                writer.key(id).value(fragment);
             }
             writer.endObject();
+            
+            
+            
+            writer.key("regions").object();          
+            for (Iterator i = umr.getRegions().entrySet().iterator(); i.hasNext();)
+            {
+
+                Map.Entry entry = (Map.Entry)i.next();
+                String id = (String)entry.getKey();
+                
+                writer.key(id);
+                
+                writer.array();
+               for (String windowId : (List<String>) entry.getValue())   {
+                   writer.value(windowId);
+               }
+               
+               writer.endArray();
+              
+            }
+            writer.endObject();
+            
+            
+            
+            
 
             //
             writer.endObject();
