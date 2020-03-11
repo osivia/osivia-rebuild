@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackageClasses = PortalController.class)
+
 public class DispatcherConfiguration extends WebMvcConfigurerAdapter {
 
     /**

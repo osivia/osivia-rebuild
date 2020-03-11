@@ -16,10 +16,7 @@
         <load-on-startup>0</load-on-startup>
     </servlet>
     
-    
-   <listener>
-      <listener-class>org.osivia.portal.kernel.common.configuration.PortalListener</listener-class>
-   </listener>
+ 
     
     <jsp-config>
         <taglib>
