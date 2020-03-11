@@ -123,6 +123,19 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 
         portalNode.setParent(contextNode);
         
+ 
+          String layoutCode = "<body id=\"body\"><table class=\"layout\" width=\"100%\">\n" + 
+          "  <tbody><tr>\n" + 
+          "    <td valign=\"top\">\n" + 
+          "      <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->\n" + 
+          "      <div id=\"col-1\"></div>\n" + 
+          "      <div id=\"col-2\"></div>\n" +
+          "  </tr>\n" + 
+          "</tbody></table></body>";
+          
+          
+          portal.setDeclaredProperty("osivia.layout.generic-2cols.code", layoutCode);                
+        
         
         if( "portalA".equals(portalName))   {
             portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, "pageA");            
@@ -137,8 +150,13 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             
             path = "/portalA/pageA-ajax";
             pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");            
-          
             SampleStaticPageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath (path, PortalObjectPath.CANONICAL_FORMAT )), pageProperties); 
+ 
+            path = "/portalA/simple-ajax";
+            pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");            
+            SampleStaticSimplePageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath (path, PortalObjectPath.CANONICAL_FORMAT )), pageProperties); 
+
+        
         } else   {
             // CMS Sample pages
             Map<String, String> pageProperties = new HashMap<>();

@@ -46,8 +46,14 @@ public class UpdatePageStateResponse extends DynaResponse
 
 /** . */
    private String viewState;
+    private String layout;
+   
 
-   public UpdatePageStateResponse(String viewState)
+
+
+
+
+public UpdatePageStateResponse(String viewState)
    {
       this.viewState = viewState;
       this.fragments = new HashMap();
@@ -76,6 +82,14 @@ public class UpdatePageStateResponse extends DynaResponse
    
    public Map<String,List<String>> getRegions() {
        return regions;
+   }
+
+   public void setLayout(String layout) {
+       this.layout = layout;
+   }
+
+   public String getLayout() {
+       return layout;
    }
 
 }

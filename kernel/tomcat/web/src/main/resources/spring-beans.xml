@@ -200,6 +200,9 @@
    </bean>
 
 
+    <bean class="org.osivia.portal.core.layouts.DynamicLayoutService" id="portal:service=DynamicLayoutService" >
+   </bean>
+
    <!-- The different containers -->
 
    <bean class="org.osivia.portal.jpb.services.InstanceContainerContextImpl"
@@ -344,6 +347,8 @@
       
       <property name="PageService" ref="portal:service=PageService"/>
       <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+      <property name="DynamicLayoutService" ref="portal:service=DynamicLayoutService"/>
+      
    </bean>
 
    <!-- The response handler selector -->

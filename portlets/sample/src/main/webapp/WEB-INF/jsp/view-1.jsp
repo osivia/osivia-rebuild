@@ -11,8 +11,10 @@
 </portlet:actionURL>
 
 <portlet:actionURL name="startWindow" var="startWindowURL">
-
 </portlet:actionURL>
+<portlet:actionURL name="goToPage" var="goToPageURL">
+</portlet:actionURL>
+
 
 
 <c:set var="tab" value="1" scope="request" />
@@ -34,6 +36,8 @@
      <span >
        <a href="${startWindowURL}" class="btn btn-default">startWindow</a>
     </span>
-   
+      <span >
+       <a href="/portal/portal/portalA/simple-ajax" class="btn btn-default">goToPage</a>
+    </span>  
     
 </div>

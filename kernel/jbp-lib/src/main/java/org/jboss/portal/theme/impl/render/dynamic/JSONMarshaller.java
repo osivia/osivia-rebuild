@@ -96,7 +96,10 @@ public class JSONMarshaller
             
             
             
-            
+            if (umr.getLayout() != null)
+            {
+               writer.key("layout").value(umr.getLayout());
+            }
 
             //
             writer.endObject();

@@ -16,6 +16,7 @@ package org.osivia.portal.core.portlets.interceptors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -25,6 +26,7 @@ import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
+import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 
 
 /**
@@ -71,7 +73,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 // Ajout la window
                 attributes.put("osivia.controller", controllerContext);
-                
+
 
                 // Set attributes
                 invocation.setRequestAttributes(attributes);
@@ -79,6 +81,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         }
 
         PortletInvocationResponse response = super.invoke(invocation);
+
 
 
         return response;

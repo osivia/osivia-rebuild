@@ -120,6 +120,13 @@ public class SampleController implements PortletContextAware {
         dynamicWindowService.startDynamicWindow(portalCtx, "col-2", "SampleInstance", properties);
     }
     
+    @ActionMapping("goToPage")
+    public void gotoPage(ActionRequest request, ActionResponse response) throws PortalException {
+        //TODO : put in API
+        request.setAttribute("osivia.pagePath", "/portalA/simple-ajax");
+    }
+    
+    
     @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;

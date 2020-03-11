@@ -24,12 +24,14 @@
 package org.jboss.portal.core.model.portal.command.view;
 
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.info.ViewCommandInfo;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
@@ -113,6 +115,11 @@ public class ViewPageCommand extends PageCommand
          nsContext.setPageNavigationalState(pageId, null);
       }
 
+//      if (ControllerContext.AJAX_TYPE == context.getType()) {
+//          context.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath", page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+//      }
+      
+      
       //
       return new UpdatePageResponse(page.getId());
    }

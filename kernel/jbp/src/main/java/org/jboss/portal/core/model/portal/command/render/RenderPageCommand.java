@@ -23,6 +23,7 @@
 package org.jboss.portal.core.model.portal.command.render;
 
 import org.jboss.portal.common.invocation.InvocationException;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -35,10 +36,12 @@ import org.jboss.portal.core.controller.command.info.ViewCommandInfo;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
+import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.content.WindowRendition;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.core.theme.WindowContextFactory;
@@ -135,6 +138,8 @@ public final class RenderPageCommand extends PageCommand
     */
    public ControllerResponse execute() throws ControllerException, InvocationException
    {
+       
+       
       try
       {
          PageService pageService = context.getController().getPageService();
@@ -151,6 +156,7 @@ public final class RenderPageCommand extends PageCommand
          ControllerPortletControllerContext portletControllerContext = new ControllerPortletControllerContext(context, page);
          ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext().createPortletPageNavigationalState(true);
 
+         /*
          // Determine theme
          if (personalizable)
          {
@@ -192,6 +198,8 @@ public final class RenderPageCommand extends PageCommand
                }
             }
          }
+         
+         */
          if (theme == null)
          {
             // If nothing get it from the object properties
@@ -202,6 +210,8 @@ public final class RenderPageCommand extends PageCommand
          // Call the portlet container to create the markup fragment(s) for each portlet that needs to render itself
          PageResult pageResult = new PageResult(getPage().getName(), new HashMap(getPage().getProperties()));
 
+         
+         /*
          // The window context factory
          WindowContextFactory wcFactory = new WindowContextFactory(context);
 
@@ -245,6 +255,7 @@ public final class RenderPageCommand extends PageCommand
                }
             }
          }
+         */
 
          //
          return new PageRendition(layout, theme, pageResult, pageService);

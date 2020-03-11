@@ -21,7 +21,7 @@
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 <%@include file="/layouts/common/modal_body.jsp"%>
 
-<table width="100%">
+<table class="layout" width="100%">
   <tr>
     <td valign="top">
       <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
