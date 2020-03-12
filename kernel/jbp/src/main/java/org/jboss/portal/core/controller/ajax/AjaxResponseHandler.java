@@ -387,7 +387,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     // Add render to the page
                                     updatePage.addFragment(wc.getId(), buffer.toString());
                                 } else {
-                                    fullRefresh = true;
+                                    //updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT), "An error occured during rendering");
                                 }
                             } else {
                                 // We'd better do a full refresh for now
@@ -407,6 +407,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                         return new AjaxResponse(updatePage);
                     }
                 }
+                
+                
+
 
                 // We perform a full refresh
                 ViewPageCommand rpc;

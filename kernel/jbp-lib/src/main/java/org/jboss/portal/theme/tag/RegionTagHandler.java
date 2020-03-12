@@ -23,14 +23,17 @@
 package org.jboss.portal.theme.tag;
 
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.theme.LayoutConstants;
 import org.jboss.portal.theme.Orientation;
+import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.JSPRendererContext;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.renderer.PageRendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -70,7 +73,7 @@ public class RegionTagHandler
     * @throws JspException
     * @throws IOException
     */
-   public void doTag() throws JspException, IOException
+   public void originalDoTag() throws JspException, IOException
    {
       if (regionCssId == null)
       {
@@ -209,6 +212,25 @@ public class RegionTagHandler
       }
    }
 
+   
+   @Override
+   public void doTag() throws JspException, IOException {
+       PageContext pageContext = (PageContext) this.getJspContext();
+       HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+
+       Boolean layoutParsing = (Boolean) request.getAttribute(ThemeConstants.ATTR_LAYOUT_HTML_EXTRACTOR);
+       if (BooleanUtils.isNotTrue(layoutParsing)) {
+           originalDoTag();
+       }    else    {
+           JspWriter out = this.getJspContext().getOut();
+           {
+              out.write(" <div id=\""+regionName+"\"></div>");
+              out.flush();
+              return;
+           }
+       }
+   }
+   
    // ------ attribute handlers
 
    /**

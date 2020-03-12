@@ -22,15 +22,18 @@
  ******************************************************************************/
 package org.jboss.portal.theme.tag;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jboss.portal.theme.LayoutConstants;
 import org.jboss.portal.theme.PortalTheme;
+import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeElement;
 import org.jboss.portal.theme.impl.render.dynamic.DynaConstants;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -73,13 +76,15 @@ public class ThemeTagHandler
     * @throws IOException
     * @see org.jboss.portal.theme.PortalTheme
     */
-   public void doTag() throws JspException, IOException
+   public void originalDoTag() throws JspException, IOException
    {
       JspWriter out = this.getJspContext().getOut();
 
       // get page and region
       PageContext app = (PageContext)getJspContext();
       HttpServletRequest request = (HttpServletRequest)app.getRequest();
+      
+      
 
       // Get the theme provided as a render context attribute
       RendererContext rendererContext = (RendererContext)request.getAttribute(LayoutConstants.ATTR_RENDERCONTEXT);
@@ -123,5 +128,19 @@ public class ThemeTagHandler
    public void setThemeName(String name)
    {
       themeName = name;
+   }
+   
+   
+   @Override
+   public void doTag() throws JspException, IOException {
+       PageContext pageContext = (PageContext) this.getJspContext();
+       HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+
+       Boolean layoutParsing = (Boolean) request.getAttribute(ThemeConstants.ATTR_LAYOUT_HTML_EXTRACTOR);
+       if (BooleanUtils.isNotTrue(layoutParsing)) {
+           originalDoTag();
+       }    else    {
+           //JspWriter out = this.getJspContext().getOut();
+       }
    }
 }

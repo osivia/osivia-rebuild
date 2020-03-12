@@ -14,6 +14,9 @@
 </portlet:actionURL>
 <portlet:actionURL name="goToPage" var="goToPageURL">
 </portlet:actionURL>
+<portlet:actionURL name="throwException" var="throwExceptionURL">
+</portlet:actionURL>
+
 
 
 
@@ -39,5 +42,7 @@
       <span >
        <a href="/portal/portal/portalA/simple-ajax" class="btn btn-default">goToPage</a>
     </span>  
-    
+        <span >
+       <a href="${throwExceptionURL}" class="btn btn-default">Exception</a>
+    </span>    
 </div>

@@ -112,6 +112,14 @@ public class SampleController implements PortletContextAware {
     }
     
     
+    @ActionMapping("throwException")
+    public void throwException(ActionRequest request, ActionResponse response) {
+        if(true)
+            throw new NullPointerException();
+    }
+    
+    
+    
     @ActionMapping("startWindow")
     public void startWindow(ActionRequest request, ActionResponse response) throws PortalException {
 

@@ -74,4 +74,7 @@ public final class ThemeConstants
     */
    public static final String PORTAL_PROP_REGION = "theme.region";
 
+   
+   public static final String ATTR_LAYOUT_HTML_EXTRACTOR = "osivia.layout.htmlExtractor";
+   
 }

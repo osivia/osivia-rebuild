@@ -123,6 +123,8 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
 
         portalNode.setParent(contextNode);
         
+        /*
+         * sample layout
  
           String layoutCode = "<body id=\"body\"><table class=\"layout\" width=\"100%\">\n" + 
           "  <tbody><tr>\n" + 
@@ -134,7 +136,8 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
           "</tbody></table></body>";
           
           
-          portal.setDeclaredProperty("osivia.layout.generic-2cols.code", layoutCode);                
+          portal.setDeclaredProperty("osivia.layout.generic-2cols.code", layoutCode);          
+          */      
         
         
         if( "portalA".equals(portalName))   {
