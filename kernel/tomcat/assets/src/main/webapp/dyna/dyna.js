@@ -391,14 +391,6 @@ function observePortlets()
 
 function footer()
 {  
-    var options = new Object();
-	
-	// We have a get
-    options.method = "get"
-
-    // We don't block
-    options.asynchronous = false;
-
-	ajaxCall(options, window.location.href);
+	observePortlets()
 }
 

@@ -387,6 +387,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     // Add render to the page
                                     updatePage.addFragment(wc.getId(), buffer.toString());
                                 } else {
+                                    //TODO:display error
                                     //updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT), "An error occured during rendering");
                                 }
                             } else {

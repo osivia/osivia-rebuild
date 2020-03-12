@@ -211,7 +211,7 @@ public final class RenderPageCommand extends PageCommand
          PageResult pageResult = new PageResult(getPage().getName(), new HashMap(getPage().getProperties()));
 
          
-         /*
+       if (!(ControllerContext.AJAX_TYPE == context.getType())) {
          // The window context factory
          WindowContextFactory wcFactory = new WindowContextFactory(context);
 
@@ -255,7 +255,7 @@ public final class RenderPageCommand extends PageCommand
                }
             }
          }
-         */
+       }
 
          //
          return new PageRendition(layout, theme, pageResult, pageService);
