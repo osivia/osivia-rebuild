@@ -7,7 +7,8 @@
    <portlet>
       <portlet-name>Sample</portlet-name>
       <header-content>
-         <link rel="stylesheet" type="text/css" href="/css/style.css" media="screen"/>
+        <link rel="stylesheet" type="text/css" href="/css/sample.css" media="screen"/>
+		<script type="text/javascript" src="/js/sample.js"></script>	         
       </header-content>
    </portlet>
 </portlet-app>

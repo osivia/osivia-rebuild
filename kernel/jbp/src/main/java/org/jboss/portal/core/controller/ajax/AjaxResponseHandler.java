@@ -66,6 +66,7 @@ import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
 import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.impl.render.dynamic.response.PageResource;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationResponse;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateResponse;
 import org.jboss.portal.theme.page.PageResult;
@@ -75,6 +76,8 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
+import org.osivia.portal.core.resources.ResourceHandler;
+import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.StringWriter;
@@ -83,6 +86,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,7 +158,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
 
                 PortalObjectId pageId = upw.getPageId();
-                boolean newAjaxPage = false;
+                boolean refreshPageStructure = false;
 
 //                String pagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath");
 //                if (pagePath != null) {
@@ -205,12 +209,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                             // Check if window state requires a refresh
                             if (WindowState.MAXIMIZED.equals(oldWindowState)) {
                                 if (!WindowState.MAXIMIZED.equals(newWindowState)) {
-                                    fullRefresh = true;
-                                    break;
+                                    refreshPageStructure = true;
                                 }
                             } else if (WindowState.MAXIMIZED.equals(newWindowState)) {
-                                fullRefresh = true;
-                                break;
+                                refreshPageStructure = true;
                             }
 
                             // Collect the dirty window id
@@ -247,7 +249,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }   else    {
                     // New Ajax Page
                     
-                    newAjaxPage = true;
+                    refreshPageStructure = true;
 
                         dirtyWindowIds.clear();
                         Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
@@ -301,7 +303,17 @@ public class AjaxResponseHandler implements ResponseHandler {
                     // Regions
                     Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
                     for (PortalObject window : windows) {
+                        
+                        NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());                        
+                        WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+
                         String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
+                        if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+                            region = "maximized";
+                        }
+                        
+                        
+                        
                         if (StringUtils.isNotEmpty(region)) {
                             List<String> regionList = updatePage.getRegions().get(region);
                             if (regionList == null) {
@@ -313,7 +325,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                     }
 
                     // Layout
-                    if (newAjaxPage) {
+                    if (refreshPageStructure) {
                         String layoutCode = getDynamicLayoutService().getLayoutCode(controllerContext, page);
 
                         updatePage.setLayout(layoutCode);
@@ -334,6 +346,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                     ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext()
                             .createPortletPageNavigationalState(true);
 
+                    List<PageResource> resources = new ArrayList<PageResource>();
+                    
                     //
                     for (Iterator i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
                         try {
@@ -377,6 +391,15 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                                     // Render
                                     rendererContext.render(wc);
+                                    
+                                    List<Element> headElements = wc.getResult().getHeaderContent();
+                                    if (headElements != null) {
+                                        for (Element element : headElements) {
+                                            if (!"title".equals(element.getNodeName().toLowerCase())) {
+                                                   resources.add(ResourceHandler.getResource(element.toString()));
+                                            }
+                                        }
+                                    }                                    
 
                                     // Pop region
                                     rendererContext.popObjectRenderContext();
@@ -402,6 +425,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                             fullRefresh = true;
                         }
                     }
+                    
+                    updatePage.setResources(resources);
 
                     //
                     if (!fullRefresh) {

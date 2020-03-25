@@ -16,7 +16,10 @@
 </portlet:actionURL>
 <portlet:actionURL name="throwException" var="throwExceptionURL">
 </portlet:actionURL>
-
+<portlet:renderURL portletMode="view" windowState="maximized" var="maximizedURL">
+</portlet:renderURL>
+<portlet:renderURL portletMode="view" windowState="normal" var="normalURL">
+</portlet:renderURL>
 
 
 
@@ -31,8 +34,8 @@
 <div class="input-group">
 
     <input type="text" value="${count}" class="form-control" disabled="disabled">
-    <span class="input-group-btn">
-       <a href="${addURL}" class="btn btn-default">Ajouter</a>
+    <span class="input-group-btn ">
+       <a href="${addURL}" class="btn btn-default sample-test">Ajouter</a>
     </span>
 </div>    
 <div class="input-group">    
@@ -44,5 +47,11 @@
     </span>  
         <span >
        <a href="${throwExceptionURL}" class="btn btn-default">Exception</a>
-    </span>    
+    </span>  
+     <span >
+       <a href="${maximizedURL}" class="btn btn-default">maximized</a>
+    </span>  
+         <span >
+       <a href="${normalURL}" class="btn btn-default">normal</a>
+    </span>          
 </div>

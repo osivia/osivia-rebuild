@@ -209,9 +209,11 @@ public final class RenderPageCommand extends PageCommand
 
          // Call the portlet container to create the markup fragment(s) for each portlet that needs to render itself
          PageResult pageResult = new PageResult(getPage().getName(), new HashMap(getPage().getProperties()));
-
          
-       if (!(ControllerContext.AJAX_TYPE == context.getType())) {
+         // Pour le moment en tout cas, le render des windows se fait uniquement en Ajax
+
+         /*
+
          // The window context factory
          WindowContextFactory wcFactory = new WindowContextFactory(context);
 
@@ -255,8 +257,8 @@ public final class RenderPageCommand extends PageCommand
                }
             }
          }
-       }
-
+       
+*/
          //
          return new PageRendition(layout, theme, pageResult, pageService);
       }

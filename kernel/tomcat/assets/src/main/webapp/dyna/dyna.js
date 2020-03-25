@@ -121,7 +121,7 @@ function bilto(event)
             options.asynchronous = false;
          }
       }
-      else if (source.nodeName == "INPUT" && source.type == "submit")
+      else if ((source.nodeName == "INPUT" || source.nodeName == "BUTTON") && source.type == "submit")
       {
          // Find enclosing form
          var current = source.parentNode;
@@ -221,6 +221,12 @@ function ajaxCall(options, url){
                  newPage = true;
 	            }
         	
+           
+           /* Update resources */
+
+           updateResources(resp.resources)
+   	   
+           
           // Iterate all changes
           for (var id in resp.fragments)
           {
@@ -281,7 +287,9 @@ function ajaxCall(options, url){
                             new Insertion.Bottom(srcContainer, markup);
 
                             // Copy the region content
-                            copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window")
+                            copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window");
+                            
+                            observePortlet(partialWindowDiv);
 
               			  }
              		  }
@@ -309,8 +317,47 @@ function ajaxCall(options, url){
 }
 
 
+function updateResources(newHeaderResources)	{
 
-
+	if( newHeaderResources != null){
+		   for( var iNewHeader=0; iNewHeader< newHeaderResources.length; iNewHeader++)	{
+			   
+			   var newHeader = newHeaderResources[iNewHeader];
+			   
+			   var head  = document.getElementsByTagName('head')[0];        		   
+			   var headers = head.children;
+			   var insert = true;
+			   
+			   for( var i=0; i<  headers.length; i++)	{
+	    		   if( newHeader.tag == "LINK" && headers[i].tagName == "LINK")	{
+	     			   if(  location.origin+newHeader.href == headers[i].href)
+	     				   insert = false;
+	    		   }
+	     		   if( newHeader.tag == "SCRIPT" && headers[i].tagName == "SCRIPT")	{
+	 			   if(  location.origin+newHeader.src == headers[i].src )
+	 				   insert = false;
+	    		   }
+	    	   }        		   
+			   
+			   if( insert && newHeader.tag == "LINK")	{
+	 		    var link  = document.createElement('LINK');
+	 		    link.rel  =  newHeader.rel;
+	 		    link.type =  newHeader.type;
+	 		    link.href =  newHeader.href;
+	 		    if( newHeader.media != undefined)
+	 		       link.media = newHeader.media;
+	 		    head.appendChild(link);
+			   }
+			   
+			   if( insert && newHeader.tag == "SCRIPT")	{
+	 		    var script  = document.createElement('SCRIPT');
+	 		    script.type  =  newHeader.type;
+	 		    script.src  =  newHeader.src;	        		    
+	 		    head.appendChild(script);
+			   }
+		   }
+	}
+}
 
 
 /*
@@ -389,8 +436,24 @@ function observePortlets()
 }
 
 
+function observePortlet(refreshWindow)
+{
+
+      Event.observe(refreshWindow, "click", bilto);
+
+}
+
+
 function footer()
 {  
-	observePortlets()
+    var options = new Object();
+	
+	// We have a get
+    options.method = "get"
+
+    // We don't block
+    options.asynchronous = false;
+
+	ajaxCall(options, window.location.href);
 }
 

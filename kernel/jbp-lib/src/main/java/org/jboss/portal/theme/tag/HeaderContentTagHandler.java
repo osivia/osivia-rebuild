@@ -54,7 +54,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       }
 
     
-      out.write("TEST");
+      out.write("<!-- portlet resources -->");
       
       out.flush();
    }

@@ -14,19 +14,16 @@
    <p:theme themeName="renewal"/>
    <!-- insert header content that was possibly set by portlets on the page -->
    <p:headerContent/>
-
 </head>
 
 <body id="body">
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 
-
 <table class="layout" width="100%">
   <tr>
     <td valign="top">
       <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
-      <p:region regionName='col-1' regionID='col-1'/>
-      <p:region regionName='col-2' regionID='col-2'/>
+      <p:region regionName='maximized' />
     </td>
   </tr>
 </table>
