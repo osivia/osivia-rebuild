@@ -1,9 +1,11 @@
 package org.osivia.portal.api.cms.model;
 
+import java.util.Map;
+
 /**
  * CMS document interface.
  *
- * @author Cédric Krommenhoek
+ * @author Jean-Sbastien Steux
  */
 public interface Document {
 
@@ -14,20 +16,25 @@ public interface Document {
      */
     String getId();
 
-
+    
     /**
-     * Get document container.
+     * Gets the title.
      *
-     * @return document container
+     * @return the title
      */
-    DocumentContainer getContainer();
-
-
+    String getTitle();
+    
     /**
-     * Get page container.
+     * Gets the properties.
      *
-     * @return page container
+     * @return the properties
      */
-    PageContainer getPageContainer();
-
+    public Map<String,Object> getProperties();
+    
+    /**
+     * Gets the space.
+     *
+     * @return the space
+     */
+    public String getSpaceId();
 }

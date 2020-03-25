@@ -160,7 +160,9 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             SampleStaticSimplePageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath (path, PortalObjectPath.CANONICAL_FORMAT )), pageProperties); 
 
         
-        } else   {
+        } 
+        
+        else   {
             // CMS Sample pages
             Map<String, String> pageProperties = new HashMap<>();
             String path = "/" + portalName ;

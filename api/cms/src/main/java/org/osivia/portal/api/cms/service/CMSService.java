@@ -1,7 +1,6 @@
 package org.osivia.portal.api.cms.service;
 
-import javax.servlet.ServletRequest;
-
+import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 
@@ -12,16 +11,17 @@ import org.osivia.portal.api.cms.model.Document;
  */
 public interface CMSService {
 
+
     /**
-     * Get document from servlet request.
+     * Gets the document.
      *
-     * @param servletRequest servlet request
-     * @return document
-     * @throws CMSException
+     * @param cmsContext the cms context
+     * @param id the id
+     * @return the document
+     * @throws CMSException the CMS exception
      */
-    Document getDocument(ServletRequest servletRequest) throws CMSException;
+    Document getDocument(CMSContext cmsContext, String id) throws CMSException;
 
 
-    String foo();
 
 }

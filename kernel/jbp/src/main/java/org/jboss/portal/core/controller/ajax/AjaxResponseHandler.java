@@ -346,7 +346,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                     ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext()
                             .createPortletPageNavigationalState(true);
 
-                    List<PageResource> resources = new ArrayList<PageResource>();
+                    Set<PageResource> resources = new LinkedHashSet<PageResource>();
                     
                     //
                     for (Iterator i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {

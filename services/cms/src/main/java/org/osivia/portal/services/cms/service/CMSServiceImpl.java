@@ -1,11 +1,14 @@
 package org.osivia.portal.services.cms.service;
 
-import javax.servlet.ServletRequest;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.url.service.PortalURLFactory;
+import org.osivia.portal.services.cms.model.DocumentImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CMSServiceImpl implements CMSService {
+    
+    public static String SPACE_SEPARATOR = "_";
 
     @Autowired
     private PortalURLFactory urlFactory;
@@ -33,16 +38,20 @@ public class CMSServiceImpl implements CMSService {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Document getDocument(ServletRequest servletRequest) throws CMSException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 
     @Override
-    public String foo() {
-        return "toto" + this.urlFactory.foo();
+    public Document getDocument(CMSContext cmsContext, String id) throws CMSException {
+
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        if( id.contains(SPACE_SEPARATOR))   {
+            properties.put("dc:title", "space" + id); 
+            properties.put("osivia.template", "/portalA/pageA"); 
+        }
+        else
+            properties.put("dc:title", "doc." + id);         
+        return new DocumentImpl(id, properties);
+
     }
 
 }

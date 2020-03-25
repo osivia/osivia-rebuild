@@ -9,8 +9,9 @@ import javax.portlet.PortletContext;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicWindowService;
@@ -33,16 +34,15 @@ import org.springframework.web.portlet.context.PortletContextAware;
 @RequestMapping(value = "VIEW")
 public class SampleController implements PortletContextAware {
 
-        /** Portlet context. */
-        private PortletContext portletContext;
-    
+    /** Portlet context. */
+    private PortletContext portletContext;
+
 
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
 
 
-    
     @Autowired
     private IDynamicWindowService dynamicWindowService;
 
@@ -66,12 +66,14 @@ public class SampleController implements PortletContextAware {
      * @param response render response
      * @param count count request parameter.
      * @return render view path
+     * @throws CMSException 
      */
     @RenderMapping
-    public String view1(RenderRequest request, RenderResponse response, @RequestParam(name = "count", defaultValue = "1") String count) {
+    public String view1(RenderRequest request, RenderResponse response, @RequestParam(name = "count", defaultValue = "1") String count) throws CMSException {
         request.setAttribute("count", count);
-        
-        String foo = cmsService.foo();
+        PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
+
+        String foo = cmsService.getDocument(new CMSContext(portalCtx), "1").getTitle();
         request.setAttribute("foo", foo);
 
         return "view-1";
@@ -104,37 +106,37 @@ public class SampleController implements PortletContextAware {
 
 
     @ActionMapping("foo")
-    public void foo(ActionRequest request, ActionResponse response) {
+    public void foo(ActionRequest request, ActionResponse response) throws CMSException {
         // CMSService cmsService = this.applicationContext.getBean(CMSService.class);
+        PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
 
-        String foo = cmsService.foo();
+        String foo = cmsService.getDocument(new CMSContext(portalCtx), "1_1").getTitle();
         request.setAttribute("foo", foo);
     }
-    
-    
+
+
     @ActionMapping("throwException")
     public void throwException(ActionRequest request, ActionResponse response) {
-        if(true)
+        if (true)
             throw new NullPointerException();
     }
-    
-    
-    
+
+
     @ActionMapping("startWindow")
     public void startWindow(ActionRequest request, ActionResponse response) throws PortalException {
 
-        PortalControllerContext portalCtx = new PortalControllerContext( portletContext, request, response);
+        PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
         Map<String, String> properties = new HashMap<String, String>();
         dynamicWindowService.startDynamicWindow(portalCtx, "col-2", "SampleInstance", properties);
     }
-    
+
     @ActionMapping("goToPage")
     public void gotoPage(ActionRequest request, ActionResponse response) throws PortalException {
-        //TODO : put in API
+        // TODO : put in API
         request.setAttribute("osivia.pagePath", "/portalA/simple-ajax");
     }
-    
-    
+
+
     @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;

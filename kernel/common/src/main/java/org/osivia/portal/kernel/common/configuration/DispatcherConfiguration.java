@@ -1,6 +1,6 @@
 package org.osivia.portal.kernel.common.configuration;
 
-import org.osivia.portal.kernel.common.controller.PortalController;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;

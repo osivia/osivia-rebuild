@@ -305,13 +305,13 @@
 
    <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
           id="portal:commandFactory=Delegate,path=portal" >
-      
       <property name="Path" value="/portal" />
       <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
       <property name="DelegateFactory" ref="portal:commandFactory=PortalObject"/>
    </bean>
    
    
+
    
       <!-- URL factories -->
    <bean class="org.jboss.portal.core.controller.command.mapper.DelegatingURLFactoryService"
@@ -326,6 +326,10 @@
       <property name="Factory" ref="portal:urlFactory=Delegating"/>
       <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Default"/>
    </bean>
+   
+   
+   
+   
    
    
 
@@ -477,5 +481,26 @@
       <property name="ThemeService" ref="portal:service=ThemeService"/>
    </bean>
 
+<!--  CMS -->
+
+   
+ 	<bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+		id="osivia:commandFactory=Delegate,path=content">
+        <property name="Path" value="/content" />
+        <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+        <property name="DelegateFactory" ref="osivia:commandFactory=Content"/>        
+	</bean>  
+   
+   
+   	<bean class="org.osivia.portal.core.cms.ViewContentCommandFactoryService"
+		id="osivia:commandFactory=Content" >
+	</bean>
+   
+   	<bean class="org.osivia.portal.core.cms.ContentURLFactory" id="osivia:urlFactory=Cms" >
+
+        <property name="Path" value="/content" />
+        <property name="Factory" ref="portal:urlFactory=Delegating"/>        
+	</bean>
+   
     
 </beans>
