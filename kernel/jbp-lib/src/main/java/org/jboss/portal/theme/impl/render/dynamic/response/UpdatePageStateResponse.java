@@ -48,7 +48,7 @@ public class UpdatePageStateResponse extends DynaResponse {
     private String layout;
 
 
-    private List<PageResource> resources;
+    private Set<PageResource> resources;
 
 
     public UpdatePageStateResponse(String viewState) {
@@ -86,12 +86,12 @@ public class UpdatePageStateResponse extends DynaResponse {
     }
 
 
-    public List<PageResource> getResources() {
+    public Set<PageResource> getResources() {
         return resources;
     }
 
 
-    public void setResources(List<PageResource> resources) {
+    public void setResources(Set<PageResource> resources) {
         this.resources = resources;
     }
 

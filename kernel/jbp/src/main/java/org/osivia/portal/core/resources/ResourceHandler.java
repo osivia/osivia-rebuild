@@ -62,6 +62,8 @@ public class ResourceHandler extends DefaultHandler {
         resource.setSrc(attributes.getValue("src"));
     }
 
+    
+
 
     /**
      * Compute resource.
