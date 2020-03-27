@@ -29,70 +29,61 @@ import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 
 public class ServerTrackerInterceptor extends ServerInterceptor {
 
-	protected static final Log logger = LogFactory.getLog(ServerTrackerInterceptor.class);
+    protected static final Log logger = LogFactory.getLog(ServerTrackerInterceptor.class);
 
 
-
-	private ITracker tracker;
-	
-	
-	public PortalObjectContainer portalObjectContainer;
-	
-   
-     
-    
-
-	public ITracker getTracker() {
-		return this.tracker;
-	}
-
-	public void setTracker(ITracker tracker) {
-		this.tracker = tracker;
-	}
-	
-
-	
-	
+    private ITracker tracker;
 
 
+    public PortalObjectContainer portalObjectContainer;
 
-	@Override
+
+    public ITracker getTracker() {
+        return this.tracker;
+    }
+
+    public void setTracker(ITracker tracker) {
+        this.tracker = tracker;
+    }
+
+
+    @Override
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
-	    
-		// réinitialisation des propriétes des windows
+
+        // réinitialisation des propriétes des windows
         PageProperties.init();
-        
-	    DynamicPortalObjectContainer.clearCache();
 
-		this.getTracker().init();
+        DynamicPortalObjectContainer.clearCache();
 
-		this.getTracker().pushState(invocation);
+        this.getTracker().init();
 
-	    ServerInvocationContext context = invocation.getServerContext();
+        this.getTracker().pushState(invocation);
 
-	    this.getTracker().setHttpRequest( context.getClientRequest());
+        ServerInvocationContext context = invocation.getServerContext();
 
-	    HttpSession session = context.getClientRequest().getSession( true);
+        this.getTracker().setHttpRequest(context.getClientRequest());
 
-		this.getTracker().setHttpSession(session);
+        HttpSession session = context.getClientRequest().getSession(true);
+
+        this.getTracker().setHttpSession(session);
 
 
-		try {
-				// Continue invocation
-			invocation.invokeNext();
-		}
+        try {
+            // Continue invocation
+            invocation.invokeNext();
+        }
 
-		finally {
-			this.getTracker().popState();
+        finally {
+            this.getTracker().popState();
 
-		}
-		
-	      PageProperties.remove();
-			this.getTracker().remove();      
-			DynamicPortalObjectContainer.removeCache();
-	      
+        }
 
-	}
+        PageProperties.remove();
+        this.getTracker().remove();
+        DynamicPortalObjectContainer.removeCache();
+
+
+    }
 
 
 }

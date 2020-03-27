@@ -237,6 +237,7 @@
       <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
       <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
       -->
+       <property name="Tracker" ref="osivia:service=Tracker"/>      
       <property name="ContentProviderRegistry" ref="portal:service=ContentProviderRegistry"/>
    </bean>
    
@@ -279,15 +280,17 @@
     <!-- Command factories -->
    <bean class="org.jboss.portal.core.controller.command.mapper.DelegatingCommandFactoryService"
           id="portal:commandFactory=Delegating" >
-      
-   </bean>
-   <bean class="org.jboss.portal.core.model.portal.DefaultPortalCommandFactory"
-          id="portal:commandFactory=DefaultPortal" >
-      
-      <property name="NextFactory" ref="portal:commandFactory=Delegating"/>
-      <property name="Container" ref="portal:container=PortalObject"/>
-   </bean>
+    </bean>
    
+
+    
+    <bean class="org.osivia.portal.core.pagemarker.PortalCommandFactory"
+		id="portal:commandFactory=DefaultPortal">
+		
+		        <property name="NextFactory" ref="portal:commandFactory=Delegating"/>    
+		        <property name="Container" ref="portal:container=PortalObject"/>    
+
+	</bean>
    
     <bean class="org.jboss.portal.core.model.portal.command.mapping.DefaultPortalObjectPathMapper"
           id="portal:service=PortalObjectPathMapper,type=Default" >
@@ -481,7 +484,7 @@
       <property name="ThemeService" ref="portal:service=ThemeService"/>
    </bean>
 
-<!--  CMS -->
+	<!--  CMS -->
 
    
  	<bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
@@ -497,10 +500,11 @@
 	</bean>
    
    	<bean class="org.osivia.portal.core.cms.ContentURLFactory" id="osivia:urlFactory=Cms" >
-
         <property name="Path" value="/content" />
         <property name="Factory" ref="portal:urlFactory=Delegating"/>        
 	</bean>
    
+
+    
     
 </beans>

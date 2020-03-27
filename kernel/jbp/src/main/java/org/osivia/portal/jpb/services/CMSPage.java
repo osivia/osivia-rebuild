@@ -75,7 +75,7 @@ public  class  CMSPage extends PageImplBase {
 		this.setObjectNode(pageNode);
 
 		pageNode.setObject(this);
-		container.nodes.put(this.getId(), this);
+		container.getContextNodes().put(this.getId(), this);
 
 		// parent relations
 		pageNode.setParent(parentNode);
@@ -157,7 +157,7 @@ public  class  CMSPage extends PageImplBase {
         win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, region);
         win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, order);
         winNode.setObject(win);
-        container.nodes.put(win.getId(), win);
+        container.getContextNodes().put(win.getId(), win);
         
         winNode.setParent(getObjectNode());
         
@@ -187,7 +187,7 @@ public  class  CMSPage extends PageImplBase {
 
 		dupWin.setDeclaredProperty("osivia.window.injected", "1");
 		dupWinNode.setObject(dupWin);
-		container.nodes.put(dupWin.getId(), dupWin);
+		container.getContextNodes().put(dupWin.getId(), dupWin);
 		return dupWinNode;
 	}
 

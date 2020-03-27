@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -112,12 +114,12 @@ public class TrackerService extends ServiceMBeanSupport implements ITracker, Ser
 		getStack().push( state);
 	}
 	
-
+	@PostConstruct
 	public void startService() throws Exception {
 		log.info("start service TrackerService");
 		RequestContextUtil.currentTracker = this;
 	}
-
+	@PreDestroy
 	public void stopService() throws Exception {
 		log.info("stop service TrackerService");
 		RequestContextUtil.currentTracker = null;

@@ -18,16 +18,15 @@ package org.osivia.portal.api.dynamic;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 
-
-
+import java.util.Locale;
 import java.util.Map;
 
 /**
- * Portal dynamic Window API interface.
+ * Portal dynamic API interface.
  *
  * @author Jean-Sébastien Steux
  */
-public interface IDynamicWindowService {
+public interface IDynamicService {
 
 
     /**
@@ -38,8 +37,10 @@ public interface IDynamicWindowService {
      * @param windowProperties        window properties
      * @return URL
      */
-    void startDynamicWindow(PortalControllerContext portalControllerContext, String regionId, String portletInstance, Map<String, String> windowProperties)  throws PortalException;
+    public void startDynamicWindow(PortalControllerContext portalControllerContext, String regionId, String portletInstance, Map<String, String> windowProperties)  throws PortalException;
 
+    public String startDynamicPage(PortalControllerContext portalControllerContext, String parentId, String pageName, Map<Locale, String> displayNames, String templateId, Map<String, String> properties,
+            Map<String, String> parameters);
 
   
 }

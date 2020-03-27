@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.osivia.portal.api.cms.model.Document;
-
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
@@ -21,6 +21,14 @@ public class DocumentImpl implements Document {
     /** The properties. */
     private final Map<String, Object> properties;
     
+
+    /** The space id. */
+    private String spaceId;
+    
+    
+    public void setSpaceId(String spaceId) {
+        this.spaceId = spaceId;
+    }
 
     /**
      * Instantiates a new document impl.
@@ -58,12 +66,8 @@ public class DocumentImpl implements Document {
 
     @Override
     public String getSpaceId() {
-        int index = getId().indexOf(CMSServiceImpl.SPACE_SEPARATOR);
-        if( index != -1)  {
-            String spaceId = id.substring(0, index);
-            return spaceId;
-        }
-        return id;
+        
+        return spaceId;
     }
 
 }

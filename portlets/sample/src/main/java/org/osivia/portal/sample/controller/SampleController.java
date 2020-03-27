@@ -14,7 +14,7 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.dynamic.IDynamicWindowService;
+import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -44,7 +44,7 @@ public class SampleController implements PortletContextAware {
 
 
     @Autowired
-    private IDynamicWindowService dynamicWindowService;
+    private IDynamicService dynamicWindowService;
 
     /** CMS service. */
     @Autowired
@@ -73,7 +73,7 @@ public class SampleController implements PortletContextAware {
         request.setAttribute("count", count);
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
 
-        String foo = cmsService.getDocument(new CMSContext(portalCtx), "1").getTitle();
+        String foo = cmsService.getDocument(new CMSContext(portalCtx), "doc1").getTitle();
         request.setAttribute("foo", foo);
 
         return "view-1";
@@ -110,7 +110,7 @@ public class SampleController implements PortletContextAware {
         // CMSService cmsService = this.applicationContext.getBean(CMSService.class);
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
 
-        String foo = cmsService.getDocument(new CMSContext(portalCtx), "1_1").getTitle();
+        String foo = cmsService.getDocument(new CMSContext(portalCtx), "doc1").getTitle();
         request.setAttribute("foo", foo);
     }
 

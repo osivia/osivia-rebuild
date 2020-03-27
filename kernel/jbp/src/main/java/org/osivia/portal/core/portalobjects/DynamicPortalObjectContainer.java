@@ -191,6 +191,9 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         newPages.add(newPage);
 
         setNavigationalItem("osivia.dynamic_pages", newPages);
+        
+        // On vide le cache
+        getDatas().clear();        
     }
 
     public List<DynamicWindowBean> getPageWindows(PortalObjectId pageId) {

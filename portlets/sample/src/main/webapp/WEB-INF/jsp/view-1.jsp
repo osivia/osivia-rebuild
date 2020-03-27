@@ -53,5 +53,8 @@
     </span>  
          <span >
        <a href="${normalURL}" class="btn btn-default">normal</a>
-    </span>          
+    </span>   
+   <span >
+       <a href="/portal/content/doc1" class="btn btn-default">cms</a>
+    </span>  
 </div>

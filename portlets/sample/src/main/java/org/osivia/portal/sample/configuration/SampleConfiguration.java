@@ -2,7 +2,7 @@ package org.osivia.portal.sample.configuration;
 
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.services.Locator;
-import org.osivia.portal.api.dynamic.IDynamicWindowService;
+import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -54,8 +54,8 @@ public class SampleConfiguration {
     }
     
     @Bean
-    public IDynamicWindowService getDynamicWindowService() {
-        return Locator.getService(IDynamicWindowService.class);
+    public IDynamicService getDynamicWindowService() {
+        return Locator.getService(IDynamicService.class);
     }
 
 }

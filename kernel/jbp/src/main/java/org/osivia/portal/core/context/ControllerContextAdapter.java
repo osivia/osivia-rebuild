@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.core.context;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -27,7 +29,13 @@ public class ControllerContextAdapter {
             controllerContext = (ControllerContext) portalContext.getRequest().getAttribute("osivia.controller");
             return controllerContext;
         }
+        if (portalContext.getHttpServletRequest() != null) {
+            controllerContext = (ControllerContext) portalContext.getHttpServletRequest().getAttribute("osivia.controllerContext");
+           
+        }
 
+
+        
         return controllerContext;
 
     }
