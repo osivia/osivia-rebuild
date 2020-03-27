@@ -4,14 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 
-public class SpaceImpl extends DocumentImpl implements Space {
+public class PageImpl extends DocumentImpl implements Page {
 
     private List<ModuleRef> moduleRefs;
 
-    public SpaceImpl(String id, String parentId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
-        super(id,parentId, childrenId, properties);
+    public PageImpl(String id, String parentId, List<String> childrenId,Map<String, Object> properties, List<ModuleRef> moduleRefs) {
+        super( id, parentId, childrenId, properties);
         this.moduleRefs = moduleRefs;
 
     }

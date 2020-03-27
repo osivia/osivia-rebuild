@@ -94,7 +94,7 @@ public class ViewContentCommand extends ControllerCommand {
     }
 
     public ControllerResponse execute() throws ControllerException {
-        ControllerResponse controllerResponse = null;
+
         ControllerContext controllerContext = this.getControllerContext();
 
         try {

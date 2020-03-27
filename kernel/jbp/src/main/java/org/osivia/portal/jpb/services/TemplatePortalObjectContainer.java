@@ -187,28 +187,28 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
          */
 
 
-        if ("portalA".equals(portalName)) {
-            portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, "pageA");
-            portal.setDeclaredProperty("osivia.publication.nameType", "name");
-
-            // static pages
-            String path = "/portalA/pageA";
-            Map<String, String> pageProperties = new HashMap<>();
-            pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
-            pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
-            SampleStaticPageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)),
-                    pageProperties);
-
-            path = "/portalA/pageA-ajax";
-            pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
-            SampleStaticPageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)),
-                    pageProperties);
-
-            path = "/portalA/simple-ajax";
-            pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
-            SampleStaticSimplePageFactory.createCMSPage(this, containerContext,
-                    new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)), pageProperties);
-        } else {
+//        if ("portalA".equals(portalName)) {
+//            portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, "pageA");
+//            portal.setDeclaredProperty("osivia.publication.nameType", "name");
+//
+//            // static pages
+//            String path = "/portalA/pageA";
+//            Map<String, String> pageProperties = new HashMap<>();
+//            pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
+//            pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
+//            SampleStaticPageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)),
+//                    pageProperties);
+//
+//            path = "/portalA/pageA-ajax";
+//            pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
+//            SampleStaticPageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)),
+//                    pageProperties);
+//
+//            path = "/portalA/simple-ajax";
+//            pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
+//            SampleStaticSimplePageFactory.createCMSPage(this, containerContext,
+//                    new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)), pageProperties);
+//        } else {
             try {
                 PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
                 CMSContext cmsContext = new CMSContext(portalCtx);
@@ -217,20 +217,14 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
                     Space space = (Space) document;
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, "default");
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
-                    String path = "/" + portalName + "/" + "default";
-                    Map<String, String> pageProperties = new HashMap<>();
-                    pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
-                    pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
-                    DefaultCMSPageFactory.createCMSPage(this, containerContext,
-                            new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)), pageProperties, getCMSService(), space);
 
-
+                    DefaultCMSPageFactory.createCMSPage(this, containerContext, portal, getCMSService(), cmsContext, space);
                 }
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
+//        }
 
 
         // else {

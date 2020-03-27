@@ -1,5 +1,6 @@
 package org.osivia.portal.services.cms.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,16 +15,22 @@ import org.osivia.portal.services.cms.service.CMSServiceImpl;
 public class DocumentImpl implements Document {
     
 
-
     /** The id. */
     private final String id;
     
+     
     /** The properties. */
     private final Map<String, Object> properties;
     
 
     /** The space id. */
     private String spaceId;
+    
+    /** The parent id. */
+    private String parentId;
+    
+    /** The id. */
+    private List<String> childrenId;
     
     
     public void setSpaceId(String spaceId) {
@@ -36,9 +43,12 @@ public class DocumentImpl implements Document {
      * @param id the id
      * @param properties the properties
      */
-    public DocumentImpl( String id, Map<String, Object> properties) {
+    public DocumentImpl( String id, String parentId, List<String> childrenId, Map<String, Object> properties) {
         super();
+        
         this.id = id;
+        this.parentId = parentId;
+        this.childrenId = childrenId;
         this.properties = properties;
     }
 
@@ -66,8 +76,18 @@ public class DocumentImpl implements Document {
 
     @Override
     public String getSpaceId() {
-        
         return spaceId;
     }
+
+    @Override
+    public String getParentId() {
+         return parentId;
+    }
+
+    @Override
+    public List<String> getChildrenId() {
+        return childrenId;
+    }
+
 
 }

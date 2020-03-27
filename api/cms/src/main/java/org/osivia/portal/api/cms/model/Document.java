@@ -1,5 +1,6 @@
 package org.osivia.portal.api.cms.model;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +25,8 @@ public interface Document {
      */
     String getTitle();
     
+
+    
     /**
      * Gets the properties.
      *
@@ -37,4 +40,21 @@ public interface Document {
      * @return the space
      */
     public String getSpaceId();
+    
+       
+    /**
+     * Gets the parent.
+     *
+     * @return the parent
+     */
+    public String getParentId();
+    
+    
+    /**
+     * Gets the parent.
+     *
+     * @return the parent
+     */
+    public List<String> getChildrenId();
+    
 }

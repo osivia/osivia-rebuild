@@ -94,7 +94,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
             // http://localhost:8080/portal/portal/site1/id-col2
 
             PortalObjectId portalID = new PortalObjectId("", new PortalObjectPath("/portalA", PortalObjectPath.CANONICAL_FORMAT));
-            PortalObjectId templateID = new PortalObjectId("", new PortalObjectPath("/portalA/pageA", PortalObjectPath.CANONICAL_FORMAT));
+            PortalObjectId templateID = new PortalObjectId("", new PortalObjectPath("/portalA/default/pageA", PortalObjectPath.CANONICAL_FORMAT));
 
             PortalObject portal = portalObjectContainer.getObject(portalID);
 
