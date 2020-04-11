@@ -215,7 +215,7 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
                 Document document = getCMSService().getDocument(cmsContext, portalName);
                 if (document instanceof Space) {
                     Space space = (Space) document;
-                    portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, "default");
+                    portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
 
                     DefaultCMSPageFactory.createCMSPage(this, containerContext, portal, getCMSService(), cmsContext, space);

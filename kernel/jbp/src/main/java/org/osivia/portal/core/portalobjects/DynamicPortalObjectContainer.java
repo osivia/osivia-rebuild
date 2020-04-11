@@ -81,42 +81,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
     }
 
-    public void addDynaPortal() {
 
-        if (this.getTracker().getHttpSession().getAttribute("osivia.demo_portal") == null) {
-
-            // Add dynamic page to portalA
-
-            // http://localhost:8080/portal/portal/portalA/pageA
-            // http://localhost:8080/portal/portal/portalA/pageA-ajax
-            // http://localhost:8080/portal/portal/portalA/dyna            
-            // http://localhost:8080/portal/portal/site1/id-col1
-            // http://localhost:8080/portal/portal/site1/id-col2
-
-            PortalObjectId portalID = new PortalObjectId("", new PortalObjectPath("/portalA", PortalObjectPath.CANONICAL_FORMAT));
-            PortalObjectId templateID = new PortalObjectId("", new PortalObjectPath("/portalA/default/pageA", PortalObjectPath.CANONICAL_FORMAT));
-
-            PortalObject portal = portalObjectContainer.getObject(portalID);
-
-            DynamicPageBean pageBean = new DynamicPageBean(portal, "dyna", null, null, templateID, new HashMap<String, String>());
-
-            addDynamicPage(pageBean);
-
-            this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
-
-            PortalObjectId dynaPageID = new PortalObjectId("", new PortalObjectPath("/portalA/dyna", PortalObjectPath.CANONICAL_FORMAT));
-
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
-            properties.put(ThemeConstants.PORTAL_PROP_REGION, "col-2");
-
-            DynamicWindowBean windowBean = new DynamicWindowBean(dynaPageID, "dyna", "SampleInstance", properties, null);
-
-            addDynamicWindow(windowBean);
-
-            this.getTracker().getHttpSession().setAttribute("osivia.demo_portal", "1");
-        }
-    }
 
     private void addCMSDynaPage(PortalObject portal, String name, String cmsTemplatePath) {
         Map cmsProperties = new ConcurrentHashMap<String, String>();
@@ -300,9 +265,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
             return cache;
         }
 
-        // just for test
-        // TODO : remove
-        addDynaPortal();
+
 
         Object cmd = this.getTracker().getCurrentState();
 

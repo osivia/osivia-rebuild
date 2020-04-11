@@ -16,6 +16,14 @@ public interface Document {
      * @return identifier
      */
     String getId();
+    
+
+    /**
+     * Get document name.
+     *
+     * @return identifier
+     */
+    String getName();
 
     
     /**

@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.jboss.portal.core.model.portal.PortalObjectId;
 
+/**
+ * A factory for creating CMSPage objects associated to CMS document.
+ */
 public interface CMSPageFactory {
 
     void createCMSWindows(CMSPage page, Map windows);

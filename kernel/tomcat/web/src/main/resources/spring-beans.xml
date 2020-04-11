@@ -504,7 +504,10 @@
         <property name="Factory" ref="portal:urlFactory=Delegating"/>        
 	</bean>
    
-
+   	<bean class="org.osivia.portal.jpb.services.PublicationManager"
+		id="osivia:service=PublicationManager" >
+	</bean>
+   
     
     
 </beans>

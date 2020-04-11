@@ -24,6 +24,10 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
     Document doc;
     CMSService cmsService;
+    
+    public static String getRootPageName() {
+        return "root";
+    }
 
 
     public static void createCMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObject parent, CMSService cmsService,
@@ -36,9 +40,9 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         this.cmsService = cmsService;
         this.doc = doc;
 
-        String pageName = "default";
+        String pageName = getRootPageName();
         if( doc instanceof Page)
-            pageName = doc.getId();
+            pageName = doc.getName();
         
         // Create default page
         String path = parent.getId().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
@@ -81,7 +85,17 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         List<PortalObjectId> templateIds = new ArrayList<>();
         String template = (String) doc.getProperties().get("osivia.template");
         if (template != null) {
+            // Insert root level
+            int indexPage = template.indexOf('/', 1);
+            if( indexPage != -1) {
+                template = template.substring(0,indexPage) + "/" + getRootPageName() + template.substring(indexPage);
+            }
+            
+            
             PortalObjectPath mainTemplatePath = new PortalObjectPath(template, PortalObjectPath.CANONICAL_FORMAT);
+            // add root level
+            
+            
             templateIds.add(new PortalObjectId("", mainTemplatePath));
         }
 

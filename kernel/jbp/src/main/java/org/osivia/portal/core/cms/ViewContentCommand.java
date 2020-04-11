@@ -43,6 +43,7 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.services.Locator;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.jpb.services.IPublicationManager;
 
 
 /**
@@ -56,6 +57,8 @@ public class ViewContentCommand extends ControllerCommand {
     private CMSService cmsService;
     
     private IDynamicService dynamicService;
+    
+    private IPublicationManager publicationManager;
 
     /** . */
     private String contentId;
@@ -81,9 +84,16 @@ public class ViewContentCommand extends ControllerCommand {
         if (dynamicService == null) {
             dynamicService = Locator.getService(IDynamicService.class);
         }
-
         return dynamicService;
     }
+    
+    private IPublicationManager getPublicationManager() {
+        if (publicationManager == null) {
+            publicationManager = Locator.getService(IPublicationManager.class);
+        }
+        return publicationManager;
+    }
+
 
     public CommandInfo getInfo() {
         return info;
@@ -103,16 +113,14 @@ public class ViewContentCommand extends ControllerCommand {
             CMSContext cmsContext = new CMSContext(portalCtx);
             Document doc = getCMSService().getDocument(cmsContext, getContentId());
             Document space = getCMSService().getDocument(cmsContext, doc.getSpaceId());
-            
               
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
             String displayName = space.getTitle();
             if (StringUtils.isNotEmpty(displayName)) {
                 displayNames.put(Locale.FRENCH, displayName);
             }
-            
-           // String templatePath = (String) space.getProperties().get("osivia.template");
-            String templatePath = "/" + space.getId() + "/default";
+
+            String templatePath = getPublicationManager().getPageTemplate(cmsContext, doc).toString(PortalObjectPath.CANONICAL_FORMAT);
             
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");               
