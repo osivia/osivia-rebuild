@@ -18,7 +18,10 @@ public class DocumentImpl implements Document {
     /** The id. */
     private final String id;
     
-     
+
+    /** The name. */
+    private final String name;
+
     /** The properties. */
     private final Map<String, Object> properties;
     
@@ -43,10 +46,11 @@ public class DocumentImpl implements Document {
      * @param id the id
      * @param properties the properties
      */
-    public DocumentImpl( String id, String parentId, List<String> childrenId, Map<String, Object> properties) {
+    public DocumentImpl( String id, String name, String parentId, List<String> childrenId, Map<String, Object> properties) {
         super();
         
         this.id = id;
+        this.name = name;
         this.parentId = parentId;
         this.childrenId = childrenId;
         this.properties = properties;
@@ -87,6 +91,13 @@ public class DocumentImpl implements Document {
     @Override
     public List<String> getChildrenId() {
         return childrenId;
+    }
+
+    
+     
+    @Override    
+    public String getName() {
+        return name;
     }
 
 

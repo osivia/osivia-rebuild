@@ -73,7 +73,7 @@ public class SampleController implements PortletContextAware {
         request.setAttribute("count", count);
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
 
-        String foo = cmsService.getDocument(new CMSContext(portalCtx), "doc1").getTitle();
+        String foo = cmsService.getDocument(new CMSContext(portalCtx), "ID_DOC_1").getTitle();
         request.setAttribute("foo", foo);
 
         return "view-1";

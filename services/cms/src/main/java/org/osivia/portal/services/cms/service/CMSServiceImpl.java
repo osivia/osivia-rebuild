@@ -42,10 +42,10 @@ public class CMSServiceImpl implements CMSService {
      * @param id the id
      * @param properties the properties
      */
-    private void addDocument( String id , String parentId)   {
+    private void addDocument( String id , String name, String parentId)   {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "doc." + id);   
-        DocumentImpl doc = new DocumentImpl(id, parentId,new ArrayList<String>(), properties);
+        properties.put("dc:title", "doc." + name + "#"+id);   
+        DocumentImpl doc = new DocumentImpl(id, name, parentId,new ArrayList<String>(), properties);
         doc.setSpaceId(parentId);
         documents.put(id, doc);
     }
@@ -59,7 +59,7 @@ public class CMSServiceImpl implements CMSService {
     private void addWorkspace( String id)   {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);   
-        properties.put("osivia.template", "/portalA/default/pageA");         
+        properties.put("osivia.template", "/portalA/pageA");         
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         ModuleRef module = new ModuleRef( "win-"+id, "col-1", "0",  "SampleInstance");
         modules.add(module);
@@ -89,10 +89,18 @@ public class CMSServiceImpl implements CMSService {
      * @param id the id
      * @param properties the properties
      */
-    private void addTemplatePage( String id, String parentId, String spaceId,  List<String> children)   {
+    private void addTemplatePage( String id, String name, String parentId, String spaceId,  List<String> children, List<ModuleRef> modules)   {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);   
       
+        PageImpl page = new PageImpl(id, name, parentId , children, properties,modules);
+        page.setSpaceId(spaceId);
+        documents.put(id, page);
+    }
+    
+    
+    protected void pageA(String id, String name, String parentId, String spaceId, List<String> children) {
+        
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         ModuleRef moduleA = new ModuleRef( "winA-"+id, "col-2", "0",  "SampleInstance");
         ModuleRef moduleB = new ModuleRef( "winB-"+id, "col-2", "1",  "SampleRemote");
@@ -102,21 +110,35 @@ public class CMSServiceImpl implements CMSService {
         modules.add(moduleB);
         modules.add(moduleC);
         
-        PageImpl page = new PageImpl(id,  parentId , children, properties,modules);
-        page.setSpaceId(spaceId);
-        documents.put(id, page);
+        addTemplatePage(  id, name, parentId,  spaceId,  children, modules) ;
     }
     
+ 
+   protected void pageB(String id, String name, String parentId, String spaceId, List<String> children) {
+        
+        List<ModuleRef> modules = new ArrayList<ModuleRef>();
+        ModuleRef moduleB = new ModuleRef( "winB-"+id, "col-2", "0",  "SampleInstance");
+        modules.add(moduleB);
+        
+        addTemplatePage(  id, name, parentId,  spaceId,  children, modules) ;
+    }
+
+    
+    
     protected void createWorskpace() {
-        addDocument( "doc1","space1");
+        addDocument( "ID_DOC_1", "doc1", "space1");
         addWorkspace("space1");
     }
     
     
     protected void createTemplateSpace() {
-        addTemplatePage("pageA", "portalA","portalA", new ArrayList<String>());
+        pageA("ID_PAGE_A", "pageA", "portalA","portalA", new ArrayList<String>());
+        pageB("ID_PAGE_B", "pageB", "portalA","portalA", new ArrayList<String>());
+       
+        
         List<String> portalChildren = new ArrayList<String>();
-        portalChildren.add("pageA");
+        portalChildren.add("ID_PAGE_A");
+        portalChildren.add("ID_PAGE_B");
         addTemplateSpace("portalA", portalChildren);
     } 
     

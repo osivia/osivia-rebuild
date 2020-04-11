@@ -43,7 +43,7 @@
        <a href="${startWindowURL}" class="btn btn-default">startWindow</a>
     </span>
       <span >
-       <a href="/portal/portal/portalA/simple-ajax" class="btn btn-default">goToPage</a>
+       <a href="/portal/portal/portalA/pageB" class="btn btn-default">goToPage</a>
     </span>  
         <span >
        <a href="${throwExceptionURL}" class="btn btn-default">Exception</a>
@@ -55,6 +55,6 @@
        <a href="${normalURL}" class="btn btn-default">normal</a>
     </span>   
    <span >
-       <a href="/portal/content/doc1" class="btn btn-default">cms</a>
+       <a href="/portal/content/ID_DOC_1" class="btn btn-default">cms</a>
     </span>  
 </div>
