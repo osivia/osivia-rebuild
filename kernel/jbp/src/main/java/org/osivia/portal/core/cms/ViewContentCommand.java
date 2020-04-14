@@ -39,6 +39,7 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.services.Locator;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -111,7 +112,7 @@ public class ViewContentCommand extends ControllerCommand {
 
             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
             CMSContext cmsContext = new CMSContext(portalCtx);
-            Document doc = getCMSService().getDocument(cmsContext, getContentId());
+            Document doc = getCMSService().getDocument(cmsContext,  new UniversalID(getContentId()));
             Document space = getCMSService().getDocument(cmsContext, doc.getSpaceId());
               
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
@@ -126,7 +127,7 @@ public class ViewContentCommand extends ControllerCommand {
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");               
             Map<String, String> parameters = new HashMap<String, String>();
             
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, "/portalA", "space_"+space.getSpaceId(), displayNames, templatePath, properties, parameters);
+            String pagePath = getDynamicService().startDynamicPage(portalCtx, "/templates_portalA", "space_"+space.getSpaceId(), displayNames, templatePath, properties, parameters);
 
             PortalObjectId pageId = PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT);
             return new UpdatePageResponse(pageId);

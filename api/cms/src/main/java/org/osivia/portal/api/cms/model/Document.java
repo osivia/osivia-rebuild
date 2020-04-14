@@ -17,9 +17,8 @@ public interface Document {
      *
      * @return identifier
      */
-    String getId();
+    UniversalID getId();
     
-
     
     /**
      * Gets the title.
@@ -42,7 +41,7 @@ public interface Document {
      *
      * @return the space
      */
-    public String getSpaceId();
+    public UniversalID getSpaceId();
     
        
     /**

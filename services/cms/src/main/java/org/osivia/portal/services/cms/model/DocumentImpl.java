@@ -7,8 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.Space;
+import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.services.cms.repository.CMSUserRepository;
+import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
 /**
@@ -18,8 +19,8 @@ public class DocumentImpl implements Document {
     
 
     /** The id. */
-    private final String id;
-    
+    private final String internalID;
+
 
     /** The name. */
     private final String name;
@@ -29,16 +30,16 @@ public class DocumentImpl implements Document {
     
 
     /** The space id. */
-    private String spaceId;
+    private String spaceInternalId;
     
     /** The parent id. */
-    private String parentId;
+    private String parentInternalId;
     
     /** The id. */
     private List<String> childrenId;
     
     /** The user repository. */
-    private CMSUserRepository userRepository;
+    private InMemoryUserRepository userRepository;
     
     
 
@@ -48,22 +49,27 @@ public class DocumentImpl implements Document {
      * @param id the id
      * @param properties the properties
      */
-    public DocumentImpl( CMSUserRepository userRepository, String id, String name, String parentId, List<String> childrenId, Map<String, Object> properties) {
+    public DocumentImpl( InMemoryUserRepository userRepository, String internalID, String name, String parentId, List<String> childrenId, Map<String, Object> properties) {
         super();
         this.userRepository = userRepository;
-        this.id = id;
+        this.internalID = internalID;
         this.name = name;
-        this.parentId = parentId;
+        this.parentInternalId = parentId;
         this.childrenId = childrenId;
         this.properties = properties;
     }
 
+     
+    public String getInternalID() {
+        return internalID;
+    }
+    
     /* (non-Javadoc)
      * @see org.osivia.portal.api.cms.model.Document#getId()
      */
     @Override
-    public String getId() {
-        return id;
+    public UniversalID getId() {
+        return new UniversalID(userRepository.getRepositoryName(), getInternalID());
     }
     
     /* (non-Javadoc)
@@ -80,14 +86,19 @@ public class DocumentImpl implements Document {
 
     }
 
+
+    public String getSpaceInternalId() {
+        return spaceInternalId;
+    }
+    
     @Override
-    public String getSpaceId() {
-        return spaceId;
+    public UniversalID getSpaceId() {
+        return new UniversalID(userRepository.getRepositoryName(), getSpaceInternalId());
     }
 
 
-    public String getParentId() {
-         return parentId;
+    public String getParentInternalId() {
+         return parentInternalId;
     }
 
 
@@ -100,8 +111,8 @@ public class DocumentImpl implements Document {
         return name;
     }
     
-    public void setSpaceId(String spaceId) {
-        this.spaceId = spaceId;
+    public void setSpaceInternalId(String spaceInternalId) {
+        this.spaceInternalId = spaceInternalId;
     }
 
 

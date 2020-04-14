@@ -25,6 +25,7 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.Space;
+import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.services.Locator;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -38,7 +39,7 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
     ContainerContext containerContext = new ContainerContext();
 
 
-    private static String PORTAL_A_NAME = "portalA";
+    private static String PORTAL_A_NAME = "templates_portalA";
 
 
     private ContentProviderRegistry contentProviderRegistry;
@@ -101,8 +102,6 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             if (curPortalObject == null) {
 
                 createPortal(contextNodes, portalID);
-
-
             }
 
             res = contextNodes.get(id);
@@ -212,7 +211,7 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             try {
                 PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
                 CMSContext cmsContext = new CMSContext(portalCtx);
-                Document document = getCMSService().getDocument(cmsContext, portalName);
+                Document document = getCMSService().getDocument(cmsContext,  new UniversalID(portalName));
                 if (document instanceof Space) {
                     Space space = (Space) document;
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());

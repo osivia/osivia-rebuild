@@ -17,6 +17,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
+import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer.ContainerContext;
 
@@ -45,7 +46,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
         String pageName = getRootPageName();
         if( doc instanceof Page)
-            pageName = doc.getId();
+            pageName = doc.getId().toString();
         
         // Create default page
         String path = parent.getId().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
@@ -89,7 +90,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         String templateCMSId = (String) doc.getProperties().get("osivia.template");
         if (templateCMSId != null) {
             
-            Document templateDoc = cmsService.getDocument(cmsContext, templateCMSId);
+            Document templateDoc = cmsService.getDocument(cmsContext, new UniversalID(templateCMSId));
             
             String templatePath = "/" + templateDoc.getId();
             while (templateDoc.getParent() instanceof Page) {

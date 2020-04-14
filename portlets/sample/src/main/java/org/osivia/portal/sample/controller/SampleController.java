@@ -12,6 +12,7 @@ import javax.portlet.RenderResponse;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -73,7 +74,7 @@ public class SampleController implements PortletContextAware {
         request.setAttribute("count", count);
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
 
-        String foo = cmsService.getDocument(new CMSContext(portalCtx), "ID_DOC_1").getTitle();
+        String foo = cmsService.getDocument(new CMSContext(portalCtx), new UniversalID("myspace","ID_DOC_1")).getTitle();
         request.setAttribute("foo", foo);
 
         return "view-1";
@@ -104,15 +105,6 @@ public class SampleController implements PortletContextAware {
         response.setRenderParameter("count", count);
     }
 
-
-    @ActionMapping("foo")
-    public void foo(ActionRequest request, ActionResponse response) throws CMSException {
-        // CMSService cmsService = this.applicationContext.getBean(CMSService.class);
-        PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
-
-        String foo = cmsService.getDocument(new CMSContext(portalCtx), "doc1").getTitle();
-        request.setAttribute("foo", foo);
-    }
 
 
     @ActionMapping("throwException")
