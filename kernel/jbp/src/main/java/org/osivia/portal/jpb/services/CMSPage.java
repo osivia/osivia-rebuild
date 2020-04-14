@@ -15,6 +15,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer.ContainerContext;
 
 public  class  CMSPage extends PageImplBase {
@@ -53,7 +54,7 @@ public  class  CMSPage extends PageImplBase {
         return pageName;
     }
 
-	public CMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObjectId pageId, Map<String, String> pageProperties, CMSPageFactory factory) {
+	public CMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObjectId pageId, Map<String, String> pageProperties, CMSPageFactory factory)  throws CMSException{
 		super();
 
 
@@ -93,7 +94,7 @@ public  class  CMSPage extends PageImplBase {
 	}
 
 
-	private Map<String, PortalObject> computeWindows() {
+	private Map<String, PortalObject> computeWindows() throws CMSException {
 
 		Map windows = new ConcurrentHashMap<>();
 
@@ -206,10 +207,14 @@ public  class  CMSPage extends PageImplBase {
 		if (this.properties == null) {
 			this.properties = new ConcurrentHashMap<>();
 			// Initialize from template
-			for (PortalObjectId templateID : factory.getTemplatesID( this)) {
-				PortalObject template = container.getObject(templateID);
-				properties.putAll(template.getProperties());
-			}
+			try {
+                for (PortalObjectId templateID : factory.getTemplatesID( this)) {
+                	PortalObject template = container.getObject(templateID);
+                	properties.putAll(template.getProperties());
+                }
+            } catch (CMSException | IllegalArgumentException e) {
+                throw new RuntimeException( e);
+            }
 
 			// TODO : initialize from current CMS properties
 

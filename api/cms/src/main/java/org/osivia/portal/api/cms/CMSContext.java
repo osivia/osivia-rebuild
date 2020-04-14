@@ -1,5 +1,7 @@
 package org.osivia.portal.api.cms;
 
+import javax.servlet.http.HttpSession;
+
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
@@ -9,7 +11,7 @@ public class CMSContext {
     
     
     /** The portal ctx. */
-    PortalControllerContext portalCtx;
+    private final PortalControllerContext portalCtx;
     
     /**
      * Instantiates a new CMS context.
@@ -21,7 +23,11 @@ public class CMSContext {
         this.portalCtx = portalCtx;
     }
 
-
     
+    public PortalControllerContext getPortalControllerContext() {
+        return portalCtx;
+    }
+
+
     
 }

@@ -3,6 +3,8 @@ package org.osivia.portal.api.cms.model;
 import java.util.List;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.exception.CMSException;
+
 /**
  * CMS document interface.
  *
@@ -17,13 +19,6 @@ public interface Document {
      */
     String getId();
     
-
-    /**
-     * Get document name.
-     *
-     * @return identifier
-     */
-    String getName();
 
     
     /**
@@ -55,7 +50,7 @@ public interface Document {
      *
      * @return the parent
      */
-    public String getParentId();
+    public Document getParent()  throws CMSException;
     
     
     /**
@@ -63,6 +58,6 @@ public interface Document {
      *
      * @return the parent
      */
-    public List<String> getChildrenId();
+    public List<Document> getChildren()  throws CMSException;
     
 }

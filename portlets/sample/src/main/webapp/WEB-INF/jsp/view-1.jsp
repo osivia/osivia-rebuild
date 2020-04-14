@@ -43,7 +43,7 @@
        <a href="${startWindowURL}" class="btn btn-default">startWindow</a>
     </span>
       <span >
-       <a href="/portal/portal/portalA/pageB" class="btn btn-default">goToPage</a>
+       <a href="/portal/portal/portalA/ID_PAGE_B" class="btn btn-default">goToPage</a>
     </span>  
         <span >
        <a href="${throwExceptionURL}" class="btn btn-default">Exception</a>

@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.services.cms.repository.CMSUserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
 /**
@@ -35,10 +37,10 @@ public class DocumentImpl implements Document {
     /** The id. */
     private List<String> childrenId;
     
+    /** The user repository. */
+    private CMSUserRepository userRepository;
     
-    public void setSpaceId(String spaceId) {
-        this.spaceId = spaceId;
-    }
+    
 
     /**
      * Instantiates a new document impl.
@@ -46,9 +48,9 @@ public class DocumentImpl implements Document {
      * @param id the id
      * @param properties the properties
      */
-    public DocumentImpl( String id, String name, String parentId, List<String> childrenId, Map<String, Object> properties) {
+    public DocumentImpl( CMSUserRepository userRepository, String id, String name, String parentId, List<String> childrenId, Map<String, Object> properties) {
         super();
-        
+        this.userRepository = userRepository;
         this.id = id;
         this.name = name;
         this.parentId = parentId;
@@ -83,21 +85,35 @@ public class DocumentImpl implements Document {
         return spaceId;
     }
 
-    @Override
+
     public String getParentId() {
          return parentId;
     }
 
-    @Override
+
     public List<String> getChildrenId() {
         return childrenId;
     }
 
-    
-     
-    @Override    
+
     public String getName() {
         return name;
+    }
+    
+    public void setSpaceId(String spaceId) {
+        this.spaceId = spaceId;
+    }
+
+
+    @Override
+    public Document getParent()  throws CMSException{
+        return userRepository.getParent(this);
+    }
+
+    @Override
+    public List<Document> getChildren()  throws CMSException {
+
+        return userRepository.getChildren(this);
     }
 
 

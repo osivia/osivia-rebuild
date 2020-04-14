@@ -24,6 +24,8 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
     Document doc;
     CMSService cmsService;
+    CMSContext cmsContext;
+    
     
     public static String getRootPageName() {
         return "root";
@@ -38,11 +40,12 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
     public DefaultCMSPageFactory(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObject parent, CMSService cmsService,
             CMSContext cmsContext, Document doc) throws CMSException {
         this.cmsService = cmsService;
+        this.cmsContext = cmsContext;       
         this.doc = doc;
 
         String pageName = getRootPageName();
         if( doc instanceof Page)
-            pageName = doc.getName();
+            pageName = doc.getId();
         
         // Create default page
         String path = parent.getId().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
@@ -55,8 +58,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
         new CMSPage(container, containerContext, pageId, pageProperties, this);
         
-        for( String childId : doc.getChildrenId()) {
-            Document child = cmsService.getDocument(cmsContext, childId);
+        for( Document child : doc.getChildren()) {
             org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);
             DefaultCMSPageFactory.createCMSPage(container, containerContext, page,cmsService, cmsContext, child);
 
@@ -81,21 +83,27 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
     }
 
     @Override
-    public List<PortalObjectId> getTemplatesID(CMSPage page) {
+    public List<PortalObjectId> getTemplatesID(CMSPage page) throws CMSException {
+        
         List<PortalObjectId> templateIds = new ArrayList<>();
-        String template = (String) doc.getProperties().get("osivia.template");
-        if (template != null) {
-            // Insert root level
-            int indexPage = template.indexOf('/', 1);
-            if( indexPage != -1) {
-                template = template.substring(0,indexPage) + "/" + getRootPageName() + template.substring(indexPage);
+        String templateCMSId = (String) doc.getProperties().get("osivia.template");
+        if (templateCMSId != null) {
+            
+            Document templateDoc = cmsService.getDocument(cmsContext, templateCMSId);
+            
+            String templatePath = "/" + templateDoc.getId();
+            while (templateDoc.getParent() instanceof Page) {
+                templateDoc = templateDoc.getParent();
+                templatePath = "/" + templateDoc.getId() + templatePath;
             }
             
+            // Add space
+            templatePath = "/" + templateDoc.getSpaceId() + "/" + getRootPageName() + templatePath;
+
             
-            PortalObjectPath mainTemplatePath = new PortalObjectPath(template, PortalObjectPath.CANONICAL_FORMAT);
+            PortalObjectPath mainTemplatePath = new PortalObjectPath(templatePath, PortalObjectPath.CANONICAL_FORMAT);
             // add root level
-            
-            
+              
             templateIds.add(new PortalObjectId("", mainTemplatePath));
         }
 
