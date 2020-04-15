@@ -35,7 +35,7 @@ public class PublicationManager implements IPublicationManager {
            throw new ControllerException(e);
         }
         // String templatePath = (String) space.getProperties().get("osivia.template");
-        String templatePath = "/" + space.getId() + "/" + DefaultCMSPageFactory.getRootPageName();
+        String templatePath =  space.getId().getRepositoryName() + ":" + "/" + space.getId().getInternalID() +"/" + DefaultCMSPageFactory.getRootPageName();
         PortalObjectId templateId = PortalObjectId.parse(templatePath, PortalObjectPath.CANONICAL_FORMAT);
         return templateId;
         

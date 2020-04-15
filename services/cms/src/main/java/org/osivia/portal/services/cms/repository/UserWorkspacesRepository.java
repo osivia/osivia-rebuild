@@ -30,7 +30,7 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
     private void addWorkspace(String id) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
-        properties.put("osivia.template", new UniversalID("templates","ID_PAGE_A"));
+        properties.put("osivia.template", "templates:ID_PAGE_A");
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         ModuleRef module = new ModuleRef("win-" + id, "col-1", "0", "SampleInstance");
         modules.add(module);

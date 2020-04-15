@@ -143,6 +143,9 @@ public class AjaxResponseHandler implements ResponseHandler {
     public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
             throws ResponseHandlerException {
         try {
+            
+            controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.controllerContext", controllerContext);
+            
             if (controllerResponse instanceof PortletWindowActionResponse) {
                 PortletWindowActionResponse pwr = (PortletWindowActionResponse) controllerResponse;
                 StateString contentState = pwr.getContentState();

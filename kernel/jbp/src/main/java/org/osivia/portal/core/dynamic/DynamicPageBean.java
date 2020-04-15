@@ -109,11 +109,11 @@ public class DynamicPageBean implements Serializable {
     public DynamicPageBean(PortalObject parent, String name, String businessName, Map displayName, PortalObjectId templateId, Map<String, String> pageProperties) {
 		super();
 		
-		pageId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
+		pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(parent.getId().getPath().toString()
 				.concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
 
         if( businessName != null)
-            pageBusinessId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
+            pageBusinessId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(parent.getId().getPath().toString()
                     .concat("/").concat(businessName), PortalObjectPath.CANONICAL_FORMAT));
         else    
             pageBusinessId = pageId;

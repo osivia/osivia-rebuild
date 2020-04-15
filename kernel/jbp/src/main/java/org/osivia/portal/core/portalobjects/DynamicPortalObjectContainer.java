@@ -83,10 +83,10 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
 
 
-    private void addCMSDynaPage(PortalObject portal, String name, String cmsTemplatePath) {
+    private void addCMSDynaPage(PortalObject portal, String name, PortalObjectId cmsTemplateID) {
         Map cmsProperties = new ConcurrentHashMap<String, String>();
 
-        PortalObjectId cmsTemplateID = new PortalObjectId("", new PortalObjectPath(cmsTemplatePath, PortalObjectPath.CANONICAL_FORMAT));
+
 
         DynamicPageBean cmsPageBean1 = new DynamicPageBean(portal, name, null, null, cmsTemplateID, cmsProperties);
 
@@ -336,7 +336,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
             else
                 pageDynamicName = ((CMSPage) page).getCmsID();
 
-            addCMSDynaPage(portal,pageDynamicName, page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+            addCMSDynaPage(portal,pageDynamicName, page.getId());
 
             Collection children = page.getChildren();
             for (Object o : children) {

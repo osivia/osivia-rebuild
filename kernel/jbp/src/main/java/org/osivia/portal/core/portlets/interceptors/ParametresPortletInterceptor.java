@@ -61,7 +61,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
             // Ajout de la window
             String windowId = invocation.getWindowContext().getId();
-            if (windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR) {
+
                 PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
 
                 Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
@@ -77,7 +77,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 // Set attributes
                 invocation.setRequestAttributes(attributes);
-            }
+            
         }
 
         PortletInvocationResponse response = super.invoke(invocation);

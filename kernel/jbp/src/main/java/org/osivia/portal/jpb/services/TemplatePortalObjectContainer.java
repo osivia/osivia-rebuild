@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.impl.model.portal.ObjectNode;
 import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.content.spi.ContentProvider;
@@ -29,6 +30,7 @@ import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.common.services.Locator;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.tracker.ITracker;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
@@ -39,7 +41,7 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
     ContainerContext containerContext = new ContainerContext();
 
 
-    private static String PORTAL_A_NAME = "templates_portalA";
+    private static String PORTAL_A_NAME = "portalA";
 
 
     private ContentProviderRegistry contentProviderRegistry;
@@ -96,12 +98,15 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             String portalName = id.getPath().getName(0);
 
             PortalObjectPath portalPath = new PortalObjectPath("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
-            PortalObjectId portalID = new PortalObjectId("", portalPath);
+            PortalObjectId portalID = new PortalObjectId(id.getNamespace(), portalPath);
 
-            PortalObjectImplBase curPortalObject = (PortalObjectImplBase) nodes.get(id);
+            
+            PortalObjectImplBase curPortalObject = (PortalObjectImplBase) contextNodes.get(portalID);
             if (curPortalObject == null) {
 
+
                 createPortal(contextNodes, portalID);
+                                
             }
 
             res = contextNodes.get(id);
@@ -122,20 +127,51 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
         Map currentContextNodes = nodes.get(sessionId);
         if (currentContextNodes == null) {
 
+            currentContextNodes = new ConcurrentHashMap();
+            nodes.put(sessionId, currentContextNodes);
+            
             PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-            ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId("", contextPath), "", containerContext);
+            ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId("templates", contextPath), "", containerContext);
 
             ContextImplBase context = new ContextImplBase();
             context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, PORTAL_A_NAME);
             context.setObjectNode(contextNode);
             contextNode.setObject(context);
-            currentContextNodes = new ConcurrentHashMap();
-            nodes.put(sessionId, currentContextNodes);
+
             currentContextNodes.put(context.getId(), context);
 
             PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
-            createPortal(currentContextNodes, new PortalObjectId("", defaultPortalPath));
+            createPortal(currentContextNodes, new PortalObjectId("templates", defaultPortalPath));
         }
+        return currentContextNodes;
+    }
+    
+
+    protected Map<PortalObjectId, PortalObject> checkContextNode(String nameSpace, String defaultPortalName) {
+        String sessionId = getTracker().getHttpRequest().getSession().getId();
+        Map<PortalObjectId, PortalObject> currentContextNodes = nodes.get(sessionId);
+
+
+        PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
+
+
+        PortalObjectId contextId = new PortalObjectId(nameSpace, contextPath);
+        if (currentContextNodes.get(contextId) == null) {
+
+
+            ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId(nameSpace, contextPath), "", containerContext);
+
+            ContextImplBase context = new ContextImplBase();
+            context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, defaultPortalName);
+            context.setObjectNode(contextNode);
+            contextNode.setObject(context);
+
+            currentContextNodes.put(context.getId(), context);
+        }
+
+        // PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
+        // createPortal(currentContextNodes, new PortalObjectId("templates", defaultPortalPath));
+
         return currentContextNodes;
     }
 
@@ -163,7 +199,11 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
         contextNodes.put(portal.getId(), portal);
 
         PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-        ObjectNodeImplBase contextNode = ((ContextImplBase) contextNodes.get(new PortalObjectId("", contextPath))).getObjectNode();
+        // Check if context exists
+        checkContextNode(portalID.getNamespace(), portalName);
+        ObjectNodeImplBase contextNode = ((ContextImplBase) contextNodes.get(new PortalObjectId(portalID.getNamespace(), contextPath))).getObjectNode();
+        
+        // Add portal
         contextNode.getChildren().put(portalName, portalNode);
 
 
@@ -186,32 +226,13 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
          */
 
 
-//        if ("portalA".equals(portalName)) {
-//            portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, "pageA");
-//            portal.setDeclaredProperty("osivia.publication.nameType", "name");
-//
-//            // static pages
-//            String path = "/portalA/pageA";
-//            Map<String, String> pageProperties = new HashMap<>();
-//            pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
-//            pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
-//            SampleStaticPageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)),
-//                    pageProperties);
-//
-//            path = "/portalA/pageA-ajax";
-//            pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
-//            SampleStaticPageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)),
-//                    pageProperties);
-//
-//            path = "/portalA/simple-ajax";
-//            pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
-//            SampleStaticSimplePageFactory.createCMSPage(this, containerContext,
-//                    new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT)), pageProperties);
-//        } else {
+
             try {
                 PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
+                ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalCtx);                
+                
                 CMSContext cmsContext = new CMSContext(portalCtx);
-                Document document = getCMSService().getDocument(cmsContext,  new UniversalID(portalName));
+                Document document = getCMSService().getDocument(cmsContext,  new UniversalID(portalID.getNamespace(), portalName));
                 if (document instanceof Space) {
                     Space space = (Space) document;
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());
@@ -223,21 +244,7 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-//        }
 
-
-        // else {
-        // // CMS Sample pages
-        // Map<String, String> pageProperties = new HashMap<>();
-        //
-        // String path = "/" + portalName ;
-        // path = path + "/col-1";
-        // SampleSitePageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath (path, PortalObjectPath.CANONICAL_FORMAT )),
-        // pageProperties);
-        // path = path + "/col-2";
-        // SampleSitePageFactory.createCMSPage(this, containerContext, new PortalObjectId("", new PortalObjectPath (path, PortalObjectPath.CANONICAL_FORMAT )),
-        // pageProperties);
-        // }
 
     }
 

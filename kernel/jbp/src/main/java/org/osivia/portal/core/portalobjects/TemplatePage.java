@@ -90,7 +90,7 @@ public class TemplatePage extends DynamicPage  {
 
         this.parentId = parentId;
 
-        this.id = new PortalObjectId("", new PortalObjectPath(parentId.getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
+        this.id = new PortalObjectId(getParent().getId().getNamespace(), new PortalObjectPath(parentId.getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
 
         // Optimisation : ajout cache
         DynamicPortalObjectContainer.addToCache(this.id, this);

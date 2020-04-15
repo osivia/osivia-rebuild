@@ -82,7 +82,7 @@ public class DynamicTemplateWindow extends DynamicWindow {
 		
 		templatedWindow = true;
 
-		id = new PortalObjectId("", new PortalObjectPath( page.getId().getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
+		id = new PortalObjectId(page.getId().getNamespace(), new PortalObjectPath( page.getId().getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
 		containerContext = (TemplatePortalObjectContainer.ContainerContext)context;
 		// v2 20121106 : Initialisation à null (sinon les propriétés sont vides)
 		//properties = new HashMap<String, String>();

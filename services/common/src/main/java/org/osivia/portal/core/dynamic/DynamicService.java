@@ -66,7 +66,7 @@ public class DynamicService implements IDynamicService {
 
         poc.addDynamicPage(pageBean);
         
-        PortalObjectId pageId = new PortalObjectId("",
+        PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(),
                 new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageName), PortalObjectPath.CANONICAL_FORMAT));
 
         return pageId.toString(PortalObjectPath.CANONICAL_FORMAT);

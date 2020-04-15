@@ -76,13 +76,24 @@ public class PortalObjectCommandFactory extends AbstractCommandFactory
       }
 
       
-      // OSIVIA : PREFETCH PORTAL
+      // OSIVIA : PREFETCH PORTAL TO RETRIEVE CHILDREN
 
-      String tokens[] = requestPath.split("/");
-      if( tokens.length >= 2)	{
-    	  PortalObjectId id =  PortalObjectId.parse("/"+tokens[1], PortalObjectPath.CANONICAL_FORMAT );
-    	  controllerContext.getController().getPortalObjectContainer().getObject(id);            
+      String tokensNamespace[] = contextPath.split("/");
+      
+      String namespace = "";
+      if( tokensNamespace.length == 3)	{
+          namespace = tokensNamespace[2];
       }
+      
+      String tokensPortal[] = requestPath.split("/");
+      String portalPath = "";
+      if( tokensPortal.length >= 2) {
+          portalPath = tokensPortal[1];
+      }     
+      
+        PortalObjectId portalId = PortalObjectId.parse(namespace, "/" + portalPath, PortalObjectPath.CANONICAL_FORMAT);
+        controllerContext.getController().getPortalObjectContainer().getObject(portalId);    
+
       
       
       

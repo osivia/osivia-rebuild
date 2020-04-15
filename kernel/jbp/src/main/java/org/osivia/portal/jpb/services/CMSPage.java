@@ -60,7 +60,7 @@ public  class  CMSPage extends PageImplBase {
 
 		this.factory = factory;
 		
-		PortalObjectId parentId = new PortalObjectId("", pageId.getPath().getParent());
+		PortalObjectId parentId = new PortalObjectId(pageId.getNamespace(), pageId.getPath().getParent());
 		PortalObjectImplBase parent = (PortalObjectImplBase) container.getObject(parentId);
 		
 

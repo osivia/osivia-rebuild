@@ -46,16 +46,16 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
         String pageName = getRootPageName();
         if( doc instanceof Page)
-            pageName = doc.getId().toString();
+            pageName = doc.getId().getInternalID();
         
         // Create default page
-        String path = parent.getId().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
+        String path = parent.getId().getPath().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
         Map<String, String> pageProperties = new HashMap<>();
         pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
         pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
         pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
 
-        PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
+        PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 
         new CMSPage(container, containerContext, pageId, pageProperties, this);
         
@@ -92,20 +92,21 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
             
             Document templateDoc = cmsService.getDocument(cmsContext, new UniversalID(templateCMSId));
             
-            String templatePath = "/" + templateDoc.getId();
+            
+            String templatePath = "/" + templateDoc.getId().getInternalID();
             while (templateDoc.getParent() instanceof Page) {
                 templateDoc = templateDoc.getParent();
                 templatePath = "/" + templateDoc.getId() + templatePath;
             }
             
             // Add space
-            templatePath = "/" + templateDoc.getSpaceId() + "/" + getRootPageName() + templatePath;
+            templatePath = "/" + templateDoc.getSpaceId().getInternalID() + "/" + getRootPageName() + templatePath;
 
             
             PortalObjectPath mainTemplatePath = new PortalObjectPath(templatePath, PortalObjectPath.CANONICAL_FORMAT);
             // add root level
               
-            templateIds.add(new PortalObjectId("", mainTemplatePath));
+            templateIds.add(new PortalObjectId(templateDoc.getId().getRepositoryName(), mainTemplatePath));
         }
 
 

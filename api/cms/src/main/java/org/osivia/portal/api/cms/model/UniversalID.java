@@ -52,7 +52,7 @@ public class UniversalID {
      * @param id the id (REPO_NAME/INTERNAL_ID)
      */
     public UniversalID(String id)   {
-        int separatorIndex = id.indexOf("_");
+        int separatorIndex = id.indexOf(":");
         if( separatorIndex == -1)
             throw new IllegalArgumentException("incorrect ID " + id);
         this.repositoryName = id.substring(0, separatorIndex);
@@ -60,7 +60,7 @@ public class UniversalID {
     }
     
     public String toString()  {
-        return repositoryName + "_" + internalID;
+        return repositoryName + ":" + internalID;
     }
     
 

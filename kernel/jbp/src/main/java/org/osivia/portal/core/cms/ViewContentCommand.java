@@ -112,7 +112,7 @@ public class ViewContentCommand extends ControllerCommand {
 
             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
             CMSContext cmsContext = new CMSContext(portalCtx);
-            Document doc = getCMSService().getDocument(cmsContext,  new UniversalID(getContentId()));
+            Document doc = getCMSService().getDocument(cmsContext,  new UniversalID(getContentId().replaceAll("/", ":")));
             Document space = getCMSService().getDocument(cmsContext, doc.getSpaceId());
               
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
@@ -127,13 +127,16 @@ public class ViewContentCommand extends ControllerCommand {
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");               
             Map<String, String> parameters = new HashMap<String, String>();
             
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, "/templates_portalA", "space_"+space.getSpaceId(), displayNames, templatePath, properties, parameters);
+            String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "space_"+space.getSpaceId().getInternalID(), displayNames, templatePath, properties, parameters);
 
             PortalObjectId pageId = PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT);
             return new UpdatePageResponse(pageId);
 
 
         } catch (Exception e) {
+            // TODO : error management
+            e.printStackTrace();
+            
             throw new ControllerException(e);
         }
     }

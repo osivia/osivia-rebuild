@@ -150,7 +150,7 @@ public abstract class DynamicWindow extends WindowImplBase {
 		this.dynamicContainer = dynamicContainer;
 		this.page = page;
 		this.name = name;
-		id = new PortalObjectId("", new PortalObjectPath( page.getId().getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
+		id = new PortalObjectId(page.getId().getNamespace(), new PortalObjectPath( page.getId().getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
 		properties = new HashMap<String, String>();
 		
 		setContext(context);
