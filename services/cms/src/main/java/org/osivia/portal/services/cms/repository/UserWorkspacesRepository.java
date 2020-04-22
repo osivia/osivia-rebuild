@@ -1,15 +1,16 @@
 package org.osivia.portal.services.cms.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.Document;
+
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.services.cms.model.DocumentImpl;
+import org.osivia.portal.services.cms.model.FolderImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 
 public class UserWorkspacesRepository extends InMemoryUserRepository {
@@ -18,9 +19,26 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
         super(repositoryName);
     }
 
+    
+    private void addFolder(String id, String name, String parentId, String spaceId, List<String> children) {
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        properties.put("dc:title", "Folder." + id);
 
+        FolderImpl folder = new FolderImpl(this, id, name, parentId, spaceId, children, properties);
+        addDocument(id, folder);
+    }
 
+    
+    private void addDocument(String id, String name, String parentId, String spaceId ) {
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        properties.put("dc:title", "Document." + id);
 
+        DocumentImpl doc = new DocumentImpl(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
+        addDocument(id, doc);
+    }
+
+    
+    
     /**
      * Adds the space.
      *
@@ -30,24 +48,23 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
     private void addWorkspace(String id) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
-        properties.put("osivia.template", "templates:ID_PAGE_A");
+
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         ModuleRef module = new ModuleRef("win-" + id, "col-1", "0", "SampleInstance");
         modules.add(module);
-        SpaceImpl space = new SpaceImpl(this,id, null, new ArrayList<String>(), properties, modules);
-        space.setSpaceInternalId(id);
+        SpaceImpl space = new SpaceImpl(this,id, new UniversalID("templates", "ID_PAGE_A1" ),new ArrayList<String>(), properties, modules);
         addDocument(id, space);
     }
 
 
 
-
-
     protected void createWorskpace() {
-        addDocument("ID_DOC_1", "doc1", "space1");
+
+        addFolder("ID_FOLD_1", "folder1", "space1", "space1", new ArrayList<String>(Arrays.asList("ID_FOLD_11")));
+        addFolder("ID_FOLD_11", "folder11", "ID_FOLD_1", "space1", new ArrayList<String>());
+        addDocument("ID_DOC_1", "doc1", "ID_FOLD_11", "space1");
         addWorkspace("space1");
     }
-
 
 
 

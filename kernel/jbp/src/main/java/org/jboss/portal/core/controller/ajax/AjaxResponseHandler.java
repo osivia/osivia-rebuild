@@ -23,6 +23,7 @@
 
 package org.jboss.portal.core.controller.ajax;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.portal.Mode;
@@ -146,6 +147,9 @@ public class AjaxResponseHandler implements ResponseHandler {
             
             controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.controllerContext", controllerContext);
             
+
+            
+            
             if (controllerResponse instanceof PortletWindowActionResponse) {
                 PortletWindowActionResponse pwr = (PortletWindowActionResponse) controllerResponse;
                 StateString contentState = pwr.getContentState();
@@ -159,8 +163,25 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }
             } else if (controllerResponse instanceof UpdatePageResponse) {
                 UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
+                
 
                 PortalObjectId pageId = upw.getPageId();
+                
+                //TODO : conversation scope
+                PortalObjectId oldPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajaxPageId");
+                controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajaxPageId", pageId);
+                
+                Boolean pageChange = false;
+                
+                if( oldPageId != null) {
+                    if( !oldPageId.equals(pageId))  {
+                        pageChange = true;
+                    }
+                }   else
+                    pageChange = true;
+                
+                
+                
                 boolean refreshPageStructure = false;
 
 //                String pagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath");
@@ -184,7 +205,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // in case we have we have a page navigational state...
                 Map<String, String[]> parameters = null;
 
-                if (ctx.getChanges() != null ) {
+
+                if (BooleanUtils.isNotTrue(pageChange) && ctx.getChanges() != null ) {
                     for (Iterator i = ctx.getChanges(); i.hasNext();) {
                         NavigationalStateChange change = (NavigationalStateChange) i.next();
 
@@ -254,13 +276,13 @@ public class AjaxResponseHandler implements ResponseHandler {
                     
                     refreshPageStructure = true;
 
-                        dirtyWindowIds.clear();
-                        Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
-                        for (PortalObject window : windows) {
-                            if (!dirtyWindowIds.contains(window)) {
-                                dirtyWindowIds.add(window.getId());
-                            }
+                    dirtyWindowIds.clear();
+                    Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+                    for (PortalObject window : windows) {
+                        if (!dirtyWindowIds.contains(window)) {
+                            dirtyWindowIds.add(window.getId());
                         }
+                    }
                   
                 }
 
@@ -272,26 +294,34 @@ public class AjaxResponseHandler implements ResponseHandler {
                     ArrayList<PortalObject> refreshedWindows = new ArrayList<PortalObject>();
 
 
-                    // New window
-                    List<PortalObjectId> requestDirtyWindowIds = (List<PortalObjectId>) controllerContext.getServerInvocation().getServerContext()
-                            .getClientRequest().getAttribute("osivia.dynamic.dirtyWindows");
-                    if (requestDirtyWindowIds != null) {
-                        for (PortalObjectId requestDirtyWindow : requestDirtyWindowIds) {
-                            if (!dirtyWindowIds.contains(requestDirtyWindow)) {
-                                dirtyWindowIds.add(requestDirtyWindow);
+                    // Windows to refresh
+                    if ( refreshPageStructure) {
+                        Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+                        for (PortalObject window : windows) {
+                            refreshedWindows.add( window);
+                        }
+                        
+                    }   else    {
+                    
+                        // New window
+                        List<PortalObjectId> requestDirtyWindowIds = (List<PortalObjectId>) controllerContext.getServerInvocation().getServerContext()
+                                .getClientRequest().getAttribute("osivia.dynamic.dirtyWindows");
+                        if (requestDirtyWindowIds != null) {
+                            for (PortalObjectId requestDirtyWindow : requestDirtyWindowIds) {
+                                if (!dirtyWindowIds.contains(requestDirtyWindow)) {
+                                    dirtyWindowIds.add(requestDirtyWindow);
+                                }
                             }
                         }
-                    }
 
 
-
-
-                    for (Object dirtyWindowId : dirtyWindowIds) {
-                        PortalObjectId poid = (PortalObjectId) dirtyWindowId;
-                        String windowName = poid.getPath().getLastComponentName();
-                        PortalObject child = page.getChild(windowName, Window.class);
-                        if (child != null) {
-                            refreshedWindows.add(child);
+                        for (Object dirtyWindowId : dirtyWindowIds) {
+                            PortalObjectId poid = (PortalObjectId) dirtyWindowId;
+                            String windowName = poid.getPath().getLastComponentName();
+                            PortalObject child = page.getChild(windowName, Window.class);
+                            if (child != null) {
+                                refreshedWindows.add(child);
+                            }
                         }
                     }
 

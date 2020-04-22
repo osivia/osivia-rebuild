@@ -1,6 +1,7 @@
 package org.osivia.portal.services.cms.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +39,7 @@ public class TemplatesRepository extends InMemoryUserRepository {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        SpaceImpl space = new SpaceImpl(this,id, null, children, properties, modules);
-        space.setSpaceInternalId(id);
+        SpaceImpl space = new SpaceImpl(this,id, null,children, properties, modules);
         addDocument(id, space);
     }
 
@@ -53,8 +53,8 @@ public class TemplatesRepository extends InMemoryUserRepository {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
 
-        PageImpl page = new PageImpl(this,id, name, parentId, children, properties, modules);
-        page.setSpaceInternalId(spaceId);
+        PageImpl page = new PageImpl(this,id, name, null, parentId, spaceId, children, properties, modules);
+
         addDocument(id, page);
     }
 
@@ -62,12 +62,26 @@ public class TemplatesRepository extends InMemoryUserRepository {
     protected void pageA(String id, String name, String parentId, String spaceId, List<String> children) {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
+        
+        ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance"); 
+        
         ModuleRef moduleA = new ModuleRef("winA-" + id, "col-2", "0", "SampleInstance");
         ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "1", "SampleRemote");
-        ModuleRef moduleC = new ModuleRef("winC-" + id, "col-2", "2", "SampleInstance");
 
+        modules.add(nav);
         modules.add(moduleA);
         modules.add(moduleB);
+
+
+        addTemplatePage(id, name, parentId, spaceId, children, modules);
+    }
+    
+    
+    protected void pageA1(String id, String name, String parentId, String spaceId, List<String> children) {
+
+        List<ModuleRef> modules = new ArrayList<ModuleRef>();
+        ModuleRef moduleC = new ModuleRef("winC-" + id, "col-2", "2", "ContentInstance");
+
         modules.add(moduleC);
 
         addTemplatePage(id, name, parentId, spaceId, children, modules);
@@ -85,7 +99,8 @@ public class TemplatesRepository extends InMemoryUserRepository {
 
 
     protected void createTemplateSpace() {
-        pageA("ID_PAGE_A", "pageA", "portalA", "portalA", new ArrayList<String>());
+        pageA("ID_PAGE_A", "pageA", "portalA", "portalA", new ArrayList<String>(Arrays.asList("ID_PAGE_A1")));
+        pageA1("ID_PAGE_A1", "pageA1", "ID_PAGE_A", "portalA", new ArrayList<String>());
         pageB("ID_PAGE_B", "pageB", "portalA", "portalA", new ArrayList<String>());
 
 

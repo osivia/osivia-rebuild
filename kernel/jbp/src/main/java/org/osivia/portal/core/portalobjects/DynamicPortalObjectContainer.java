@@ -157,6 +157,8 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
         setNavigationalItem("osivia.dynamic_pages", newPages);
         
+        this.getTracker().getHttpRequest().setAttribute("osivia.dynamic.newPage", Boolean.TRUE);
+        
         // On vide le cache
         getDatas().clear();        
     }

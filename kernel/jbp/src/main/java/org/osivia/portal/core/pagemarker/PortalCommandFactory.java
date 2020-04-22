@@ -18,8 +18,10 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
+
+import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 
 
@@ -46,6 +48,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
+        
+
   
 
         return cmd;

@@ -11,9 +11,11 @@ import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 public class SpaceImpl extends DocumentImpl implements Space {
 
     private List<ModuleRef> moduleRefs;
+    private UniversalID templateId;
 
-    public SpaceImpl(InMemoryUserRepository repository, String id, String parentId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
-        super(repository, id, null,parentId, childrenId, properties);
+    public SpaceImpl(InMemoryUserRepository repository, String id, UniversalID templateId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
+        super(repository, id, null,null, id,childrenId, properties);
+        this.templateId = templateId    ;
         this.moduleRefs = moduleRefs;
 
     }
@@ -22,5 +24,11 @@ public class SpaceImpl extends DocumentImpl implements Space {
     public List<ModuleRef> getModuleRefs() {
         return moduleRefs;
     }
+    
+    @Override
+    public UniversalID getTemplateId() {
+        return templateId;
+    }
+
 
 }

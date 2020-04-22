@@ -30,16 +30,16 @@ public class DocumentImpl implements Document {
     
 
     /** The space id. */
-    private String spaceInternalId;
+    private final String spaceInternalId;
     
     /** The parent id. */
-    private String parentInternalId;
+    private final String parentInternalId;
     
     /** The id. */
-    private List<String> childrenId;
+    private final List<String> childrenId;
     
     /** The user repository. */
-    private InMemoryUserRepository userRepository;
+    private final InMemoryUserRepository userRepository;
     
     
 
@@ -49,12 +49,13 @@ public class DocumentImpl implements Document {
      * @param id the id
      * @param properties the properties
      */
-    public DocumentImpl( InMemoryUserRepository userRepository, String internalID, String name, String parentId, List<String> childrenId, Map<String, Object> properties) {
+    public DocumentImpl( InMemoryUserRepository userRepository, String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
         super();
         this.userRepository = userRepository;
         this.internalID = internalID;
         this.name = name;
         this.parentInternalId = parentId;
+        this.spaceInternalId = spaceId;
         this.childrenId = childrenId;
         this.properties = properties;
     }
@@ -110,19 +111,16 @@ public class DocumentImpl implements Document {
     public String getName() {
         return name;
     }
-    
-    public void setSpaceInternalId(String spaceInternalId) {
-        this.spaceInternalId = spaceInternalId;
-    }
+
 
 
     @Override
-    public Document getParent()  throws CMSException{
+    public Document getNavigationParent()  throws CMSException{
         return userRepository.getParent(this);
     }
 
     @Override
-    public List<Document> getChildren()  throws CMSException {
+    public List<Document> getNavigationChildren()  throws CMSException {
 
         return userRepository.getChildren(this);
     }

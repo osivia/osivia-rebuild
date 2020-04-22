@@ -1,0 +1,21 @@
+
+<!DOCTYPE portlet-app PUBLIC
+   "-//JBoss Portal//DTD JBoss Portlet 2.6//EN"
+   "http://www.jboss.org/portal/dtd/jboss-portlet_2_6.dtd">
+
+<portlet-app>
+   <portlet>
+      <portlet-name>Content</portlet-name>
+      <header-content>
+        <link rel="stylesheet" type="text/css" href="/css/cms.css" media="screen"/>
+		<script type="text/javascript" src="/js/cms.js"></script>	         
+      </header-content>
+   </portlet>
+   <portlet>
+      <portlet-name>Menu</portlet-name>
+      <header-content>
+        <link rel="stylesheet" type="text/css" href="/css/cms.css" media="screen"/>
+		<script type="text/javascript" src="/js/cms.js"></script>	         
+      </header-content>
+   </portlet>   
+</portlet-app>

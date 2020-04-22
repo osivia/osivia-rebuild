@@ -12,9 +12,12 @@ import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 public class PageImpl extends DocumentImpl implements Page {
 
     private List<ModuleRef> moduleRefs;
+    private UniversalID templateId;
+    
 
-    public PageImpl(InMemoryUserRepository repository, String id, String name, String parentId, List<String> childrenId,Map<String, Object> properties, List<ModuleRef> moduleRefs) {
-        super(repository, id, name, parentId, childrenId, properties);
+    public PageImpl(InMemoryUserRepository repository, String id, String name, UniversalID templateId, String parentId, String spaceId, List<String> childrenId,Map<String, Object> properties, List<ModuleRef> moduleRefs) {
+        super(repository, id, name, parentId, spaceId,childrenId, properties);
+        this.templateId = templateId;
         this.moduleRefs = moduleRefs;
 
     }
@@ -22,6 +25,11 @@ public class PageImpl extends DocumentImpl implements Page {
     @Override
     public List<ModuleRef> getModuleRefs() {
         return moduleRefs;
+    }
+
+    @Override
+    public UniversalID getTemplateId() {
+        return templateId;
     }
 
 }

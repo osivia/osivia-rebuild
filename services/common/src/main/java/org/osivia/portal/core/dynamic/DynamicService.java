@@ -4,11 +4,17 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.portal.WindowState;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -22,29 +28,40 @@ public class DynamicService implements IDynamicService {
 
 
     @Override
-    public void startDynamicWindow(PortalControllerContext portalControllerContext, String regionId, String portletInstance,
+    public void startDynamicWindow(PortalControllerContext portalControllerContext, String parentPath, String windowName, String regionId, String portletInstance,
             Map<String, String> windowProperties) throws PortalException {
 
         ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         DynamicPortalObjectContainer poc = (DynamicPortalObjectContainer) ctx.getController().getPortalObjectContainer();
 
-        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
-
-        if (window != null) {
-
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
-            properties.put(ThemeConstants.PORTAL_PROP_REGION, regionId);
-
-            DynamicWindowBean windowBean = new DynamicWindowBean(window.getPage().getId(), "dyna" + System.currentTimeMillis(), "SampleInstance", properties,
-                    null);
-
-            poc.addDynamicWindow(windowBean);
+        PortalObjectId pageId = PortalObjectId.parse(parentPath, PortalObjectPath.CANONICAL_FORMAT);
 
 
-        } else
-            throw new PortalException("no window in request");
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
+        properties.put(ThemeConstants.PORTAL_PROP_REGION, regionId);
+
+        for (String dynaKey : windowProperties.keySet()) {
+            properties.put(dynaKey, windowProperties.get(dynaKey));
+        }
+
+        DynamicWindowBean windowBean = new DynamicWindowBean(pageId, windowName, portletInstance, properties, null);
+
+        poc.addDynamicWindow(windowBean);
+
+        PortalObjectId windowId = new PortalObjectId(pageId.getNamespace(), new PortalObjectPath(pageId.getPath().toString(PortalObjectPath.CANONICAL_FORMAT).concat("/").concat(windowName), PortalObjectPath.CANONICAL_FORMAT));
+
+        // On force la maximisation
+        NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, windowId);
+        WindowNavigationalState windowNavState = WindowNavigationalState.create();
+        Map<String, String[]> parameters = new HashMap<String, String[]>();
+
+
+        WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED, windowNavState.getMode(),
+                ParametersStateString.create(parameters));
+
+        ctx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
     }
 
     @Override
@@ -65,11 +82,31 @@ public class DynamicService implements IDynamicService {
         DynamicPageBean pageBean = new DynamicPageBean(parent, pageName, pageName, displayNames, potemplateid, properties);
 
         poc.addDynamicPage(pageBean);
-        
+
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(),
                 new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageName), PortalObjectPath.CANONICAL_FORMAT));
 
         return pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
+
+    }
+
+    @Override
+    public void startDynamicWindow(PortalControllerContext portalControllerContext, String regionId, String portletInstance,
+            Map<String, String> windowProperties) throws PortalException {
+
+
+        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+
+        if (window != null) {
+
+            String parentPath = window.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+            
+            String windowName = "dyna" + System.currentTimeMillis();
+
+            startDynamicWindow(portalControllerContext, parentPath, windowName, regionId, portletInstance, windowProperties);
+
+        } else
+            throw new PortalException("no window in request");
 
     }
 

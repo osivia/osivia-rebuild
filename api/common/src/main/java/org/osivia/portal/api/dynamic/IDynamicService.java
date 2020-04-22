@@ -38,7 +38,37 @@ public interface IDynamicService {
      * @return URL
      */
     public void startDynamicWindow(PortalControllerContext portalControllerContext, String regionId, String portletInstance, Map<String, String> windowProperties)  throws PortalException;
-
+    
+  
+    
+    /**
+     * Start dynamic Window.
+     *
+     * @param portalControllerContext portal controller context
+     * @param parentId the parent id
+     * @param regionId the region id
+     * @param portletInstance         portlet instance
+     * @param windowProperties        window properties
+     * @return URL
+     * @throws PortalException the portal exception
+     */
+    public void startDynamicWindow(PortalControllerContext portalControllerContext,  String parentPath, String windowName, String regionId, String portletInstance, Map<String, String> windowProperties)  throws PortalException;
+    
+    
+    
+    
+      /**
+     * Start dynamic page.
+     *
+     * @param portalControllerContext the portal controller context
+     * @param parentId the parent id
+     * @param pageName the page name
+     * @param displayNames the display names
+     * @param templateId the template id
+     * @param properties the properties
+     * @param parameters the parameters
+     * @return the string
+     */
     public String startDynamicPage(PortalControllerContext portalControllerContext, String parentId, String pageName, Map<Locale, String> displayNames, String templateId, Map<String, String> properties,
             Map<String, String> parameters);
 

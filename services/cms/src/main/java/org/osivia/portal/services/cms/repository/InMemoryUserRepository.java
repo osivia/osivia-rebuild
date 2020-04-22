@@ -53,19 +53,6 @@ public abstract class InMemoryUserRepository {
         documents.put(internalID, document);
     }
 
-    /**
-     * Adds the document.
-     *
-     * @param id the id
-     * @param properties the properties
-     */
-    protected void addDocument(String id, String name, String parentId) {
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "doc." + name + "#" + id);
-        DocumentImpl doc = new DocumentImpl(this, id, name, parentId, new ArrayList<String>(), properties);
-        doc.setSpaceInternalId(parentId);
-        documents.put(id, doc);
-    }
 
 
     /**

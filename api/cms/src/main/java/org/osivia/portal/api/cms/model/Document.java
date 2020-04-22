@@ -27,8 +27,6 @@ public interface Document {
      */
     String getTitle();
     
-
-    
     /**
      * Gets the properties.
      *
@@ -43,13 +41,13 @@ public interface Document {
      */
     public UniversalID getSpaceId();
     
-       
+     
     /**
      * Gets the parent.
      *
      * @return the parent
      */
-    public Document getParent()  throws CMSException;
+    public Document getNavigationParent()  throws CMSException;
     
     
     /**
@@ -57,6 +55,7 @@ public interface Document {
      *
      * @return the parent
      */
-    public List<Document> getChildren()  throws CMSException;
+    public List<Document> getNavigationChildren()  throws CMSException;
+  
     
 }

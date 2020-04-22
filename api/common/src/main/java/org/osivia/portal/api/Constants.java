@@ -178,7 +178,8 @@ public final class Constants {
     public static final String PORTLET_ATTR_PAGE_REFRESH = "osivia.pageRefresh";    
     /** To notify data change */
     public static final String PORTLET_ATTR_UPDATE_SPACE_DATA_TS = "osivia.updateSpaceDataTs";        
-
+    /** Menu bar. */
+    public static final String PORTLET_ATTR_WINDOW = "osivia.portal.window";
 
 
     //PORTLET - OUTPUT

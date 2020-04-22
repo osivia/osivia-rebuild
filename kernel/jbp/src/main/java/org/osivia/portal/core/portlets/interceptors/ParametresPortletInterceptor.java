@@ -71,8 +71,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 // Ajout du controleur
                 attributes.put("osivia.controller", controllerContext);
 
-                // Ajout la window
-                attributes.put("osivia.controller", controllerContext);
+
+                WrappedPortalWindow portalWindow = new WrappedPortalWindow( window);
+                attributes.put("osivia.portal.window", portalWindow);
 
 
                 // Set attributes

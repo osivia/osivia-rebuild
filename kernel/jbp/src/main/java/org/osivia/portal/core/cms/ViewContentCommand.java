@@ -56,9 +56,8 @@ public class ViewContentCommand extends ControllerCommand {
     private static final CommandInfo info = new ActionCommandInfo(false);
 
     private CMSService cmsService;
-    
-    private IDynamicService dynamicService;
-    
+
+
     private IPublicationManager publicationManager;
 
     /** . */
@@ -72,22 +71,7 @@ public class ViewContentCommand extends ControllerCommand {
         this.contentId = contentId;
     }
 
-    private CMSService getCMSService() {
-        if (cmsService == null) {
-            cmsService = Locator.getService(CMSService.class);
-        }
 
-        return cmsService;
-    }
-    
-    
-    private IDynamicService getDynamicService() {
-        if (dynamicService == null) {
-            dynamicService = Locator.getService(IDynamicService.class);
-        }
-        return dynamicService;
-    }
-    
     private IPublicationManager getPublicationManager() {
         if (publicationManager == null) {
             publicationManager = Locator.getService(IPublicationManager.class);
@@ -111,32 +95,17 @@ public class ViewContentCommand extends ControllerCommand {
         try {
 
             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
-            CMSContext cmsContext = new CMSContext(portalCtx);
-            Document doc = getCMSService().getDocument(cmsContext,  new UniversalID(getContentId().replaceAll("/", ":")));
-            Document space = getCMSService().getDocument(cmsContext, doc.getSpaceId());
-              
-            Map<Locale, String> displayNames = new HashMap<Locale, String>();
-            String displayName = space.getTitle();
-            if (StringUtils.isNotEmpty(displayName)) {
-                displayNames.put(Locale.FRENCH, displayName);
-            }
 
-            String templatePath = getPublicationManager().getPageTemplate(cmsContext, doc).toString(PortalObjectPath.CANONICAL_FORMAT);
-            
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED,"true");               
-            Map<String, String> parameters = new HashMap<String, String>();
-            
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "space_"+space.getSpaceId().getInternalID(), displayNames, templatePath, properties, parameters);
 
-            PortalObjectId pageId = PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, new UniversalID(getContentId().replaceAll("/", ":")));
+
             return new UpdatePageResponse(pageId);
 
 
         } catch (Exception e) {
             // TODO : error management
             e.printStackTrace();
-            
+
             throw new ControllerException(e);
         }
     }

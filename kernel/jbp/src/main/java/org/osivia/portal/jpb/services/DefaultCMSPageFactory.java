@@ -17,6 +17,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
+import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.jpb.services.TemplatePortalObjectContainer.ContainerContext;
@@ -26,8 +27,8 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
     Document doc;
     CMSService cmsService;
     CMSContext cmsContext;
-    
-    
+
+
     public static String getRootPageName() {
         return "root";
     }
@@ -35,19 +36,19 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
     public static void createCMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObject parent, CMSService cmsService,
             CMSContext cmsContext, Document doc) throws CMSException {
-       new DefaultCMSPageFactory(container, containerContext, parent, cmsService, cmsContext, doc);
+        new DefaultCMSPageFactory(container, containerContext, parent, cmsService, cmsContext, doc);
     }
 
     public DefaultCMSPageFactory(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObject parent, CMSService cmsService,
             CMSContext cmsContext, Document doc) throws CMSException {
         this.cmsService = cmsService;
-        this.cmsContext = cmsContext;       
+        this.cmsContext = cmsContext;
         this.doc = doc;
 
         String pageName = getRootPageName();
-        if( doc instanceof Page)
+        if (doc instanceof Page)
             pageName = doc.getId().getInternalID();
-        
+
         // Create default page
         String path = parent.getId().getPath().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
         Map<String, String> pageProperties = new HashMap<>();
@@ -58,10 +59,10 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 
         new CMSPage(container, containerContext, pageId, pageProperties, this);
-        
-        for( Document child : doc.getChildren()) {
+
+        for (Document child : doc.getNavigationChildren()) {
             org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);
-            DefaultCMSPageFactory.createCMSPage(container, containerContext, page,cmsService, cmsContext, child);
+            DefaultCMSPageFactory.createCMSPage(container, containerContext, page, cmsService, cmsContext, child);
 
         }
 
@@ -75,7 +76,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
                 page.addWindow(windows, moduleRef.getWindowName(), moduleRef.getModuleId(), moduleRef.getRegion(), moduleRef.getOrder());
             }
         }
-        
+
         if (doc instanceof Page) {
             for (ModuleRef moduleRef : ((Page) doc).getModuleRefs()) {
                 page.addWindow(windows, moduleRef.getWindowName(), moduleRef.getModuleId(), moduleRef.getRegion(), moduleRef.getOrder());
@@ -85,30 +86,36 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
     @Override
     public List<PortalObjectId> getTemplatesID(CMSPage page) throws CMSException {
-        
+
         List<PortalObjectId> templateIds = new ArrayList<>();
-        String templateCMSId = (String) doc.getProperties().get("osivia.template");
-        if (templateCMSId != null) {
-            
-            Document templateDoc = cmsService.getDocument(cmsContext, new UniversalID(templateCMSId));
-            
-            
-            String templatePath = "/" + templateDoc.getId().getInternalID();
-            while (templateDoc.getParent() instanceof Page) {
-                templateDoc = templateDoc.getParent();
-                templatePath = "/" + templateDoc.getId() + templatePath;
+
+
+        UniversalID templateCMSId;
+        if (doc instanceof Templateable) {
+            templateCMSId = ((Templateable) doc).getTemplateId();
+
+
+            if (templateCMSId != null) {
+
+                Document templateDoc = cmsService.getDocument(cmsContext, templateCMSId);
+
+
+                String templatePath = "/" + templateDoc.getId().getInternalID();
+                while (templateDoc.getNavigationParent() instanceof Page) {
+                    templateDoc = templateDoc.getNavigationParent();
+                    templatePath = "/" + templateDoc.getId().getInternalID() + templatePath;
+                }
+
+                // Add space
+                templatePath = "/" + templateDoc.getSpaceId().getInternalID() + "/" + getRootPageName() + templatePath;
+
+
+                PortalObjectPath mainTemplatePath = new PortalObjectPath(templatePath, PortalObjectPath.CANONICAL_FORMAT);
+                // add root level
+
+                templateIds.add(new PortalObjectId(templateDoc.getId().getRepositoryName(), mainTemplatePath));
             }
-            
-            // Add space
-            templatePath = "/" + templateDoc.getSpaceId().getInternalID() + "/" + getRootPageName() + templatePath;
-
-            
-            PortalObjectPath mainTemplatePath = new PortalObjectPath(templatePath, PortalObjectPath.CANONICAL_FORMAT);
-            // add root level
-              
-            templateIds.add(new PortalObjectId(templateDoc.getId().getRepositoryName(), mainTemplatePath));
         }
-
 
         return templateIds;
     }
