@@ -139,6 +139,10 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             contextNode.setObject(context);
 
             currentContextNodes.put(context.getId(), context);
+            
+            // this is the default context
+            PortalObjectId rootId = new PortalObjectId("", PortalObjectPath.ROOT_PATH);
+            currentContextNodes.put(rootId, context);
 
             PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
             createPortal(currentContextNodes, new PortalObjectId("templates", defaultPortalPath));
@@ -169,8 +173,6 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
             currentContextNodes.put(context.getId(), context);
         }
 
-        // PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
-        // createPortal(currentContextNodes, new PortalObjectId("templates", defaultPortalPath));
 
         return currentContextNodes;
     }

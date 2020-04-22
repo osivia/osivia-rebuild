@@ -39,6 +39,8 @@ public class TemplatesRepository extends InMemoryUserRepository {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
+        ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance"); 
+        modules.add(nav);          
         SpaceImpl space = new SpaceImpl(this,id, null,children, properties, modules);
         addDocument(id, space);
     }
@@ -53,6 +55,7 @@ public class TemplatesRepository extends InMemoryUserRepository {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
 
+        
         PageImpl page = new PageImpl(this,id, name, null, parentId, spaceId, children, properties, modules);
 
         addDocument(id, page);
@@ -63,12 +66,12 @@ public class TemplatesRepository extends InMemoryUserRepository {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         
-        ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance"); 
+
         
         ModuleRef moduleA = new ModuleRef("winA-" + id, "col-2", "0", "SampleInstance");
         ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "1", "SampleRemote");
 
-        modules.add(nav);
+
         modules.add(moduleA);
         modules.add(moduleB);
 
