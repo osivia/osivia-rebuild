@@ -113,16 +113,13 @@ public class DocumentImpl implements Document {
     }
 
 
-
-    @Override
-    public Document getNavigationParent()  throws CMSException{
+    public DocumentImpl getNavigationParent()  throws CMSException{
         return userRepository.getParent(this);
     }
 
-    @Override
-    public List<Document> getNavigationChildren()  throws CMSException {
 
-        return userRepository.getChildren(this);
+    public List<DocumentImpl> getNavigationChildren()  throws CMSException {
+       return userRepository.getChildren(this);
     }
 
 

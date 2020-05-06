@@ -15,6 +15,7 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.model.Templateable;
@@ -24,9 +25,10 @@ import org.osivia.portal.jpb.services.TemplatePortalObjectContainer.ContainerCon
 
 public class DefaultCMSPageFactory implements CMSPageFactory {
 
-    Document doc;
+    NavigationItem navItem;
     CMSService cmsService;
     CMSContext cmsContext;
+    Document doc;
 
 
     public static String getRootPageName() {
@@ -35,18 +37,20 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
 
     public static void createCMSPage(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObject parent, CMSService cmsService,
-            CMSContext cmsContext, Document doc) throws CMSException {
-        new DefaultCMSPageFactory(container, containerContext, parent, cmsService, cmsContext, doc);
+            CMSContext cmsContext, NavigationItem navItem) throws CMSException {
+        new DefaultCMSPageFactory(container, containerContext, parent, cmsService, cmsContext, navItem);
     }
 
     public DefaultCMSPageFactory(TemplatePortalObjectContainer container, ContainerContext containerContext, PortalObject parent, CMSService cmsService,
-            CMSContext cmsContext, Document doc) throws CMSException {
+            CMSContext cmsContext, NavigationItem navItem) throws CMSException {
         this.cmsService = cmsService;
         this.cmsContext = cmsContext;
-        this.doc = doc;
+        this.navItem = navItem;
+        
+        doc = cmsService.getDocument(cmsContext, navItem.getDocumentId());
 
         String pageName = getRootPageName();
-        if (doc instanceof Page)
+        if (!navItem.isRoot())
             pageName = doc.getId().getInternalID();
 
         // Create default page
@@ -60,7 +64,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
         new CMSPage(container, containerContext, pageId, pageProperties, this);
 
-        for (Document child : doc.getNavigationChildren()) {
+        for (NavigationItem child : navItem.getChildren()) {
             org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);
             DefaultCMSPageFactory.createCMSPage(container, containerContext, page, cmsService, cmsContext, child);
 
@@ -98,11 +102,15 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
             if (templateCMSId != null) {
 
                 Document templateDoc = cmsService.getDocument(cmsContext, templateCMSId);
-
-
                 String templatePath = "/" + templateDoc.getId().getInternalID();
-                while (templateDoc.getNavigationParent() instanceof Page) {
-                    templateDoc = templateDoc.getNavigationParent();
+                
+                NavigationItem templateNav = cmsService.getNavigationItem(cmsContext, templateDoc.getId(), CMSService.PRIMARY_NAVIGATION_TREE);
+                
+
+                while (! templateNav.getParent().isRoot()) {
+                    templateNav = templateNav.getParent();
+                    templateDoc = cmsService.getDocument(cmsContext, templateNav.getDocumentId());
+
                     templatePath = "/" + templateDoc.getId().getInternalID() + templatePath;
                 }
 

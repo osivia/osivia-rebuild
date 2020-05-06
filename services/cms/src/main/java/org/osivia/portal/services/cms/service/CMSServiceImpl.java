@@ -6,6 +6,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.core.context.ControllerContextAdapter;
@@ -38,6 +39,19 @@ public class CMSServiceImpl implements CMSService {
     @Override
     public Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException {
 
+        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id);
+        return userRepository.getDocument(id.getInternalID());
+
+    }
+
+    /**
+     * Gets the user repository.
+     *
+     * @param cmsContext the cms context
+     * @param id the id
+     * @return the user repository
+     */
+    protected InMemoryUserRepository getUserRepository(CMSContext cmsContext, UniversalID id) {
         ControllerContext ctx = ControllerContextAdapter.getControllerContext(cmsContext.getPortalControllerContext());
 
         HttpSession session = ctx.getServerInvocation().getServerContext().getClientRequest().getSession(true);
@@ -53,8 +67,13 @@ public class CMSServiceImpl implements CMSService {
             
             session.setAttribute(repositoryAttributeName, userRepository);
         }
-        return userRepository.getDocument(id.getInternalID());
+        return userRepository;
+    }
 
+    @Override
+    public NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID id, String navigation) throws CMSException {
+        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id);
+        return userRepository.getNavigationItem(id.getInternalID());
     }
 
 }

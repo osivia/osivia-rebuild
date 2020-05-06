@@ -25,6 +25,7 @@ import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
@@ -240,7 +241,11 @@ public class TemplatePortalObjectContainer implements org.jboss.portal.core.mode
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
 
-                    DefaultCMSPageFactory.createCMSPage(this, containerContext, portal, getCMSService(), cmsContext, space);
+                    
+                    NavigationItem navRoot = cmsService.getNavigationItem(cmsContext, space.getId(), CMSService.PRIMARY_NAVIGATION_TREE);
+                    
+                    
+                    DefaultCMSPageFactory.createCMSPage(this, containerContext, portal, getCMSService(), cmsContext,  navRoot);
                 }
 
             } catch (Exception e) {

@@ -11,9 +11,11 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.model.DocumentImpl;
+import org.osivia.portal.services.cms.model.NavigationItemImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 
@@ -37,7 +39,9 @@ public abstract class InMemoryUserRepository {
 
     private Map<String, DocumentImpl> documents;
 
-
+    
+    
+    
     private void init() {
         documents = new ConcurrentHashMap<>();
         initDocuments();
@@ -60,21 +64,27 @@ public abstract class InMemoryUserRepository {
      */
 
 
-    public Document getDocument(String internalId) throws CMSException {
+    public DocumentImpl getDocument(String internalId) throws CMSException {
         return documents.get(internalId);
     }
 
+    
+    
+    public NavigationItem getNavigationItem( String internalId)   throws CMSException {
+        return new NavigationItemImpl( getDocument( internalId));        
+    }
+    
 
-    public Document getParent(Document document) throws CMSException {
+    public DocumentImpl getParent(Document document) throws CMSException {
         DocumentImpl docImpl = (DocumentImpl) document;
         return getDocument(docImpl.getParentInternalId());
 
     }
 
-    public List<Document> getChildren(Document document) throws CMSException {
+    public List<DocumentImpl> getChildren(DocumentImpl document) throws CMSException {
         DocumentImpl docImpl = (DocumentImpl) document;
         List<String> childrenId = docImpl.getChildrenId();
-        List<Document> children = new ArrayList<>();
+        List<DocumentImpl> children = new ArrayList<>();
         for (String id : childrenId) {
             children.add(getDocument(id));
         }

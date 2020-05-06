@@ -42,20 +42,7 @@ public interface Document {
     public UniversalID getSpaceId();
     
      
-    /**
-     * Gets the parent.
-     *
-     * @return the parent
-     */
-    public Document getNavigationParent()  throws CMSException;
-    
-    
-    /**
-     * Gets the parent.
-     *
-     * @return the parent
-     */
-    public List<Document> getNavigationChildren()  throws CMSException;
+
   
     
 }
