@@ -57,4 +57,8 @@
    <span >
        <a href="/portal/content/myspace/ID_DOC_1" class="btn btn-default">cms</a>
     </span>  
+    
+    <span >
+       <a href="${startWindowCommand}" class="btn btn-default">startWindowCommand</a>
+    </span>
 </div>

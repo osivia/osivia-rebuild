@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+		id="wwa:commandFactory=Delegate,path=Default">
+        <property name="Path" value="/command" />
+        <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+        <property name="DelegateFactory" ref="osivia:commandFactory=Default"/>        
+	</bean>  
+   
+   
+   	<bean class="org.osivia.portal.core.portalcommands.DefaultCommandFactoryService"
+		id="osivia:commandFactory=Default" >
+	</bean>
+    
+     <bean class="org.osivia.portal.core.portalcommands.DefaultURLFactory" id="osivia:urlFactory=Default" >
+        <property name="Path" value="/command" />
+        <property name="Factory" ref="portal:urlFactory=Delegating"/>        
+	</bean>
+	
+	
+    
+</beans>

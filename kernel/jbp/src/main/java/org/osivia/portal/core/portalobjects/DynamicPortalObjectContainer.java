@@ -352,7 +352,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
     @Override
     public <T extends PortalObject> T getObject(PortalObjectId id, Class<T> expectedType) throws IllegalArgumentException {
-        return portalObjectContainer.getObject(id, expectedType);
+        return (T) getObject(id);
     }
 
     @Override

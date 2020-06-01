@@ -20,6 +20,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
 
 import org.jboss.portal.core.model.portal.command.PageCommand;
+import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.tracker.RequestContextUtil;
@@ -49,6 +50,9 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         
+        if(cmd instanceof RenderPageCommand)    {
+            PortalObjectUtils.setPageId(controllerContext, ((RenderPageCommand) cmd).getTargetId());
+        }
 
   
 

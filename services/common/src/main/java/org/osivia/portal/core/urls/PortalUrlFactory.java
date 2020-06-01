@@ -14,13 +14,24 @@
 package org.osivia.portal.core.urls;
 
 
+import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.CharEncoding;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,23 +47,8 @@ import org.springframework.stereotype.Service;
 public class PortalUrlFactory implements IPortalUrlFactory {
 
    
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    
     public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties) throws PortalException {
-        
-        // Controller context
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-        
-        return"url";
-    }
-    
-
-    /* 
-    
-    public String getStartPortletUrlOld(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties) throws PortalException {
        
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
@@ -98,6 +94,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             builder.append("&regionId=").append(regionId);
             builder.append("&windowName=").append(windowName);
             builder.append("&instanceId=").append(portletInstance);
+            builder.append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties));
+            builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(new HashMap<String, String>()));            
+            
+            
 
             url = builder.toString();
 
@@ -107,6 +107,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return url;
     }
-*/
+
 
 }

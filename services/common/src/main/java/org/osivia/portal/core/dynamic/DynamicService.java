@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -21,6 +22,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -94,19 +96,18 @@ public class DynamicService implements IDynamicService {
     public void startDynamicWindow(PortalControllerContext portalControllerContext, String regionId, String portletInstance,
             Map<String, String> windowProperties) throws PortalException {
 
+        
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        
+        Page page = PortalObjectUtils.getPage(controllerContext);
 
-        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
 
-        if (window != null) {
+        String parentPath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+        
+        String windowName = "dyna" + System.currentTimeMillis();
 
-            String parentPath = window.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
-            
-            String windowName = "dyna" + System.currentTimeMillis();
+        startDynamicWindow(portalControllerContext, parentPath, windowName, regionId, portletInstance, windowProperties);
 
-            startDynamicWindow(portalControllerContext, parentPath, windowName, regionId, portletInstance, windowProperties);
-
-        } else
-            throw new PortalException("no window in request");
 
     }
 

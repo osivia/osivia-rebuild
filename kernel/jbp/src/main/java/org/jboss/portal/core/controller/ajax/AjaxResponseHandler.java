@@ -77,6 +77,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.resources.ResourceHandler;
 import org.w3c.dom.Element;
 
@@ -166,6 +167,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                 
 
                 PortalObjectId pageId = upw.getPageId();
+
+                
+                PortalObjectUtils.setPageId(controllerContext, pageId);
+                
                 
                 //TODO : conversation scope
                 PortalObjectId oldPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajaxPageId");

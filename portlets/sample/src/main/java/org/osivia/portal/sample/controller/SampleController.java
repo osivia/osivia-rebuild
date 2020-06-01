@@ -51,7 +51,11 @@ public class SampleController implements PortletContextAware {
     @Autowired
     private CMSService cmsService;
 
-
+    /** Url factory service. */
+    @Autowired
+    IPortalUrlFactory portalUrlFactory;
+    
+    
     /**
      * Constructor.
      */
@@ -70,13 +74,17 @@ public class SampleController implements PortletContextAware {
      * @throws CMSException 
      */
     @RenderMapping
-    public String view1(RenderRequest request, RenderResponse response, @RequestParam(name = "count", defaultValue = "1") String count) throws CMSException {
+    public String view1(RenderRequest request, RenderResponse response, @RequestParam(name = "count", defaultValue = "1") String count) throws Exception {
         request.setAttribute("count", count);
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
 
         String foo = cmsService.getDocument(new CMSContext(portalCtx), new UniversalID("myspace","ID_DOC_1")).getTitle();
         request.setAttribute("foo", foo);
-
+        
+        Map<String, String> properties = new HashMap<String, String>();
+        String startWindowUrl = portalUrlFactory.getStartPortletUrl(portalCtx, "SampleInstance", properties);
+        request.setAttribute("startWindowCommand", startWindowUrl);
+        
         return "view-1";
     }
 
