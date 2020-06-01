@@ -26,7 +26,7 @@ import org.jboss.portal.portlet.state.producer.ProducerPortletInvoker;
 import org.jboss.portal.web.ServletContainer;
 import org.jboss.portal.web.ServletContainerFactory;
 import org.jboss.portal.web.impl.DefaultServletContainerFactory;
-import org.osivia.portal.api.common.services.Locator;
+import org.osivia.portal.api.locator.Locator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

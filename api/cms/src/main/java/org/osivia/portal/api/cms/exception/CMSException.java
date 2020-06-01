@@ -1,6 +1,6 @@
 package org.osivia.portal.api.cms.exception;
 
-import org.osivia.portal.api.common.exception.PortalException;
+import org.osivia.portal.api.PortalException;
 
 /**
  * CMS exception.

@@ -17,9 +17,9 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.api.common.services.Locator;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locator.Locator;
 
 public class PublicationManager implements IPublicationManager {
 

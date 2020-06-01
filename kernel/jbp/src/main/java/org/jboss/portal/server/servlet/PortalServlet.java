@@ -41,7 +41,7 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.web.WebRequest;
 import org.jboss.portal.web.endpoint.EndPointRequest;
 import org.jboss.portal.web.endpoint.EndPointServlet;
-import org.osivia.portal.api.common.services.Locator;
+import org.osivia.portal.api.locator.Locator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
