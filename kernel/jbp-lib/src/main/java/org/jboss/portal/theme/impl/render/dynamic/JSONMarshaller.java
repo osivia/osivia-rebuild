@@ -59,6 +59,11 @@ public class JSONMarshaller {
                     writer.key("view_state").value(umr.getViewState());
                 }
 
+                if (umr.getRestoreUrl() != null) {
+                    writer.key("restore_url").value(umr.getRestoreUrl());
+                }
+
+                
                 //
                 writer.key("fragments").object();
                 for (Iterator i = umr.getFragments().entrySet().iterator(); i.hasNext();) {

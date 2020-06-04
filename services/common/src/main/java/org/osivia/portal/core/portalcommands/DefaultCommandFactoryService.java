@@ -23,6 +23,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -90,11 +91,17 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                               WindowPropertiesEncoder.decodeProperties(params));
                         
                          return command;
-
-//                        return new StartDynamicWindowCommand(pageId, regionId, instanceId, windowName, WindowPropertiesEncoder.decodeProperties(windowProps),
-//                                WindowPropertiesEncoder.decodeProperties(params));
                     }
                 }
+                
+                if ("restore".equals(action)) {
+ 
+                        // Nuxeo command
+                        RestorePageCommand command = this.applicationContext.getBean(RestorePageCommand.class);
+                        
+                         return command;
+
+                }                
 
             }
         } catch (Exception e) {

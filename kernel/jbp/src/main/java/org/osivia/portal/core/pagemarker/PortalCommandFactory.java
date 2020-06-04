@@ -36,7 +36,6 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     protected static final Log logger = LogFactory.getLog(PortalCommandFactory.class);
 
 
-
    
     /**
      * {@inheritDoc}
@@ -46,13 +45,21 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
  
         RequestContextUtil.setControllerContext(controllerContext);
-
+        
+        String viewState = controllerContext.getServerInvocation().getServerContext().getClientRequest().getHeader("view_state");
+        
+        if (viewState != null) {
+            PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
+            PageMarkerUtils.restorePageState(controllerContext, viewState);
+        }
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         
         if(cmd instanceof RenderPageCommand)    {
             PortalObjectUtils.setPageId(controllerContext, ((RenderPageCommand) cmd).getTargetId());
         }
+        
+
 
   
 

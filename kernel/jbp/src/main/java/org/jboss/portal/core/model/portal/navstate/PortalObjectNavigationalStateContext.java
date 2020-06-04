@@ -236,6 +236,10 @@ public class PortalObjectNavigationalStateContext implements NavigationalStateCo
                      logger.error("Two windows are maximized at once, it should not be possible");
                   }
                   maximizedKey = change.getKey();
+                  
+                  if(maximizedKey instanceof NavigationalStateKey)    {
+                      maximizedKey = ((NavigationalStateKey) maximizedKey).getId().toString();
+                  }
                }
             }
 
@@ -287,6 +291,8 @@ public class PortalObjectNavigationalStateContext implements NavigationalStateCo
          return false;
       }
    }
+   
+
 
    public String getViewId()
    {
@@ -303,4 +309,12 @@ public class PortalObjectNavigationalStateContext implements NavigationalStateCo
    {
       return new NavigationalStateKey(PageNavigationalState.class, PortalObjectId.parse(pageId, PortalObjectPath.CANONICAL_FORMAT));
    }
+   
+   
+    
+   
+   
+   
+   
+   
 }

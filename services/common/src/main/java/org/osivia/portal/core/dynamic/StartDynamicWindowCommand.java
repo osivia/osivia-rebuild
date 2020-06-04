@@ -131,6 +131,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
             for (String dynaKey : this.dynaProps.keySet()) {
                 properties.put(dynaKey, this.dynaProps.get(dynaKey));
             }
+            
 
             dynamicService.startDynamicWindow(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), regionId, instanceId, properties);
            

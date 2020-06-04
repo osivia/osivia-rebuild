@@ -100,7 +100,7 @@ public class ControllerContext extends AbstractInvocationContext
       //
       addResolver(ControllerCommand.REQUEST_SCOPE, serverInvocation.getContext());
       addResolver(ControllerCommand.SESSION_SCOPE, serverInvocation.getContext());
-      addResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, new PortalObjectNavigationalStateContext(serverInvocation.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE)));
+      addResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, new PortalObjectNavigationalStateContext(serverInvocation.getContext().getAttributeResolver(ControllerCommand.REQUEST_SCOPE)));
       addResolver(ControllerCommand.PRINCIPAL_SCOPE, serverInvocation.getContext());
    }
 

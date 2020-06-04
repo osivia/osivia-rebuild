@@ -24,6 +24,14 @@
         <property name="Factory" ref="portal:urlFactory=Delegating"/>        
 	</bean>
 	
-	
+	   <!-- The ajax response handler -->
+   <bean class="org.osivia.portal.core.ajax.AjaxResponseHandler"
+          id="portal:service=ResponseHandler,type=Ajax" >
+      
+      <property name="PageService" ref="portal:service=PageService"/>
+      <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+      <property name="DynamicLayoutService" ref="portal:service=DynamicLayoutService"/>
+      
+   </bean>
     
 </beans>

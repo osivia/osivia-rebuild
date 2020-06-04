@@ -164,10 +164,8 @@ function bilto(event)
       // Handle links here
       if (url != null)
       {
-        //
-         Event.stop(event);
          
-         ajaxCall( options, url);
+         ajaxCall( options, url, event);
 
       }
 
@@ -177,16 +175,32 @@ function bilto(event)
 
 
 
-function ajaxCall(options, url){
+function ajaxCall(options, url, eventToStop, popViewState){
     // Setup headers
     var headers = ["ajax","true"];
 
-    // Add the view state value
-    if (view_state != null)
-    {
-       headers.view_state = view_state;
-    }
+	var headerState = null;
+	if (popViewState != null) {
+		headerState = popViewState;
 
+	} else {
+
+		// Add the view state value
+		if (view_state != null) {
+			headerState = view_state;
+		}
+	}
+	if (headerState != null) {
+		headers.push('view_state', headerState);
+	}
+
+
+    var popState;
+    if ((eventToStop != null) && (eventToStop.type === "popstate")) {
+        popState = true;
+    }
+    
+    
     // note : we don't convert query string to prototype parameters as in the case
     // of a post, the parameters will be appended to the body of the query which
     // will lead to a non correct request
@@ -304,23 +318,64 @@ function ajaxCall(options, url){
           }
           
           if( newPage){
-       	   observePortlets();
+       	   		observePortlets();
           }
+
 
           // update view state
           if (resp.view_state != null)
           {
              view_state = resp.view_state;
           }
+
+          
+          
+          if (popState === undefined  && resp.restore_url != "") {
+
+              // Add the current page
+              var stateObject = {
+                  url: resp.restore_url,
+                  viewState:view_state
+              };
+              
+              history.pushState(stateObject, "", resp.restore_url);
+          }
+          
+          
+          
+
+          
+          
        }
        else if (resp.type == "update_page")
        {
           document.location = resp.location;
        }
     };
+     
+
+    if ((eventToStop !== undefined) && !(eventToStop.type === "popstate")) {
+        Event.stop(eventToStop);
+    }
+
+     
+    
+    
     
     new Ajax.Request(url, options);
 }
+
+
+window.onpopstate = function (event) {
+    if (event.state) {
+        var options = new Object();
+        options.method = "get";
+        options.asynchronous = true;
+        ajaxCall( options, event.state.url, event, event.state.viewState);
+    }
+
+}
+
 
 
 function updateResources(newHeaderResources)	{

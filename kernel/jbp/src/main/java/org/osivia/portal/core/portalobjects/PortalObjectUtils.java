@@ -63,7 +63,7 @@ public class PortalObjectUtils {
         if (controllerContext != null) {
             // Page identifier
             //TODO : navigation scope
-            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_PAGE_ID);
         }
 
         return pageId;
@@ -79,7 +79,7 @@ public class PortalObjectUtils {
 
      */
     public static final void setPageId(ControllerContext controllerContext, PortalObjectId pageId) {
-        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID, pageId);
+        controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_PAGE_ID, pageId);
 
     }
 

@@ -94,11 +94,11 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
     }
 
     private Object getNavigationalItem(String attribute) {
-        return this.getTracker().getHttpSession().getAttribute(attribute);
+        return this.getTracker().getHttpRequest().getAttribute(attribute);
     }
 
     private void setNavigationalItem(String attribute, Object value) {
-        this.getTracker().getHttpSession().setAttribute(attribute, value);
+        this.getTracker().getHttpRequest().setAttribute(attribute, value);
     }
 
     public void addDynamicWindow(DynamicWindowBean newWindow) {
@@ -115,7 +115,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         newWindows.add(newWindow);
 
         // TODO : move to jbp conversation scopes
-        setNavigationalItem("osivia.dynamic_windows", newWindows);
+        setDynamicWindows(newWindows);
         
         // TODO MOVE TO JBP NavigationalStateContext
         List<PortalObjectId> dirtyWindowIds = (List<PortalObjectId>) this.getTracker().getHttpRequest().getAttribute("osivia.dynamic.dirtyWindows");
@@ -127,6 +127,10 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
         // On vide le cache
         getDatas().clear();
+    }
+
+    public void setDynamicWindows(List<DynamicWindowBean> newWindows) {
+        setNavigationalItem("osivia.dynamic_windows", newWindows);
     }
 
     public void addDynamicPage(DynamicPageBean newPage) {
@@ -155,12 +159,16 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         }
         newPages.add(newPage);
 
-        setNavigationalItem("osivia.dynamic_pages", newPages);
+        setDynamicPages(newPages);
         
         this.getTracker().getHttpRequest().setAttribute("osivia.dynamic.newPage", Boolean.TRUE);
         
         // On vide le cache
         getDatas().clear();        
+    }
+
+    public void setDynamicPages(List<DynamicPageBean> newPages) {
+        setNavigationalItem("osivia.dynamic_pages", newPages);
     }
 
     public List<DynamicWindowBean> getPageWindows(PortalObjectId pageId) {
@@ -185,7 +193,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
                 newWindows.add(window);
             }
         }
-        setNavigationalItem("osivia.dynamic_windows", newWindows);
+        setDynamicWindows(newWindows);
 
         // On vide le cache
         getDatas().clear();
@@ -202,7 +210,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
                 newPages.add(page);
             }
         }
-        setNavigationalItem("osivia.dynamic_pages", newPages);
+        setDynamicPages(newPages);
 
         // Remove child windows
 
@@ -213,7 +221,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
                 newWindows.add(windowBean);
             }
         }
-        setNavigationalItem("osivia.dynamic_windows", newWindows);
+        setDynamicWindows(newWindows);
 
         // On vide le cache
         getDatas().clear();
