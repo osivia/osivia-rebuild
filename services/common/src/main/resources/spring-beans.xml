@@ -15,6 +15,15 @@
 	</bean>  
    
    
+   <bean class="org.osivia.portal.core.pagemarker.PortalCommandFactory"
+		id="portal:commandFactory=DefaultPortal">
+		
+		        <property name="NextFactory" ref="portal:commandFactory=Delegating"/>    
+		        <property name="Container" ref="portal:container=PortalObject"/>    
+
+	</bean>
+   
+   
    	<bean class="org.osivia.portal.core.portalcommands.DefaultCommandFactoryService"
 		id="osivia:commandFactory=Default" >
 	</bean>

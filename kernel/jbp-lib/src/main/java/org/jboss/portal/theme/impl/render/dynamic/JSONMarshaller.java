@@ -60,7 +60,11 @@ public class JSONMarshaller {
                 }
 
                 if (umr.getRestoreUrl() != null) {
-                    writer.key("restore_url").value(umr.getRestoreUrl());
+                    writer.key("pop_url").value(umr.getRestoreUrl());
+                }
+                
+                if (umr.getFullStateUrl() != null) {
+                    writer.key("full_state_url").value(umr.getFullStateUrl());
                 }
 
                 

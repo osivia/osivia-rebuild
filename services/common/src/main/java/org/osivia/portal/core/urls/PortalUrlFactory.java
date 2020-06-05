@@ -61,9 +61,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         // URL
         String url;
         try {
-            // Current portal name
-            String currentPortal = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
-
             // Page identifier
             String pageId;
             // Region
@@ -77,8 +74,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             pageId = URLEncoder.encode(pageObjectId.toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
             regionId = "virtual";
             windowName = "dynamicPortlet";
-
-
 
 
             // Start dynamic window command
@@ -96,7 +91,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             builder.append("&instanceId=").append(portletInstance);
             builder.append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties));
             builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(new HashMap<String, String>()));            
-            
             
 
             url = builder.toString();

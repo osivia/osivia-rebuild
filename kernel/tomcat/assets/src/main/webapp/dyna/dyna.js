@@ -334,11 +334,11 @@ function ajaxCall(options, url, eventToStop, popViewState){
 
               // Add the current page
               var stateObject = {
-                  url: resp.restore_url,
+                  url: resp.pop_url,
                   viewState:view_state
               };
               
-              history.pushState(stateObject, "", resp.restore_url);
+              history.pushState(stateObject, "", resp.full_state_url);
           }
           
           

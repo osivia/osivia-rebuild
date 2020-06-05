@@ -47,9 +47,21 @@ public class UpdatePageStateResponse extends DynaResponse {
     private String viewState;
     private String layout;
     private String restoreUrl;
+    private String fullStateUrl;
+
+    
+    
+    public String getFullStateUrl() {
+        return fullStateUrl;
+    }
 
 
     
+    public void setFullStateUrl(String fullStateUrl) {
+        this.fullStateUrl = fullStateUrl;
+    }
+
+
     public String getRestoreUrl() {
         return restoreUrl;
     }

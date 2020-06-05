@@ -80,13 +80,20 @@ public class DynamicService implements IDynamicService {
 
 
         PortalObjectId potemplateid = PortalObjectId.parse(templatePath, PortalObjectPath.CANONICAL_FORMAT);
+        
+        // Base path
+        String basePath = properties.get("osivia.contentId");
+        
+        String pageResorableName = RestorablePageUtils.createRestorableName(ctx, pageName, potemplateid.toString(PortalObjectPath.SAFEST_FORMAT), basePath, displayNames,
+                properties, parameters);
+        
 
-        DynamicPageBean pageBean = new DynamicPageBean(parent, pageName, pageName, displayNames, potemplateid, properties);
+        DynamicPageBean pageBean = new DynamicPageBean(parent, pageResorableName, pageName, displayNames, potemplateid, properties);
 
         poc.addDynamicPage(pageBean);
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(),
-                new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageName), PortalObjectPath.CANONICAL_FORMAT));
+                new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageResorableName), PortalObjectPath.CANONICAL_FORMAT));
 
         return pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
 

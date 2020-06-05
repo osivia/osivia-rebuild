@@ -353,6 +353,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                     
                     RestorePageCommand restoreCmd = new RestorePageCommand();
                     updatePage.setRestoreUrl(controllerContext.renderURL(restoreCmd, null, null));
+                    
+                    
+                    ViewPageCommand vpc = new ViewPageCommand(pageId);
+                    updatePage.setFullStateUrl(controllerContext.renderURL(vpc, null, null));
+                    
 
 
                     // Regions

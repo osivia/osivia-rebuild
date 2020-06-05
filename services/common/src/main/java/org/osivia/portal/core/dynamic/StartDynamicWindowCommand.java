@@ -28,6 +28,7 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -133,7 +134,10 @@ public class StartDynamicWindowCommand extends DynamicCommand {
             }
             
 
-            dynamicService.startDynamicWindow(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), regionId, instanceId, properties);
+
+            String parentPath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+
+            dynamicService.startDynamicWindow(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), parentPath, this.windowName, regionId, instanceId, properties);
            
             return new UpdatePageResponse(page.getId());
         } catch (Exception e) {

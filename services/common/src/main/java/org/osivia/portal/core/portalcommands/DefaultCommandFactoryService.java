@@ -22,6 +22,7 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
@@ -93,6 +94,25 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                          return command;
                     }
                 }
+                
+                if ("startDynamicPage".equals(action)) {
+                    String parentId = null;
+                    String pageName = null;
+                    String templateId = null;
+                    String pageProps = null;
+                    String pageParams = null;
+
+                    if ((parameterMap.get("parentId") != null) && (parameterMap.get("pageName") != null) && (parameterMap.get("templateId") != null)) {
+                        parentId = URLDecoder.decode(parameterMap.get("parentId")[0], CharEncoding.UTF_8);
+                        pageName = URLDecoder.decode(parameterMap.get("pageName")[0], CharEncoding.UTF_8);
+                        templateId = URLDecoder.decode(parameterMap.get("templateId")[0], CharEncoding.UTF_8);
+                        pageProps = URLDecoder.decode(parameterMap.get("props")[0], CharEncoding.UTF_8);
+                        pageParams = URLDecoder.decode(parameterMap.get("params")[0], CharEncoding.UTF_8);
+
+                        return new StartDynamicPageCommand(parentId, pageName, null, templateId, WindowPropertiesEncoder.decodeProperties(pageProps),
+                                WindowPropertiesEncoder.decodeProperties(pageParams));
+                    }
+                }                
                 
                 if ("restore".equals(action)) {
  
