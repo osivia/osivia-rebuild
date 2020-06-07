@@ -52,20 +52,12 @@ public class CommandTrackerInterceptor extends ControllerInterceptor{
 			
 		getTracker().pushState(cmd);		
 		
-		HttpServletRequest clientRequest = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
-		clientRequest.setAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT, cmd.getControllerContext());
-		
 		ControllerResponse resp = (ControllerResponse) cmd.invokeNext();
-		
-		
-        clientRequest.removeAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
 
 
 		getTracker().popState();
 		
 		
-
-	
 		return resp;
 	}
 	

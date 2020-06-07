@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.core.constants.InternalConstants;
 
 /**
  * Utility functions to retrieve request scope datas
@@ -49,46 +50,12 @@ public class RequestContextUtil {
 	
 	
 	   public static ControllerContext getControllerContext() {
-
-	        // Le controller context est le meme pour tous les threads, on le stocke dans la requete
-	        // TODO : mettre dans le scope invocation et déplacer dans requestContextUtil
 	       
 	       HttpServletRequest request = currentTracker.getHttpRequest();
 	       
-	       
-	        ControllerContext controllerContext = (ControllerContext) request.getAttribute("osivia.controllerContext");
-
-	        if (controllerContext == null) {
-
-	            Stack stack = currentTracker.getStack();
-
-	            List commands = new ArrayList();
-
-	            // Inverse order
-	            for (Object cmd : stack) {
-	                commands.add(0, cmd);
-	            }
-
-	            for (Object cmd : commands) {
-	                if (cmd instanceof ControllerCommand) {
-
-	                    controllerContext = ((ControllerCommand) cmd).getControllerContext();
-	                    break;
-	                }
-	            }
-
-	            if (controllerContext != null) {
-	                request.setAttribute("osivia.controllerContext", controllerContext);
-	            }
-	        }
-
+	        ControllerContext controllerContext = (ControllerContext) request.getAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
 	        return controllerContext;
 	    }
-	   
-       public static void setControllerContext(ControllerContext controllerContext) {
-           HttpServletRequest request = currentTracker.getHttpRequest();
-           request.setAttribute("osivia.controllerContext", controllerContext);
-          
-       }
+
 
 }

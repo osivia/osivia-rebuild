@@ -52,7 +52,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
 
  
-        RequestContextUtil.setControllerContext(controllerContext);
+
         
         String viewState = controllerContext.getServerInvocation().getServerContext().getClientRequest().getHeader("view_state");
         
@@ -124,9 +124,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             PortalObjectUtils.setPageId(controllerContext, ((RenderPageCommand) cmd).getTargetId());
         }
         
-
-
-  
+ 
 
         return cmd;
     }

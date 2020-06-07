@@ -47,6 +47,8 @@ import org.jboss.portal.server.RequestController;
 import org.jboss.portal.server.ServerException;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.PageService;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.tracker.RequestContextUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -247,6 +249,8 @@ public class Controller extends AbstractJBossService implements RequestControlle
    {
       // Create controller context
       ControllerContext controllerContext = new ControllerContext(invocation, this);
+      
+      invocation.getServerContext().getClientRequest().setAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT, controllerContext);
 
       // Invoke the chain that creates the initial command
       ControllerCommand cmd = commandFactory.doMapping(controllerContext, invocation, invocation.getServerContext().getPortalHost(), invocation.getServerContext().getPortalContextPath(), invocation.getServerContext().getPortalRequestPath());
