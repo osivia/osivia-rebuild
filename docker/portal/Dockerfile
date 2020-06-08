@@ -34,6 +34,8 @@ RUN cd / \
     && unzip -oq ${PORTAL_DISTRIBUTION_ZIP}  \
     && rm -f ${PORTAL_DISTRIBUTION_ZIP}
 
+#Logs
+COPY logging.properties /usr/local/tomcat/conf
 # Entrypoint
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
