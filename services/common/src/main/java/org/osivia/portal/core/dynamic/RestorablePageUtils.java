@@ -12,7 +12,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.page.PageParametersEncoder;
-import org.osivia.portal.core.cms.ViewContentCommand;
+import org.osivia.portal.core.content.ViewContentCommand;
 
 
 

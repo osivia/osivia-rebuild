@@ -7,6 +7,21 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+
+	<bean class="org.osivia.portal.core.tracker.ServerTrackerInterceptor"
+		id="osivia:service=Interceptor,type=Server,name=ServerTracker">
+		<property name="Tracker" ref="osivia:service=Tracker"/>
+	</bean>
+
+
+	<bean class="org.osivia.portal.core.tracker.TrackerService" name="osivia:service=Tracker"></bean>
+
+
+	<bean class="org.osivia.portal.core.tracker.CommandTrackerInterceptor"
+		id="osivia:service=Interceptor,type=Command,name=CommandTracker">
+		<property name="Tracker" ref="osivia:service=Tracker"/>
+	</bean>
+
     <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
 		id="wwa:commandFactory=Delegate,path=Default">
         <property name="Path" value="/command" />
@@ -15,7 +30,7 @@
 	</bean>  
    
    
-   <bean class="org.osivia.portal.core.pagemarker.PortalCommandFactory"
+   <bean class="org.osivia.portal.core.portalcommands.PortalCommandFactory"
 		id="portal:commandFactory=DefaultPortal">
 		
 		        <property name="NextFactory" ref="portal:commandFactory=Delegating"/>    
@@ -43,4 +58,60 @@
       
    </bean>
     
+    
+   <bean class="org.osivia.portal.core.portlets.interceptors.ParametresPortletInterceptor"
+          id="osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor" >
+   </bean>
+   
+   
+      
+   	<bean class="org.osivia.portal.core.content.PublicationManager"
+		id="osivia:service=PublicationManager" >
+	</bean>
+	
+   <!-- The different containers -->	
+      
+       <bean class="org.osivia.portal.core.container.persistent.StaticPortalObjectContainer"
+          id="portal:container=TemplatePortalObject" >
+<!-- 
+      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
+      <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
+      -->
+       <property name="Tracker" ref="osivia:service=Tracker"/>      
+      <property name="ContentProviderRegistry" ref="portal:service=ContentProviderRegistry"/>
+   </bean>
+   
+       
+       
+    <bean class="org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer"
+          id="portal:container=PortalObject" >
+       <property name="PortalObjectContainer" ref="portal:container=TemplatePortalObject"/>
+       <property name="Tracker" ref="osivia:service=Tracker"/>
+   </bean>
+   
+       
+       
+    <!--  content -->
+
+   
+ 	<bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+		id="osivia:commandFactory=Delegate,path=content">
+        <property name="Path" value="/content" />
+        <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+        <property name="DelegateFactory" ref="osivia:commandFactory=Content"/>        
+	</bean>  
+   
+   
+   	<bean class="org.osivia.portal.core.content.ViewContentCommandFactoryService"
+		id="osivia:commandFactory=Content" >
+	</bean>
+   
+   	<bean class="org.osivia.portal.core.content.ContentURLFactory" id="osivia:urlFactory=Cms" >
+        <property name="Path" value="/content" />
+        <property name="Factory" ref="portal:urlFactory=Delegating"/>        
+	</bean>
+
+   
+       
+       
 </beans>

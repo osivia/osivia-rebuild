@@ -22,7 +22,8 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osivia.portal.core.cms.CMSConfigurationItem;
+import org.osivia.portal.core.content.CMSConfigurationItem;
+
 
 
 /**

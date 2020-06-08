@@ -20,8 +20,8 @@ import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
 import org.osivia.portal.core.context.ControllerContextAdapter;
-import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.springframework.stereotype.Service;
 

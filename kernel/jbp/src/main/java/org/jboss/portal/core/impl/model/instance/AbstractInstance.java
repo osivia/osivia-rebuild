@@ -227,7 +227,7 @@ public abstract class AbstractInstance implements Instance
          invocation.setInstanceContext(instanceContext);
 
          // Perform invocation
-         org.osivia.portal.jpb.services.InstanceContainerImpl container = (org.osivia.portal.jpb.services.InstanceContainerImpl)getContainer();
+         org.osivia.portal.core.instances.InstanceContainerImpl container = (org.osivia.portal.core.instances.InstanceContainerImpl)getContainer();
          PortletInvocationResponse response = container.invoke(invocation);
 
          // Create user instance if a clone operation occured
