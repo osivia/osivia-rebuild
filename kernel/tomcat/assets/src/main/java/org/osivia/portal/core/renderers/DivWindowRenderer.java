@@ -31,7 +31,7 @@ import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRenderer;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.osivia.portal.api.page.PageProperties;
+import org.osivia.portal.core.page.PageProperties;
 
 /**
  * Implementation of a WindowRenderer, based on div tags.

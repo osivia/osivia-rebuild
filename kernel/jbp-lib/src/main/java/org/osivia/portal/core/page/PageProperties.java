@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.page;
+package org.osivia.portal.core.page;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -22,6 +22,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osivia.portal.core.cms.CMSConfigurationItem;
 
 
 

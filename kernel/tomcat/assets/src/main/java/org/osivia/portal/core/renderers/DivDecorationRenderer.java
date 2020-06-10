@@ -20,7 +20,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.page.PageProperties;
+import org.osivia.portal.core.page.PageProperties;
 
 
 

@@ -26,7 +26,12 @@
 			<scope>provided</scope>
 		</dependency>
 
-
+        <!-- OSIVIA Portal API -->
+        <dependency>
+            <groupId>org.osivia.portal.api</groupId>
+            <artifactId>osivia-portal-api-common</artifactId>
+        </dependency>
+        
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>

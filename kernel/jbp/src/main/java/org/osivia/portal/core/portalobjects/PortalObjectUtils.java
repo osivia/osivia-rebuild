@@ -29,8 +29,8 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.page.PageProperties;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.page.PageProperties;
 
 
 /**

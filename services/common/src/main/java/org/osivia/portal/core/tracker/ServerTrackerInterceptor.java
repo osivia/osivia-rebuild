@@ -23,8 +23,8 @@ import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
-import org.osivia.portal.api.page.PageProperties;
 import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
+import org.osivia.portal.core.page.PageProperties;
 
 
 public class ServerTrackerInterceptor extends ServerInterceptor {

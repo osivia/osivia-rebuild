@@ -1,4 +1,4 @@
-package org.osivia.portal.api.page;
+package org.osivia.portal.core.cms;
 
 
 

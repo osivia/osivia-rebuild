@@ -25,8 +25,8 @@ import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
-import org.osivia.portal.api.page.PageProperties;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.page.PageProperties;
 
 
 @SuppressWarnings("unchecked")
