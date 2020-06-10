@@ -31,11 +31,11 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.page.PageProperties;
 import org.osivia.portal.core.container.persistent.PageImplBase;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer;
 import org.osivia.portal.core.container.persistent.WindowImplBase;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.core.page.PageProperties;
 
 
 

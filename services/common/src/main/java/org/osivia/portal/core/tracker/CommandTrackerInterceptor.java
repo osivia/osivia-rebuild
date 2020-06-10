@@ -25,8 +25,8 @@ import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.osivia.portal.api.page.PageProperties;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.ITracker;
 
 

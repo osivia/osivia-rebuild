@@ -78,7 +78,8 @@ public class PublicationManager implements IPublicationManager {
 
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
-            properties.put("osivia.contentId", docId.toString());           
+            properties.put("osivia.contentId", docId.toString());      
+
             Map<String, String> parameters = new HashMap<String, String>();
 
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
@@ -96,6 +97,7 @@ public class PublicationManager implements IPublicationManager {
                 Map<String, String> windowProperties = new HashMap<String, String>();
 
                 windowProperties.put(Constants.WINDOW_PROP_URI, doc.getId().toString());
+                windowProperties.put("osivia.hideTitle", "1");                    
                 getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", "ContentInstance", windowProperties);
                 
             }

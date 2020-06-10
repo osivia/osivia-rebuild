@@ -90,7 +90,8 @@ public class SampleController implements PortletContextAware {
 
 
     @RenderMapping(params = "tab=2")
-    public String view2() {
+    public String view2(RenderRequest request, RenderResponse response) {
+        response.setTitle("Sample (tab2)");
         return "view-2";
     }
 

@@ -53,6 +53,13 @@
     </developers>
     
     
+    
+
+
+    
+
+     
+        
     <modules>
         <module>api</module>
         <module>services</module>
@@ -130,6 +137,7 @@
         <!-- Others -->
         <log4j.version>1.2.14</log4j.version>
         <taglib-standard.version>1.1.2</taglib-standard.version>
+        <dom4j.version>1.6.1</dom4j.version>        
 
 
         
@@ -297,6 +305,16 @@
 	            <scope>provided</scope>
             </dependency>
             
+            <!-- DOM -->            
+
+            <dependency>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+
             <!-- taglibs -->
             
 			<dependency>
@@ -375,6 +393,13 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
+        
+        <!-- DOM -->        
+        
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+        </dependency>                   
         
         
         <!-- JBoss portlet container -->

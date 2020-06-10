@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.core.page;
+package org.osivia.portal.api.page;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -22,16 +22,14 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osivia.portal.core.content.CMSConfigurationItem;
 
 
 
 /**
- * Gestion multi-threads des pages et des windows
- *
- *  Cette classe permet
- *   - d'optimiser l'acces aux propriétés de la page en mode multi-threads (en partageant les propriétés entre les threads)
- *   - d'enrichir les contextes d'affichage car les contextes de windows sont opaque (pas possibilité de les modifier avant le renderer)
+ * Utility class associated to current page
+ * 
+ *  - get Window property at theme level
+ *  - check if refreshing
  *
  * @author jeanseb
  *

@@ -152,6 +152,7 @@
          <value>portal:service=Interceptor,type=Command,name=ResourceAcquisition</value>
          <value>portal:service=Interceptor,type=Command,name=Ajax</value>
          <value>portal:service=Interceptor,type=Command,name=NavigationalState</value>
+         <value>osivia:service=Interceptor,type=Command,name=WindowTheming</value>
 <!--          
          <ref bean="portal:service=Interceptor,type=Command,name=Control"/>
          <ref bean="portal:service=Interceptor,type=Command,name=BackwardCompatibility"/>

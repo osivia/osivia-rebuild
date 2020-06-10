@@ -145,6 +145,12 @@
 		    <scope>compile</scope>
 		</dependency>
 		
+		<dependency>
+		    <groupId>dom4j</groupId>
+		    <artifactId>dom4j</artifactId>
+		    <scope>compile</scope>
+		</dependency>
+		
         <dependency>
             <groupId>javax.portlet</groupId>
             <artifactId>portlet-api</artifactId>

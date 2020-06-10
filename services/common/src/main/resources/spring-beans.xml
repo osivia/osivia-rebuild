@@ -21,6 +21,12 @@
 		id="osivia:service=Interceptor,type=Command,name=CommandTracker">
 		<property name="Tracker" ref="osivia:service=Tracker"/>
 	</bean>
+	
+	
+	<bean class="org.osivia.portal.core.window.WindowThemingInterceptor"
+		id="osivia:service=Interceptor,type=Command,name=WindowTheming">
+	</bean>	
+	
 
     <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
 		id="wwa:commandFactory=Delegate,path=Default">
