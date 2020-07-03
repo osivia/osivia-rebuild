@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.HierarchicalDocument;
 import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
@@ -15,7 +16,7 @@ import org.osivia.portal.services.cms.service.CMSServiceImpl;
 /**
  * The Class DocumentImpl.
  */
-public class DocumentImpl implements Document {
+public class DocumentImpl implements HierarchicalDocument {
     
 
     /** The id. */
@@ -24,6 +25,13 @@ public class DocumentImpl implements Document {
 
     /** The name. */
     private final String name;
+
+    
+    /** The path. */
+    private String path;
+    
+    
+
 
     /** The properties. */
     private final Map<String, Object> properties;
@@ -121,6 +129,20 @@ public class DocumentImpl implements Document {
     public List<DocumentImpl> getNavigationChildren()  throws CMSException {
        return userRepository.getChildren(this);
     }
+    
+    public boolean isNavigable()    {
+        return false;
+    }
 
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+    
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
 }

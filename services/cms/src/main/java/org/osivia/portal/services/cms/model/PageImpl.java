@@ -3,10 +3,10 @@ package org.osivia.portal.services.cms.model;
 import java.util.List;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 
 public class PageImpl extends DocumentImpl implements Page {
@@ -32,4 +32,9 @@ public class PageImpl extends DocumentImpl implements Page {
         return templateId;
     }
 
+    
+    public boolean isNavigable()    {
+        return true;
+    }
+    
 }

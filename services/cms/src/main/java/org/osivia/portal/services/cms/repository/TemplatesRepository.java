@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.model.DocumentImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
@@ -41,7 +41,7 @@ public class TemplatesRepository extends InMemoryUserRepository {
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance"); 
         modules.add(nav);          
-        SpaceImpl space = new SpaceImpl(this,id, null,children, properties, modules);
+        SpaceImpl space = new SpaceImpl(this,id, id,null,children, properties, modules);
         addDocument(id, space);
     }
 

@@ -19,14 +19,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.CharEncoding;
+import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageProperties;
@@ -100,6 +103,22 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         }
 
         return url;
+    }
+
+    @Override
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException {
+
+
+        final ViewContentCommand cmd = new ViewContentCommand(id.toString());
+
+
+        final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
+
+        String url = portalURL.toString();
+
+
+        return url;
+
     }
 
 

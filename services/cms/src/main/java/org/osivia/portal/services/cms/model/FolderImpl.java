@@ -15,4 +15,10 @@ public class FolderImpl extends DocumentImpl  {
 
     }
 
+    
+    public boolean isNavigable()    {
+        return true;
+    }
+    
+
 }

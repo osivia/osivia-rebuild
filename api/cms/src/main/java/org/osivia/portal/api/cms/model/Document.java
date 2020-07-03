@@ -3,6 +3,7 @@ package org.osivia.portal.api.cms.model;
 import java.util.List;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 
 /**

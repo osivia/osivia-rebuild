@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.services.cms.model.DocumentImpl;
 import org.osivia.portal.services.cms.model.FolderImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
@@ -45,14 +44,14 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
      * @param id the id
      * @param properties the properties
      */
-    private void addWorkspace(String id) {
+    private void addWorkspace(String id,  List<String> children) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         ModuleRef module = new ModuleRef("win-" + id, "col-1", "0", "SampleInstance");
         modules.add(module);
-        SpaceImpl space = new SpaceImpl(this,id, new UniversalID("templates", "ID_PAGE_A1" ),new ArrayList<String>(), properties, modules);
+        SpaceImpl space = new SpaceImpl(this,id, id,new UniversalID("templates", "ID_PAGE_A1" ),children, properties, modules);
         addDocument(id, space);
     }
 
@@ -63,7 +62,7 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
         addFolder("ID_FOLD_1", "folder1", "space1", "space1", new ArrayList<String>(Arrays.asList("ID_FOLD_11")));
         addFolder("ID_FOLD_11", "folder11", "ID_FOLD_1", "space1", new ArrayList<String>());
         addDocument("ID_DOC_1", "doc1", "ID_FOLD_11", "space1");
-        addWorkspace("space1");
+        addWorkspace("space1",  new ArrayList<String>(Arrays.asList("ID_FOLD_1")));
     }
 
 

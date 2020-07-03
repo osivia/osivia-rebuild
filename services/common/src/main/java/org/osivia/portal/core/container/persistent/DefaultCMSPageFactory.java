@@ -12,6 +12,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
@@ -19,7 +20,6 @@ import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.model.Templateable;
-import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.ContainerContext;
 
@@ -60,6 +60,12 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
         pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
         pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
+        
+        // Navigation
+        // TODO : facorize with publicationManager
+        pageProperties.put("osivia.contentId", doc.getId().toString());      
+        pageProperties.put("osivia.navigationId", doc.getId().toString());     
+        pageProperties.put("osivia.spaceId", doc.getSpaceId().toString());           
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 

@@ -58,7 +58,7 @@ public class ContentURLFactory extends URLFactoryDelegate
 
 
          if( contentId != null)	{
-        	 portalRequestPath += contentId;
+        	 portalRequestPath += "/" +contentId.replaceAll(":", "/");
          }
 
          asu.setPortalRequestPath(portalRequestPath);

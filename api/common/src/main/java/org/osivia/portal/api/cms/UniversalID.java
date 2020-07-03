@@ -1,4 +1,4 @@
-package org.osivia.portal.api.cms.model;
+package org.osivia.portal.api.cms;
 
 
 /**
@@ -61,6 +61,41 @@ public class UniversalID {
     
     public String toString()  {
         return repositoryName + ":" + internalID;
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((internalID == null) ? 0 : internalID.hashCode());
+        result = prime * result + ((repositoryName == null) ? 0 : repositoryName.hashCode());
+        return result;
+    }
+
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        UniversalID other = (UniversalID) obj;
+        if (internalID == null) {
+            if (other.internalID != null)
+                return false;
+        } else if (!internalID.equals(other.internalID))
+            return false;
+        if (repositoryName == null) {
+            if (other.repositoryName != null)
+                return false;
+        } else if (!repositoryName.equals(other.repositoryName))
+            return false;
+        return true;
     }
     
 

@@ -1,10 +1,12 @@
 package org.osivia.portal.core.content;
 
+import java.util.Map;
+
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
@@ -14,4 +16,5 @@ import org.osivia.portal.api.context.PortalControllerContext;
  */
 public interface IPublicationManager {
     public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID docId) throws ControllerException;
+
 }
