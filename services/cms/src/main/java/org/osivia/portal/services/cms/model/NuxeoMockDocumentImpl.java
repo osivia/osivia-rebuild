@@ -92,7 +92,7 @@ public class NuxeoMockDocumentImpl implements HierarchicalDocument {
         return spaceInternalId;
     }
     
-    @Override
+
     public UniversalID getSpaceId() {
         return new UniversalID(userRepository.getRepositoryName(), getSpaceInternalId());
     }

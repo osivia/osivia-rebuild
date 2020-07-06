@@ -100,17 +100,13 @@ public abstract class InMemoryUserRepository {
 
     public NavigationItem getNavigationItem(String internalId) throws CMSException {
         NuxeoMockDocumentImpl document = getDocument(internalId);
-        return new NavigationItemImpl(document);
-    }
-
-
-    public NavigationItem getContentPrimaryNavigationItem(String internalId) throws CMSException {
-        NuxeoMockDocumentImpl document = getDocument(internalId);
         if (!document.isNavigable()) {
             document = document.getNavigationParent();
         }
         return new NavigationItemImpl(document);
     }
+
+
 
     public NuxeoMockDocumentImpl getParent(Document document) throws CMSException {
         NuxeoMockDocumentImpl docImpl = (NuxeoMockDocumentImpl) document;

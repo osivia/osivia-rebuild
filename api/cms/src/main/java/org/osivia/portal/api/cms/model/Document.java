@@ -36,13 +36,7 @@ public interface Document {
      */
     public Map<String,Object> getProperties();
     
-    /**
-     * Gets the space.
-     *
-     * @return the space
-     */
-    public UniversalID getSpaceId();
-    
+
     /**
      * Gets the native item.
      *

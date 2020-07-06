@@ -67,5 +67,11 @@ public class NavigationItemImpl implements NavigationItem {
             return false;
     }
 
+    @Override
+    public UniversalID getSpaceId() {
+        return document.getSpaceId();
+
+    }
+
 
 }

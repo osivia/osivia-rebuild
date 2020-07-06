@@ -65,7 +65,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         // TODO : facorize with publicationManager
         pageProperties.put("osivia.contentId", doc.getId().toString());      
         pageProperties.put("osivia.navigationId", doc.getId().toString());     
-        pageProperties.put("osivia.spaceId", doc.getSpaceId().toString());           
+        pageProperties.put("osivia.spaceId", navItem.getSpaceId().toString());           
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 
@@ -122,7 +122,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
                 }
 
                 // Add space
-                templatePath = "/" + templateDoc.getSpaceId().getInternalID() + "/" + getRootPageName() + templatePath;
+                templatePath = "/" + templateNav.getSpaceId().getInternalID() + "/" + getRootPageName() + templatePath;
 
 
                 PortalObjectPath mainTemplatePath = new PortalObjectPath(templatePath, PortalObjectPath.CANONICAL_FORMAT);

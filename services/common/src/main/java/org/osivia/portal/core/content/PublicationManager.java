@@ -50,40 +50,40 @@ public class PublicationManager implements IPublicationManager {
 
         Document space;
         try {
-            space = getCMSService().getDocument(cmsContext, doc.getSpaceId());
+            space = getCMSService().getDocument(cmsContext, navigation.getSpaceId());
 
 
-        String spacePath = space.getId().getRepositoryName() + ":" + "/" + space.getId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName();
-        
-        String templateRelativePath = "";
-        
-        Document templateDoc = null;
-        
-        // Find first page
-        while( !navigation.isRoot()) {
-            Document navDoc = getCMSService().getDocument(cmsContext, navigation.getDocumentId());
-            if(  navDoc instanceof Templateable)    {
-                templateDoc = navDoc;
-                break;
+            String spacePath = space.getId().getRepositoryName() + ":" + "/" + space.getId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName();
+
+            String templateRelativePath = "";
+
+            Document templateDoc = null;
+
+            // Find first page
+            while (!navigation.isRoot()) {
+                Document navDoc = getCMSService().getDocument(cmsContext, navigation.getDocumentId());
+                if (navDoc instanceof Templateable) {
+                    templateDoc = navDoc;
+                    break;
+                }
+                navigation = navigation.getParent();
             }
-            navigation = navigation.getParent();
-        }
-        
-        if( templateDoc != null)    {
 
-            NavigationItem nav = getCMSService().getNavigationItem(cmsContext, templateDoc.getId());
-            
-            while( ! nav.isRoot()) {
-                templateRelativePath = "/" + nav.getDocumentId().getInternalID() + templateRelativePath;
-                nav = nav.getParent();
+            if (templateDoc != null) {
+
+                NavigationItem nav = getCMSService().getNavigationItem(cmsContext, templateDoc.getId());
+
+                while (!nav.isRoot()) {
+                    templateRelativePath = "/" + nav.getDocumentId().getInternalID() + templateRelativePath;
+                    nav = nav.getParent();
+                }
+
             }
-            
-        }
-        
-        String templatePath = spacePath + templateRelativePath;
-        
-        PortalObjectId templateId = PortalObjectId.parse(templatePath, PortalObjectPath.CANONICAL_FORMAT);
-        return templateId;
+
+            String templatePath = spacePath + templateRelativePath;
+
+            PortalObjectId templateId = PortalObjectId.parse(templatePath, PortalObjectPath.CANONICAL_FORMAT);
+            return templateId;
         } catch (CMSException e) {
             throw new ControllerException(e);
         }
@@ -100,19 +100,19 @@ public class PublicationManager implements IPublicationManager {
             CMSContext cmsContext = new CMSContext(portalCtx);
 
             Document doc = getCMSService().getDocument(cmsContext, docId);
-            Document space = getCMSService().getDocument(cmsContext, doc.getSpaceId());
-            NavigationItem navigation = getCMSService().getNavigationItem(cmsContext, docId);
 
+            NavigationItem navigation = getCMSService().getNavigationItem(cmsContext, docId);
+            Document space = getCMSService().getDocument(cmsContext, navigation.getSpaceId());
 
             String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
 
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
-            properties.put("osivia.contentId", docId.toString());      
-            properties.put("osivia.navigationId", navigation.getDocumentId().toString());               
-            properties.put("osivia.spaceId", doc.getSpaceId().toString());           
-            
-            
+            properties.put("osivia.contentId", docId.toString());
+            properties.put("osivia.navigationId", navigation.getDocumentId().toString());
+            properties.put("osivia.spaceId", navigation.getSpaceId().toString());
+
+
             Map<String, String> parameters = new HashMap<String, String>();
 
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
@@ -121,24 +121,24 @@ public class PublicationManager implements IPublicationManager {
                 displayNames.put(Locale.FRENCH, displayName);
             }
 
-            //TODO : get current portal
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "space_" + space.getSpaceId().getInternalID(), displayNames,
-                    templatePath, properties, parameters);
-            
-            if( ! (doc instanceof Templateable ))    {
-                
+            // TODO : get current portal
+            String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "space_" + navigation.getSpaceId().getInternalID(),
+                    displayNames, templatePath, properties, parameters);
+
+            if (!(doc instanceof Templateable)) {
+
                 Map<String, String> windowProperties = new HashMap<String, String>();
 
                 windowProperties.put(Constants.WINDOW_PROP_URI, doc.getId().toString());
-                windowProperties.put("osivia.hideTitle", "1");                    
+                windowProperties.put("osivia.hideTitle", "1");
                 getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", "ContentInstance", windowProperties);
-                
+
             }
-             
+
 
             pageId = PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT);
-            
-            
+
+
         } catch (Exception e) {
             throw new ControllerException(e);
         }

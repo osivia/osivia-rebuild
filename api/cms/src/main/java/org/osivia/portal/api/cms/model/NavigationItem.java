@@ -48,4 +48,12 @@ public interface NavigationItem {
      * @return the parent
      */
     public List<NavigationItem> getChildren()  throws CMSException;
+    
+    
+    /**
+     * Get space identifier.
+     *
+     * @return identifier
+     */
+    UniversalID getSpaceId();
 }
