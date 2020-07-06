@@ -13,7 +13,6 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.HierarchicalDocument;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -146,7 +145,8 @@ public class MenuService implements IMenuService {
             NavigationItem navigationItem, int level) throws PortalException {
         // Nuxeo document
         // Nuxeo document
-        HierarchicalDocument document = (HierarchicalDocument) cmsService.getDocument(cmsContext, navigationItem.getDocumentId());
+        Document document = (Document) cmsService.getDocument(cmsContext, navigationItem.getDocumentId());
+        org.nuxeo.ecm.automation.client.model.Document nuxeoDocument = (org.nuxeo.ecm.automation.client.model.Document) document.getNativeItem();
 
         // Nuxeo document link
         Link link = new Link(portalUrlFactory.getViewContentUrl(portalControllerContext, document.getId()), false);
@@ -158,10 +158,10 @@ public class MenuService implements IMenuService {
 
 
 
-        if (this.isSelected(options.getCurrentPath(), document.getPath())) {
+        if (this.isSelected(options.getCurrentPath(), nuxeoDocument.getPath())) {
             selected = true;
 
-            if (StringUtils.equals(options.getCurrentPath(),  document.getPath())) {
+            if (StringUtils.equals(options.getCurrentPath(),  nuxeoDocument.getPath())) {
                 current = true;
             }
         }

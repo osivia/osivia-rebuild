@@ -8,7 +8,7 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.HierarchicalDocument;
+
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -18,10 +18,9 @@ import org.osivia.portal.api.windows.WindowFactory;
 public class NuxeoController {
 
 
-    
     /** The navigation path. */
     String basePath;
-    
+
     /** The navigation path. */
     String navigationPath;
 
@@ -38,16 +37,14 @@ public class NuxeoController {
 
     /** The portal ctx. */
     private PortalControllerContext portalCtx;
-    
+
     /** The request. */
     PortletRequest request;
 
 
-    
     public PortletRequest getRequest() {
         return request;
     }
-
 
 
     /**
@@ -61,7 +58,6 @@ public class NuxeoController {
         }
         return cmsService;
     }
-
 
 
     /**
@@ -82,15 +78,16 @@ public class NuxeoController {
      * @return the navigation path
      */
     public String getNavigationPath() throws RuntimeException {
-        if( navigationPath == null) {
-            if( navigationId != null)   {
-                 try {
-                     UniversalID docId = navigationId;
-                    Document doc = getCMSService().getDocument(getCMSContext(), docId);
-                    if( doc instanceof HierarchicalDocument)
-                        navigationPath = ((HierarchicalDocument)doc).getPath();
+        if (navigationPath == null) {
+            if (navigationId != null) {
+                try {
+                    UniversalID docId = navigationId;
+                    org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
+                            .getDocument(getCMSContext(), docId).getNativeItem();
+
+                    navigationPath = ((org.nuxeo.ecm.automation.client.model.Document) doc).getPath();
                 } catch (CMSException e) {
-                    throw new RuntimeException( e);
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -98,63 +95,58 @@ public class NuxeoController {
     }
 
 
-    
-
     /**
      * Gets the navigation path.
      *
      * @return the navigation path
      */
     public String getBasePath() throws RuntimeException {
-        if( basePath == null) {
-            if( spaceId != null)   {
-                 try {
-                     UniversalID docId = spaceId;
-                     Document doc = getCMSService().getDocument(getCMSContext(), docId);
-                     if( doc instanceof HierarchicalDocument)
-                         basePath = ((HierarchicalDocument)doc).getPath();
+        if (basePath == null) {
+            if (spaceId != null) {
+                try {
+                    UniversalID docId = spaceId;
+                    org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
+                            .getDocument(getCMSContext(), docId).getNativeItem();
+                    basePath = doc.getPath();
                 } catch (CMSException e) {
-                    throw new RuntimeException( e);
+                    throw new RuntimeException(e);
                 }
             }
         }
         return this.basePath;
     }
-    
-    
-    
-    
+
+
     /**
      * Gets the navigation path.
      *
      * @return the navigation path
      */
     public String getItemNavigationPath() throws RuntimeException {
-        if( itemNavigationPath == null) {
-            if( contentId != null)   {
-                 try {
-                     UniversalID docId =  contentId;
-                    Document doc = getCMSService().getDocument(getCMSContext(), docId);
-                    if( doc instanceof HierarchicalDocument)
-                        itemNavigationPath = ((HierarchicalDocument)doc).getPath();
+        if (itemNavigationPath == null) {
+            if (contentId != null) {
+                try {
+                    UniversalID docId = contentId;
+                    org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
+                            .getDocument(getCMSContext(), docId).getNativeItem();
+                    itemNavigationPath = ((org.nuxeo.ecm.automation.client.model.Document) doc).getPath();
                 } catch (CMSException e) {
-                    throw new RuntimeException( e);
+                    throw new RuntimeException(e);
                 }
             }
         }
         return this.itemNavigationPath;
     }
 
-    
+
     public final UniversalID navigationId;
-    public final UniversalID contentId;    
+    public final UniversalID contentId;
     public final UniversalID spaceId;
 
-    
+
     public UniversalID getSpaceId() {
         return spaceId;
     }
-
 
 
     /**
@@ -168,13 +160,13 @@ public class NuxeoController {
     public NuxeoController(PortletRequest request, PortletResponse response, PortletContext portletCtx) throws RuntimeException {
 
         this.request = request;
-        this.contentId = new UniversalID(WindowFactory.getWindow(request).getPageProperty("osivia.contentId"));         
+        this.contentId = new UniversalID(WindowFactory.getWindow(request).getPageProperty("osivia.contentId"));
         this.navigationId = new UniversalID(WindowFactory.getWindow(request).getPageProperty("osivia.navigationId"));
-        this.spaceId = new UniversalID(WindowFactory.getWindow(request).getPageProperty("osivia.spaceId"));        
+        this.spaceId = new UniversalID(WindowFactory.getWindow(request).getPageProperty("osivia.spaceId"));
         this.portalCtx = new PortalControllerContext(portletCtx, request, response);
 
     }
-    
+
     /**
      * Constructor.
      *
@@ -183,5 +175,5 @@ public class NuxeoController {
     public NuxeoController(PortalControllerContext portalControllerContext) {
         this(portalControllerContext.getRequest(), portalControllerContext.getResponse(), portalControllerContext.getPortletCtx());
     }
-    
+
 }

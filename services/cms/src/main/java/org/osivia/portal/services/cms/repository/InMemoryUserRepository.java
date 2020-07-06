@@ -5,18 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-
-import org.osivia.portal.api.cms.CMSContext;
-import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
-import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.NavigationItemImpl;
-import org.osivia.portal.services.cms.model.PageImpl;
+import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 
 public abstract class InMemoryUserRepository {

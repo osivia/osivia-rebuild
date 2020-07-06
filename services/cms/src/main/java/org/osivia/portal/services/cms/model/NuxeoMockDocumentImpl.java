@@ -8,13 +8,13 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.HierarchicalDocument;
+
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 
 /**
  * The Class DocumentImpl.
  */
-public class NuxeoMockDocumentImpl implements HierarchicalDocument {
+public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Document {
     
 
     /** The id. */
@@ -127,10 +127,6 @@ public class NuxeoMockDocumentImpl implements HierarchicalDocument {
     }
 
 
-    @Override
-    public String getPath() {
-        return this.nativeItem.getPath();
-    }
     
 
     public void setPath(String path) {
