@@ -14,7 +14,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.core.context.ControllerContextAdapter;
-import org.osivia.portal.services.cms.model.DocumentImpl;
+import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 import org.osivia.portal.services.cms.repository.TemplatesRepository;
 import org.osivia.portal.services.cms.repository.UserWorkspacesRepository;
@@ -52,7 +52,7 @@ public class CMSServiceImpl implements CMSService {
     public Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException {
 
         InMemoryUserRepository userRepository = getUserRepository(cmsContext, id);
-        DocumentImpl document = userRepository.getDocument(id.getInternalID());
+        NuxeoMockDocumentImpl document = userRepository.getDocument(id.getInternalID());
         
         return document;
 
@@ -111,15 +111,9 @@ public class CMSServiceImpl implements CMSService {
     }
 
     @Override
-    public NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID id, String navigation) throws CMSException {
+    public NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID id) throws CMSException {
         InMemoryUserRepository userRepository = getUserRepository(cmsContext, id);
         return userRepository.getNavigationItem(id.getInternalID());
-    }
-
-    @Override
-    public NavigationItem getContentPrimaryNavigationItem(CMSContext cmsContext, UniversalID id) throws CMSException {
-        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id);
-        return userRepository.getContentPrimaryNavigationItem(id.getInternalID());
     }
 
 }

@@ -9,7 +9,7 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 
-public class PageImpl extends DocumentImpl implements Page {
+public class PageImpl extends NuxeoMockDocumentImpl implements Page {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;

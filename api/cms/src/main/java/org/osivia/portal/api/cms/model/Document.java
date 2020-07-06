@@ -3,6 +3,7 @@ package org.osivia.portal.api.cms.model;
 import java.util.List;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 
@@ -41,6 +42,13 @@ public interface Document {
      * @return the space
      */
     public UniversalID getSpaceId();
+    
+    /**
+     * Gets the native item.
+     *
+     * @return the native item
+     */
+    public EcmDocument getNativeItem();
     
      
 

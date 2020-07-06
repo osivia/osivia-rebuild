@@ -244,7 +244,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
 
                     
-                    NavigationItem navRoot = cmsService.getNavigationItem(cmsContext, space.getId(), CMSService.PRIMARY_NAVIGATION_TREE);
+                    NavigationItem navRoot = cmsService.getNavigationItem(cmsContext, space.getId());
                     
                     
                     DefaultCMSPageFactory.createCMSPage(this, containerContext, portal, getCMSService(), cmsContext,  navRoot);

@@ -1,36 +1,24 @@
 package org.osivia.portal.services.cms.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.HierarchicalDocument;
-import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
-import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
 /**
  * The Class DocumentImpl.
  */
-public class DocumentImpl implements HierarchicalDocument {
+public class NuxeoMockDocumentImpl implements HierarchicalDocument {
     
 
     /** The id. */
     private final String internalID;
-
-
-    /** The name. */
-    private final String name;
-
-    
-    /** The path. */
-    private String path;
-    
-    
 
 
     /** The properties. */
@@ -49,6 +37,8 @@ public class DocumentImpl implements HierarchicalDocument {
     /** The user repository. */
     private final InMemoryUserRepository userRepository;
     
+
+    private Document nativeItem;
     
 
     /**
@@ -57,11 +47,13 @@ public class DocumentImpl implements HierarchicalDocument {
      * @param id the id
      * @param properties the properties
      */
-    public DocumentImpl( InMemoryUserRepository userRepository, String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
+    public NuxeoMockDocumentImpl( InMemoryUserRepository userRepository,  String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
         super();
         this.userRepository = userRepository;
         this.internalID = internalID;
-        this.name = name;
+        this.nativeItem = new Document();
+        this.nativeItem.setName(name);
+        this.nativeItem.setTitle(properties.get("dc:title").toString());
         this.parentInternalId = parentId;
         this.spaceInternalId = spaceId;
         this.childrenId = childrenId;
@@ -91,7 +83,7 @@ public class DocumentImpl implements HierarchicalDocument {
 
     @Override
     public String getTitle() {
-        return properties.get("dc:title").toString();
+        return nativeItem.getTitle();
 
     }
 
@@ -117,16 +109,16 @@ public class DocumentImpl implements HierarchicalDocument {
 
 
     public String getName() {
-        return name;
+        return this.nativeItem.getName();
     }
 
 
-    public DocumentImpl getNavigationParent()  throws CMSException{
+    public NuxeoMockDocumentImpl getNavigationParent()  throws CMSException{
         return userRepository.getParent(this);
     }
 
 
-    public List<DocumentImpl> getNavigationChildren()  throws CMSException {
+    public List<NuxeoMockDocumentImpl> getNavigationChildren()  throws CMSException {
        return userRepository.getChildren(this);
     }
     
@@ -137,12 +129,19 @@ public class DocumentImpl implements HierarchicalDocument {
 
     @Override
     public String getPath() {
-        return path;
+        return this.nativeItem.getPath();
     }
     
 
     public void setPath(String path) {
-        this.path = path;
+        this.nativeItem.setPath( path);
     }
+
+
+    @Override
+    public EcmDocument getNativeItem() {
+        return nativeItem;
+    }
+
 
 }

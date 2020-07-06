@@ -85,7 +85,7 @@ public class MenuController implements PortletContextAware {
         
         String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
         if( navigationId != null)
-            request.setAttribute("navigation", cmsService.getNavigationItem(new CMSContext(portalControllerContext), new UniversalID(navigationId), CMSService.PRIMARY_NAVIGATION_TREE));
+            request.setAttribute("navigation", cmsService.getNavigationItem(new CMSContext(portalControllerContext), new UniversalID(navigationId)));
 
         request.setAttribute("navigationPath", nuxeoController.getNavigationPath());
         

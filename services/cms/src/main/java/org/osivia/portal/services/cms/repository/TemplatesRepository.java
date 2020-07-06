@@ -14,7 +14,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.services.cms.model.DocumentImpl;
+import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 

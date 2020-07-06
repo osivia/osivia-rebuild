@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 
-public class FolderImpl extends DocumentImpl  {
+public class FolderImpl extends NuxeoMockDocumentImpl  {
 
 
 

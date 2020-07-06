@@ -20,7 +20,7 @@ import org.osivia.portal.services.cms.service.CMSServiceImpl;
 public class NavigationItemImpl implements NavigationItem {
 
 
-    private DocumentImpl document;
+    private NuxeoMockDocumentImpl document;
 
 
     /**
@@ -29,7 +29,7 @@ public class NavigationItemImpl implements NavigationItem {
      * @param id the id
      * @param properties the properties
      */
-    public NavigationItemImpl(DocumentImpl document) {
+    public NavigationItemImpl(NuxeoMockDocumentImpl document) {
         super();
         this.document = document;
     }
@@ -46,14 +46,14 @@ public class NavigationItemImpl implements NavigationItem {
 
     @Override
     public NavigationItem getParent() throws CMSException {
-        DocumentImpl parent = document.getNavigationParent();
+        NuxeoMockDocumentImpl parent = document.getNavigationParent();
         return new NavigationItemImpl(parent);
     }
 
     @Override
     public List<NavigationItem> getChildren() throws CMSException {
         List<NavigationItem> children = new ArrayList<>();
-        for (DocumentImpl doc : document.getNavigationChildren()) {
+        for (NuxeoMockDocumentImpl doc : document.getNavigationChildren()) {
             children.add(new NavigationItemImpl(doc));
         }
         return children;

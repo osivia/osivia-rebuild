@@ -232,7 +232,7 @@ public class MenuService implements IMenuService {
             // Navigation item
             NavigationItem navigationItem;
 
-            navigationItem = cmsService.getNavigationItem(cmsContext, nuxeoController.getSpaceId(), CMSService.PRIMARY_NAVIGATION_TREE);
+            navigationItem = cmsService.getNavigationItem(cmsContext, nuxeoController.getSpaceId());
 
 
             // Navigation display item

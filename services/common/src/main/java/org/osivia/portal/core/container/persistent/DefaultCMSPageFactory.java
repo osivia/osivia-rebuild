@@ -111,7 +111,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
                 Document templateDoc = cmsService.getDocument(cmsContext, templateCMSId);
                 String templatePath = "/" + templateDoc.getId().getInternalID();
                 
-                NavigationItem templateNav = cmsService.getNavigationItem(cmsContext, templateDoc.getId(), CMSService.PRIMARY_NAVIGATION_TREE);
+                NavigationItem templateNav = cmsService.getNavigationItem(cmsContext, templateDoc.getId());
                 
 
                 while (! templateNav.getParent().isRoot()) {

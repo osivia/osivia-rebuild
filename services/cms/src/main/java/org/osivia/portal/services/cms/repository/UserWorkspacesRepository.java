@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.services.cms.model.DocumentImpl;
+import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.FolderImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 
@@ -32,7 +32,7 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Document." + id);
 
-        DocumentImpl doc = new DocumentImpl(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
+        NuxeoMockDocumentImpl doc = new NuxeoMockDocumentImpl(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
         addDocument(id, doc);
     }
 

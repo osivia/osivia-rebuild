@@ -14,10 +14,6 @@ import org.osivia.portal.api.cms.model.NavigationItem;
 public interface CMSService {
 
 
-    /** The primary navigation tree. */
-    
-    public static final String PRIMARY_NAVIGATION_TREE = "PRIMARY";
-
     
     /**
      * Gets the document.
@@ -30,7 +26,6 @@ public interface CMSService {
     Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException;
 
 
-
     /**
      * Gets the navigation item for the current document.
      *
@@ -40,19 +35,7 @@ public interface CMSService {
      * @return the navigation item
      * @throws CMSException the CMS exception
      */
-    NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID navigableDocumentId, String navigationTreeName) throws CMSException;
+    NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID id) throws CMSException;
     
-    /**
-     * Gets the primary navigation item for current document
-     *
-     * @param cmsContext the cms context
-     * @param documentId the document id
-     * @param navigationTreeName the navigation tree name
-     * @return the navigation item
-     * @throws CMSException the CMS exception
-     */
-    NavigationItem getContentPrimaryNavigationItem(CMSContext cmsContext, UniversalID documentId) throws CMSException;
-    
-    
-    
+   
 }

@@ -71,7 +71,7 @@ public class PublicationManager implements IPublicationManager {
         
         if( templateDoc != null)    {
 
-            NavigationItem nav = getCMSService().getNavigationItem(cmsContext, templateDoc.getId(), CMSService.PRIMARY_NAVIGATION_TREE);
+            NavigationItem nav = getCMSService().getNavigationItem(cmsContext, templateDoc.getId());
             
             while( ! nav.isRoot()) {
                 templateRelativePath = "/" + nav.getDocumentId().getInternalID() + templateRelativePath;
@@ -101,7 +101,7 @@ public class PublicationManager implements IPublicationManager {
 
             Document doc = getCMSService().getDocument(cmsContext, docId);
             Document space = getCMSService().getDocument(cmsContext, doc.getSpaceId());
-            NavigationItem navigation = getCMSService().getContentPrimaryNavigationItem(cmsContext, docId);
+            NavigationItem navigation = getCMSService().getNavigationItem(cmsContext, docId);
 
 
             String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
