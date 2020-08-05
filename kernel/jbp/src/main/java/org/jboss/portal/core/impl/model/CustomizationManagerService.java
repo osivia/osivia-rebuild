@@ -173,6 +173,7 @@ public class CustomizationManagerService extends AbstractJBossService implements
 
       // Get the instance
       Instance instance = instanceContainer.getDefinition(instanceId);
+      /* 
       if (instance != null)
       {
          // If we are in the context of an existing user we get a customization for that user
@@ -181,6 +182,7 @@ public class CustomizationManagerService extends AbstractJBossService implements
             String userId = getUserId(user);
 
             // And if it is in a dashboard context we get the per window customization
+           
             if (isDashboard(window, user))
             {
                // That's how we manufacture dash board keys
@@ -189,13 +191,16 @@ public class CustomizationManagerService extends AbstractJBossService implements
                //
                instance = instance.getCustomization(dashboardId);
             }
+            
             else
+
             {
                instance = instance.getCustomization(userId);
             }
          }
       }
 
+*/
       //
       return instance;
    }

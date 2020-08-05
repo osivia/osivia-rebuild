@@ -86,9 +86,61 @@
       <url-pattern>/auth/*</url-pattern>
    </servlet-mapping>
 
+
+   <!-- Force the mapping of the jsp and images because of the default servlet replacement -->
+   <servlet-mapping>
+      <servlet-name>jsp</servlet-name>
+      <url-pattern>/login/login.jsp</url-pattern>
+   </servlet-mapping>
+   
+   <servlet-mapping>
+      <servlet-name>jsp</servlet-name>
+      <url-pattern>/login/error.jsp</url-pattern>
+   </servlet-mapping>
+
 	<!-- prevent insertion of jsessionid into urls -->
     <session-config>
     	<tracking-mode>COOKIE</tracking-mode>
  	</session-config> 
+
+
+	<security-constraint>
+      <display-name>Example Security Constraint - part 1</display-name>
+      <web-resource-collection>
+         <web-resource-name>Protected Area - Allow methods</web-resource-name>
+         <!-- Define the context-relative URL(s) to be protected -->
+         <url-pattern>/auth/*</url-pattern>
+         <!-- If you list http methods, only those methods are protected so -->
+         <!-- the constraint below ensures all other methods are denied     -->
+         <http-method>DELETE</http-method>
+         <http-method>GET</http-method>
+         <http-method>POST</http-method>
+         <http-method>PUT</http-method>
+      </web-resource-collection>
+      <auth-constraint>
+         <!-- Anyone with one of the listed roles may access this area -->
+         <role-name>members</role-name>
+      </auth-constraint>
+    </security-constraint>
+
+    <!-- Default login configuration uses form-based authentication -->
+    <login-config>
+      <auth-method>FORM</auth-method>
+      <realm-name>Example Form-Based Authentication Area</realm-name>
+      <form-login-config>
+        <form-login-page>/login/login.jsp</form-login-page>
+        <form-error-page>/login/error.jsp</form-error-page>
+      </form-login-config>
+    </login-config>
+
+    <!-- Security roles referenced by this web application -->
+    <security-role>
+      <role-name>role1</role-name>
+    </security-role>
+    <security-role>
+      <role-name>tomcat</role-name>
+    </security-role>
+
+
 
 </web-app>

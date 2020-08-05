@@ -40,11 +40,21 @@
           id="portal:service=Interceptor,type=Server,name=SessionInvalidator" >
      <property name="ServletContainerFactory" ref="ServletContainerFactory"/>
    </bean>
+   
+   <!--
    <bean class="org.jboss.portal.core.aspects.server.UserInterceptor"
           id="portal:service=Interceptor,type=Server,name=User" >
       <property name="CacheUser" value="true"/>
-      <!-- <depends>portal:service=Module,type=IdentityServiceController</depends> -->
+       <depends>portal:service=Module,type=IdentityServiceController</depends> 
    </bean>
+   -->
+   
+    <bean class="org.osivia.portal.core.user.MinimalUserInterceptor"
+          id="portal:service=Interceptor,type=Server,name=User" >
+      <property name="CacheUser" value="true"/>
+
+   </bean>
+   
    <bean class="org.jboss.portal.core.aspects.server.LocaleInterceptor"
           id="portal:service=Interceptor,type=Server,name=Locale" >
       

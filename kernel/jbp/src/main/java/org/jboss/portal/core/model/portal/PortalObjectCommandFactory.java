@@ -81,8 +81,8 @@ public class PortalObjectCommandFactory extends AbstractCommandFactory
       String tokensNamespace[] = contextPath.split("/");
       
       String namespace = "";
-      if( tokensNamespace.length == 3)	{
-          namespace = tokensNamespace[2];
+      if( tokensNamespace.length >= 3)	{
+          namespace = tokensNamespace[tokensNamespace.length - 1];
       }
       
       String tokensPortal[] = requestPath.split("/");

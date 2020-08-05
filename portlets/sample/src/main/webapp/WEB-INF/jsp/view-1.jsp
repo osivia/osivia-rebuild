@@ -31,6 +31,8 @@
 
 <p>  foo : ${foo} </p>
 
+<p>  user : ${user} </p>
+
 <div class="input-group">
 
     <input type="text" value="${count}" class="form-control" disabled="disabled">
