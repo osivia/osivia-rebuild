@@ -23,7 +23,7 @@
             <li class="list-group-item list-group-item-linked">
                 <!-- Link -->
                 <a href="${child.url}" class="list-group-item ${selected} ${current}">            
-                    <span>${child.title}</span>
+                    ${child.title}
 
                 </a>
                     
