@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpSession;
+
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
 import org.jboss.portal.core.model.portal.Page;
@@ -266,6 +268,12 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         return pages;
     }
 
+    public HttpSession getSession() {
+        HttpSession session = this.getTracker().getHttpRequest().getSession();
+        return session;
+    }
+    
+    
     @Override
     public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
 

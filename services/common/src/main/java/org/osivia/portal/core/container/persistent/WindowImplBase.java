@@ -24,7 +24,7 @@ package org.osivia.portal.core.container.persistent;
 
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
-import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
+
 import org.jboss.portal.core.model.content.Content;
 import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.content.spi.handler.ContentHandler;

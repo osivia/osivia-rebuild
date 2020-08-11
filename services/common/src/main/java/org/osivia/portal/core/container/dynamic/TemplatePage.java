@@ -20,10 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.portal.core.impl.model.portal.ObjectNode;
-import org.jboss.portal.core.impl.model.portal.PageImpl;
-import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
-import org.jboss.portal.core.impl.model.portal.WindowImpl;
+
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;

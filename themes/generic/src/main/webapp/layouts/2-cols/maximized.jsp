@@ -20,6 +20,11 @@
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 
 <table class="layout" width="100%">
+   <tr>
+	<td width="100%" colspan="2" valign="top">    
+  		<p:region regionName='top' regionID='top'/>
+    </td>
+  </tr> 
   <tr>
    <td width="20%" valign="top">
    		<p:region regionName='nav' regionID='nav'/>

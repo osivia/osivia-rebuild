@@ -10,7 +10,8 @@ import javax.annotation.PostConstruct;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.impl.model.portal.ObjectNode;
+
+
 import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.content.spi.ContentProvider;
 import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
@@ -20,6 +21,7 @@ import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.jems.hibernate.ContextObject;
 import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
@@ -35,6 +37,7 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.tracker.ITracker;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+import fr.toutatice.portail.cms.producers.api.InternalCMSService;
 
 public class StaticPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
@@ -72,8 +75,18 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
         return cmsService;
     }
-
+    
     private CMSService cmsService;
+    
+    private InternalCMSService getInternalService() {
+        if (internalCMSService == null) {
+            internalCMSService = Locator.getService(InternalCMSService.class);
+        }
+
+        return internalCMSService;
+    }
+
+    private InternalCMSService internalCMSService;
 
     @PostConstruct
     private void build() {
@@ -92,6 +105,24 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
 
         PortalObject res = contextNodes.get(id);
+        
+        /* Check if a content has been modified */
+        
+        if( res != null)    {
+            PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
+            PortalObjectId contextId = new PortalObjectId(id.getNamespace(), contextPath);
+            ContextImplBase context =  (ContextImplBase) getContextNodes().get(contextId);
+            if (context != null)    {
+                if( (context.getObjectNode().isDirty()))    {
+                    // TODO remove all child
+                    Set<PortalObjectId> nodes = new HashSet<>(getContextNodes().keySet());
+                    for( PortalObjectId poid: nodes)
+                        getContextNodes().remove(poid);
+                    res = null;
+                }
+            }
+         }
+        
 
         if (res == null) {
             // Create portal
@@ -103,8 +134,9 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
             
             PortalObjectImplBase curPortalObject = (PortalObjectImplBase) contextNodes.get(portalID);
-            if (curPortalObject == null) {
-
+            
+           
+            if (curPortalObject == null ) {
 
                 createPortal(contextNodes, portalID);
                                 
@@ -126,20 +158,14 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     protected Map<PortalObjectId, PortalObject> getContextNodes() {
         String sessionId = getTracker().getHttpRequest().getSession().getId();
         Map currentContextNodes = nodes.get(sessionId);
+        
+        
         if (currentContextNodes == null) {
 
             currentContextNodes = new ConcurrentHashMap();
             nodes.put(sessionId, currentContextNodes);
             
-            PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-            ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId("templates", contextPath), "", containerContext);
-
-            ContextImplBase context = new ContextImplBase();
-            context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, PORTAL_A_NAME);
-            context.setObjectNode(contextNode);
-            contextNode.setObject(context);
-
-            currentContextNodes.put(context.getId(), context);
+            ContextImplBase context = createContext( "templates", PORTAL_A_NAME);
             
             // this is the default context
             PortalObjectId rootId = new PortalObjectId("", PortalObjectPath.ROOT_PATH);
@@ -150,32 +176,49 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         }
         return currentContextNodes;
     }
+
+    
+    
+    
+    protected ContextImplBase createContext(String nameSpace, String defaultPortalName) {
+        
+        String sessionId = getTracker().getHttpRequest().getSession().getId();
+        Map<PortalObjectId, PortalObject> currentContextNodes = nodes.get(sessionId);
+        
+        PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
+        ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId(nameSpace, contextPath), "", containerContext);
+        
+        PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
+        
+        CMSContext cmsContext = new CMSContext(portalCtx);
+        ((InternalCMSService) getInternalService()).addListener(cmsContext, nameSpace, contextNode);              
+
+        ContextImplBase context = new ContextImplBase();
+        context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, defaultPortalName);
+        context.setObjectNode(contextNode);
+        contextNode.setObject(context);
+
+        currentContextNodes.put(context.getId(), context);
+        return context;
+    }
     
 
-    protected Map<PortalObjectId, PortalObject> checkContextNode(String nameSpace, String defaultPortalName) {
+    
+    
+    
+    
+    protected void checkContextNode(String nameSpace, String defaultPortalName) {
+
         String sessionId = getTracker().getHttpRequest().getSession().getId();
         Map<PortalObjectId, PortalObject> currentContextNodes = nodes.get(sessionId);
 
-
         PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-
-
         PortalObjectId contextId = new PortalObjectId(nameSpace, contextPath);
+        
+        
         if (currentContextNodes.get(contextId) == null) {
-
-
-            ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId(nameSpace, contextPath), "", containerContext);
-
-            ContextImplBase context = new ContextImplBase();
-            context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, defaultPortalName);
-            context.setObjectNode(contextNode);
-            contextNode.setObject(context);
-
-            currentContextNodes.put(context.getId(), context);
+            createContext( nameSpace, defaultPortalName);
         }
-
-
-        return currentContextNodes;
     }
 
 
@@ -242,11 +285,9 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                     Space space = (Space) document;
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
-
-                    
+                   
                     NavigationItem navRoot = cmsService.getNavigationItem(cmsContext, space.getId());
-                    
-                    
+                      
                     DefaultCMSPageFactory.createCMSPage(this, containerContext, portal, getCMSService(), cmsContext,  navRoot);
                 }
 
@@ -300,18 +341,21 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
         /**
          */
-        public void destroyChild(ObjectNode node) {
+        public void destroyChild(ContextObject node) {
+            
+            
+            
         }
 
         /**
          * @throws DuplicatePortalObjectException
          */
-        public void createChild(ObjectNode node) throws DuplicatePortalObjectException {
+        public void createChild(ContextObject node) throws DuplicatePortalObjectException {
         }
 
         /**
          */
-        public void updated(ObjectNode node) {
+        public void updated(ContextObject node) {
         }
 
         /**

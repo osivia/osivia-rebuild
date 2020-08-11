@@ -14,27 +14,17 @@
  */
 package org.osivia.portal.core.container.dynamic;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.common.i18n.LocalizedString;
-import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
-import org.jboss.portal.core.impl.model.portal.ObjectNode;
-import org.jboss.portal.core.impl.model.portal.PageImpl;
-import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
-import org.jboss.portal.core.impl.model.portal.WindowImpl;
-import org.jboss.portal.core.model.content.Content;
-import org.jboss.portal.core.model.content.ContentType;
+
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.core.container.persistent.PortalObjectImplBase;
 import org.osivia.portal.core.container.persistent.WindowImplBase;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 
@@ -120,9 +110,9 @@ public abstract class DynamicWindow extends WindowImplBase {
 
 	 public boolean equals(Object obj)
 	   {
-	     if ( obj instanceof PortalObjectImpl)
+	     if ( obj instanceof PortalObjectImplBase)
 	      {
-	         PortalObjectImpl that = (PortalObjectImpl)obj;
+	         PortalObjectImplBase that = (PortalObjectImplBase)obj;
 	         return getId().equals(that.getId());
 	      }
 	      return false;

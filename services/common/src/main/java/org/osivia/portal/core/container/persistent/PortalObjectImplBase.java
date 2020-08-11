@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 import org.jboss.portal.common.NotYetImplemented;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.util.ParameterValidation;
-import org.jboss.portal.core.impl.model.portal.ObjectNode;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
 import org.jboss.portal.core.model.portal.NoSuchPortalObjectException;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -81,6 +80,8 @@ public abstract class PortalObjectImplBase implements PortalObject
    private Map properties;
    private Map unmodifiableProperties;
    private SortedSet accessedChildren;
+   
+   private long updateTs;
 
    public PortalObjectImplBase()
    {
@@ -96,7 +97,9 @@ public abstract class PortalObjectImplBase implements PortalObject
       this.properties = null;
       this.unmodifiableProperties = null;
       this.accessedChildren = null;
-   }
+      
+      this.updateTs = System.currentTimeMillis();
+    }
 
    public Long getKey()
    {
@@ -578,7 +581,12 @@ public abstract class PortalObjectImplBase implements PortalObject
       return objectNode.toString();
    }
 
-   public boolean equals(Object obj)
+   
+public long getUpdateTs() {
+    return updateTs;
+}
+
+public boolean equals(Object obj)
    {
       if (obj == this)
       {

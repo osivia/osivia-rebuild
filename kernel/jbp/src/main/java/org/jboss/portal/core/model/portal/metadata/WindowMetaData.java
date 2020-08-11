@@ -25,7 +25,7 @@ package org.jboss.portal.core.model.portal.metadata;
 import org.jboss.logging.Logger;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.xml.XMLTools;
-import org.jboss.portal.core.impl.model.portal.WindowImpl;
+
 import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
 import org.jboss.portal.core.model.portal.Page;
@@ -134,14 +134,7 @@ public class WindowMetaData extends PortalObjectMetaData
       //
       window.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, region);
       window.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, "" + order);
-      if (initialWindowState != null)
-      {
-         window.setDeclaredProperty(WindowImpl.PORTAL_INITIAL_WINDOW_STATE, "" + initialWindowState);
-      }
-      if (initialMode != null)
-      {
-         window.setDeclaredProperty(WindowImpl.PORTAL_INITIAL_MODE, "" + initialMode);
-      }
+
 
       //
       return window;

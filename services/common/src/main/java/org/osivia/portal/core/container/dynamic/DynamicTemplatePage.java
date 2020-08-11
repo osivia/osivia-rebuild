@@ -17,8 +17,10 @@ package org.osivia.portal.core.container.dynamic;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.jboss.portal.common.i18n.LocalizedString;
-import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
+
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -61,6 +63,9 @@ public final class DynamicTemplatePage extends TemplatePage {
         DynamicTemplatePage page = null;
         try {
             page = new DynamicTemplatePage(container, parentId, name, displayNames, template, theme, dynamicContainer, pageBean);
+            
+            
+              
         } catch (Exception e) {
             PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parentId.getPath().toString().concat("/").concat(name),
                     PortalObjectPath.CANONICAL_FORMAT));

@@ -53,7 +53,7 @@ public final class ObjectNodeSecurityConstraint implements Serializable
    private transient String toString;
 
    /** The ObjectNode to which this security constraint is attached to . */
-   private ObjectNode objectNode;
+   private Object objectNode;
 
 
    public ObjectNodeSecurityConstraint()
@@ -112,12 +112,12 @@ public final class ObjectNodeSecurityConstraint implements Serializable
       this.role = role;
    }
 
-   public ObjectNode getObjectNode()
+   public Object getObjectNode()
    {
       return objectNode;
    }
 
-   public void setObjectNode(ObjectNode objectNode)
+   public void setObjectNode(Object objectNode)
    {
       this.objectNode = objectNode;
    }

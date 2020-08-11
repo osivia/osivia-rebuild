@@ -25,11 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
-import org.jboss.portal.core.impl.model.portal.ContextImpl;
-import org.jboss.portal.core.impl.model.portal.ObjectNode;
-import org.jboss.portal.core.impl.model.portal.PortalImpl;
-import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
+
+
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -48,7 +45,7 @@ public  class DynamicContext extends ContextImplBase {
 	
 	protected static final Log log = LogFactory.getLog(DynamicContext.class);
 
-	protected StaticPortalObjectContainer.ContainerContext containerContext;
+
 	protected DynamicPortalObjectContainer dynamicContainer;
 	
 	StaticPortalObjectContainer container;
@@ -64,7 +61,7 @@ public  class DynamicContext extends ContextImplBase {
 		this.dynamicContainer = dynamicContainer;
 		this.container = container;
 		
-		containerContext = orig.getObjectNode().getContext();
+
 		setObjectNode(orig.getObjectNode());	
 		
 		this.orig = orig;

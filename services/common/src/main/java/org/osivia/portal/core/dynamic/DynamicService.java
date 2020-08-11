@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.common.invocation.AttributeResolver;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
@@ -89,11 +91,26 @@ public class DynamicService implements IDynamicService {
         
 
         DynamicPageBean pageBean = new DynamicPageBean(parent, pageResorableName, pageName, displayNames, potemplateid, properties);
-
         poc.addDynamicPage(pageBean);
+        
+        
+        
+        
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(),
                 new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageResorableName), PortalObjectPath.CANONICAL_FORMAT));
+        
+        // Remove portlets cache
+
+        AttributeResolver resolver = ctx.getAttributeResolver(Scope.PRINCIPAL_SCOPE);
+        Page page = (Page) ctx.getController().getPortalObjectContainer().getObject(pageId);
+        for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK))    {
+            Window window = (Window) po;
+            String scopeKey = "cached_markup." + window.getId();    
+            resolver.setAttribute(scopeKey, null);            
+        }
+        
+        
 
         return pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
 

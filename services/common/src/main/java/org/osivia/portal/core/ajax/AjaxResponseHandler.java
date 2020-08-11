@@ -34,8 +34,10 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.ErrorResponse;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.handler.AjaxResponse;
 import org.jboss.portal.core.controller.handler.CommandForward;
+import org.jboss.portal.core.controller.handler.HTTPResponse;
 import org.jboss.portal.core.controller.handler.HandlerResponse;
 import org.jboss.portal.core.controller.handler.ResponseHandler;
 import org.jboss.portal.core.controller.handler.ResponseHandlerException;
@@ -84,8 +86,11 @@ import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.resources.ResourceHandler;
 import org.w3c.dom.Element;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -510,7 +515,34 @@ public class AjaxResponseHandler implements ResponseHandler {
                 String url = controllerContext.renderURL(rpc, null, null);
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
                 return new AjaxResponse(dresp);
-            }else if (controllerResponse instanceof ErrorResponse) { 
+            }else if (controllerResponse instanceof RedirectionResponse) { 
+
+                boolean ajaxRedirect = false;
+                String contextPath  = controllerContext.getServerInvocation().getServerContext().getClientRequest().getContextPath();
+               
+                String requestedLocation = ((RedirectionResponse) controllerResponse).getLocation();
+                URL redirectURL;
+                try {
+                    redirectURL = new URL(requestedLocation);
+                    if(redirectURL.getPath().startsWith(contextPath))
+                        ajaxRedirect = true;
+                            
+                } catch (MalformedURLException e) {
+                    // do nothing
+                }
+
+                if( ajaxRedirect)   {
+                    // Ajax redirection
+                    return HTTPResponse.sendRedirect(((RedirectionResponse) controllerResponse).getLocation());
+                } 
+                
+                // Default (http redirection)
+                UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());
+                return new AjaxResponse(dresp);
+                
+            }
+            
+            else if (controllerResponse instanceof ErrorResponse) { 
                 ErrorResponse errorResp = (ErrorResponse) controllerResponse;
                 log.error("An error occured during the execution of the command", errorResp.getCause());
                 return null;

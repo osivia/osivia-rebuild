@@ -17,8 +17,14 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 
-public class TemplatesRepository extends InMemoryUserRepository {
+import fr.toutatice.portail.cms.producers.api.ITemplatesMemoryRepository;
+
+
+public class TemplatesRepository extends InMemoryUserRepository implements ITemplatesMemoryRepository {
 
       public TemplatesRepository( String repositoryName) {
         super(repositoryName);
@@ -39,8 +45,10 @@ public class TemplatesRepository extends InMemoryUserRepository {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
+        ModuleRef edition = new ModuleRef("edition" , "top", "0", "EditionInstance"); 
+        modules.add(edition);  
         ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance"); 
-        modules.add(nav);          
+        modules.add(nav);     
         SpaceImpl space = new SpaceImpl(this,id, id,null,children, properties, modules);
         addDocument(id, space);
     }
@@ -113,6 +121,16 @@ public class TemplatesRepository extends InMemoryUserRepository {
         addTemplateSpace("portalA", portalChildren);
     }
 
+    
+    public void addEmptyPage(String id, String name, String parentId) throws CMSException {
+        NuxeoMockDocumentImpl parent = getDocument(parentId);
+        parent.getChildrenId().add(id);
+        addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
+        updatePaths();
+        
+        notifyChanges();
+    }
+    
 
     protected void initDocuments() {
         createTemplateSpace();

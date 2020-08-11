@@ -200,6 +200,9 @@ public interface PortalObject extends Comparable, HasDisplayName
     * @return a map of the properties declared by the object
     */
    Map<String, String> getDeclaredProperties();
+   
+   
+   long getUpdateTs();
 
 //   /**
 //    * Return true if the portal object is part of a dashboard.

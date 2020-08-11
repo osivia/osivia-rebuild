@@ -16,6 +16,19 @@
     <name>OSIVIA Portal - Portlets - CMS</name>
     <description>OSIVIA Portal CMS portlet.</description>
 
+
+    <dependencies>
+    
+        <dependency>
+            <groupId>org.osivia.portal.services</groupId>
+            <artifactId>osivia-portal-services-cms</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>            
+        </dependency>
+        
+    </dependencies>
+
+
     
     <build>
         <plugins>

@@ -23,7 +23,6 @@
 package org.osivia.portal.core.container.persistent;
 
 import org.jboss.logging.Logger;
-import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
 import org.jboss.portal.core.impl.model.portal.ObjectNodeSecurityConstraint;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
 import org.jboss.portal.core.model.portal.NoSuchPortalObjectException;
@@ -33,6 +32,7 @@ import org.jboss.portal.jems.hibernate.ContextObject;
 import org.jboss.portal.security.RoleSecurityBinding;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+import fr.toutatice.portail.cms.producers.api.RepositoryListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,7 @@ import java.util.Set;
 /**
  * cf. PersistentPortalObjectContainer ...
  */
-public class ObjectNodeImplBase implements ContextObject
+public class ObjectNodeImplBase implements ContextObject, RepositoryListener
 {
 
    /** . */
@@ -62,8 +62,15 @@ public class ObjectNodeImplBase implements ContextObject
    private Map children;
    private PortalObjectImplBase object;
    private Map<String, ObjectNodeSecurityConstraint> securityConstraints;
+   
+   private boolean dirty =false;
 
-   // Runtime fields
+   
+    public boolean isDirty() {
+        return dirty;
+    }
+
+// Runtime fields
    private StaticPortalObjectContainer.ContainerContext containerContext;
    private static final String DASHBOARD = "dashboard";
 
@@ -258,4 +265,10 @@ public class ObjectNodeImplBase implements ContextObject
          return null;
       }
    }
+
+    @Override
+    public void contentModified() {
+        dirty = true;
+        
+    }
 }

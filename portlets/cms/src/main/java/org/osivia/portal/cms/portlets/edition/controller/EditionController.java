@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.menu.controller;
+package org.osivia.portal.cms.portlets.edition.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,8 +8,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -18,18 +16,16 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.cms.portlets.edition.controller.EditionController;
-import org.osivia.portal.cms.portlets.menu.model.NavigationDisplayItem;
-import org.osivia.portal.cms.portlets.menu.service.IMenuService;
+import org.osivia.portal.services.cms.repository.TemplatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
@@ -39,6 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.producers.api.ITemplatesMemoryRepository;
+import fr.toutatice.portail.cms.producers.api.TemplatesLocator;
 
 /**
  * Sample controller.
@@ -47,29 +45,27 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
  */
 @Controller
 @RequestMapping(value = "VIEW")
-public class MenuController implements PortletContextAware {
+public class EditionController implements PortletContextAware {
 
     /** Portlet context. */
     private PortletContext portletContext;
 
 
-
     /** CMS service. */
     @Autowired
     private CMSService cmsService;
-    
-    /** CMS service. */
+
     @Autowired
-    private IMenuService menuService;
+    private IPortalUrlFactory portalUrlFactory;
 
 
     /** The logger. */
-    protected static Log logger = LogFactory.getLog(MenuController.class);
-    
+    protected static Log logger = LogFactory.getLog(EditionController.class);
+
     /**
      * Constructor.
      */
-    public MenuController() {
+    public EditionController() {
         super();
     }
 
@@ -81,30 +77,52 @@ public class MenuController implements PortletContextAware {
      * @param response render response
      * @param count count request parameter.
      * @return render view path
-     * @throws CMSException 
+     * @throws CMSException
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws CMSException {
-        
-        logger.info("view");
-        
-        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
-
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        
-        String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
-        if( navigationId != null)
-            request.setAttribute("navigation", cmsService.getNavigationItem(new CMSContext(portalControllerContext), new UniversalID(navigationId)));
-
-        request.setAttribute("navigationPath", nuxeoController.getNavigationPath());
-        
-        
-
-
         return "view";
     }
 
+    /**
+     * Update location action mapping.
+     *
+     * @param request action request
+     * @param response action response
+     * @param form search filters form model attribute
+     */
+    @ActionMapping(name = "submit", params = "add-page")
+    public void updateLocation(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
+        try {
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            if (navigationId != null) {
+
+                UniversalID id = new UniversalID(navigationId);
+                if (id.getRepositoryName().equals("templates")) {
+                    ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), "templates");
+
+                    String newID = "" + System.currentTimeMillis();
+                    
+                    ((ITemplatesMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(),
+                            id.getInternalID());
+
+
+                    String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
+                    response.sendRedirect(url);
+
+                }
+            }
+        } catch (PortalException | IOException e) {
+           throw new PortletException(e);
+        }
+
+    }
 
 
     @Override
@@ -112,17 +130,4 @@ public class MenuController implements PortletContextAware {
         this.portletContext = portletContext;
     }
 
-    
-
-    @ModelAttribute("displayItem")
-    public NavigationDisplayItem getDisplayItem(PortletRequest request, PortletResponse response) throws PortletException, IOException {
-        
-        logger.info("getDisplayItem");
-        
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
-
-        return this.menuService.getDisplayItem(portalControllerContext);
-    }
-    
 }

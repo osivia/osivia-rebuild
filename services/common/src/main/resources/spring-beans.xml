@@ -117,7 +117,11 @@
         <property name="Factory" ref="portal:urlFactory=Delegating"/>        
 	</bean>
 
-   
+   	<bean class="org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor" id="osivia:service=Interceptor,type=Portlet,name=ConsumerCache" >
+     
+	</bean>
+
+
        
        
 </beans>

@@ -12,16 +12,21 @@ import org.osivia.portal.services.cms.model.NavigationItemImpl;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 
+import fr.toutatice.portail.cms.producers.api.RepositoryListener;
+
 public abstract class InMemoryUserRepository {
 
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
 
     protected String repositoryName;
 
+    protected List<RepositoryListener> listeners;
+
 
     public InMemoryUserRepository(String repositoryName) {
         super();
         this.repositoryName = repositoryName;
+        this.listeners = new ArrayList<>();
         init();
     }
 
@@ -29,10 +34,19 @@ public abstract class InMemoryUserRepository {
      * {@inheritDoc}
      */
 
+    public void addListener(RepositoryListener listener) {
+        listeners.add(listener);
+    }
+
+    protected void notifyChanges() {
+        for (RepositoryListener listener : listeners) {
+            listener.contentModified();
+        }
+    }
+
 
     private Map<String, NuxeoMockDocumentImpl> documents;
 
-   
 
     private void init() {
         documents = new ConcurrentHashMap<>();
@@ -47,22 +61,22 @@ public abstract class InMemoryUserRepository {
             try {
                 String path = "";
                 NuxeoMockDocumentImpl hDoc = doc;
-                
+
                 path = "/" + hDoc.getName() + path;
- 
-                while (!(hDoc instanceof SpaceImpl))    {
-                        hDoc = getDocument(hDoc.getParentInternalId());
-                        path = "/" + hDoc.getName() + path;
-                } 
-                
+
+                while (!(hDoc instanceof SpaceImpl)) {
+                    hDoc = getDocument(hDoc.getParentInternalId());
+                    path = "/" + hDoc.getName() + path;
+                }
+
                 path = "/" + getRepositoryName() + path;
-                
+
                 // add path to document
                 doc.setPath(path);
-                
+
                 // add path entry
                 documents.put(path, doc);
-                
+
             } catch (Exception e) {
                 throw new RuntimeException(e);
 
@@ -98,7 +112,6 @@ public abstract class InMemoryUserRepository {
         }
         return new NavigationItemImpl(document);
     }
-
 
 
     public NuxeoMockDocumentImpl getParent(Document document) throws CMSException {

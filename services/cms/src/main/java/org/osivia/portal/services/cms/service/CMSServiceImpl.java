@@ -1,6 +1,9 @@
 package org.osivia.portal.services.cms.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSession;
@@ -20,6 +23,9 @@ import org.osivia.portal.services.cms.repository.TemplatesRepository;
 import org.osivia.portal.services.cms.repository.UserWorkspacesRepository;
 import org.springframework.stereotype.Service;
 
+import fr.toutatice.portail.cms.producers.api.InternalCMSService;
+import fr.toutatice.portail.cms.producers.api.RepositoryListener;
+
 /**
  * CMS service implementation.
  *
@@ -27,7 +33,7 @@ import org.springframework.stereotype.Service;
  * @see CMSService
  */
 @Service
-public class CMSServiceImpl implements CMSService {
+public class CMSServiceImpl implements CMSService, InternalCMSService {
 
     /**
      * Constructor.
@@ -35,13 +41,13 @@ public class CMSServiceImpl implements CMSService {
     public CMSServiceImpl() {
         super();
         superUserRepositories = new ConcurrentHashMap<String, InMemoryUserRepository>();
+
+
     }
 
     /** The super user repositories. */
     private Map<String, InMemoryUserRepository> superUserRepositories;
-    
-
-
+ 
 
     /**
      * {@inheritDoc}
@@ -51,7 +57,7 @@ public class CMSServiceImpl implements CMSService {
     @Override
     public Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException {
 
-        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id);
+        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id.getRepositoryName());
         NuxeoMockDocumentImpl document = userRepository.getDocument(id.getInternalID());
         
         return document;
@@ -65,55 +71,64 @@ public class CMSServiceImpl implements CMSService {
      * @param id the id
      * @return the user repository
      */
-    protected InMemoryUserRepository getUserRepository(CMSContext cmsContext, UniversalID id) {
+    public InMemoryUserRepository getUserRepository(CMSContext cmsContext, String repositoryName) {
 
         InMemoryUserRepository userRepository;
 
 
         if (cmsContext instanceof SuperUserContext) {
             
-            userRepository = (InMemoryUserRepository) superUserRepositories.get(id.getRepositoryName());
+            userRepository = (InMemoryUserRepository) superUserRepositories.get(repositoryName);
             if (userRepository == null) {
-                userRepository = createRepository(id, userRepository);
-                superUserRepositories.put(id.getRepositoryName(), userRepository);
+                userRepository = createRepository(repositoryName);
+                superUserRepositories.put(repositoryName, userRepository);
             }
 
         } else {
-
             ControllerContext ctx = ControllerContextAdapter.getControllerContext(cmsContext.getPortalControllerContext());
 
             HttpSession session = ctx.getServerInvocation().getServerContext().getClientRequest().getSession(true);
 
-            String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + id.getRepositoryName();
+            String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName;
 
             userRepository = (InMemoryUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null) {
-                userRepository = createRepository(id, userRepository);
+                userRepository = createRepository(repositoryName);
 
                 session.setAttribute(repositoryAttributeName, userRepository);
             }
         }
+         
+        
         return userRepository;
     }
 
-    protected InMemoryUserRepository createRepository(UniversalID id, InMemoryUserRepository userRepository) {
+    protected InMemoryUserRepository createRepository(String repositoryName) {
         
-        if ("templates".equals(id.getRepositoryName()))
-            userRepository = new TemplatesRepository(id.getRepositoryName());
-        if ("myspace".equals(id.getRepositoryName()))
-            userRepository = new UserWorkspacesRepository(id.getRepositoryName());
+        InMemoryUserRepository userRepository = null;
         
-        
-
-        
+        if ("templates".equals(repositoryName))
+            userRepository = new TemplatesRepository(repositoryName);
+        if ("myspace".equals(repositoryName))
+            userRepository = new UserWorkspacesRepository(repositoryName);
+          
         
         return userRepository;
     }
 
     @Override
     public NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID id) throws CMSException {
-        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id);
+        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id.getRepositoryName());
         return userRepository.getNavigationItem(id.getInternalID());
     }
+
+    @Override
+    public void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+        InMemoryUserRepository userRepository = getUserRepository(cmsContext, repositoryName);
+        userRepository.addListener(listener);
+        
+    }
+
+
 
 }

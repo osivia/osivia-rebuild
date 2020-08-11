@@ -21,4 +21,12 @@
          <portlet-ref>Menu</portlet-ref>
       </instance>      
    </deployment>
+   <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS edition portlet</display-name>
+         <display-name xml:lang="fr">Portlet edition contenu</display-name>
+         <instance-id>EditionInstance</instance-id>
+         <portlet-ref>Edition</portlet-ref>
+      </instance>      
+   </deployment>   
 </deployments>
