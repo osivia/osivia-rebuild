@@ -38,6 +38,29 @@ public interface CMSService {
     NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID id) throws CMSException;
     
     
+    
+    
+    /**
+     * Gets the user repository.
+     *
+     * @param cmsContext the cms context
+     * @param id the id
+     * @return the document
+     * @throws CMSException the CMS exception
+     */
+    Object getUserRepository(CMSContext cmsContext, String repositoryName) throws CMSException;
+    
+    
+    /**
+     * Adds the listener.
+     *
+     * @param listener the listener
+     */
+
+    void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener);
+     
+    
+    
 
    
 }

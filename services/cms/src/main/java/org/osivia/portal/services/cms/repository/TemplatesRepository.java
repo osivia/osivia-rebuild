@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.producers.api.ITemplatesMemoryRepository;
+import fr.toutatice.portail.cms.producers.sample.inmemory.ITemplatesMemoryRepository;
 
 
 public class TemplatesRepository extends InMemoryUserRepository implements ITemplatesMemoryRepository {

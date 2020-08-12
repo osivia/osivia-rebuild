@@ -1,4 +1,4 @@
-package fr.toutatice.portail.cms.producers.api;
+package fr.toutatice.portail.cms.producers.sample.inmemory;
 
 import org.osivia.portal.api.cms.exception.CMSException;
 

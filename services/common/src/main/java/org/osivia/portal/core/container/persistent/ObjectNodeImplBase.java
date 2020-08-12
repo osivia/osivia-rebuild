@@ -30,9 +30,9 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.jems.hibernate.ContextObject;
 import org.jboss.portal.security.RoleSecurityBinding;
+import org.osivia.portal.api.cms.service.RepositoryListener;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
-import fr.toutatice.portail.cms.producers.api.RepositoryListener;
 
 import java.util.ArrayList;
 import java.util.Collections;

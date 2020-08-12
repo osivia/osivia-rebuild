@@ -1,4 +1,4 @@
-package fr.toutatice.portail.cms.producers.api;
+package org.osivia.portal.api.cms.service;
 
 
 /**

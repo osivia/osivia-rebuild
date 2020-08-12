@@ -1,4 +1,4 @@
-package fr.toutatice.portail.cms.producers.api;
+package fr.toutatice.portail.cms.producers.sample.inmemory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -14,12 +14,11 @@ public class TemplatesLocator {
 
     @SuppressWarnings("unchecked")
     public static ITemplatesMemoryRepository getTemplateRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
-        InternalCMSService cms = Locator.getApplicationContext().getBean(InternalCMSService.class);
+        CMSService cms = Locator.getApplicationContext().getBean(CMSService.class);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         ITemplatesMemoryRepository repository =  (ITemplatesMemoryRepository) cms.getUserRepository(cmsContext, repositoryName);
         InvocationHandler invocationHandler = new TemplatesInvocationHandler(repository);
         Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{ITemplatesMemoryRepository.class}, invocationHandler);
-
         return (ITemplatesMemoryRepository) proxy;
     }
 

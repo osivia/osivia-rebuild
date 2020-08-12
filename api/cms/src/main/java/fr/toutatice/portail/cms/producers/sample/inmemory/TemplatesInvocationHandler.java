@@ -1,4 +1,4 @@
-package fr.toutatice.portail.cms.producers.api;
+package fr.toutatice.portail.cms.producers.sample.inmemory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

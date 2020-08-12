@@ -35,8 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.producers.api.ITemplatesMemoryRepository;
-import fr.toutatice.portail.cms.producers.api.TemplatesLocator;
+import fr.toutatice.portail.cms.producers.sample.inmemory.ITemplatesMemoryRepository;
+import fr.toutatice.portail.cms.producers.sample.inmemory.TemplatesLocator;
 
 /**
  * Sample controller.

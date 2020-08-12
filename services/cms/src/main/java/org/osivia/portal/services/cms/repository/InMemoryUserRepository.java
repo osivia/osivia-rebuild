@@ -8,11 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.NavigationItemImpl;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
-
-import fr.toutatice.portail.cms.producers.api.RepositoryListener;
 
 public abstract class InMemoryUserRepository {
 

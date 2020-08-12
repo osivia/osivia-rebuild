@@ -1,9 +1,6 @@
 package org.osivia.portal.services.cms.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSession;
@@ -16,15 +13,13 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
 import org.osivia.portal.services.cms.repository.TemplatesRepository;
 import org.osivia.portal.services.cms.repository.UserWorkspacesRepository;
 import org.springframework.stereotype.Service;
-
-import fr.toutatice.portail.cms.producers.api.InternalCMSService;
-import fr.toutatice.portail.cms.producers.api.RepositoryListener;
 
 /**
  * CMS service implementation.
@@ -33,7 +28,7 @@ import fr.toutatice.portail.cms.producers.api.RepositoryListener;
  * @see CMSService
  */
 @Service
-public class CMSServiceImpl implements CMSService, InternalCMSService {
+public class CMSServiceImpl implements CMSService {
 
     /**
      * Constructor.

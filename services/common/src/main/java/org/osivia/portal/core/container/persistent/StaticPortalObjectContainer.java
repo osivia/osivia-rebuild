@@ -37,7 +37,7 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.tracker.ITracker;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
-import fr.toutatice.portail.cms.producers.api.InternalCMSService;
+
 
 public class StaticPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
@@ -78,15 +78,6 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     
     private CMSService cmsService;
     
-    private InternalCMSService getInternalService() {
-        if (internalCMSService == null) {
-            internalCMSService = Locator.getService(InternalCMSService.class);
-        }
-
-        return internalCMSService;
-    }
-
-    private InternalCMSService internalCMSService;
 
     @PostConstruct
     private void build() {
@@ -191,7 +182,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
         
         CMSContext cmsContext = new CMSContext(portalCtx);
-        ((InternalCMSService) getInternalService()).addListener(cmsContext, nameSpace, contextNode);              
+        getCMSService().addListener(cmsContext, nameSpace, contextNode);              
 
         ContextImplBase context = new ContextImplBase();
         context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, defaultPortalName);
