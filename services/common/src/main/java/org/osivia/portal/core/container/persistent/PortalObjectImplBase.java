@@ -83,7 +83,12 @@ public abstract class PortalObjectImplBase implements PortalObject
    
    private long updateTs;
 
-   public PortalObjectImplBase()
+   
+protected void setUpdateTs(long updateTs) {
+    this.updateTs = updateTs;
+}
+
+public PortalObjectImplBase()
    {
       this(true);
    }

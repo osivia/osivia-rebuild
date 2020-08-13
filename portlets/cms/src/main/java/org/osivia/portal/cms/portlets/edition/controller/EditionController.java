@@ -85,14 +85,10 @@ public class EditionController implements PortletContextAware {
     }
 
     /**
-     * Update location action mapping.
-     *
-     * @param request action request
-     * @param response action response
-     * @param form search filters form model attribute
+     * Add page sample
      */
-    @ActionMapping(name = "submit", params = "add-page")
-    public void updateLocation(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+    @ActionMapping(name = "addPage")
+    public void addPage(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
         try {
             // Portal Controller context
@@ -108,9 +104,8 @@ public class EditionController implements PortletContextAware {
                     ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), "templates");
 
                     String newID = "" + System.currentTimeMillis();
-                    
-                    ((ITemplatesMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(),
-                            id.getInternalID());
+
+                    ((ITemplatesMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
 
 
                     String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
@@ -119,7 +114,39 @@ public class EditionController implements PortletContextAware {
                 }
             }
         } catch (PortalException | IOException e) {
-           throw new PortletException(e);
+            throw new PortletException(e);
+        }
+
+    }
+
+    /**
+     * Add page sample
+     */
+    @ActionMapping(name = "addPortlet")
+    public void addPortlet(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+
+        try {
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            if (navigationId != null) {
+
+                UniversalID id = new UniversalID(navigationId);
+                if (id.getRepositoryName().equals("templates")) {
+                    ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), "templates");
+
+                    String windowID = "" + System.currentTimeMillis();
+
+                    ((ITemplatesMemoryRepository) repository).addWindow(windowID, windowID, id.getInternalID());
+//                    
+//                    String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
+//                    response.sendRedirect(url);
+
+                }
+            }
+        } catch (PortalException e) {
+            throw new PortletException(e);
         }
 
     }

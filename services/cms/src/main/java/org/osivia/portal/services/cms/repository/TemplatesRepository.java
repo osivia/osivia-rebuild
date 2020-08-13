@@ -13,6 +13,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
@@ -121,12 +122,22 @@ public class TemplatesRepository extends InMemoryUserRepository implements ITemp
         addTemplateSpace("portalA", portalChildren);
     }
 
-    
+@Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
         NuxeoMockDocumentImpl parent = getDocument(parentId);
         parent.getChildrenId().add(id);
         addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
         updatePaths();
+        
+        notifyChanges();
+    }
+    
+@Override  
+    public void addWindow(String id, String name, String pageId) throws CMSException {
+        Page page = (Page) getDocument(pageId);
+        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), "col-2", "0", "SampleInstance");
+        page.getModuleRefs().add(module);
+
         
         notifyChanges();
     }

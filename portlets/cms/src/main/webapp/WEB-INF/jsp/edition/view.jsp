@@ -7,8 +7,16 @@
 
 <portlet:defineObjects />
 
-<portlet:actionURL name="submit" var="submitUrl"/>
+<portlet:actionURL name="addPage" var="addPageURL"/>
+<portlet:actionURL name="addPortlet" var="addPortletURL"/>
 
-<form:form action="${submitUrl}" method="post">
-      <button type="submit" name="add-page" class="btn btn-primary">Add page</button>
-</form:form>
+<p>
+     <span >
+       <a href="${addPageURL}" class="btn btn-default">Add page</a>
+    </span>
+    
+         <span >
+       <a href="${addPortletURL}" class="btn btn-default">Add portlet</a>
+    </span>
+</p>
+

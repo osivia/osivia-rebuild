@@ -4,5 +4,6 @@ import org.osivia.portal.api.cms.exception.CMSException;
 
 public interface ITemplatesMemoryRepository {
     void addEmptyPage(String id, String name, String parentId) throws CMSException;
+    void addWindow(String id, String name, String pageId) throws CMSException;
 
 }

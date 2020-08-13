@@ -193,6 +193,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }   else
                     pageChange = true;
                 
+                   
 
                 // Changes have been commited during the restore page state
                 // ctx.getChanges doesn't contain modified windows
@@ -202,7 +203,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }
                 
                 
-                boolean refreshPageStructure = false;
+                boolean pageStructureModified = false;  
 
 //                String pagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath");
 //                if (pagePath != null) {
@@ -212,6 +213,20 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 // Obtain page
                 final Page page = (Page) portalObjectContainer.getObject(pageId);
+                
+                
+                 Long lastUpdateTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,"osivia.updateTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT));
+                 if( lastUpdateTs != null) {
+                     if (page.getUpdateTs() > lastUpdateTs)
+                         pageStructureModified = true;
+                 }
+                 controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.updateTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT), System.currentTimeMillis());
+                
+                log.info("updateTs = "+page.getUpdateTs());
+                
+                
+                
+                boolean refreshPageStructure = false;              
 
                 //
                 NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
@@ -226,7 +241,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 Map<String, String[]> parameters = null;
 
 
-                if (BooleanUtils.isNotTrue(pageChange) && ctx.getChanges() != null ) {
+                if (BooleanUtils.isNotTrue(pageChange) && BooleanUtils.isNotTrue(pageStructureModified) && ctx.getChanges() != null ) {
                     for (Iterator i = ctx.getChanges(); i.hasNext();) {
                         NavigationalStateChange change = (NavigationalStateChange) i.next();
 
@@ -304,6 +319,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
                   
+                }
+                
+                
+                if( refreshPageStructure)   {
+                    log.info("refresh page structure");
                 }
 
                 // Commit changes

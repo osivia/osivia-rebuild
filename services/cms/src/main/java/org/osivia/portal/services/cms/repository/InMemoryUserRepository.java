@@ -1,9 +1,9 @@
 package org.osivia.portal.services.cms.repository;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
@@ -11,15 +11,18 @@ import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.NavigationItemImpl;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
-import org.osivia.portal.services.cms.model.SpaceImpl;
 
-public abstract class InMemoryUserRepository {
+public abstract class InMemoryUserRepository implements RepositoryListener{
 
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
 
     protected String repositoryName;
 
+
+
     protected List<RepositoryListener> listeners;
+    
+    private static Map<String, SharedRepository>  sharedRepositories = new Hashtable<String, SharedRepository>();
 
 
     public InMemoryUserRepository(String repositoryName) {
@@ -38,49 +41,31 @@ public abstract class InMemoryUserRepository {
     }
 
     protected void notifyChanges() {
-        for (RepositoryListener listener : listeners) {
-            listener.contentModified();
-        }
+        getSharedRepository().notifyChanges();
     }
 
-
-    private Map<String, NuxeoMockDocumentImpl> documents;
 
 
     private void init() {
-        documents = new ConcurrentHashMap<>();
-        initDocuments();
 
-        updatePaths();
+        boolean initRepository = false;
+        if( getSharedRepository() == null)    {
+            sharedRepositories.put(repositoryName, new SharedRepository(repositoryName));
+            initRepository = true;
+        }
+        
+        sharedRepositories.get(repositoryName).addListener(this);
+        
+        if(initRepository)  {
+            initDocuments();
+            updatePaths();     
+        }
+        
+        
     }
 
     protected void updatePaths() {
-        // Set paths
-        for (NuxeoMockDocumentImpl doc : documents.values()) {
-            try {
-                String path = "";
-                NuxeoMockDocumentImpl hDoc = doc;
-
-                path = "/" + hDoc.getName() + path;
-
-                while (!(hDoc instanceof SpaceImpl)) {
-                    hDoc = getDocument(hDoc.getParentInternalId());
-                    path = "/" + hDoc.getName() + path;
-                }
-
-                path = "/" + getRepositoryName() + path;
-
-                // add path to document
-                doc.setPath(path);
-
-                // add path entry
-                documents.put(path, doc);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-
-            }
-        }
+        getSharedRepository().updatePaths();
     }
 
     protected abstract void initDocuments();
@@ -89,18 +74,24 @@ public abstract class InMemoryUserRepository {
         return repositoryName;
     }
 
-    protected void addDocument(String internalID, NuxeoMockDocumentImpl document) {
-        documents.put(internalID, document);
+
+
+    protected SharedRepository getSharedRepository() {
+       
+        return sharedRepositories.get(repositoryName);
     }
 
-
+    protected void addDocument(String internalID, NuxeoMockDocumentImpl document) {
+        getSharedRepository().addDocument(internalID, document);
+    }
+    
     /**
      * {@inheritDoc}
      */
 
 
     public NuxeoMockDocumentImpl getDocument(String internalId) throws CMSException {
-        return documents.get(internalId);
+        return getSharedRepository().getDocument(internalId);
     }
 
 
@@ -128,6 +119,13 @@ public abstract class InMemoryUserRepository {
         }
 
         return children;
+    }
+    
+    @Override
+    public void contentModified() {
+        for (RepositoryListener listener : listeners) {
+            listener.contentModified();
+        }
     }
 
 

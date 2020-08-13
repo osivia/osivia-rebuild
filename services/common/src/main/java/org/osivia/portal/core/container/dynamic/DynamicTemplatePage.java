@@ -109,6 +109,8 @@ public final class DynamicTemplatePage extends TemplatePage {
         this.localDisplayName = displayNames;
 
         // TODO : analyser si on peut faire du lazy fetching sur les propriétés
+        
+        setUpdateTs(template.getUpdateTs());
     }
 
 
