@@ -33,6 +33,7 @@ public  class  CMSPage extends PageImplBase {
 	private ObjectNodeImplBase parentNode;
 	
 	private CMSPageFactory factory;
+	private List<String> inheritedRegions;
 	
 	private String cmsID;
 
@@ -55,7 +56,7 @@ public  class  CMSPage extends PageImplBase {
         return pageName;
     }
 
-	public CMSPage(StaticPortalObjectContainer container, ContainerContext containerContext, PortalObjectId pageId, Map<String, String> pageProperties, CMSPageFactory factory)  throws CMSException{
+	public CMSPage(StaticPortalObjectContainer container, ContainerContext containerContext, PortalObjectId pageId, Map<String, String> pageProperties, List<String> inheritedRegions, CMSPageFactory factory)  throws CMSException{
 		super();
 
 
@@ -72,6 +73,7 @@ public  class  CMSPage extends PageImplBase {
 		this.pagePath = new PortalObjectPath(pageId.getPath().toString(), PortalObjectPath.CANONICAL_FORMAT);
 		this.pageName = pagePath.getLastComponentName();
 
+		this.inheritedRegions = inheritedRegions;
 
 		ObjectNodeImplBase pageNode = new ObjectNodeImplBase(pageId, pageName, containerContext);
 		this.setObjectNode(pageNode);
@@ -110,10 +112,12 @@ public  class  CMSPage extends PageImplBase {
 			Collection<PortalObject> parentWindows = parent.getChildren(PortalObject.WINDOW_MASK);
 			for (PortalObject parentWindow : parentWindows) {
 				WindowImplBase parentWindowMock = (WindowImplBase) parentWindow;
-				ObjectNodeImplBase dupWinNode = duplicateWindow(parentWindowMock, false);
-				if (dupWinNode != null)
-					windows.put(parentWindow.getName(), dupWinNode);
-
+				String region = parentWindow.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
+				if( inheritedRegions.contains(region))  {
+    				ObjectNodeImplBase dupWinNode = duplicateWindow(parentWindowMock, false);
+    				if (dupWinNode != null)
+    					windows.put(parentWindow.getName(), dupWinNode);
+				}
 			}
 		}
 

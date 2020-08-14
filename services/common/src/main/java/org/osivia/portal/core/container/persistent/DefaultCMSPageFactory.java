@@ -69,7 +69,11 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 
-        new CMSPage(container, containerContext, pageId, pageProperties, this);
+        List<String> inheritedRegions = new ArrayList<>();
+        if( doc instanceof Page)
+            inheritedRegions = ((Page) doc).getInheritedRegions();
+        
+        new CMSPage(container, containerContext, pageId, pageProperties, inheritedRegions, this);
 
         for (NavigationItem child : navItem.getChildren()) {
             org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);

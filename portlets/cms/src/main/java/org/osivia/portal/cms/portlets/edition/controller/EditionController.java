@@ -22,7 +22,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.services.cms.repository.TemplatesRepository;
+import org.osivia.portal.services.cms.repository.user.TemplatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -129,27 +129,65 @@ public class EditionController implements PortletContextAware {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
-            if (navigationId != null) {
+            addPortletToRegion(request, portalControllerContext,"SampleInstance", "col-2");
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+    }
+    
+    
+    
+    /**
+     * Add page sample
+     */
+    @ActionMapping(name = "switchMode")
+    public void switchMode(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
-                UniversalID id = new UniversalID(navigationId);
-                if (id.getRepositoryName().equals("templates")) {
-                    ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), "templates");
+        try {
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-                    String windowID = "" + System.currentTimeMillis();
+            addPortletToRegion(request, portalControllerContext,"SampleInstance", "col-2");
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+    }
+    
+    
 
-                    ((ITemplatesMemoryRepository) repository).addWindow(windowID, windowID, id.getInternalID());
-//                    
-//                    String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
-//                    response.sendRedirect(url);
+    /**
+     * Add page sample
+     */
+    @ActionMapping(name = "addPortletNav")
+    public void addPortletNav(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
-                }
-            }
+        try {
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+            addPortletToRegion(request, portalControllerContext,"SampleRemote", "nav");
         } catch (PortalException e) {
             throw new PortletException(e);
         }
 
     }
+
+
+    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, String portletName, String region) throws CMSException {
+        String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+        if (navigationId != null) {
+
+            UniversalID id = new UniversalID(navigationId);
+            if (id.getRepositoryName().equals("templates")) {
+                ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), "templates");
+
+                String windowID = "" + System.currentTimeMillis();
+
+                ((ITemplatesMemoryRepository) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
+            }
+        }
+    }
+    
 
 
     @Override

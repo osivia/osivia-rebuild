@@ -16,6 +16,8 @@ package org.osivia.portal.core.portlets.interceptors;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -27,6 +29,7 @@ import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
+import org.osivia.portal.api.Constants;
 
 
 /**
@@ -74,6 +77,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 WrappedPortalWindow portalWindow = new WrappedPortalWindow( window);
                 attributes.put("osivia.portal.window", portalWindow);
+                
+                
+               // HTTP Request
+                HttpServletRequest httpRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+                attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
 
 
                 // Set attributes

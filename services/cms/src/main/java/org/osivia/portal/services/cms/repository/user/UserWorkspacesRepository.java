@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository;
+package org.osivia.portal.services.cms.repository.user;
 
 import java.util.ArrayList;
 import java.util.Arrays;

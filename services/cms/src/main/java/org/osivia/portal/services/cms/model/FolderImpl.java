@@ -3,7 +3,7 @@ package org.osivia.portal.services.cms.model;
 import java.util.List;
 import java.util.Map;
 
-import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
 
 public class FolderImpl extends NuxeoMockDocumentImpl  {
 

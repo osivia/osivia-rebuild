@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository;
+package org.osivia.portal.services.cms.repository.cache;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -9,8 +9,13 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 
+/**
+ * The shared cache
+ * 
+ */
 public class SharedRepository {
     
+    /** The repository name. */
     private final String repositoryName;
     
     private final List<RepositoryListener> listeners;

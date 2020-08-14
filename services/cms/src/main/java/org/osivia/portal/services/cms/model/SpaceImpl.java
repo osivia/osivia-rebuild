@@ -6,7 +6,7 @@ import java.util.Map;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
 
 public class SpaceImpl extends NuxeoMockDocumentImpl implements Space {
 

@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository;
+package org.osivia.portal.services.cms.repository.user;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +66,7 @@ public class TemplatesRepository extends InMemoryUserRepository implements ITemp
 
         
         PageImpl page = new PageImpl(this,id, name, null, parentId, spaceId, children, properties, modules);
+        page.setInheritedRegions(Arrays.asList("top","nav"));
 
         addDocument(id, page);
     }
@@ -133,9 +134,9 @@ public class TemplatesRepository extends InMemoryUserRepository implements ITemp
     }
     
 @Override  
-    public void addWindow(String id, String name, String pageId) throws CMSException {
+    public void addWindow(String id, String name, String portletName, String region, String pageId) throws CMSException {
         Page page = (Page) getDocument(pageId);
-        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), "col-2", "0", "SampleInstance");
+        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region, "0", portletName);
         page.getModuleRefs().add(module);
 
         

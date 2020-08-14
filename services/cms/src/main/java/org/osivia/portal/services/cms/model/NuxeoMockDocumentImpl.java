@@ -8,8 +8,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-
-import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
 
 /**
  * The Class DocumentImpl.

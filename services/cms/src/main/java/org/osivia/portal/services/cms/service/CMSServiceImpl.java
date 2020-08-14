@@ -16,9 +16,9 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
-import org.osivia.portal.services.cms.repository.InMemoryUserRepository;
-import org.osivia.portal.services.cms.repository.TemplatesRepository;
-import org.osivia.portal.services.cms.repository.UserWorkspacesRepository;
+import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.user.TemplatesRepository;
+import org.osivia.portal.services.cms.repository.user.UserWorkspacesRepository;
 import org.springframework.stereotype.Service;
 
 /**
