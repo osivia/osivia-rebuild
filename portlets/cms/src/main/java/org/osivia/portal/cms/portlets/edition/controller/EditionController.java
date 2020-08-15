@@ -100,18 +100,18 @@ public class EditionController implements PortletContextAware {
             if (navigationId != null) {
 
                 UniversalID id = new UniversalID(navigationId);
-                if (id.getRepositoryName().equals("templates")) {
-                    ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), "templates");
 
-                    String newID = "" + System.currentTimeMillis();
+                ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), id.getRepositoryName());
 
-                    ((ITemplatesMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
+                String newID = "" + System.currentTimeMillis();
+
+                ((ITemplatesMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
 
 
-                    String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
-                    response.sendRedirect(url);
+                String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
+                response.sendRedirect(url);
 
-                }
+
             }
         } catch (PortalException | IOException e) {
             throw new PortletException(e);
@@ -129,14 +129,13 @@ public class EditionController implements PortletContextAware {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-            addPortletToRegion(request, portalControllerContext,"SampleInstance", "col-2");
+            addPortletToRegion(request, portalControllerContext, "SampleInstance", "col-2");
         } catch (PortalException e) {
             throw new PortletException(e);
         }
     }
-    
-    
-    
+
+
     /**
      * Add page sample
      */
@@ -147,13 +146,12 @@ public class EditionController implements PortletContextAware {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-            addPortletToRegion(request, portalControllerContext,"SampleInstance", "col-2");
+            addPortletToRegion(request, portalControllerContext, "SampleInstance", "col-2");
         } catch (PortalException e) {
             throw new PortletException(e);
         }
     }
-    
-    
+
 
     /**
      * Add page sample
@@ -165,7 +163,7 @@ public class EditionController implements PortletContextAware {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-            addPortletToRegion(request, portalControllerContext,"SampleRemote", "nav");
+            addPortletToRegion(request, portalControllerContext, "SampleRemote", "nav");
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -173,21 +171,21 @@ public class EditionController implements PortletContextAware {
     }
 
 
-    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, String portletName, String region) throws CMSException {
+    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, String portletName, String region)
+            throws CMSException {
         String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
         if (navigationId != null) {
 
             UniversalID id = new UniversalID(navigationId);
-            if (id.getRepositoryName().equals("templates")) {
-                ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), "templates");
 
-                String windowID = "" + System.currentTimeMillis();
+            ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), id.getRepositoryName());
 
-                ((ITemplatesMemoryRepository) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
-            }
+            String windowID = "" + System.currentTimeMillis();
+
+            ((ITemplatesMemoryRepository) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
+
         }
     }
-    
 
 
     @Override

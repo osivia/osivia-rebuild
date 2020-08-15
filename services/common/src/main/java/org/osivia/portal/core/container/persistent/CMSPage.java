@@ -36,6 +36,8 @@ public  class  CMSPage extends PageImplBase {
 	private List<String> inheritedRegions;
 	
 	private String cmsID;
+	
+	List<PortalObjectId> templatesId = null;
 
 	
 	public String getCmsID() {
@@ -123,21 +125,24 @@ public  class  CMSPage extends PageImplBase {
 
 		/* Template Windows */
 
-		for (PortalObjectId templateID : factory.getTemplatesID(this)) {
+		for (PortalObjectId templateID : getTemplatesId()) {
 
-			PortalObject template = container.getObject(templateID);
-			Collection<PortalObject> tmplWindows = template.getChildren(PortalObject.WINDOW_MASK);
+            PortalObject template = container.getObject(templateID);
 
-			for (PortalObject tmplWindow : tmplWindows) {
+            if (template instanceof Page) {
+                Collection<PortalObject> tmplWindows = template.getChildren(PortalObject.WINDOW_MASK);
 
-				if (tmplWindow instanceof WindowImplBase) {
-					ObjectNodeImplBase dupWinNode = duplicateWindow(tmplWindow, true);
-					if (dupWinNode != null)
+                for (PortalObject tmplWindow : tmplWindows) {
 
-						windows.put(tmplWindow.getName(), dupWinNode);
-				}
+                    if (tmplWindow instanceof WindowImplBase) {
+                        ObjectNodeImplBase dupWinNode = duplicateWindow(tmplWindow, true);
+                        if (dupWinNode != null)
 
-			}
+                            windows.put(tmplWindow.getName(), dupWinNode);
+                    }
+
+                }
+            }
 		}
 
 		/* CMS Windows */
@@ -206,6 +211,25 @@ public  class  CMSPage extends PageImplBase {
 	}
 
 
+	protected List<PortalObjectId> getTemplatesId() throws CMSException    {
+	    if( templatesId == null) {
+    	    templatesId = factory.getDeclaredTemplatesID( this);
+    	    
+    	    if( templatesId.isEmpty()) {
+    	        PortalObject parent = parentNode.getObject();
+    	        if( parent instanceof CMSPage) 
+    	            templatesId = ((CMSPage) parent).getTemplatesId();
+    	       
+    	    }
+    	    
+//    	    if( templatesId == null || templatesId.isEmpty())  {
+//    	        throw new RuntimeException("No template found for " + pagePath);
+//    	    }
+	    }
+	    return templatesId;
+	}
+	
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -216,7 +240,7 @@ public  class  CMSPage extends PageImplBase {
 			this.properties = new ConcurrentHashMap<>();
 			// Initialize from template
 			try {
-                for (PortalObjectId templateID : factory.getTemplatesID( this)) {
+                for (PortalObjectId templateID : getTemplatesId()) {
                 	PortalObject template = container.getObject(templateID);
                 	properties.putAll(template.getProperties());
                 }

@@ -13,6 +13,6 @@ public interface CMSPageFactory {
 
     void createCMSWindows(CMSPage page, Map windows) throws CMSException;
 
-    public List<PortalObjectId> getTemplatesID(CMSPage page) throws CMSException;
+    public List<PortalObjectId> getDeclaredTemplatesID(CMSPage page) throws CMSException;
 
 }

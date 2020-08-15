@@ -51,7 +51,7 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         ModuleRef module = new ModuleRef("win-" + id, "col-1", "0", "SampleInstance");
         modules.add(module);
-        SpaceImpl space = new SpaceImpl(this,id, id,new UniversalID("templates", "ID_PAGE_A1" ),children, properties, modules);
+        SpaceImpl space = new SpaceImpl(this,id, id,new UniversalID("templates", "ID_TEMPLATE_WORKSPACE" ),children, properties, modules);
         addDocument(id, space);
     }
 

@@ -100,7 +100,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
     }
 
     @Override
-    public List<PortalObjectId> getTemplatesID(CMSPage page) throws CMSException {
+    public List<PortalObjectId> getDeclaredTemplatesID(CMSPage page) throws CMSException {
 
         List<PortalObjectId> templateIds = new ArrayList<>();
 
@@ -133,7 +133,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
                 // add root level
 
                 templateIds.add(new PortalObjectId(templateDoc.getId().getRepositoryName(), mainTemplatePath));
-            }
+            }   
         }
 
         return templateIds;

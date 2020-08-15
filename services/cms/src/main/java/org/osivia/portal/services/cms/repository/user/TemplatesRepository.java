@@ -112,14 +112,14 @@ public class TemplatesRepository extends InMemoryUserRepository implements ITemp
 
 
     protected void createTemplateSpace() {
-        pageA("ID_PAGE_A", "pageA", "portalA", "portalA", new ArrayList<String>(Arrays.asList("ID_PAGE_A1")));
-        pageA1("ID_PAGE_A1", "pageA1", "ID_PAGE_A", "portalA", new ArrayList<String>());
-        pageB("ID_PAGE_B", "pageB", "portalA", "portalA", new ArrayList<String>());
+        pageA("ID_PAGE_A", "pageA", "portalA", "portalA", new ArrayList<String>(Arrays.asList("ID_TEMPLATE_WORKSPACE")));
+        pageA1("ID_TEMPLATE_WORKSPACE", "workspace", "ID_PAGE_A", "portalA", new ArrayList<String>());
+        pageB("ID_TEMPLATE_SITE", "site", "portalA", "portalA", new ArrayList<String>());
 
 
         List<String> portalChildren = new ArrayList<String>();
         portalChildren.add("ID_PAGE_A");
-        portalChildren.add("ID_PAGE_B");
+        portalChildren.add("ID_TEMPLATE_SITE");
         addTemplateSpace("portalA", portalChildren);
     }
 

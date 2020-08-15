@@ -17,6 +17,7 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.user.SiteRepository;
 import org.osivia.portal.services.cms.repository.user.TemplatesRepository;
 import org.osivia.portal.services.cms.repository.user.UserWorkspacesRepository;
 import org.springframework.stereotype.Service;
@@ -106,7 +107,8 @@ public class CMSServiceImpl implements CMSService {
             userRepository = new TemplatesRepository(repositoryName);
         if ("myspace".equals(repositoryName))
             userRepository = new UserWorkspacesRepository(repositoryName);
-          
+        if ("sites".equals(repositoryName))
+            userRepository = new SiteRepository(repositoryName);          
         
         return userRepository;
     }
