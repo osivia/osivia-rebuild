@@ -16,6 +16,7 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
 import org.osivia.portal.services.cms.repository.user.SiteRepository;
 import org.osivia.portal.services.cms.repository.user.TemplatesRepository;
@@ -36,13 +37,13 @@ public class CMSServiceImpl implements CMSService {
      */
     public CMSServiceImpl() {
         super();
-        superUserRepositories = new ConcurrentHashMap<String, InMemoryUserRepository>();
+        superUserRepositories = new ConcurrentHashMap<SharedRepositoryKey, InMemoryUserRepository>();
 
 
     }
 
     /** The super user repositories. */
-    private Map<String, InMemoryUserRepository> superUserRepositories;
+    private Map<SharedRepositoryKey, InMemoryUserRepository> superUserRepositories;
  
 
     /**
@@ -67,17 +68,18 @@ public class CMSServiceImpl implements CMSService {
      * @param id the id
      * @return the user repository
      */
-    public InMemoryUserRepository getUserRepository(CMSContext cmsContext, String repositoryName) {
+    public InMemoryUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName) {
 
         InMemoryUserRepository userRepository;
 
+        SharedRepositoryKey repositoryKey = new SharedRepositoryKey(repositoryName, cmsContext.isPreview());
 
         if (cmsContext instanceof SuperUserContext) {
             
-            userRepository = (InMemoryUserRepository) superUserRepositories.get(repositoryName);
+            userRepository = (InMemoryUserRepository) superUserRepositories.get(repositoryKey);
             if (userRepository == null) {
-                userRepository = createRepository(repositoryName);
-                superUserRepositories.put(repositoryName, userRepository);
+                userRepository = createRepository(repositoryKey);
+                superUserRepositories.put(repositoryKey, userRepository);
             }
 
         } else {
@@ -85,11 +87,11 @@ public class CMSServiceImpl implements CMSService {
 
             HttpSession session = ctx.getServerInvocation().getServerContext().getClientRequest().getSession(true);
 
-            String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName;
+            String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName+"."+ cmsContext.isPreview();
 
             userRepository = (InMemoryUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null) {
-                userRepository = createRepository(repositoryName);
+                userRepository = createRepository(repositoryKey);
 
                 session.setAttribute(repositoryAttributeName, userRepository);
             }
@@ -98,17 +100,36 @@ public class CMSServiceImpl implements CMSService {
         
         return userRepository;
     }
+    
+    public InMemoryUserRepository getUserRepository(CMSContext cmsContext, String repositoryName) {
+        // for previewed respositories, ensure online repository has been loaded
+        // just for synchronicity of the 2 shared repositories initialisation
+        
+        if( supportsPreview(repositoryName)) {
+            boolean savedPreview = cmsContext.isPreview();
+            cmsContext.setPreview(false);
+            getOrCreateUserRepository(cmsContext, repositoryName);
+            cmsContext.setPreview(true);
+            getOrCreateUserRepository(cmsContext, repositoryName);
+            cmsContext.setPreview(savedPreview);
+        }
+        
+        return getOrCreateUserRepository(cmsContext, repositoryName);
+    }
 
-    protected InMemoryUserRepository createRepository(String repositoryName) {
+    protected InMemoryUserRepository createRepository(SharedRepositoryKey repositoryKey) {
         
         InMemoryUserRepository userRepository = null;
         
-        if ("templates".equals(repositoryName))
-            userRepository = new TemplatesRepository(repositoryName);
-        if ("myspace".equals(repositoryName))
-            userRepository = new UserWorkspacesRepository(repositoryName);
-        if ("sites".equals(repositoryName))
-            userRepository = new SiteRepository(repositoryName);          
+        if ("templates".equals(repositoryKey.getRepositoryName()))  {
+            userRepository = new TemplatesRepository(repositoryKey);
+        }
+        if ("myspace".equals(repositoryKey.getRepositoryName()))    {
+            userRepository = new UserWorkspacesRepository(repositoryKey);
+        }
+        if ("sites".equals(repositoryKey.getRepositoryName()))  {
+            userRepository = new SiteRepository(repositoryKey);   
+        }
         
         return userRepository;
     }
@@ -124,8 +145,24 @@ public class CMSServiceImpl implements CMSService {
         InMemoryUserRepository userRepository = getUserRepository(cmsContext, repositoryName);
         userRepository.addListener(listener);
         
+        if( supportsPreview(repositoryName)) {
+            boolean savedPreview = cmsContext.isPreview();
+            cmsContext.setPreview(true);
+            userRepository = getUserRepository(cmsContext, repositoryName);
+            userRepository.addListener(listener);
+            cmsContext.setPreview(savedPreview);
+        }
+        
+        
     }
 
-
+    protected boolean supportsPreview( String repositoryName) {
+        if ("sites".equals(repositoryName))  {
+            return true;  
+        }
+        
+        return false;
+     }
+   
 
 }

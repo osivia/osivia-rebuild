@@ -1,41 +1,41 @@
 package org.osivia.portal.cms.portlets.edition.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.services.cms.repository.user.TemplatesRepository;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.producers.sample.inmemory.ITemplatesMemoryRepository;
+import fr.toutatice.portail.cms.producers.sample.inmemory.IPageMemoryRepository;
 import fr.toutatice.portail.cms.producers.sample.inmemory.TemplatesLocator;
 
 /**
@@ -45,7 +45,7 @@ import fr.toutatice.portail.cms.producers.sample.inmemory.TemplatesLocator;
  */
 @Controller
 @RequestMapping(value = "VIEW")
-public class EditionController implements PortletContextAware {
+public class EditionController implements PortletContextAware, ApplicationContextAware {
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -54,6 +54,9 @@ public class EditionController implements PortletContextAware {
     /** CMS service. */
     @Autowired
     private CMSService cmsService;
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
 
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
@@ -84,6 +87,7 @@ public class EditionController implements PortletContextAware {
         return "view";
     }
 
+
     /**
      * Add page sample
      */
@@ -101,11 +105,14 @@ public class EditionController implements PortletContextAware {
 
                 UniversalID id = new UniversalID(navigationId);
 
-                ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), id.getRepositoryName());
+                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+
+
+                IPageMemoryRepository repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
                 String newID = "" + System.currentTimeMillis();
 
-                ((ITemplatesMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
+                ((IPageMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
 
 
                 String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
@@ -129,6 +136,7 @@ public class EditionController implements PortletContextAware {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
+
             addPortletToRegion(request, portalControllerContext, "SampleInstance", "col-2");
         } catch (PortalException e) {
             throw new PortletException(e);
@@ -143,11 +151,28 @@ public class EditionController implements PortletContextAware {
     public void switchMode(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
         try {
+
+            // TODO : create edition service
+            HttpServletRequest mainRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
+            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            UniversalID id = new UniversalID(navigationId);
+            
+            String editionModeKey = "editionMode."+id.getRepositoryName();
+            String editionMode = (String) mainRequest.getSession().getAttribute(editionModeKey);
+            if ("preview".equals(editionMode)) {
+                mainRequest.getSession().removeAttribute(editionModeKey);
+            } else
+                mainRequest.getSession().setAttribute(editionModeKey, "preview");
+
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+    
 
-            addPortletToRegion(request, portalControllerContext, "SampleInstance", "col-2");
-        } catch (PortalException e) {
+
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
+            response.sendRedirect(url);
+
+        } catch (PortalException | IOException e) {
             throw new PortletException(e);
         }
     }
@@ -178,13 +203,51 @@ public class EditionController implements PortletContextAware {
 
             UniversalID id = new UniversalID(navigationId);
 
-            ITemplatesMemoryRepository repository = TemplatesLocator.getTemplateRepository(new CMSContext(portalControllerContext), id.getRepositoryName());
+            CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+
+
+            IPageMemoryRepository repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
             String windowID = "" + System.currentTimeMillis();
 
-            ((ITemplatesMemoryRepository) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
+            ((IPageMemoryRepository) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
 
         }
+    }
+
+
+    @ModelAttribute("status")
+    public EditionStatus getStatus(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        // application form
+        EditionStatus status = this.applicationContext.getBean(EditionStatus.class);
+
+        try {
+
+            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            if (navigationId != null) {
+                UniversalID id = new UniversalID(navigationId);
+
+                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+                status.setPreview(cmsContext.isPreview());
+
+                IPageMemoryRepository repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                status.setSupportPreview(repository.supportPreview());
+                    
+            }
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+        return status;
+    }
+
+
+    protected CMSContext getCMSContext(PortalControllerContext portalControllerContext, UniversalID id) {
+        CMSContext cmsContext = new CMSContext(portalControllerContext, id);
+        return cmsContext;
     }
 
 
@@ -192,5 +255,12 @@ public class EditionController implements PortletContextAware {
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;
     }
+
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
 
 }

@@ -13,13 +13,13 @@ public class TemplatesLocator {
 
 
     @SuppressWarnings("unchecked")
-    public static ITemplatesMemoryRepository getTemplateRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
+    public static IPageMemoryRepository getTemplateRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
         CMSService cms = Locator.getApplicationContext().getBean(CMSService.class);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        ITemplatesMemoryRepository repository =  (ITemplatesMemoryRepository) cms.getUserRepository(cmsContext, repositoryName);
+        IPageMemoryRepository repository =  (IPageMemoryRepository) cms.getUserRepository(cmsContext, repositoryName);
         InvocationHandler invocationHandler = new TemplatesInvocationHandler(repository);
-        Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{ITemplatesMemoryRepository.class}, invocationHandler);
-        return (ITemplatesMemoryRepository) proxy;
+        Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{IPageMemoryRepository.class}, invocationHandler);
+        return (IPageMemoryRepository) proxy;
     }
 
 }

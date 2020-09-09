@@ -27,8 +27,7 @@ public class SharedRepository {
         this.repositoryName = repositoryName;
         this.listeners = new ArrayList<>();
         this.documents= new Hashtable<String, NuxeoMockDocumentImpl>();
-
-    }
+   }
 
 
     /**

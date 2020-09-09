@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -53,7 +55,12 @@ public class PublicationManager implements IPublicationManager {
             space = getCMSService().getDocument(cmsContext, navigation.getSpaceId());
 
 
-            String spacePath = space.getId().getRepositoryName() + ":" + "/" + space.getId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName();
+            String spaceTemplateID =  space.getId().getInternalID();
+            if( cmsContext.isPreview()) {
+                spaceTemplateID += "_preview";
+            }
+            
+            String spacePath = space.getId().getRepositoryName() + ":" + "/" + spaceTemplateID + "/" + DefaultCMSPageFactory.getRootPageName();
 
             String templateRelativePath = "";
 
@@ -97,13 +104,15 @@ public class PublicationManager implements IPublicationManager {
         PortalObjectId pageId = null;
 
         try {
-            CMSContext cmsContext = new CMSContext(portalCtx);
+            CMSContext cmsContext = new CMSContext(portalCtx, docId);
+            
 
             Document doc = getCMSService().getDocument(cmsContext, docId);
 
             NavigationItem navigation = getCMSService().getNavigationItem(cmsContext, docId);
             Document space = getCMSService().getDocument(cmsContext, navigation.getSpaceId());
-
+            
+             
             String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
 
             Map<String, String> properties = new HashMap<String, String>();
@@ -122,7 +131,14 @@ public class PublicationManager implements IPublicationManager {
             }
 
             // TODO : get current portal
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "space_" + navigation.getSpaceId().getInternalID(),
+            
+            String pageDynamicID =  "space_" + navigation.getSpaceId().getInternalID();
+            if( cmsContext.isPreview()) {
+                pageDynamicID += "_preview";
+            }
+            
+             
+            String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", pageDynamicID,
                     displayNames, templatePath, properties, parameters);
 
             if (!(doc instanceof Templateable)) {

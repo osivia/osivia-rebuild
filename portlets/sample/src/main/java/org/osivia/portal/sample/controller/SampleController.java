@@ -78,7 +78,9 @@ public class SampleController implements PortletContextAware {
         request.setAttribute("count", count);
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
 
-        String foo = cmsService.getDocument(new CMSContext(portalCtx), new UniversalID("myspace","ID_DOC_1")).getTitle();
+        UniversalID id = new UniversalID("myspace","ID_DOC_1");
+        
+        String foo = cmsService.getDocument(new CMSContext(portalCtx, id), id).getTitle();
         request.setAttribute("foo", foo);
         
         Map<String, String> properties = new HashMap<String, String>();

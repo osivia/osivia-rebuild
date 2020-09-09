@@ -41,6 +41,7 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 
 public class StaticPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
+    private static final String _PREVIEW = "_preview";
     Map<String, Map<PortalObjectId, PortalObject>> nodes;
     ContainerContext containerContext = new ContainerContext();
 
@@ -116,7 +117,6 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         
 
         if (res == null) {
-            // Create portal
 
             String portalName = id.getPath().getName(0);
 
@@ -128,6 +128,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
             
            
             if (curPortalObject == null ) {
+                // Create portal
 
                 createPortal(contextNodes, portalID);
                                 
@@ -181,7 +182,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         
         PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
         
-        CMSContext cmsContext = new CMSContext(portalCtx);
+        CMSContext cmsContext = new CMSContext(portalCtx, null);
         getCMSService().addListener(cmsContext, nameSpace, contextNode);              
 
         ContextImplBase context = new ContextImplBase();
@@ -270,8 +271,17 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                 PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
                 ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalCtx);                
                 
-                CMSContext cmsContext = new CMSContext(portalCtx);
-                Document document = getCMSService().getDocument(cmsContext,  new UniversalID(portalID.getNamespace(), portalName));
+                
+                String portalCMSName = portalName;
+                CMSContext cmsContext = new CMSContext(portalCtx, null);
+                if( portalCMSName.endsWith(_PREVIEW))    {
+                    cmsContext.setPreview(true);
+                    portalCMSName = portalCMSName.substring(0, portalCMSName.length() - _PREVIEW.length());
+                }
+                    
+                Document document = getCMSService().getDocument(cmsContext,  new UniversalID(portalID.getNamespace(), portalCMSName));
+                
+                
                 if (document instanceof Space) {
                     Space space = (Space) document;
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());

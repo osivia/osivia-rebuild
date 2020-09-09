@@ -74,7 +74,8 @@ public class ContentController implements PortletContextAware {
         
         
         if( contentId != null)  {
-            Document doc = cmsService.getDocument(new CMSContext(portalCtx), new UniversalID(contentId));
+            UniversalID id = new UniversalID(contentId);
+            Document doc = cmsService.getDocument(new CMSContext(portalCtx, id), id);
             request.setAttribute("document", doc);
         }
 

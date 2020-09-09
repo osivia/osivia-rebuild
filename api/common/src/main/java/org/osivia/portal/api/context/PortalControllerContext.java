@@ -19,6 +19,8 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.osivia.portal.api.Constants;
+
 
 /**
  * The Class PortalControllerContext.
@@ -52,6 +54,8 @@ public class PortalControllerContext {
 		this.request = request;
 		this.response = response;
 		this.portletCtx = portletCtx;
+		
+		mainRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
 	}
 
 

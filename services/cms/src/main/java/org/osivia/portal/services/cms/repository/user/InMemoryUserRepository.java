@@ -12,27 +12,31 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.NavigationItemImpl;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
+import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
-public abstract class InMemoryUserRepository implements RepositoryListener{
+public abstract class InMemoryUserRepository implements RepositoryListener {
 
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
 
-    protected String repositoryName;
-
-
+    protected SharedRepositoryKey repositoryKey;
 
     protected List<RepositoryListener> listeners;
     
-    private static Map<String, SharedRepository>  sharedRepositories = new Hashtable<String, SharedRepository>();
+    
+    private static Map<SharedRepositoryKey, SharedRepository>  sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
+    
 
 
-    public InMemoryUserRepository(String repositoryName) {
+
+    public InMemoryUserRepository(SharedRepositoryKey repositoryKey) {
         super();
-        this.repositoryName = repositoryName;
+        this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
-        init();
+        init(repositoryKey);
     }
 
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -47,15 +51,15 @@ public abstract class InMemoryUserRepository implements RepositoryListener{
 
 
 
-    private void init() {
+    private void init(SharedRepositoryKey repositoryKey) {
 
         boolean initRepository = false;
         if( getSharedRepository() == null)    {
-            sharedRepositories.put(repositoryName, new SharedRepository(repositoryName));
+            sharedRepositories.put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName()));   
             initRepository = true;
         }
         
-        sharedRepositories.get(repositoryName).addListener(this);
+        sharedRepositories.get(repositoryKey).addListener(this);
         
         if(initRepository)  {
             initDocuments();
@@ -72,14 +76,13 @@ public abstract class InMemoryUserRepository implements RepositoryListener{
     protected abstract void initDocuments();
 
     public String getRepositoryName() {
-        return repositoryName;
+        return repositoryKey.getRepositoryName();
     }
 
 
 
     protected SharedRepository getSharedRepository() {
-       
-        return sharedRepositories.get(repositoryName);
+         return sharedRepositories.get(repositoryKey);
     }
 
     protected void addDocument(String internalID, NuxeoMockDocumentImpl document) {

@@ -9,10 +9,10 @@ import org.springframework.context.ApplicationContext;
 
 public class TemplatesInvocationHandler implements InvocationHandler {
 
-    ITemplatesMemoryRepository templatesRepository;
+    IPageMemoryRepository templatesRepository;
     
 
-    public TemplatesInvocationHandler(ITemplatesMemoryRepository templatesRepository) {
+    public TemplatesInvocationHandler(IPageMemoryRepository templatesRepository) {
         super();
         this.templatesRepository = templatesRepository;
     }

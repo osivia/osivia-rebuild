@@ -12,6 +12,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
@@ -93,8 +94,13 @@ public class MenuController implements PortletContextAware {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         
         String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
-        if( navigationId != null)
-            request.setAttribute("navigation", cmsService.getNavigationItem(new CMSContext(portalControllerContext), new UniversalID(navigationId)));
+        if( navigationId != null)   {
+
+            
+            UniversalID id = new UniversalID(navigationId);
+            CMSContext cmsContext = new CMSContext(portalControllerContext, id);            
+            request.setAttribute("navigation", cmsService.getNavigationItem(cmsContext, id));
+        }
 
         request.setAttribute("navigationPath", nuxeoController.getNavigationPath());
         

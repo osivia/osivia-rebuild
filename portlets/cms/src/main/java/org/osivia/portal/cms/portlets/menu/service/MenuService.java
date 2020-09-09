@@ -6,11 +6,14 @@ import java.util.List;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -227,12 +230,14 @@ public class MenuService implements IMenuService {
 
             MenuOptions options = getMenuOptions(nuxeoController);
 
-            CMSContext cmsContext = new CMSContext(portalControllerContext);
+
 
             // Navigation item
             NavigationItem navigationItem;
 
-            navigationItem = cmsService.getNavigationItem(cmsContext, nuxeoController.getSpaceId());
+            UniversalID spaceId = nuxeoController.getSpaceId();
+            CMSContext cmsContext = new CMSContext(portalControllerContext, spaceId);            
+            navigationItem = cmsService.getNavigationItem(cmsContext, spaceId);
 
 
             // Navigation display item

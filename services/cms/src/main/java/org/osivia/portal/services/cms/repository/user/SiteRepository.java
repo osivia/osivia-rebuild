@@ -18,17 +18,18 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
+import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.producers.sample.inmemory.ITemplatesMemoryRepository;
+import fr.toutatice.portail.cms.producers.sample.inmemory.IPageMemoryRepository;
 
 
-public class SiteRepository extends InMemoryUserRepository implements ITemplatesMemoryRepository {
+public class SiteRepository extends InMemoryUserRepository implements IPageMemoryRepository {
 
-    public SiteRepository(String repositoryName) {
-        super(repositoryName);
+    public SiteRepository(SharedRepositoryKey repositoryKey) {
+        super(repositoryKey);
     }
 
 
@@ -95,6 +96,12 @@ public class SiteRepository extends InMemoryUserRepository implements ITemplates
 
     protected void initDocuments() {
         createTemplateSpace();
+    }
+
+
+    @Override
+    public boolean supportPreview() {
+        return true;
     }
 
 

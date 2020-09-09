@@ -3,7 +3,9 @@ package fr.toutatice.portail.cms.nuxeo.api;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.servlet.http.HttpServletRequest;
 
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -67,8 +69,8 @@ public class NuxeoController {
      */
     public CMSContext getCMSContext() {
         if (cmsContext == null) {
-            cmsContext = new CMSContext(portalCtx);
-        }
+            cmsContext = new CMSContext(portalCtx, contentId);
+         }
         return cmsContext;
     }
 
