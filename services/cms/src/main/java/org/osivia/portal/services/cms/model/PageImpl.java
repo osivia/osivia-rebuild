@@ -1,6 +1,7 @@
 package org.osivia.portal.services.cms.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ public class PageImpl extends NuxeoMockDocumentImpl implements Page {
         super(repository, id, name, parentId, spaceId,childrenId, properties);
         this.templateId = templateId;
         this.moduleRefs = moduleRefs;
+        subTypes = Arrays.asList(new String[]{"document"});
 
     }
 
@@ -48,5 +50,6 @@ public class PageImpl extends NuxeoMockDocumentImpl implements Page {
     public List<String> getInheritedRegions() {
          return inheritedRegions;
     }
-    
+
+
 }

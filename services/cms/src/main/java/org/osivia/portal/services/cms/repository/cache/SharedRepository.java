@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
@@ -44,8 +45,11 @@ public class SharedRepository {
         documents.put(internalID, document);
     }
     
-    public NuxeoMockDocumentImpl getDocument(String internalID)  {
-        return documents.get(internalID);
+    public NuxeoMockDocumentImpl getDocument(String internalID) throws CMSException {
+        NuxeoMockDocumentImpl doc = documents.get(internalID);
+        if( doc == null)
+            throw new CMSException();
+        return doc;
     }
 
    

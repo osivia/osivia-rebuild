@@ -1,9 +1,11 @@
 package org.osivia.portal.services.cms.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
@@ -13,7 +15,7 @@ import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
 /**
  * The Class DocumentImpl.
  */
-public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Document {
+public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Document, Serializable {
     
 
     /** The id. */
@@ -28,16 +30,21 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     private final String spaceInternalId;
     
     /** The parent id. */
-    private final String parentInternalId;
+    private transient  String parentInternalId;
     
+ 
     /** The id. */
-    private final List<String> childrenId;
+    private transient  List<String> childrenId;
     
     /** The user repository. */
-    private final InMemoryUserRepository userRepository;
+    private transient InMemoryUserRepository userRepository;
     
 
+    /** The native item. */
     private Document nativeItem;
+    
+    /** The sub types. */
+    protected List<String> subTypes;
     
 
     /**
@@ -126,7 +133,10 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     }
 
 
-    
+    public void setParentInternalId(String parentInternalId) {
+        this.parentInternalId = parentInternalId;
+    }
+
 
     public void setPath(String path) {
         this.nativeItem.setPath( path);
@@ -137,6 +147,24 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     public EcmDocument getNativeItem() {
         return nativeItem;
     }
+
+
+    public NuxeoMockDocumentImpl duplicate( String parentInternalId,List<String> childrenId,InMemoryUserRepository userRepository) throws CloneNotSupportedException {
+        NuxeoMockDocumentImpl newDoc = SerializationUtils.clone(this);
+        newDoc.parentInternalId = parentInternalId;
+        newDoc.childrenId = childrenId;
+        newDoc.userRepository = userRepository;
+        return newDoc;
+    }
+
+
+    @Override
+    public List<String> getSubTypes() {
+        return subTypes;
+    } 
+
+
+
 
 
 }

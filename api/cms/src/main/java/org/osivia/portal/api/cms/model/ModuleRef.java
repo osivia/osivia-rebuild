@@ -1,10 +1,16 @@
 package org.osivia.portal.api.cms.model;
 
+import java.io.Serializable;
 
 /**
  * The Class ModuleRef.
  */
-public class ModuleRef {
+public class ModuleRef implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4305768690906614507L;
 
     private final String windowName;
 

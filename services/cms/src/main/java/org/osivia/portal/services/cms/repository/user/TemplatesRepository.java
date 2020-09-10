@@ -23,10 +23,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.producers.sample.inmemory.IPageMemoryRepository;
+import fr.toutatice.portail.cms.producers.sample.inmemory.IRepositoryUpdate;
 
 
-public class TemplatesRepository extends InMemoryUserRepository implements IPageMemoryRepository {
+public class TemplatesRepository extends InMemoryUserRepository implements IRepositoryUpdate {
 
       
       public TemplatesRepository(SharedRepositoryKey repositoryKey) {
@@ -151,11 +151,9 @@ public class TemplatesRepository extends InMemoryUserRepository implements IPage
 
 
     @Override
-    public boolean supportPreview() {
-       return false;
+    public boolean supportPageEdition() {
+        return true;
     }
-
-    
 
 
 }

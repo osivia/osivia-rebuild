@@ -19,6 +19,7 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -35,7 +36,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.producers.sample.inmemory.IPageMemoryRepository;
+import fr.toutatice.portail.cms.producers.sample.inmemory.IRepositoryUpdate;
 import fr.toutatice.portail.cms.producers.sample.inmemory.TemplatesLocator;
 
 /**
@@ -108,11 +109,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = getCMSContext(portalControllerContext, id);
 
 
-                IPageMemoryRepository repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
                 String newID = "" + System.currentTimeMillis();
 
-                ((IPageMemoryRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
+                ((IRepositoryUpdate) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
 
 
                 String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
@@ -154,7 +155,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             // TODO : create edition service
             HttpServletRequest mainRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
-            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
             UniversalID id = new UniversalID(navigationId);
             
             String editionModeKey = "editionMode."+id.getRepositoryName();
@@ -166,9 +167,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-    
-
-
+  
             String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
             response.sendRedirect(url);
 
@@ -179,7 +178,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
 
     /**
-     * Add page sample
+     * Add portlet sample
      */
     @ActionMapping(name = "addPortletNav")
     public void addPortletNav(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
@@ -206,16 +205,109 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSContext cmsContext = getCMSContext(portalControllerContext, id);
 
 
-            IPageMemoryRepository repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+            IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
             String windowID = "" + System.currentTimeMillis();
 
-            ((IPageMemoryRepository) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
+            ((IRepositoryUpdate) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
 
         }
     }
 
+    
 
+    /**
+     * publish sample
+     */
+    @ActionMapping(name = "publish")
+    public void publish(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+        // Portal Controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        try {
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
+            if (contentId != null) {
+
+                UniversalID id = new UniversalID(contentId);
+
+                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+
+                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if( repository instanceof IRepositoryUpdate) {
+                    ((IRepositoryUpdate) repository).publish(id.getInternalID());
+                }
+
+                
+            }
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+    }
+
+    
+    /**
+     * add folder
+     */
+    @ActionMapping(name = "addFolder")
+    public void addFolder(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+        // Portal Controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        try {
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            if (contentId != null) {
+
+                UniversalID id = new UniversalID(contentId);
+
+                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+
+                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if( repository instanceof IRepositoryUpdate) {
+                    String newID = "" + System.currentTimeMillis();
+
+                    ((IRepositoryUpdate) repository).addFolder(newID, newID, id.getInternalID());
+                }
+
+                
+            }
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+    }
+    
+    /**
+     * add document
+     */
+    @ActionMapping(name = "addDocument")
+    public void addDocument(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+        // Portal Controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        try {
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            if (contentId != null) {
+
+                UniversalID id = new UniversalID(contentId);
+
+                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+
+                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if( repository instanceof IRepositoryUpdate) {
+                    String newID = "" + System.currentTimeMillis();
+
+                    ((IRepositoryUpdate) repository).addDocument(newID, newID, id.getInternalID());
+                }
+
+                
+            }
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+    }
+    
     @ModelAttribute("status")
     public EditionStatus getStatus(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
@@ -226,16 +318,32 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
         try {
 
-            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
-            if (navigationId != null) {
-                UniversalID id = new UniversalID(navigationId);
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            if (contentId != null) {
+                UniversalID id = new UniversalID(contentId);
 
                 CMSContext cmsContext = getCMSContext(portalControllerContext, id);
                 status.setPreview(cmsContext.isPreview());
 
-                IPageMemoryRepository repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 status.setSupportPreview(repository.supportPreview());
-                    
+                
+                status.setPageEdition(repository.supportPageEdition());
+                
+                
+                Document currentDoc = cmsService.getDocument(cmsContext, id);
+                status.setSubtypes(currentDoc.getSubTypes());
+                
+                if( cmsContext.isPreview()) {
+                    cmsContext.setPreview(false);
+                    try {
+                        cmsService.getDocument(cmsContext, id);
+                        status.setHavingPublication(true);
+                    } catch (CMSException e) {
+                        // Not found
+                    }
+                }
+                
             }
         } catch (PortalException e) {
             throw new PortletException(e);

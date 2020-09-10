@@ -68,7 +68,7 @@ public class CMSServiceImpl implements CMSService {
      * @param id the id
      * @return the user repository
      */
-    public InMemoryUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName) {
+    public InMemoryUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName, InMemoryUserRepository publishRepository) {
 
         InMemoryUserRepository userRepository;
 
@@ -78,7 +78,7 @@ public class CMSServiceImpl implements CMSService {
             
             userRepository = (InMemoryUserRepository) superUserRepositories.get(repositoryKey);
             if (userRepository == null) {
-                userRepository = createRepository(repositoryKey);
+                userRepository = createRepository(repositoryKey, publishRepository);
                 superUserRepositories.put(repositoryKey, userRepository);
             }
 
@@ -91,7 +91,7 @@ public class CMSServiceImpl implements CMSService {
 
             userRepository = (InMemoryUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null) {
-                userRepository = createRepository(repositoryKey);
+                userRepository = createRepository(repositoryKey, publishRepository);
 
                 session.setAttribute(repositoryAttributeName, userRepository);
             }
@@ -108,16 +108,16 @@ public class CMSServiceImpl implements CMSService {
         if( supportsPreview(repositoryName)) {
             boolean savedPreview = cmsContext.isPreview();
             cmsContext.setPreview(false);
-            getOrCreateUserRepository(cmsContext, repositoryName);
+            InMemoryUserRepository publishRespository = getOrCreateUserRepository(cmsContext, repositoryName, null);
             cmsContext.setPreview(true);
-            getOrCreateUserRepository(cmsContext, repositoryName);
+            getOrCreateUserRepository(cmsContext, repositoryName, publishRespository);
             cmsContext.setPreview(savedPreview);
         }
         
-        return getOrCreateUserRepository(cmsContext, repositoryName);
+        return getOrCreateUserRepository(cmsContext, repositoryName, null);
     }
 
-    protected InMemoryUserRepository createRepository(SharedRepositoryKey repositoryKey) {
+    protected InMemoryUserRepository createRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository) {
         
         InMemoryUserRepository userRepository = null;
         
@@ -128,7 +128,7 @@ public class CMSServiceImpl implements CMSService {
             userRepository = new UserWorkspacesRepository(repositoryKey);
         }
         if ("sites".equals(repositoryKey.getRepositoryName()))  {
-            userRepository = new SiteRepository(repositoryKey);   
+            userRepository = new SiteRepository(repositoryKey, publishRepository);   
         }
         
         return userRepository;

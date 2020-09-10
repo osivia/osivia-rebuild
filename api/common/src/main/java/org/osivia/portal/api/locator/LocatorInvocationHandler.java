@@ -1,6 +1,7 @@
 package org.osivia.portal.api.locator;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +40,15 @@ public class LocatorInvocationHandler implements InvocationHandler {
             Thread.currentThread().setContextClassLoader(bean.getClass().getClassLoader());
 
             result = method.invoke(bean, args);
-        } finally {
+        } catch(InvocationTargetException e)    {
+            if( e.getCause() != null)
+                throw  e.getCause();
+            else
+                throw e;
+        }
+        
+        
+        finally {
             Thread.currentThread().setContextClassLoader(savedClassLoader);
         }
 

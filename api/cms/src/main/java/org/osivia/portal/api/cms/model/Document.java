@@ -23,6 +23,14 @@ public interface Document {
     
     
     /**
+     * Gets the space id.
+     *
+     * @return the space id
+     */
+    public UniversalID getSpaceId();
+    
+    
+    /**
      * Gets the title.
      *
      * @return the title
@@ -45,7 +53,12 @@ public interface Document {
     public EcmDocument getNativeItem();
     
      
-
+    /**
+     * Gets the sub types.
+     *
+     * @return the sub types
+     */
+    public List<String> getSubTypes();
   
     
 }

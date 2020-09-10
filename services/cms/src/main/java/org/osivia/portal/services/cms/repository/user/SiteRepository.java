@@ -11,25 +11,22 @@ import javax.annotation.PostConstruct;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.Document;
+
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
-import org.osivia.portal.api.cms.service.CMSService;
+
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-
-import fr.toutatice.portail.cms.producers.sample.inmemory.IPageMemoryRepository;
 
 
-public class SiteRepository extends InMemoryUserRepository implements IPageMemoryRepository {
 
-    public SiteRepository(SharedRepositoryKey repositoryKey) {
-        super(repositoryKey);
+
+public class SiteRepository extends InMemoryUserRepository  {
+
+    public SiteRepository(SharedRepositoryKey repositoryKey,  InMemoryUserRepository publishRepository) {
+        super(repositoryKey, publishRepository);
     }
 
 
@@ -78,9 +75,9 @@ public class SiteRepository extends InMemoryUserRepository implements IPageMemor
         NuxeoMockDocumentImpl parent = getDocument(parentId);
         parent.getChildrenId().add(id);
         addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
+        
         updatePaths();
-
-        notifyChanges();
+        notifyChanges(); 
     }
 
     @Override
@@ -88,7 +85,6 @@ public class SiteRepository extends InMemoryUserRepository implements IPageMemor
         Page page = (Page) getDocument(pageId);
         ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region, "0", portletName);
         page.getModuleRefs().add(module);
-
 
         notifyChanges();
     }
@@ -104,5 +100,17 @@ public class SiteRepository extends InMemoryUserRepository implements IPageMemor
         return true;
     }
 
+
+    @Override
+    public void publish(String id) throws CMSException {
+        super.publish(id);
+        
+    }
+
+    
+    @Override
+    public boolean supportPageEdition() {
+        return true;
+    }
 
 }
