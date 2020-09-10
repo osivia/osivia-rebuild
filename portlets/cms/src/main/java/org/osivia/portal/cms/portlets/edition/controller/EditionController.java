@@ -220,7 +220,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
      * publish sample
      */
     @ActionMapping(name = "publish")
-    public void publish(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+    public void publish(ActionRequest request, ActionResponse response,   @ModelAttribute("status") EditionStatus status) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
@@ -242,6 +242,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
         } catch (PortalException e) {
             throw new PortletException(e);
         }
+        
+        
+        refreshStatus(portalControllerContext, status) ;
 
     }
 
@@ -316,9 +319,16 @@ public class EditionController implements PortletContextAware, ApplicationContex
         // application form
         EditionStatus status = this.applicationContext.getBean(EditionStatus.class);
 
+        refreshStatus( portalControllerContext, status);
+
+        return status;
+    }
+
+
+    protected void refreshStatus(PortalControllerContext portalControllerContext, EditionStatus status) throws PortletException {
         try {
 
-            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            String contentId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
             if (contentId != null) {
                 UniversalID id = new UniversalID(contentId);
 
@@ -348,8 +358,6 @@ public class EditionController implements PortletContextAware, ApplicationContex
         } catch (PortalException e) {
             throw new PortletException(e);
         }
-
-        return status;
     }
 
 

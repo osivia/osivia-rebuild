@@ -47,9 +47,12 @@ public class TemplatesRepository extends InMemoryUserRepository implements IRepo
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        ModuleRef edition = new ModuleRef("edition" , "top", "0", "EditionInstance"); 
+        Map<String,String> editionProperties = new ConcurrentHashMap<>();
+        editionProperties.put("osivia.hideTitle", "1");
+        ModuleRef edition = new ModuleRef("edition" , "top", "0", "EditionInstance", editionProperties); 
         modules.add(edition);  
-        ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance"); 
+        Map<String,String> navProperties = new ConcurrentHashMap<>(); 
+        ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance", navProperties); 
         modules.add(nav);     
         SpaceImpl space = new SpaceImpl(this,id, id,null,children, properties, modules);
         addDocument(id, space);
@@ -76,11 +79,10 @@ public class TemplatesRepository extends InMemoryUserRepository implements IRepo
     protected void pageA(String id, String name, String parentId, String spaceId, List<String> children) {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        
-
-        
-        ModuleRef moduleA = new ModuleRef("winA-" + id, "col-2", "0", "SampleInstance");
-        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "1", "SampleRemote");
+        Map<String,String> aProperties = new ConcurrentHashMap<>();       
+        ModuleRef moduleA = new ModuleRef("winA-" + id, "col-2", "0", "SampleInstance", aProperties);
+        Map<String,String> bProperties = new ConcurrentHashMap<>();          
+        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "1", "SampleRemote", bProperties);
 
 
         modules.add(moduleA);
@@ -94,7 +96,8 @@ public class TemplatesRepository extends InMemoryUserRepository implements IRepo
     protected void pageA1(String id, String name, String parentId, String spaceId, List<String> children) {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        ModuleRef moduleC = new ModuleRef("winC-" + id, "col-2", "2", "ContentInstance");
+        Map<String,String> cProperties = new ConcurrentHashMap<>();    
+        ModuleRef moduleC = new ModuleRef("winC-" + id, "col-2", "2", "ContentInstance", cProperties);
 
         modules.add(moduleC);
 
@@ -105,7 +108,8 @@ public class TemplatesRepository extends InMemoryUserRepository implements IRepo
     protected void pageB(String id, String name, String parentId, String spaceId, List<String> children) {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "0", "SampleInstance");
+        Map<String,String> bProperties = new ConcurrentHashMap<>();    
+        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "0", "SampleInstance", bProperties);
         modules.add(moduleB);
 
         addTemplatePage(id, name, parentId, spaceId, children, modules);
@@ -137,7 +141,8 @@ public class TemplatesRepository extends InMemoryUserRepository implements IRepo
 @Override  
     public void addWindow(String id, String name, String portletName, String region, String pageId) throws CMSException {
         Page page = (Page) getDocument(pageId);
-        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region, "0", portletName);
+        Map<String,String> properties = new ConcurrentHashMap<>();  
+        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region, "0", portletName, properties);
         page.getModuleRefs().add(module);
 
         

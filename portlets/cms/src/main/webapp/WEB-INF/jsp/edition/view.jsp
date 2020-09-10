@@ -16,6 +16,8 @@
 <portlet:actionURL name="addFolder" var="addFolderURL" />
 <portlet:actionURL name="addDocument" var="addDocumentURL" />
 
+
+
 <div>
 	<c:if test="${status.supportPreview}">
 		<c:if test="${status.preview}">

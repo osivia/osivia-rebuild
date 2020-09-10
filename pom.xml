@@ -128,7 +128,7 @@
         <jboss-portal-web.version>1.2.0</jboss-portal-web.version>        
         
         <!-- Spring framework -->
-        <springframework.version>4.2.0.RELEASE</springframework.version>
+        <springframework.version>4.2.6.RELEASE</springframework.version>
         
         <!-- Commons -->
         <commons-lang3.version>3.4</commons-lang3.version>

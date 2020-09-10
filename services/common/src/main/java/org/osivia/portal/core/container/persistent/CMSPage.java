@@ -16,6 +16,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.ContainerContext;
 
 
@@ -156,27 +157,32 @@ public  class  CMSPage extends PageImplBase {
 
 	
   
-    protected void addWindow(Map windows, String windowName, String portletInstance, String region, String order) {
+    protected void addWindow(Map windows, ModuleRef module) {
 
         PortalObjectPath winPath = new PortalObjectPath(
-                pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + windowName,
+                pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + module.getWindowName(),
                 PortalObjectPath.CANONICAL_FORMAT);
 
-        ObjectNodeImplBase winNode = new ObjectNodeImplBase(new PortalObjectId("", winPath), windowName,
+        ObjectNodeImplBase winNode = new ObjectNodeImplBase(new PortalObjectId("", winPath), module.getWindowName(),
                 containerContext);
         WindowImplBase win = new WindowImplBase();
         win.setContext(containerContext);
-        win.setURI(portletInstance);
+        win.setURI(module.getModuleId());
         win.setObjectNode(winNode);
-        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, region);
-        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, order);
+        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, module.getRegion());
+        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, module.getOrder());
+        
+        for( String propName : module.getProperties().keySet()) {
+            win.setDeclaredProperty(propName, module.getProperties().get(propName));
+        }
+        
         winNode.setObject(win);
         container.getContextNodes().put(win.getId(), win);
         
         winNode.setParent(getObjectNode());
         
         
-        windows.put(windowName, winNode);
+        windows.put(module.getWindowName(), winNode);
     }
     
     

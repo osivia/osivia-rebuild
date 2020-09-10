@@ -6,11 +6,12 @@ import java.util.List;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 /**
  * The Class EditionStatus.
  */
 @Component
-@Scope(WebApplicationContext.SCOPE_REQUEST)
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 
 public class EditionStatus {
     
@@ -19,6 +20,11 @@ public class EditionStatus {
     public boolean supportPreview = false;
     public boolean havingPublication = false;
     
+
+
+    public EditionStatus() {
+        super();
+    }
 
 
     public List<String> subtypes = new ArrayList<>();

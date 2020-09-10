@@ -88,13 +88,13 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
     public void createCMSWindows(CMSPage page, Map windows) {
         if (doc instanceof Space) {
             for (ModuleRef moduleRef : ((Space) doc).getModuleRefs()) {
-                page.addWindow(windows, moduleRef.getWindowName(), moduleRef.getModuleId(), moduleRef.getRegion(), moduleRef.getOrder());
+                page.addWindow(windows, moduleRef);
             }
         }
 
         if (doc instanceof Page) {
             for (ModuleRef moduleRef : ((Page) doc).getModuleRefs()) {
-                page.addWindow(windows, moduleRef.getWindowName(), moduleRef.getModuleId(), moduleRef.getRegion(), moduleRef.getOrder());
+                page.addWindow(windows, moduleRef);
             }
         }
     }

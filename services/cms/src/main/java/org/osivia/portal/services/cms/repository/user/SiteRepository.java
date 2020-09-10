@@ -2,6 +2,7 @@ package org.osivia.portal.services.cms.repository.user;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,7 +84,8 @@ public class SiteRepository extends InMemoryUserRepository  {
     @Override
     public void addWindow(String id, String name, String portletName, String region, String pageId) throws CMSException {
         Page page = (Page) getDocument(pageId);
-        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region, "0", portletName);
+        Map<String,String> properties = new ConcurrentHashMap<>();
+        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region, "0", portletName, properties);
         page.getModuleRefs().add(module);
 
         notifyChanges();
