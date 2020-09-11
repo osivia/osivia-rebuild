@@ -318,7 +318,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     
     @ModelAttribute("status")
     public EditionStatus getStatus(PortletRequest request, PortletResponse response) throws PortletException {
-        // Portal controller context
+        // Portal controller context 
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
         CMSController ctrl = new CMSController(portalControllerContext); 
 
