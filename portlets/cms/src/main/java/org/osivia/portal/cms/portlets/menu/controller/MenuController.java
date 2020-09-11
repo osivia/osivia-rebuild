@@ -98,7 +98,7 @@ public class MenuController implements PortletContextAware {
 
             
             UniversalID id = new UniversalID(navigationId);
-            CMSContext cmsContext = new CMSContext(portalControllerContext, id);            
+            CMSContext cmsContext = nuxeoController.getCMSContext();           
             request.setAttribute("navigation", cmsService.getNavigationItem(cmsContext, id));
         }
 

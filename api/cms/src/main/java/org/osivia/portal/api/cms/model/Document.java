@@ -59,6 +59,14 @@ public interface Document {
      * @return the sub types
      */
     public List<String> getSubTypes();
+    
+    
+    /**
+     * Checks if is preview.
+     *
+     * @return true, if is preview
+     */
+    public boolean isPreview();
   
     
 }

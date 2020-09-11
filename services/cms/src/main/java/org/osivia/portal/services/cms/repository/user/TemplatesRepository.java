@@ -30,7 +30,7 @@ public class TemplatesRepository extends InMemoryUserRepository implements IRepo
 
       
       public TemplatesRepository(SharedRepositoryKey repositoryKey) {
-          super(repositoryKey);
+          super(repositoryKey, null);
       }
     /**
      * {@inheritDoc}

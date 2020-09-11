@@ -46,6 +46,10 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     /** The sub types. */
     protected List<String> subTypes;
     
+    private transient boolean preview = false;
+    
+
+
 
     /**
      * Instantiates a new document impl.
@@ -64,9 +68,16 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
         this.spaceInternalId = spaceId;
         this.childrenId = childrenId;
         this.properties = properties;
+        this.preview = userRepository.isPreviewRepository();
     }
 
      
+    
+    public boolean isPreview() {
+        return preview;
+    }
+
+    
     public String getInternalID() {
         return internalID;
     }

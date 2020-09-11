@@ -236,7 +236,7 @@ public class MenuService implements IMenuService {
             NavigationItem navigationItem;
 
             UniversalID spaceId = nuxeoController.getSpaceId();
-            CMSContext cmsContext = new CMSContext(portalControllerContext, spaceId);            
+            CMSContext cmsContext = nuxeoController.getCMSContext();            
             navigationItem = cmsService.getNavigationItem(cmsContext, spaceId);
 
 

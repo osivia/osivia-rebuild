@@ -69,7 +69,7 @@ public class NuxeoController {
      */
     public CMSContext getCMSContext() {
         if (cmsContext == null) {
-            cmsContext = new CMSContext(portalCtx, contentId);
+            cmsContext = CMSContext.createFromEditionMode(portalCtx, contentId);
          }
         return cmsContext;
     }

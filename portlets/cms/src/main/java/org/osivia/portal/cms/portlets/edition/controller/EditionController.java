@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
@@ -105,8 +106,10 @@ public class EditionController implements PortletContextAware, ApplicationContex
             if (navigationId != null) {
 
                 UniversalID id = new UniversalID(navigationId);
+                
+                CMSController ctrl = new CMSController(portalControllerContext);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
 
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
@@ -136,9 +139,10 @@ public class EditionController implements PortletContextAware, ApplicationContex
         try {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+            CMSController ctrl = new CMSController(portalControllerContext);
 
 
-            addPortletToRegion(request, portalControllerContext, "SampleInstance", "col-2");
+            addPortletToRegion(request, portalControllerContext,ctrl, "SampleInstance", "col-2");
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -186,8 +190,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
         try {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+            CMSController ctrl = new CMSController(portalControllerContext);
 
-            addPortletToRegion(request, portalControllerContext, "SampleRemote", "nav");
+            addPortletToRegion(request, portalControllerContext, ctrl,"SampleRemote", "nav");
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -195,14 +200,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, String portletName, String region)
+    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl, String portletName, String region)
             throws CMSException {
         String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
         if (navigationId != null) {
 
             UniversalID id = new UniversalID(navigationId);
 
-            CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+            CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
 
 
             IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
@@ -223,6 +228,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     public void publish(ActionRequest request, ActionResponse response,   @ModelAttribute("status") EditionStatus status) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        CMSController ctrl = new CMSController(portalControllerContext);
         
         try {
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
@@ -230,7 +236,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl,id);
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 if( repository instanceof IRepositoryUpdate) {
@@ -244,7 +250,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
         
         
-        refreshStatus(portalControllerContext, status) ;
+        refreshStatus(portalControllerContext, ctrl, status) ;
 
     }
 
@@ -256,6 +262,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     public void addFolder(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        CMSController ctrl = new CMSController(portalControllerContext);       
         
         try {
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
@@ -263,7 +270,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 if( repository instanceof IRepositoryUpdate) {
@@ -287,6 +294,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     public void addDocument(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        CMSController ctrl = new CMSController(portalControllerContext); 
         
         try {
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
@@ -294,7 +302,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 if( repository instanceof IRepositoryUpdate) {
@@ -315,24 +323,25 @@ public class EditionController implements PortletContextAware, ApplicationContex
     public EditionStatus getStatus(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+        CMSController ctrl = new CMSController(portalControllerContext); 
 
         // application form
         EditionStatus status = this.applicationContext.getBean(EditionStatus.class);
 
-        refreshStatus( portalControllerContext, status);
+        refreshStatus( portalControllerContext, ctrl, status);
 
         return status;
     }
 
 
-    protected void refreshStatus(PortalControllerContext portalControllerContext, EditionStatus status) throws PortletException {
+    protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl ,EditionStatus status) throws PortletException {
         try {
 
             String contentId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
             if (contentId != null) {
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, id);
+                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
                 status.setPreview(cmsContext.isPreview());
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
@@ -361,8 +370,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected CMSContext getCMSContext(PortalControllerContext portalControllerContext, UniversalID id) {
-        CMSContext cmsContext = new CMSContext(portalControllerContext, id);
+    protected CMSContext getCMSContext(PortalControllerContext portalControllerContext, CMSController ctrl, UniversalID id) {
+        CMSContext cmsContext = ctrl.getCMSContext();
         return cmsContext;
     }
 

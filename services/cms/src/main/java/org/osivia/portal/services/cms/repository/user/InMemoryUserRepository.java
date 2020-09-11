@@ -31,21 +31,23 @@ public abstract class InMemoryUserRepository implements RepositoryListener, IRep
     
     private static Map<SharedRepositoryKey, SharedRepository>  sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
     
+    private boolean previewRepository = false;;
 
 
 
-    public InMemoryUserRepository(SharedRepositoryKey repositoryKey) {
+
+    public InMemoryUserRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository) {
         super();
         this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
+        if( publishRepository != null)  {
+            this.publishRepository = publishRepository;
+            this.previewRepository = true;        
+        }
         init(repositoryKey);
     }
 
-    
-    public InMemoryUserRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository) {
-        this( repositoryKey);
-        this.publishRepository = publishRepository;
-    }
+ 
     
     
     /**
@@ -60,6 +62,10 @@ public abstract class InMemoryUserRepository implements RepositoryListener, IRep
         getSharedRepository().notifyChanges();
     }
 
+    
+    public boolean isPreviewRepository() {
+        return previewRepository;
+    }
 
 
     private void init(SharedRepositoryKey repositoryKey) {

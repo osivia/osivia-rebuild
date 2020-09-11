@@ -12,6 +12,7 @@ import javax.portlet.RenderResponse;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
@@ -68,17 +69,16 @@ public class ContentController implements PortletContextAware {
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws CMSException {
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
-
-        String contentId = WindowFactory.getWindow(request).getProperty(Constants.WINDOW_PROP_URI);
+        CMSController ctrl = new CMSController(portalCtx);
         
-        
-        
+        String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
         if( contentId != null)  {
             UniversalID id = new UniversalID(contentId);
-            Document doc = cmsService.getDocument(new CMSContext(portalCtx, id), id);
+            Document doc = cmsService.getDocument(ctrl.getCMSContext(), id);
             request.setAttribute("document", doc);
         }
-
+        
+        
         return "view";
     }
 

@@ -182,7 +182,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         
         PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
         
-        CMSContext cmsContext = new CMSContext(portalCtx, null);
+        CMSContext cmsContext = new CMSContext(portalCtx);
         getCMSService().addListener(cmsContext, nameSpace, contextNode);              
 
         ContextImplBase context = new ContextImplBase();
@@ -273,7 +273,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                 
                 
                 String portalCMSName = portalName;
-                CMSContext cmsContext = new CMSContext(portalCtx, null);
+                CMSContext cmsContext = new CMSContext(portalCtx);
                 if( portalCMSName.endsWith(_PREVIEW))    {
                     cmsContext.setPreview(true);
                     portalCMSName = portalCMSName.substring(0, portalCMSName.length() - _PREVIEW.length());

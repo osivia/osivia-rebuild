@@ -18,7 +18,7 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
 
     
     public UserWorkspacesRepository(SharedRepositoryKey repositoryKey) {
-        super(repositoryKey);
+        super(repositoryKey, null);
     }
 
     

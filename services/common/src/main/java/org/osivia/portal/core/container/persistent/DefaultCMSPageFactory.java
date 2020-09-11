@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -65,7 +66,8 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         // TODO : facorize with publicationManager
         pageProperties.put("osivia.contentId", doc.getId().toString());      
         pageProperties.put("osivia.navigationId", doc.getId().toString());     
-        pageProperties.put("osivia.spaceId", navItem.getSpaceId().toString());           
+        pageProperties.put("osivia.spaceId", navItem.getSpaceId().toString());   
+        pageProperties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 

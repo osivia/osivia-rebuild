@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -104,7 +105,7 @@ public class PublicationManager implements IPublicationManager {
         PortalObjectId pageId = null;
 
         try {
-            CMSContext cmsContext = new CMSContext(portalCtx, docId);
+            CMSContext cmsContext = CMSContext.createFromEditionMode(portalCtx, docId);
             
 
             Document doc = getCMSService().getDocument(cmsContext, docId);
@@ -120,6 +121,7 @@ public class PublicationManager implements IPublicationManager {
             properties.put("osivia.contentId", docId.toString());
             properties.put("osivia.navigationId", navigation.getDocumentId().toString());
             properties.put("osivia.spaceId", navigation.getSpaceId().toString());
+            properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));            
 
 
             Map<String, String> parameters = new HashMap<String, String>();
