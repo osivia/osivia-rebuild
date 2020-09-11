@@ -3,6 +3,7 @@ package org.osivia.portal.cms.portlets.edition.configuration;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -58,4 +59,8 @@ public class EditionConfiguration {
         return Locator.getService(IDynamicService.class);
     }
 
+    @Bean
+    public IPreviewModeService getPreviewModeService() {
+        return Locator.getService(IPreviewModeService.class);
+    }
 }

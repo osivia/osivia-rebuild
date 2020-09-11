@@ -23,6 +23,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.springframework.beans.BeansException;
@@ -63,6 +64,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
+    
+    @Autowired
+    private IPreviewModeService previewModeService;
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(EditionController.class);
@@ -109,7 +113,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 
                 CMSController ctrl = new CMSController(portalControllerContext);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
+                CMSContext cmsContext = ctrl.getCMSContext();
 
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
@@ -157,20 +161,13 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
         try {
 
-            // TODO : create edition service
-            HttpServletRequest mainRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
-            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
-            UniversalID id = new UniversalID(navigationId);
-            
-            String editionModeKey = "editionMode."+id.getRepositoryName();
-            String editionMode = (String) mainRequest.getSession().getAttribute(editionModeKey);
-            if ("preview".equals(editionMode)) {
-                mainRequest.getSession().removeAttribute(editionModeKey);
-            } else
-                mainRequest.getSession().setAttribute(editionModeKey, "preview");
-
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+ 
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
+            UniversalID id = new UniversalID(contentId);
+            
+            previewModeService.changePreviewMode(portalControllerContext, id);
   
             String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
             response.sendRedirect(url);
@@ -207,7 +204,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             UniversalID id = new UniversalID(navigationId);
 
-            CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
+            CMSContext cmsContext = ctrl.getCMSContext();
 
 
             IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
@@ -236,7 +233,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl,id);
+                CMSContext cmsContext = ctrl.getCMSContext();
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 if( repository instanceof IRepositoryUpdate) {
@@ -270,7 +267,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
+                CMSContext cmsContext = ctrl.getCMSContext();
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 if( repository instanceof IRepositoryUpdate) {
@@ -302,7 +299,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
+                CMSContext cmsContext = ctrl.getCMSContext();
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 if( repository instanceof IRepositoryUpdate) {
@@ -341,7 +338,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             if (contentId != null) {
                 UniversalID id = new UniversalID(contentId);
 
-                CMSContext cmsContext = getCMSContext(portalControllerContext, ctrl, id);
+                CMSContext cmsContext = ctrl.getCMSContext();
                 status.setPreview(cmsContext.isPreview());
 
                 IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
@@ -370,12 +367,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected CMSContext getCMSContext(PortalControllerContext portalControllerContext, CMSController ctrl, UniversalID id) {
-        CMSContext cmsContext = ctrl.getCMSContext();
-        return cmsContext;
-    }
-
-
+ 
     @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;

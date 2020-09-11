@@ -75,6 +75,8 @@
 		id="osivia:service=PublicationManager" >
 	</bean>
 	
+
+	
    <!-- The different containers -->	
       
        <bean class="org.osivia.portal.core.container.persistent.StaticPortalObjectContainer"

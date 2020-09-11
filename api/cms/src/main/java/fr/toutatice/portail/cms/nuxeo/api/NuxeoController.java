@@ -5,6 +5,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
@@ -69,7 +70,9 @@ public class NuxeoController {
      */
     public CMSContext getCMSContext() {
         if (cmsContext == null) {
-            cmsContext = CMSContext.createFromEditionMode(portalCtx, contentId);
+            cmsContext = new CMSContext(portalCtx);
+            String sPreview = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.preview");
+            cmsContext.setPreview(BooleanUtils.toBoolean(sPreview));
          }
         return cmsContext;
     }

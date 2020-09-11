@@ -24,13 +24,18 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PublicationManager implements IPublicationManager {
 
     private CMSService cmsService;
 
     private IDynamicService dynamicService;
+    
+    @Autowired
+    private IPreviewModeService previewModeService;
 
     private CMSService getCMSService() {
         if (cmsService == null) {
@@ -48,6 +53,10 @@ public class PublicationManager implements IPublicationManager {
         return dynamicService;
     }
 
+    private IPreviewModeService getPreviewModeService() {
+
+        return previewModeService;       
+    }
 
     protected PortalObjectId getPageTemplate(CMSContext cmsContext, Document doc, NavigationItem navigation) throws ControllerException {
 
@@ -105,7 +114,8 @@ public class PublicationManager implements IPublicationManager {
         PortalObjectId pageId = null;
 
         try {
-            CMSContext cmsContext = CMSContext.createFromEditionMode(portalCtx, docId);
+            CMSContext cmsContext = new CMSContext(portalCtx);
+            cmsContext.setPreview(getPreviewModeService().isPreviewing(portalCtx, docId));
             
 
             Document doc = getCMSService().getDocument(cmsContext, docId);

@@ -43,24 +43,6 @@ public class CMSContext {
     
 
 
-    
-    public static CMSContext createFromEditionMode(PortalControllerContext portalCtx, UniversalID fromContent) {
-        CMSContext cmsContext = new CMSContext(portalCtx);
-
-        if (fromContent != null) {
-            // TODO : appeler service
-            HttpServletRequest mainRequest = (HttpServletRequest) portalCtx.getHttpServletRequest();
-            String editionMode = (String) mainRequest.getSession().getAttribute("editionMode."+fromContent.getRepositoryName());
-            if ("preview".equals(editionMode)) {
-                cmsContext.setPreview(true);
-            }
-        }
-        
-        return cmsContext;
-
-    }
-    
-
     public PortalControllerContext getPortalControllerContext() {
         return portalCtx;
     }
