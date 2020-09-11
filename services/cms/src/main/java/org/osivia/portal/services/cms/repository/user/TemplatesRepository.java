@@ -52,7 +52,9 @@ public class TemplatesRepository extends InMemoryUserRepository implements IRepo
         ModuleRef edition = new ModuleRef("edition" , "top", "0", "EditionInstance", editionProperties); 
         modules.add(edition);  
         Map<String,String> navProperties = new ConcurrentHashMap<>(); 
+        navProperties.put("osivia.hideTitle", "1");        
         ModuleRef nav = new ModuleRef("nav" , "nav", "0", "MenuInstance", navProperties); 
+        
         modules.add(nav);     
         SpaceImpl space = new SpaceImpl(this,id, id,null,children, properties, modules);
         addDocument(id, space);
