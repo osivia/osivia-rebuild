@@ -5,7 +5,7 @@
 
 
 <c:if test="${parent.selected || (level <= openLevels)}">
-    <ul class="list-group list-group-hierarchical">
+
         <c:forEach var="child" items="${parent.children}">
             <!-- Selected item ? -->
             <c:remove var="selected" />
@@ -19,20 +19,23 @@
                 <c:set var="current" value="active" />
             </c:if>
     
-        
-            <li class="list-group-item list-group-item-linked">
-                <!-- Link -->
+   
+                   <!-- Link -->
                 <a href="${child.url}" class="list-group-item ${selected} ${current}">            
                     ${child.title}
 
-                </a>
+                </a>     
+            
+
                     
                 <c:if test="${not empty child.children}">
                     <c:set var="parent" value="${child}" scope="request" />
                     <c:set var="level" value="${childLevel}" scope="request" />
-                    <jsp:include page="display-items.jsp" />
+                    <div class="list-group">
+                    	<jsp:include page="display-items.jsp" />
+                     </div>
                 </c:if>
-            </li>
+
         </c:forEach>
-    </ul>
+
 </c:if>

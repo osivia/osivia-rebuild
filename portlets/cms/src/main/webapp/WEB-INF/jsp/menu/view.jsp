@@ -15,20 +15,15 @@
                 <!-- Title -->
                 <h3 class="hidden"><op:translate key="MENU_TITLE_DEFAULT" /></h3>
         
-                <!-- Navigation home link -->
-                <c:if test="${not displayItem.current}">
-                    <p class="visible-xs">
-                        <a href="${displayItem.url}" class="btn btn-link">
-                            <i class="halflings halflings-home"></i>
-                            <span>${displayItem.title}</span>
-                        </a>
-                    </p>
-                </c:if>
-            
+             
                 <!-- Menu -->
                 <c:set var="parent" value="${displayItem}" scope="request" />
                 <c:set var="level" value="1" scope="request" />
-                <jsp:include page="display-items.jsp" />
+				<div class="just-padding">
+					<div class="list-group list-group-root card card-body bg-light">                
+                		<jsp:include page="display-items.jsp" />
+               		</div>
+                </div>
             </nav>
         </c:when>
         

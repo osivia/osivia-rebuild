@@ -37,10 +37,6 @@
 </table>
            
 
-<!-- TODO: Fix the auto jump in this tag -->
-<div id="footer-container" class="portal-copyright">
-<a class="portal-copyright" href="http://www.jboss.com/products/jbossportal">JBoss Portal</a><br/>
-</div>
 
 <p:region regionName='AJAXFooter' regionID='AJAXFooter'/>
 

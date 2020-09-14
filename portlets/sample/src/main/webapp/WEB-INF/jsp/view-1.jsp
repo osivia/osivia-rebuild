@@ -37,30 +37,30 @@
 
     <input type="text" value="${count}" class="form-control" disabled="disabled">
     <span class="input-group-btn ">
-       <a href="${addURL}" class="btn btn-default sample-test">Ajouter</a>
+       <a href="${addURL}" class="btn btn-secondary sample-test">Ajouter</a>
     </span>
 </div>    
-<div class="input-group">    
+<div class="p-2">    
      <span >
-       <a href="${startWindowURL}" class="btn btn-default">startWindow</a>
+       <a href="${startWindowURL}" class="btn btn-secondary">startWindow</a>
     </span>
       <span >
-       <a href="/portal/templates/portalA/ID_PAGE_B" class="btn btn-default">goToPage</a>
+       <a href="/portal/templates/portalA/ID_PAGE_B" class="btn btn-secondary">goToPage</a>
     </span>  
         <span >
-       <a href="${throwExceptionURL}" class="btn btn-default">Exception</a>
+       <a href="${throwExceptionURL}" class="btn btn-secondary">Exception</a>
     </span>  
      <span >
-       <a href="${maximizedURL}" class="btn btn-default">maximized</a>
+       <a href="${maximizedURL}" class="btn btn-secondary">maximized</a>
     </span>  
          <span >
-       <a href="${normalURL}" class="btn btn-default">normal</a>
+       <a href="${normalURL}" class="btn btn-secondary">normal</a>
     </span>   
    <span >
-       <a href="/portal/content/myspace/ID_DOC_1" class="btn btn-default">cms</a>
+       <a href="/portal/content/myspace/ID_DOC_1" class="btn btn-secondary">cms</a>
     </span>  
     
     <span >
-       <a href="${startWindowCommand}" class="btn btn-default">startWindowCommand</a>
+       <a href="${startWindowCommand}" class="btn btn-secondary">startWindowCommand</a>
     </span>
 </div>

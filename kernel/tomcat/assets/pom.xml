@@ -54,15 +54,7 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.lesscss</groupId>
-                <artifactId>lesscss-maven-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>bootstrap/bootstrap.less</include>
-                    </includes>
-                </configuration>
-            </plugin>
+ 
 
             
             <plugin>

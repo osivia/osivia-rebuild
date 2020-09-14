@@ -21,27 +21,19 @@
 
 
 <ul class="nav nav-tabs">
-    <li
-        <c:if test="${empty tab or tab eq 1}">class="active"</c:if>
-    >
-        <a href="${tab1URL}">Onglet #1</a>
+    <li class="nav-item">
+        <a class="nav-link <c:if test="${empty tab or tab eq 1}">active</c:if>" href="${tab1URL}">Onglet #1</a>
     </li>
     
-    <li
-        <c:if test="${tab eq 2}">class="active"</c:if>
-    >
-        <a href="${tab2URL}">Onglet #2</a>
+    <li class="nav-item">
+        <a class="nav-link <c:if test="${tab eq 2}">active</c:if>" href="${tab2URL}">Onglet #2</a>
     </li>
     
-    <li
-        <c:if test="${tab eq 3}">class="active"</c:if>
-    >
-        <a href="${tab3URL}">Onglet #3</a>
+    <li class="nav-item">
+        <a class="nav-link <c:if test="${tab eq 3}">active</c:if>" href="${tab3URL}">Onglet #3</a>
     </li>
     
-    <li
-        <c:if test="${tab eq 4}">class="active"</c:if>
-    >
-        <a href="${tab4URL}">Formulaire</a>
+    <li class="nav-item">
+        <a class="nav-link <c:if test="${tab eq 4}">active</c:if>" href="${tab4URL}">Formulaire</a>
     </li>
 </ul>
