@@ -2,4 +2,7 @@
 sample style
  */
  
-.sample-test {color:blue}
+.sample-test {
+	color: #fff;
+    background-color: #bd2130;
+}

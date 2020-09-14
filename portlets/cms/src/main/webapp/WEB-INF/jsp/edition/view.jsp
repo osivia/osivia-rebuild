@@ -32,7 +32,7 @@
 					 <span class="btn btn-sm btn-light text-muted my-1">En ligne</span>
 
 				</c:if>				
-				<span class="btn btn-sm btn-warning active my-1">Edition</span>
+				<span class="btn btn-sm btn-warning my-1">Edition</span>
 			</div>
 		</c:if>
 
@@ -76,6 +76,6 @@
 			</span>	
 		</c:if>			
 	</c:if>	
-	
+
 </nav>
 

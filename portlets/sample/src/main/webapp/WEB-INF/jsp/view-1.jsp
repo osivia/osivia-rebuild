@@ -37,7 +37,7 @@
 
     <input type="text" value="${count}" class="form-control" disabled="disabled">
     <span class="input-group-btn ">
-       <a href="${addURL}" class="btn btn-secondary sample-test">Ajouter</a>
+       <a href="${addURL}" class="btn sample-test">Ajouter</a>
     </span>
 </div>    
 <div class="p-2">    
@@ -64,3 +64,6 @@
        <a href="${startWindowCommand}" class="btn btn-secondary">startWindowCommand</a>
     </span>
 </div>
+
+
+	
