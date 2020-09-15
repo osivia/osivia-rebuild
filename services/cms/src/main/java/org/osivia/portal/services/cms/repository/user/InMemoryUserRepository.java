@@ -18,9 +18,9 @@ import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
-import fr.toutatice.portail.cms.producers.sample.inmemory.IRepositoryUpdate;
+import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepository;
 
-public abstract class InMemoryUserRepository implements RepositoryListener, IRepositoryUpdate {
+public abstract class InMemoryUserRepository implements RepositoryListener, AdvancedRepository {
 
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
 
@@ -152,6 +152,17 @@ public abstract class InMemoryUserRepository implements RepositoryListener, IRep
         }
     }
 
+    
+    
+    public List<Document> getChildren(String id) throws CMSException {
+        List<Document> childrens = new ArrayList<>();
+        for (NuxeoMockDocumentImpl doc:getChildren(getDocument(id))) {
+            childrens.add(doc);
+        }
+        
+        return childrens;
+    }
+    
     public void publish( String id) throws CMSException {
         try {
         

@@ -21,6 +21,14 @@
          <portlet-ref>Fragment</portlet-ref>
       </instance>
    </deployment>     
+   <deployment>
+      <instance>
+         <display-name xml:lang="en">CMS browser portlet</display-name>
+         <display-name xml:lang="fr">Portlet affichage dossier</display-name>
+         <instance-id>BrowserInstance</instance-id>
+         <portlet-ref>Browser</portlet-ref>
+      </instance>
+   </deployment>       
    <deployment>    
       <instance>
          <display-name xml:lang="en">CMS menu portlet</display-name>

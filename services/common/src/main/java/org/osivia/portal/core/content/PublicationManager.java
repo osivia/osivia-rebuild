@@ -155,11 +155,18 @@ public class PublicationManager implements IPublicationManager {
 
             if (!(doc instanceof Templateable)) {
 
+                
+                String instance;
+                if( "folder".equals(doc.getType()))
+                    instance = "BrowserInstance";
+                else
+                    instance = "ContentInstance";
+                
                 Map<String, String> windowProperties = new HashMap<String, String>();
 
                 windowProperties.put(Constants.WINDOW_PROP_URI, doc.getId().toString());
                 windowProperties.put("osivia.hideTitle", "1");
-                getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", "ContentInstance", windowProperties);
+                getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", instance, windowProperties);
 
             }
 

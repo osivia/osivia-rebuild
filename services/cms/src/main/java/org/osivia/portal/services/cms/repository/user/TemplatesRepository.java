@@ -23,10 +23,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.producers.sample.inmemory.IRepositoryUpdate;
+import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepository;
 
 
-public class TemplatesRepository extends InMemoryUserRepository implements IRepositoryUpdate {
+public class TemplatesRepository extends InMemoryUserRepository implements AdvancedRepository {
 
       
       public TemplatesRepository(SharedRepositoryKey repositoryKey) {

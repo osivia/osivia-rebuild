@@ -9,17 +9,17 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.locator.Locator;
 import org.springframework.context.ApplicationContext;
 
-public class TemplatesLocator {
+public class AdvancedRepositoryLocator {
 
 
     @SuppressWarnings("unchecked")
-    public static IRepositoryUpdate getTemplateRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
+    public static AdvancedRepository getTemplateRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
         CMSService cms = Locator.getApplicationContext().getBean(CMSService.class);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        IRepositoryUpdate repository =  (IRepositoryUpdate) cms.getUserRepository(cmsContext, repositoryName);
-        InvocationHandler invocationHandler = new TemplatesInvocationHandler(repository);
-        Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{IRepositoryUpdate.class}, invocationHandler);
-        return (IRepositoryUpdate) proxy;
+        AdvancedRepository repository =  (AdvancedRepository) cms.getUserRepository(cmsContext, repositoryName);
+        InvocationHandler invocationHandler = new AdvancedRepositoryInvocationHandler(repository);
+        Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{AdvancedRepository.class}, invocationHandler);
+        return (AdvancedRepository) proxy;
     }
 
 }

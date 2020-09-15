@@ -67,6 +67,15 @@ public interface Document {
      * @return true, if is preview
      */
     public boolean isPreview();
+    
+    
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    public String getType();
+    
   
     
 }

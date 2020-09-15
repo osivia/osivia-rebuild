@@ -1,10 +1,12 @@
 package fr.toutatice.portail.cms.producers.sample.inmemory;
 
+import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Document;
 
-public interface IRepositoryUpdate {
+public interface AdvancedRepository {
     
     public final static int POSITION_BEGIN = 0;
     public final static int POSITION_END = -1;
@@ -23,4 +25,6 @@ public interface IRepositoryUpdate {
     void publish(String id) throws CMSException;
     
     boolean supportPageEdition();
+    
+    List<Document> getChildren(String id) throws CMSException;
 }

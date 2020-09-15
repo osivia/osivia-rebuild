@@ -7,12 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 
-public class TemplatesInvocationHandler implements InvocationHandler {
+public class AdvancedRepositoryInvocationHandler implements InvocationHandler {
 
-    IRepositoryUpdate templatesRepository;
+    AdvancedRepository templatesRepository;
     
 
-    public TemplatesInvocationHandler(IRepositoryUpdate templatesRepository) {
+    public AdvancedRepositoryInvocationHandler(AdvancedRepository templatesRepository) {
         super();
         this.templatesRepository = templatesRepository;
     }

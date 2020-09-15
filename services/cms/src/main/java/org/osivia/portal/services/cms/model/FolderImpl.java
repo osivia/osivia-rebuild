@@ -21,6 +21,14 @@ public class FolderImpl extends NuxeoMockDocumentImpl  {
     public boolean isNavigable()    {
         return true;
     }
+
+
+    @Override
+    public String getType() {
+        return "folder";
+    }
+    
+    
     
 
 }

@@ -48,7 +48,9 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     
     private transient boolean preview = false;
     
-
+    public  String getType()    {
+        return "document";
+    }
 
 
     /**
@@ -136,7 +138,15 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
 
 
     public List<NuxeoMockDocumentImpl> getNavigationChildren()  throws CMSException {
-       return userRepository.getChildren(this);
+        List<NuxeoMockDocumentImpl> navChildren = new ArrayList<>();
+        for( NuxeoMockDocumentImpl doc: userRepository.getChildren(this)) {
+            if( doc.isNavigable())
+                navChildren.add(doc);
+        }
+        
+       return navChildren;
+       
+       
     }
     
     public boolean isNavigable()    {

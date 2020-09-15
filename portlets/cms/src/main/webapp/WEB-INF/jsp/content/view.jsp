@@ -6,7 +6,7 @@
 
 <portlet:defineObjects />
 
-<c:if test="${not emptydocument}">
-	${document.title}
+<c:if test="${not empty document}">
+	browser ${document.title}
 </c:if>
 

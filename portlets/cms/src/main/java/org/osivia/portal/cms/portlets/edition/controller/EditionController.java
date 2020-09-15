@@ -40,8 +40,8 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.producers.sample.inmemory.IRepositoryUpdate;
-import fr.toutatice.portail.cms.producers.sample.inmemory.TemplatesLocator;
+import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepository;
+import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepositoryLocator;
 
 /**
  * Sample controller.
@@ -118,11 +118,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();
 
 
-                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                AdvancedRepository repository = AdvancedRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
                 String newID = "" + System.currentTimeMillis();
 
-                ((IRepositoryUpdate) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
+                ((AdvancedRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
 
 
                 String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
@@ -148,7 +148,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSController ctrl = new CMSController(portalControllerContext);
 
 
-            addPortletToRegion(request, portalControllerContext,ctrl, "SampleInstance", "col-2", IRepositoryUpdate.POSITION_END);
+            addPortletToRegion(request, portalControllerContext,ctrl, "SampleInstance", "col-2", AdvancedRepository.POSITION_END);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -191,7 +191,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
             CMSController ctrl = new CMSController(portalControllerContext);
 
-            addPortletToRegion(request, portalControllerContext, ctrl,"FragmentInstance", "logo", IRepositoryUpdate.POSITION_BEGIN);
+            addPortletToRegion(request, portalControllerContext, ctrl,"FragmentInstance", "logo", AdvancedRepository.POSITION_BEGIN);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -209,14 +209,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSContext cmsContext = ctrl.getCMSContext();
 
 
-            IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+            AdvancedRepository repository = AdvancedRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
             String windowID = "" + System.currentTimeMillis();
             
             Map<String,String> editionProperties = new ConcurrentHashMap<>();
             editionProperties.put("osivia.hideTitle", "1");
 
-            ((IRepositoryUpdate) repository).addWindow(windowID, windowID, portletName, region, position, id.getInternalID(), editionProperties);
+            ((AdvancedRepository) repository).addWindow(windowID, windowID, portletName, region, position, id.getInternalID(), editionProperties);
 
         }
     }
@@ -240,9 +240,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if( repository instanceof IRepositoryUpdate) {
-                    ((IRepositoryUpdate) repository).publish(id.getInternalID());
+                AdvancedRepository repository = AdvancedRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if( repository instanceof AdvancedRepository) {
+                    ((AdvancedRepository) repository).publish(id.getInternalID());
                 }
 
                 
@@ -274,11 +274,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if( repository instanceof IRepositoryUpdate) {
+                AdvancedRepository repository = AdvancedRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if( repository instanceof AdvancedRepository) {
                     String newID = "" + System.currentTimeMillis();
 
-                    ((IRepositoryUpdate) repository).addFolder(newID, newID, id.getInternalID());
+                    ((AdvancedRepository) repository).addFolder(newID, newID, id.getInternalID());
                 }
 
                 
@@ -306,11 +306,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if( repository instanceof IRepositoryUpdate) {
+                AdvancedRepository repository = AdvancedRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if( repository instanceof AdvancedRepository) {
                     String newID = "" + System.currentTimeMillis();
 
-                    ((IRepositoryUpdate) repository).addDocument(newID, newID, id.getInternalID());
+                    ((AdvancedRepository) repository).addDocument(newID, newID, id.getInternalID());
                 }
 
                 
@@ -346,7 +346,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();
                 status.setPreview(cmsContext.isPreview());
 
-                IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                AdvancedRepository repository = AdvancedRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 status.setSupportPreview(repository.supportPreview());
                 
                 status.setPageEdition(repository.supportPageEdition());
