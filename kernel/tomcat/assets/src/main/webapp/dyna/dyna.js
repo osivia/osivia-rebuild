@@ -286,6 +286,8 @@ function ajaxCall(options, url, eventToStop, popViewState){
 	             				  var divRegion =  document.getElementById(regionName);
 	             				  
 	             				  if( divRegion != null)	{
+	             					  
+	             					  	  // Prepare new window
 			             				  var newWindowDiv = document.createElement("div");
 			             				  newWindowDiv.className = "dyna-window";
 			             				  var partialWindowDiv = document.createElement("div");
@@ -293,7 +295,36 @@ function ajaxCall(options, url, eventToStop, popViewState){
 			             				  partialWindowDiv.className = "partial-refresh-window";
 			             				  newWindowDiv.appendChild(partialWindowDiv);
 			             				  
-			             				  divRegion.appendChild(newWindowDiv);      
+			             				  
+			             				  // Search for first inserted windows to insert before it
+			             				  var children = divRegion.children;
+			             				  console.log("child" + children.length);
+
+			             				  var insertBefore = null;
+			             				  
+
+			             				  for( var iDomWindow=0; iDomWindow< children.length && insertBefore == null; iDomWindow++)	{
+			             					 var domWindow = children[iDomWindow];
+			             					 var className = domWindow.className;
+			             					 if( className == "dyna-window")	{
+				             					 var insertedId = domWindow.firstChild.id;
+				             					 
+				             					 // Browse by order to find if this window is after the window to insert
+				             					 for( var j=i+1; j< resp.regions[regionName].length && insertBefore == null; j++)	{
+				             						 if( resp.regions[regionName][j] == insertedId)	{
+				             							 insertBefore = domWindow;
+				             							 console.log("found "+ insertedId)
+				             						 }
+				             					 }
+			             					  }
+			             				  }
+
+			             				  
+			             				if( insertBefore == null)
+			             					divRegion.appendChild(newWindowDiv);
+			             				else	
+			             					divRegion.insertBefore(newWindowDiv, insertBefore);
+			             				
 			
 			                            // Get markup fragment
 			                            var markup = resp.fragments[id];

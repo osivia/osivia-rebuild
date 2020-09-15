@@ -88,15 +88,16 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
     @Override
     public void createCMSWindows(CMSPage page, Map windows) {
+        int order = 0;
         if (doc instanceof Space) {
             for (ModuleRef moduleRef : ((Space) doc).getModuleRefs()) {
-                page.addWindow(windows, moduleRef);
+                page.addWindow(windows, moduleRef, order++);
             }
         }
 
         if (doc instanceof Page) {
             for (ModuleRef moduleRef : ((Page) doc).getModuleRefs()) {
-                page.addWindow(windows, moduleRef);
+                page.addWindow(windows, moduleRef, order++);
             }
         }
     }

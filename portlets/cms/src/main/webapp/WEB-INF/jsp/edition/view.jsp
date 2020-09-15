@@ -60,7 +60,7 @@
 		</span> <span> <a href="${addPortletURL}" class=" btn-sm btn-light m-1">
 				portlet</a>
 		</span> <span> <a href="${addPortletNavURL}" class=" btn-sm btn-light m-1">
-				portlet(nav)</a>
+				fragment</a>
 		</span>
 	</c:if>		
 

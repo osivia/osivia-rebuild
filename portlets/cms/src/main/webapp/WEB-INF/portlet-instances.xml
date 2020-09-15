@@ -13,6 +13,14 @@
          <portlet-ref>Content</portlet-ref>
       </instance>
    </deployment>  
+   <deployment>
+      <instance>
+         <display-name xml:lang="en">CMS fragment portlet</display-name>
+         <display-name xml:lang="fr">Portlet affichage contenu</display-name>
+         <instance-id>FragmentInstance</instance-id>
+         <portlet-ref>Fragment</portlet-ref>
+      </instance>
+   </deployment>     
    <deployment>    
       <instance>
          <display-name xml:lang="en">CMS menu portlet</display-name>

@@ -53,7 +53,7 @@ public class UserWorkspacesRepository extends InMemoryUserRepository {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> moduleProperties = new ConcurrentHashMap<>();         
-        ModuleRef module = new ModuleRef("win-" + id, "col-1", "0", "SampleInstance", moduleProperties);
+        ModuleRef module = new ModuleRef("win-" + id, "col-1",  "SampleInstance", moduleProperties);
         modules.add(module);
         SpaceImpl space = new SpaceImpl(this,id, id,new UniversalID("templates", "ID_TEMPLATE_WORKSPACE" ),children, properties, modules);
         addDocument(id, space);

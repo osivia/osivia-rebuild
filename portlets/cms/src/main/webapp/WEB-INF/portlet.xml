@@ -30,6 +30,31 @@
             <title>CMS Content</title>
         </portlet-info>
     </portlet>
+    
+   <portlet>
+        <portlet-name>Fragment</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.cms.portlets.configuration.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.portal.cms.portlets.fragment.configuration.FragmentConfiguration</value>
+        </init-param>
+        
+        <expiration-cache>180</expiration-cache>
+        
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        
+        <portlet-info>
+            <title>CMS Fragment</title>
+        </portlet-info>
+    </portlet>    
 
 
    <portlet>

@@ -16,18 +16,18 @@ public class ModuleRef implements Serializable {
     private final String windowName;
 
     private final String region;
-    private final String order;
+
     private final String moduleId;
     private final Map<String,String> properties;
 
     
 
 
-    public ModuleRef(String windowName, String region, String order, String moduleId, Map<String,String> properties) {
+    public ModuleRef(String windowName, String region,String moduleId, Map<String,String> properties) {
         super();
         this.windowName = windowName;
         this.region = region;
-        this.order = order;
+
         this.moduleId = moduleId;
         this.properties = properties;
     }
@@ -42,9 +42,7 @@ public class ModuleRef implements Serializable {
         return region;
     }
 
-    public String getOrder() {
-        return order;
-    }
+
 
     public String getModuleId() {
         return moduleId;

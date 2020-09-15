@@ -81,16 +81,6 @@ public class SiteRepository extends InMemoryUserRepository  {
         notifyChanges(); 
     }
 
-    @Override
-    public void addWindow(String id, String name, String portletName, String region, String pageId) throws CMSException {
-        Page page = (Page) getDocument(pageId);
-        Map<String,String> properties = new ConcurrentHashMap<>();
-        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region, "0", portletName, properties);
-        page.getModuleRefs().add(module);
-
-        notifyChanges();
-    }
-
 
     protected void initDocuments() {
         createTemplateSpace();

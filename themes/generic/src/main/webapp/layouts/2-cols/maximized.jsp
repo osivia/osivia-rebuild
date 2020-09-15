@@ -27,6 +27,7 @@
   </tr> 
   <tr>
    <td width="20%" valign="top">
+   		<p:region regionName='logo' regionID='logo'/>   
    		<p:region regionName='nav' regionID='nav'/>
     </td>   
     <td width="80%" valign="top">

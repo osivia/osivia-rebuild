@@ -10,6 +10,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.FolderImpl;
 import org.osivia.portal.services.cms.model.NavigationItemImpl;
@@ -250,10 +251,19 @@ public abstract class InMemoryUserRepository implements RepositoryListener, IRep
     }
 
 
-    @Override
-    public void addWindow(String id, String name, String portletName, String region, String pageId) throws CMSException {
-     }
-
+    @Override  
+    public void addWindow(String id, String name, String portletName, String region, int position, String pageId,  Map<String,String> properties) throws CMSException {
+        Page page = (Page) getDocument(pageId);
+        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region,  portletName, properties);
+        
+        if( position == POSITION_END)
+            page.getModuleRefs().add(module);
+        else
+            page.getModuleRefs().add(position, module);
+        
+        notifyChanges();
+    }
+    
     
     @Override
     public void addFolder(String id, String name, String parentId) throws CMSException {

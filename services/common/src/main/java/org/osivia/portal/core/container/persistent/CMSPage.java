@@ -157,7 +157,7 @@ public  class  CMSPage extends PageImplBase {
 
 	
   
-    protected void addWindow(Map windows, ModuleRef module) {
+    protected void addWindow(Map windows, ModuleRef module, int order) {
 
         PortalObjectPath winPath = new PortalObjectPath(
                 pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + module.getWindowName(),
@@ -170,7 +170,7 @@ public  class  CMSPage extends PageImplBase {
         win.setURI(module.getModuleId());
         win.setObjectNode(winNode);
         win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, module.getRegion());
-        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, module.getOrder());
+        win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, Integer.toString(order));
         
         for( String propName : module.getProperties().keySet()) {
             win.setDeclaredProperty(propName, module.getProperties().get(propName));

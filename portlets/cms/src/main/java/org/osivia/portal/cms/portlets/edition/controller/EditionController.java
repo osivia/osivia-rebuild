@@ -1,6 +1,8 @@
 package org.osivia.portal.cms.portlets.edition.controller;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -146,7 +148,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSController ctrl = new CMSController(portalControllerContext);
 
 
-            addPortletToRegion(request, portalControllerContext,ctrl, "SampleInstance", "col-2");
+            addPortletToRegion(request, portalControllerContext,ctrl, "SampleInstance", "col-2", IRepositoryUpdate.POSITION_END);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -189,7 +191,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
             CMSController ctrl = new CMSController(portalControllerContext);
 
-            addPortletToRegion(request, portalControllerContext, ctrl,"SampleRemote", "nav");
+            addPortletToRegion(request, portalControllerContext, ctrl,"FragmentInstance", "logo", IRepositoryUpdate.POSITION_BEGIN);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -197,7 +199,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl, String portletName, String region)
+    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl, String portletName, String region, int position)
             throws CMSException {
         String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
         if (navigationId != null) {
@@ -210,8 +212,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
             IRepositoryUpdate repository = TemplatesLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
             String windowID = "" + System.currentTimeMillis();
+            
+            Map<String,String> editionProperties = new ConcurrentHashMap<>();
+            editionProperties.put("osivia.hideTitle", "1");
 
-            ((IRepositoryUpdate) repository).addWindow(windowID, windowID, portletName, region, id.getInternalID());
+            ((IRepositoryUpdate) repository).addWindow(windowID, windowID, portletName, region, position, id.getInternalID(), editionProperties);
 
         }
     }
