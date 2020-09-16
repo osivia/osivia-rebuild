@@ -1,25 +1,29 @@
-<%--
- Licensed to the Apache Software Foundation (ASF) under one or more
-  contributor license agreements.  See the NOTICE file distributed with
-  this work for additional information regarding copyright ownership.
-  The ASF licenses this file to You under the Apache License, Version 2.0
-  (the "License"); you may not use this file except in compliance with
-  the License.  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
---%>
 <html>
 <head>
-<title>Error Page For Examples</title>
+<title>Login Page</title>
+<link href="/osivia-portal-themes-generic-5.0-SNAPSHOT/css/socle.css"
+	rel="stylesheet">
+<script async
+	src="/osivia-portal-themes-generic-5.0-SNAPSHOT/js/bootstrap.bundle.js"></script>
 </head>
-<body bgcolor="white">
+<body>
+
+	<div class="container">
+		<div class="row h-100">
+			<div class="m-auto">
+				<div class="card card-body">
+					<h5 class="card-title">Login error</h5>
+<div class="alert alert-danger" role="alert">
 Invalid username and/or password, please try
-<a href='<%= response.encodeURL("index.jsp") %>'>again</a>.
+<a href='<%= response.encodeURL("/portal/auth") %>'>again</a>.
+</div>					
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 </body>
 </html>
+
