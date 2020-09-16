@@ -31,8 +31,8 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepository;
-import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepositoryLocator;
+import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
  * Sample controller.
@@ -80,7 +80,7 @@ public class BrowserController implements PortletContextAware {
             UniversalID id = new UniversalID(contentId);
             CMSContext cmsContext = ctrl.getCMSContext();
 
-            AdvancedRepository repository = AdvancedRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+            TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
             request.setAttribute("children", repository.getChildren(id.getInternalID()));
         }
         

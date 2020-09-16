@@ -1,4 +1,4 @@
-package fr.toutatice.portail.cms.producers.sample.inmemory;
+package fr.toutatice.portail.cms.producers.test;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -7,12 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 
-public class AdvancedRepositoryInvocationHandler implements InvocationHandler {
+public class TestRepositoryInvocationHandler implements InvocationHandler {
 
-    AdvancedRepository templatesRepository;
+    TestRepository templatesRepository;
     
 
-    public AdvancedRepositoryInvocationHandler(AdvancedRepository templatesRepository) {
+    public TestRepositoryInvocationHandler(TestRepository templatesRepository) {
         super();
         this.templatesRepository = templatesRepository;
     }

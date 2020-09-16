@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.user;
+package org.osivia.portal.services.cms.repository.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,10 +23,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepository;
+import fr.toutatice.portail.cms.producers.test.TestRepository;
 
 
-public class TemplatesRepository extends InMemoryUserRepository implements AdvancedRepository {
+public class TemplatesRepository extends NativeMemoryRepository  {
 
       
       public TemplatesRepository(SharedRepositoryKey repositoryKey) {

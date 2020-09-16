@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.user;
+package org.osivia.portal.services.cms.repository.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,11 +20,12 @@ import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.PageImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
 
 
 
 
-public class SiteRepository extends InMemoryUserRepository  {
+public class SiteRepository extends NativeMemoryRepository  {
 
     public SiteRepository(SharedRepositoryKey repositoryKey,  InMemoryUserRepository publishRepository) {
         super(repositoryKey, publishRepository);

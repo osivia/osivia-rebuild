@@ -13,14 +13,15 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.services.cms.repository.test.SiteRepository;
+import org.osivia.portal.services.cms.repository.test.TemplatesRepository;
+import org.osivia.portal.services.cms.repository.test.UserWorkspacesRepository;
 import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
-import org.osivia.portal.services.cms.repository.user.SiteRepository;
-import org.osivia.portal.services.cms.repository.user.TemplatesRepository;
-import org.osivia.portal.services.cms.repository.user.UserWorkspacesRepository;
 import org.springframework.stereotype.Service;
 
 /**
@@ -54,7 +55,7 @@ public class CMSServiceImpl implements CMSService {
     @Override
     public Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException {
 
-        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id.getRepositoryName());
+        InMemoryUserRepository userRepository = (InMemoryUserRepository) getUserRepository(cmsContext, id.getRepositoryName());
         NuxeoMockDocumentImpl document = userRepository.getDocument(id.getInternalID());
         
         return document;
@@ -101,7 +102,7 @@ public class CMSServiceImpl implements CMSService {
         return userRepository;
     }
     
-    public InMemoryUserRepository getUserRepository(CMSContext cmsContext, String repositoryName) {
+    public NativeRepository getUserRepository(CMSContext cmsContext, String repositoryName) {
         // for previewed respositories, ensure online repository has been loaded
         // just for synchronicity of the 2 shared repositories initialisation
         
@@ -114,7 +115,7 @@ public class CMSServiceImpl implements CMSService {
             cmsContext.setPreview(savedPreview);
         }
         
-        return getOrCreateUserRepository(cmsContext, repositoryName, null);
+        return (NativeRepository) getOrCreateUserRepository(cmsContext, repositoryName, null);
     }
 
     protected InMemoryUserRepository createRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository) {
@@ -136,19 +137,19 @@ public class CMSServiceImpl implements CMSService {
 
     @Override
     public NavigationItem getNavigationItem(CMSContext cmsContext, UniversalID id) throws CMSException {
-        InMemoryUserRepository userRepository = getUserRepository(cmsContext, id.getRepositoryName());
+        InMemoryUserRepository userRepository = (InMemoryUserRepository) getUserRepository(cmsContext, id.getRepositoryName());
         return userRepository.getNavigationItem(id.getInternalID());
     }
 
     @Override
     public void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
-        InMemoryUserRepository userRepository = getUserRepository(cmsContext, repositoryName);
+        InMemoryUserRepository userRepository = (InMemoryUserRepository) getUserRepository(cmsContext, repositoryName);
         userRepository.addListener(listener);
         
         if( supportsPreview(repositoryName)) {
             boolean savedPreview = cmsContext.isPreview();
             cmsContext.setPreview(true);
-            userRepository = getUserRepository(cmsContext, repositoryName);
+            userRepository = (InMemoryUserRepository) getUserRepository(cmsContext, repositoryName);
             userRepository.addListener(listener);
             cmsContext.setPreview(savedPreview);
         }

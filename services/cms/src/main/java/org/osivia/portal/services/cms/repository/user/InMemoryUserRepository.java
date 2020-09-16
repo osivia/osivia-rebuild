@@ -11,6 +11,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.FolderImpl;
 import org.osivia.portal.services.cms.model.NavigationItemImpl;
@@ -18,9 +19,9 @@ import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
-import fr.toutatice.portail.cms.producers.sample.inmemory.AdvancedRepository;
+import fr.toutatice.portail.cms.producers.test.TestRepository;
 
-public abstract class InMemoryUserRepository implements RepositoryListener, AdvancedRepository {
+public abstract class InMemoryUserRepository implements RepositoryListener {
 
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
 
@@ -257,68 +258,7 @@ public abstract class InMemoryUserRepository implements RepositoryListener, Adva
     }
     
 
-    @Override
-    public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-    }
-
-
-    @Override  
-    public void addWindow(String id, String name, String portletName, String region, int position, String pageId,  Map<String,String> properties) throws CMSException {
-        Page page = (Page) getDocument(pageId);
-        ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region,  portletName, properties);
-        
-        if( position == POSITION_END)
-            page.getModuleRefs().add(module);
-        else
-            page.getModuleRefs().add(position, module);
-        
-        notifyChanges();
-    }
-    
-    
-    @Override
-    public void addFolder(String id, String name, String parentId) throws CMSException {
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Folder." + id);
-        
-        NuxeoMockDocumentImpl parent = getDocument(parentId);
-        parent.getChildrenId().add(id);        
- 
-        FolderImpl folder = new FolderImpl(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);        
-        
-        addDocument(id, folder);
-        updatePaths();
-        notifyChanges();         
-    }
-
-
-    @Override
-    public void addDocument(String id, String name, String parentId) throws CMSException {
-        
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Document." + id);
-        
-        NuxeoMockDocumentImpl parent = getDocument(parentId);
-        parent.getChildrenId().add(id);        
-
-        NuxeoMockDocumentImpl doc = new NuxeoMockDocumentImpl(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
-        
-        addDocument(id, doc);
-        updatePaths();
-        notifyChanges();           
-    }
-
-
-    @Override
-    public boolean supportPreview() {
-        return false;
-     }
-
-
-    @Override
-    public boolean supportPageEdition() {
-        return false;
-    }
+   
 
 
 

@@ -1,12 +1,13 @@
-package fr.toutatice.portail.cms.producers.sample.inmemory;
+package fr.toutatice.portail.cms.producers.test;
 
 import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.service.NativeRepository;
 
-public interface AdvancedRepository {
+public interface TestRepository extends NativeRepository {
     
     public final static int POSITION_BEGIN = 0;
     public final static int POSITION_END = -1;

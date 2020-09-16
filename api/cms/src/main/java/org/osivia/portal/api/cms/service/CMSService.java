@@ -48,7 +48,7 @@ public interface CMSService {
      * @return the document
      * @throws CMSException the CMS exception
      */
-    Object getUserRepository(CMSContext cmsContext, String repositoryName) throws CMSException;
+    NativeRepository getUserRepository(CMSContext cmsContext, String repositoryName) throws CMSException;
     
     
     /**

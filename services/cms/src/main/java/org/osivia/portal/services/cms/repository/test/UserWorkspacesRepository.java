@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.user;
+package org.osivia.portal.services.cms.repository.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import org.osivia.portal.services.cms.model.FolderImpl;
 import org.osivia.portal.services.cms.model.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
-public class UserWorkspacesRepository extends InMemoryUserRepository {
+public class UserWorkspacesRepository extends NativeMemoryRepository {
 
     
     public UserWorkspacesRepository(SharedRepositoryKey repositoryKey) {
