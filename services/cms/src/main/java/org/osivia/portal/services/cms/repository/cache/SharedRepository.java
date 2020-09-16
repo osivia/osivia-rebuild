@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.service.RepositoryListener;
-import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
-import org.osivia.portal.services.cms.model.SpaceImpl;
+import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.model.test.SpaceImpl;
 
 /**
  * The shared cache

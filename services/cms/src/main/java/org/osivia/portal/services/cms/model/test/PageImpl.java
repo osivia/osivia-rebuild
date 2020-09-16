@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model;
+package org.osivia.portal.services.cms.model.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
 
 public class PageImpl extends NuxeoMockDocumentImpl implements Page {
 

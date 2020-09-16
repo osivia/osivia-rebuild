@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model;
+package org.osivia.portal.services.cms.model.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
 /**

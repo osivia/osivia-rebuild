@@ -15,12 +15,10 @@ import org.osivia.portal.api.cms.exception.CMSException;
 
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
-
-import org.osivia.portal.services.cms.model.NuxeoMockDocumentImpl;
-import org.osivia.portal.services.cms.model.PageImpl;
-import org.osivia.portal.services.cms.model.SpaceImpl;
+import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.model.test.PageImpl;
+import org.osivia.portal.services.cms.model.test.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
-import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
 
 
 
@@ -74,7 +72,7 @@ public class SiteRepository extends NativeMemoryRepository  {
 
     @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        NuxeoMockDocumentImpl parent = getDocument(parentId);
+        NuxeoMockDocumentImpl parent = getInternalDocument(parentId);
         parent.getChildrenId().add(id);
         addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
         

@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model;
+package org.osivia.portal.services.cms.model.test;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.services.cms.repository.user.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
 
 /**
  * The Class DocumentImpl.

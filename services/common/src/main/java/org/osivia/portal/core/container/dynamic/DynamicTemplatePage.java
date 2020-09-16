@@ -74,7 +74,9 @@ public final class DynamicTemplatePage extends TemplatePage {
             // On supprime la page dynamique pour ne plus rencontrer d'erreurs
             dynamicContainer.removeDynamicPage(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
 
-            throw new RuntimeException("Page " + pageId + " has not be created. Exception = " + e.getMessage() + ". Check the template " + poid.toString());
+            
+
+            throw new RuntimeException("Page " + pageId + " has not be created. Exception = " + e.getMessage() + ". Check the template " + poid.toString(), e);
 
         }
 
