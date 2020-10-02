@@ -107,6 +107,20 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
       // Handle special ajax region here
       if ("AJAXScripts".equals(rrc.getId()))
       {
+          
+          
+          
+         markup.print("<script type='text/javascript' src='");
+         markup.print(jsBase);
+         markup.print("/react.production.min.js'></script>\n");
+         markup.print("<script type='text/javascript' src='");
+         markup.print(jsBase);
+         markup.print("/react-dom.production.min.js'></script>\n");
+         markup.print("<script type='text/javascript' src='");
+         markup.print(jsBase);
+         markup.print("/babel.js'></script>\n");
+          
+          
          markup.print("<script type='text/javascript' src='");
          markup.print(jsBase);
          markup.print("/prototype.js'></script>\n");
@@ -122,15 +136,7 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
          markup.print("<link rel=\"stylesheet\" id=\"dyna_css\" href=\"" + jsBase + "/style.css\" type=\"text/css\"/>\n");
 
          
-//         markup.print("<script type='text/javascript' src='");
-//         markup.print(jsBase);
-//         markup.print("/react.production.min.js'></script>\n");
-//         markup.print("<script type='text/javascript' src='");
-//         markup.print(jsBase);
-//         markup.print("/react-dom.production.min.js'></script>\n");
-//         markup.print("<script type='text/javascript' src='");
-//         markup.print(jsBase);
-//         markup.print("/babel.js'></script>\n");
+
          
          
          markup.print("<script type='text/javascript'>\n");

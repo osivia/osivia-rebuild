@@ -13,10 +13,7 @@
    <!-- inject the theme, default to the Renewal theme if nothing is selected for the portal or the page -->
    <p:theme themeName="renewal"/>
    
-  <script type="application/javascript" src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
-  <script type="application/javascript" src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
-  <script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
-     
+
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 </head>
 
