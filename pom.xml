@@ -1,611 +1,692 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    
-    
-    <groupId>org.osivia.portal</groupId>
-    <artifactId>osivia-portal-parent</artifactId>
-    <version>5.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    
-    
-    <name>OSIVIA Portal - Parent</name>
-    <description>OSIVIA Portal POM parent.</description>
-    <url>http://www.osivia.org</url>
-    <inceptionYear>2015</inceptionYear>
-    
-    <organization>
-        <name>OSIVIA</name>
-        <url>http://www.osivia.com</url>
-    </organization>
-    
-    <licenses>
-        <license>
-            <name>GNU Lesser General Public License (LGPL) version 2.1</name>
-            <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-        </license>
-    </licenses>
-    
-    <developers>
-        <developer>
-            <id>ckrommenhoek</id>
-            <name>Cédric Krommenhoek</name>
-            <email>ckrommenhoek@osivia.com</email>
-            <organization>OSIVIA</organization>
-            <organizationUrl>http://www.osivia.com</organizationUrl>
-            <roles>
-                <role>Development</role>
-            </roles>
-            <timezone>Europe/Paris</timezone>
-        </developer>
-        
-        <developer>
-            <id>lbillon</id>
-            <name>Loïc Billon</name>
-            <email>lbillon@osivia.com</email>
-            <organization>OSIVIA</organization>
-            <organizationUrl>http://www.osivia.com</organizationUrl>
-            <roles>
-                <role>Development</role>
-            </roles>
-            <timezone>Europe/Paris</timezone>
-        </developer>        
-    </developers>
-    
-    
-    
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
 
 
-    
+	<groupId>org.osivia.portal</groupId>
+	<artifactId>osivia-portal-parent</artifactId>
+	<version>5.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-     
-        
-    <modules>
-        <module>api</module>
-        <module>services</module>
-        <module>kernel</module>
-        <module>portlets</module>
+
+	<name>OSIVIA Portal - Parent</name>
+	<description>OSIVIA Portal POM parent.</description>
+	<url>http://www.osivia.org</url>
+	<inceptionYear>2015</inceptionYear>
+
+	<organization>
+		<name>OSIVIA</name>
+		<url>http://www.osivia.com</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL) version 2.1</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>ckrommenhoek</id>
+			<name>Cédric Krommenhoek</name>
+			<email>ckrommenhoek@osivia.com</email>
+			<organization>OSIVIA</organization>
+			<organizationUrl>http://www.osivia.com</organizationUrl>
+			<roles>
+				<role>Development</role>
+			</roles>
+			<timezone>Europe/Paris</timezone>
+		</developer>
+
+		<developer>
+			<id>lbillon</id>
+			<name>Loïc Billon</name>
+			<email>lbillon@osivia.com</email>
+			<organization>OSIVIA</organization>
+			<organizationUrl>http://www.osivia.com</organizationUrl>
+			<roles>
+				<role>Development</role>
+			</roles>
+			<timezone>Europe/Paris</timezone>
+		</developer>
+	</developers>
+
+
+
+
+
+
+
+
+
+	<modules>
+		<module>api</module>
+		<module>services</module>
+		<module>kernel</module>
+		<module>portlets</module>
 		<module>themes</module>
-		<module>distrib</module>		
-    </modules>
-    
+		<module>ws</module>
+		<module>distrib</module>
+	</modules>
 
-    <issueManagement>
-        <system>Redmine</system>
-        <url>http://redmine.osivia.org</url>
-    </issueManagement>
-    
-    <ciManagement>
-        <system>Jenkins</system>
-        <url>http://jenkins.osivia.net</url>
-        <notifiers>
-            <notifier>
-                <type>mail</type>
-                <sendOnError>true</sendOnError>
-                <sendOnFailure>true</sendOnFailure>
-                <sendOnWarning>false</sendOnWarning>
-                <sendOnSuccess>false</sendOnSuccess>
-            </notifier>
-        </notifiers>
-    </ciManagement>
-    
-    <scm>
-        <url>https://github.com/osivia/osivia-rebuild</url>
-        <connection>https://github.com/osivia/osivia-rebuild.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/osivia/osivia-rebuild.git</developerConnection>     
-        <tag>HEAD</tag>
+
+	<issueManagement>
+		<system>Redmine</system>
+		<url>http://redmine.osivia.org</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://jenkins.osivia.net</url>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<sendOnError>true</sendOnError>
+				<sendOnFailure>true</sendOnFailure>
+				<sendOnWarning>false</sendOnWarning>
+				<sendOnSuccess>false</sendOnSuccess>
+			</notifier>
+		</notifiers>
+	</ciManagement>
+
+	<scm>
+		<url>https://github.com/osivia/osivia-rebuild</url>
+		<connection>https://github.com/osivia/osivia-rebuild.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/osivia/osivia-rebuild.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
-    
-    
-    <distributionManagement>
-        <repository>
-            <id>osivia-releases</id>
-            <name>OSIVIA releases</name>
-            <url>http://www.osivia.org/nexus/content/repositories/osivia-releases</url>
-        </repository>
-        
-        <snapshotRepository>
-            <id>osivia-snapshots</id>
-            <name>OSIVIA snapshots</name>
-            <url>http://www.osivia.org/nexus/content/repositories/osivia-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-    
-    
-    <properties>
-        <!-- Javax -->
-        <javax-servlet-api.version>3.1.0</javax-servlet-api.version>
-        <javax-servlet-jsp-api.version>2.3.0</javax-servlet-jsp-api.version>
-        <javax-el-api.version>3.0.0</javax-el-api.version>
-        <javax-portlet-api.version>2.0</javax-portlet-api.version>
-        <javax-jstl.version>1.2</javax-jstl.version>
-        <javax-activation.version>1.0.2</javax-activation.version>
-        <javax-security-jacc.version>1.5</javax-security-jacc.version>
-        <javax-ccpp.version>1.0</javax-ccpp.version>
-                
-        <!-- JBoss portlet container -->
-        <jboss-portlet-container.version>2.0.9</jboss-portlet-container.version>
-        <jboss-portal-web.version>1.2.0</jboss-portal-web.version>        
-        
-        <!-- Spring framework -->
-        <springframework.version>4.2.6.RELEASE</springframework.version>
-        
-        <!-- Commons -->
-        <commons-lang3.version>3.4</commons-lang3.version>
-        <commons-logging.version>1.2</commons-logging.version>
-        
-        <!-- Others -->
-        <log4j.version>1.2.14</log4j.version>
-        <taglib-standard.version>1.1.2</taglib-standard.version>
-        <dom4j.version>1.6.1</dom4j.version>        
 
 
-        
-    </properties>
-    
-    
-    <dependencyManagement>
-        <dependencies>
-        
-            <!-- Javax -->
-            
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${javax-servlet-api.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>javax.servlet.jsp</groupId>
-                <artifactId>javax.servlet.jsp-api</artifactId>
-                <version>${javax-servlet-jsp-api.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>javax.el</groupId>
-                <artifactId>javax.el-api</artifactId>
-                <version>${javax-el-api.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-	            <groupId>javax.portlet</groupId>
-	            <artifactId>portlet-api</artifactId>
-	            <version>${javax-portlet-api.version}</version>
-	            <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>jstl</artifactId>
-                <version>${javax-jstl.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
-          	<dependency>
-    			<groupId>javax.activation</groupId>
-    			<artifactId>activation</artifactId>
-    			<version>${javax-activation.version}</version>
-    			<scope>provided</scope>
+	<distributionManagement>
+		<repository>
+			<id>osivia-releases</id>
+			<name>OSIVIA releases</name>
+			<url>http://www.osivia.org/nexus/content/repositories/osivia-releases</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>osivia-snapshots</id>
+			<name>OSIVIA snapshots</name>
+			<url>http://www.osivia.org/nexus/content/repositories/osivia-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+
+	<properties>
+		<!-- Javax -->
+		<javax-servlet-api.version>3.1.0</javax-servlet-api.version>
+		<javax-servlet-jsp-api.version>2.3.0</javax-servlet-jsp-api.version>
+		<javax-el-api.version>3.0.0</javax-el-api.version>
+		<javax-portlet-api.version>2.0</javax-portlet-api.version>
+		<javax-jstl.version>1.2</javax-jstl.version>
+		<javax-activation.version>1.0.2</javax-activation.version>
+		<javax-security-jacc.version>1.5</javax-security-jacc.version>
+		<javax-ccpp.version>1.0</javax-ccpp.version>
+
+		<!-- JBoss portlet container -->
+		<jboss-portlet-container.version>2.0.9</jboss-portlet-container.version>
+		<jboss-portal-web.version>1.2.0</jboss-portal-web.version>
+
+		<!-- Spring framework -->
+		<springframework.version>4.2.6.RELEASE</springframework.version>
+		<org.springframework.security.version>4.0.4.RELEASE</org.springframework.security.version>
+		<org.springframework.security.oauth2.version>2.0.16.RELEASE</org.springframework.security.oauth2.version>
+		<!-- Commons -->
+		<commons-lang3.version>3.4</commons-lang3.version>
+		<commons-logging.version>1.2</commons-logging.version>
+
+		<!-- Others -->
+		<log4j.version>1.2.14</log4j.version>
+		<taglib-standard.version>1.1.2</taglib-standard.version>
+		<dom4j.version>1.6.1</dom4j.version>
+
+        <!-- REST -->
+        <jackson.version>2.10.1</jackson.version>
+
+
+	</properties>
+
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- Javax -->
+
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${javax-servlet-api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.servlet.jsp</groupId>
+				<artifactId>javax.servlet.jsp-api</artifactId>
+				<version>${javax-servlet-jsp-api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.el</groupId>
+				<artifactId>javax.el-api</artifactId>
+				<version>${javax-el-api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.portlet</groupId>
+				<artifactId>portlet-api</artifactId>
+				<version>${javax-portlet-api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jstl</artifactId>
+				<version>${javax-jstl.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>${javax-activation.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.security.jacc</groupId>
+				<artifactId>javax.security.jacc-api</artifactId>
+				<version>${javax-security-jacc.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.ccpp</groupId>
+				<artifactId>ccpp</artifactId>
+				<version>${javax-ccpp.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- Apache commons -->
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>${commons-logging.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+
+			<!-- JBoss portlet container -->
+
+			<dependency>
+				<groupId>org.jboss.portal.portlet</groupId>
+				<artifactId>portlet-portlet</artifactId>
+				<version>${jboss-portlet-container.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.portal.web</groupId>
+				<artifactId>web-web</artifactId>
+				<version>${jboss-portal-web.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>*</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+
+			<!-- Spring framework -->
+
+
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
 			</dependency>
 			
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>			
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc-portlet</artifactId>
+				<version>${springframework.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>${org.springframework.security.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${org.springframework.security.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+				<version>${org.springframework.security.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-taglibs</artifactId>
+				<version>${org.springframework.security.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security.oauth</groupId>
+				<artifactId>spring-security-oauth2</artifactId>
+				<version>${org.springframework.security.oauth2.version}</version>
+				<scope>provided</scope>
+			</dependency>
 	        <dependency>
-	    		<groupId>javax.security.jacc</groupId>
-	    		<artifactId>javax.security.jacc-api</artifactId>
-	    		<version>${javax-security-jacc.version}</version>
-	    		<scope>provided</scope>
-			</dependency>
-			
+	            <groupId>org.springframework.security.oauth</groupId>
+	            <artifactId>spring-security-oauth2</artifactId>
+	            <version>${org.springframework.security.oauth2.version}</version>
+	        </dependency>
+
+			<!-- DOM -->
+
 			<dependency>
-    			<groupId>javax.ccpp</groupId>
-    			<artifactId>ccpp</artifactId>
-    			<version>${javax-ccpp.version}</version>
- 				<scope>provided</scope>    			
+				<groupId>dom4j</groupId>
+				<artifactId>dom4j</artifactId>
+				<version>${dom4j.version}</version>
+				<scope>provided</scope>
 			</dependency>
-	
-            <!-- Apache commons -->
-            
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons-logging.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
-            
-            <!-- JBoss portlet container -->
-            
-            <dependency>
-                <groupId>org.jboss.portal.portlet</groupId>
-                <artifactId>portlet-portlet</artifactId>
-                <version>${jboss-portlet-container.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.jboss.portal.web</groupId>
-                <artifactId>web-web</artifactId>
-                <version>${jboss-portal-web.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>*</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>            
-            
-            
-            <!-- Spring framework -->
-            
-
-            
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
-                <version>${springframework.version}</version>
-                <scope>provided</scope>
-            </dependency>      
-            
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${springframework.version}</version>
-                <scope>provided</scope>
-            </dependency>   
-             
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${springframework.version}</version>
-                <scope>provided</scope>
-            </dependency>
-                        
-           <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${springframework.version}</version>
-                <scope>provided</scope>
-            </dependency>  
-            
-             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-expression</artifactId>
-                <version>${springframework.version}</version>
-                <scope>provided</scope>
-            </dependency>  
-            
-            <dependency>
-	            <groupId>org.springframework</groupId>
-	            <artifactId>spring-web</artifactId>
-	            <version>${springframework.version}</version>
-	            <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-	            <groupId>org.springframework</groupId>
-	            <artifactId>spring-webmvc</artifactId>
-	            <version>${springframework.version}</version>
-	            <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-	            <groupId>org.springframework</groupId>
-	            <artifactId>spring-webmvc-portlet</artifactId>
-	            <version>${springframework.version}</version>
-	            <scope>provided</scope>
-            </dependency>
-            
-            <!-- DOM -->            
-
-            <dependency>
-                <groupId>dom4j</groupId>
-                <artifactId>dom4j</artifactId>
-                <version>${dom4j.version}</version>
-                <scope>provided</scope>
-            </dependency>
 
 
-            <!-- taglibs -->
-            
+			<!-- taglibs -->
+
 			<dependency>
-			    <groupId>taglibs</groupId>
-			    <artifactId>standard</artifactId>
-			    <version>${taglib-standard.version}</version>
-			     <scope>provided</scope>
-			</dependency>            
-         
-            
-            <dependency>
-			    <groupId>log4j</groupId>
-			    <artifactId>log4j</artifactId>
-			    <version>${log4j.version}</version>
-			    <scope>provided</scope>
+				<groupId>taglibs</groupId>
+				<artifactId>standard</artifactId>
+				<version>${taglib-standard.version}</version>
+				<scope>provided</scope>
 			</dependency>
-            
-            <!-- Test -->
-        
-            <dependency>
-	            <groupId>junit</groupId>
-	            <artifactId>junit</artifactId>
-	            <version>4.12</version>
-	            <scope>test</scope>
-            </dependency>
-            
-            <dependency>
-	            <groupId>org.easymock</groupId>
-	            <artifactId>easymock</artifactId>
-	            <version>3.3.1</version>
-	            <scope>test</scope>
-            </dependency>
 
-        </dependencies>
-    </dependencyManagement>
-    
-    
-    <dependencies>
-    
-        <!-- Javax -->
-            
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>javax.servlet.jsp-api</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.portlet</groupId>
-            <artifactId>portlet-api</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-        </dependency>
-    
-    
-        <!-- Apache commons -->
-        
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-        
-        <!-- DOM -->        
-        
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-        </dependency>                   
-        
-        
-        <!-- JBoss portlet container -->
-            
-        <dependency>
-            <groupId>org.jboss.portal.portlet</groupId>
-            <artifactId>portlet-portlet</artifactId>
-        </dependency>
-        
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>${log4j.version}</version>
+				<scope>provided</scope>
+			</dependency>
 
-        <!-- Spring framework -->
-            
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc-portlet</artifactId>
-        </dependency>
-        
-        
-        <!-- Test -->
-        
-        <dependency>
-	        <groupId>junit</groupId>
-	        <artifactId>junit</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-        </dependency>
+			<!-- Test -->
 
-    </dependencies>
-    
-    
-    <build>
-        <pluginManagement>
-            <plugins>
-            
-                <!-- Compiler -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-                
-                <!-- Resources -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                </plugin>
-            
-                <!-- WAR -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>2.6</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-                
-                <!-- LESS -->
-                <plugin>
-                    <groupId>org.lesscss</groupId>
-                    <artifactId>lesscss-maven-plugin</artifactId>
-                    <version>1.7.0.1.1</version>
-                    <configuration>
-                        <sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
-                        <outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
-                        <compress>true</compress>
-                        <includes>
-                            <include>*.less</include>
-                        </includes>
-                        <outputFileFormat>{fileName}.min.css</outputFileFormat>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>compile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                
-                <!-- AntRun -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.8</version>
-                    <executions>
-                    
-                        <!-- JAR deployment -->
-                        <execution>
-                            <id>jar-deployment</id>
-                            <phase>none</phase>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                            <configuration>
-                                <tasks>
-                                    <copy file="${project.basedir}/target/${project.build.finalName}.jar" todir="${lib.path}" />
-                                </tasks>
-                            </configuration>
-                        </execution>
-                        
-                        <!-- WAR deployment -->
-                        <execution>
-                            <id>war-deployment</id>
-                            <phase>none</phase>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                            <configuration>
-                                <tasks>
-                                    <copy file="${project.basedir}/target/${project.build.finalName}.war" tofile="${web.path}/${project.artifactId}.war" />
-                                </tasks>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                
-                <!-- Eclipse -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-eclipse-plugin</artifactId>
-                    <version>2.10</version>
-                    <configuration>
-                        <downloadJavadocs>true</downloadJavadocs>
-                        <downloadSources>true</downloadSources>
-                    </configuration>
-                </plugin>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
 
-            </plugins>
-        </pluginManagement>
-        
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>    
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-            </plugin>
-             <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-release-plugin</artifactId>
-                 <version>2.2.1</version>
-                 <configuration>
-                     <releaseProfiles>pack</releaseProfiles>
-                     <preparationGoals>clean install</preparationGoals>
-                     <goals>deploy</goals>
-                     <arguments>-Prelease</arguments>
-                 </configuration>
-             </plugin>            
-        </plugins>
-    </build>
-    
-    
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>3.3.1</version>
+				<scope>test</scope>
+			</dependency>
 
- 
-    
-    
-    
-    
-    <profiles>
-        <profile>
-            <id>tomcat</id>
-            <properties>
-                <lib.path>${tomcat.lib.path}</lib.path>
-                <web.path>${tomcat.web.path}</web.path>
-            </properties>
-        </profile>
-    </profiles>
+		</dependencies>
+	</dependencyManagement>
+
+
+	<dependencies>
+
+		<!-- Javax -->
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.portlet</groupId>
+			<artifactId>portlet-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+
+
+		<!-- Apache commons -->
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+
+		<!-- DOM -->
+
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+		</dependency>
+
+
+		<!-- JBoss portlet container -->
+
+		<dependency>
+			<groupId>org.jboss.portal.portlet</groupId>
+			<artifactId>portlet-portlet</artifactId>
+		</dependency>
+
+
+		<!-- Spring framework -->
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc-portlet</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>		
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+		</dependency>	
+		
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+		</dependency>		
+		<!-- Test -->
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+		</dependency>
+
+	</dependencies>
+
+
+	<build>
+		<pluginManagement>
+			<plugins>
+
+				<!-- Compiler -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.3</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+
+				<!-- Resources -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.7</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+
+				<!-- WAR -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<!-- LESS -->
+				<plugin>
+					<groupId>org.lesscss</groupId>
+					<artifactId>lesscss-maven-plugin</artifactId>
+					<version>1.7.0.1.1</version>
+					<configuration>
+						<sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
+						<outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
+						<compress>true</compress>
+						<includes>
+							<include>*.less</include>
+						</includes>
+						<outputFileFormat>{fileName}.min.css</outputFileFormat>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- AntRun -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.8</version>
+					<executions>
+
+						<!-- JAR deployment -->
+						<execution>
+							<id>jar-deployment</id>
+							<phase>none</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<tasks>
+									<copy
+										file="${project.basedir}/target/${project.build.finalName}.jar"
+										todir="${lib.path}" />
+								</tasks>
+							</configuration>
+						</execution>
+
+						<!-- WAR deployment -->
+						<execution>
+							<id>war-deployment</id>
+							<phase>none</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<tasks>
+									<copy
+										file="${project.basedir}/target/${project.build.finalName}.war"
+										tofile="${web.path}/${project.artifactId}.war" />
+								</tasks>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- Eclipse -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.10</version>
+					<configuration>
+						<downloadJavadocs>true</downloadJavadocs>
+						<downloadSources>true</downloadSources>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<releaseProfiles>pack</releaseProfiles>
+					<preparationGoals>clean install</preparationGoals>
+					<goals>deploy</goals>
+					<arguments>-Prelease</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+
+
+
+
+
+
+	<profiles>
+		<profile>
+			<id>tomcat</id>
+			<properties>
+				<lib.path>${tomcat.lib.path}</lib.path>
+				<web.path>${tomcat.web.path}</web.path>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

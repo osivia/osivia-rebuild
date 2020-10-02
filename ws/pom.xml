@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+	
+    <parent>
+        <groupId>org.osivia.portal</groupId>
+        <artifactId>osivia-portal-parent</artifactId>
+        <version>5.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.osivia.portal.ws</groupId>
+    <artifactId>osivia-portal-ws</artifactId>
+    <packaging>war</packaging>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.3.0</version>
+            <exclusions>            
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>                            
+	   </dependency>
+       
+	   
+       
+       
+       
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.51</version>
+		</dependency>
+	   
+	   <dependency>
+    		<groupId>org.springframework.security</groupId>
+    		<artifactId>spring-security-core</artifactId>
+    		<version>4.0.4.RELEASE</version>
+    		<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.springframework.security</groupId>
+    		<artifactId>spring-security-config</artifactId>
+    		<version>4.0.4.RELEASE</version>
+    		<scope>provided</scope>    		
+		</dependency>
+		
+		<dependency>
+      		<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>4.0.4.RELEASE</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-tx</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>	
+			<version>2.0.16.RELEASE</version>
+    		<scope>provided</scope>			
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.springframework.security</groupId>
+    		<artifactId>spring-security-taglibs</artifactId>
+    		<version>4.0.4.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>    		
+		</dependency>		
+
+		<dependency>
+    		<groupId>aopalliance</groupId>
+    		<artifactId>aopalliance</artifactId>
+    		<version>1.0</version>
+			<scope>provided</scope>	    		
+		</dependency>
+		
+
+		<dependency>
+                <groupId>org.osivia.portal.api</groupId>
+                <artifactId>osivia-portal-api-common</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.osivia.portal.api</groupId>
+                <artifactId>osivia-portal-api-cms</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            		
+		
+    </dependencies>
+
+
+
+</project>

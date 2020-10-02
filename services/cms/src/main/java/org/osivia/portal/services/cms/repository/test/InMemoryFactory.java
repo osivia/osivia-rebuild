@@ -3,6 +3,7 @@ package org.osivia.portal.services.cms.repository.test;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jboss.portal.core.controller.ControllerContext;
@@ -75,9 +76,12 @@ public class InMemoryFactory {
             }
 
         } else {
-            ControllerContext ctx = ControllerContextAdapter.getControllerContext(cmsContext.getPortalControllerContext());
+//            ControllerContext ctx = ControllerContextAdapter.getControllerContext(cmsContext.getPortalControllerContext());
+//            HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
+            
+            HttpServletRequest request = cmsContext.getPortalControllerContext().getHttpServletRequest();
 
-            HttpSession session = ctx.getServerInvocation().getServerContext().getClientRequest().getSession(true);
+            HttpSession session = request.getSession(true);
 
             String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName + "." + cmsContext.isPreview();
 

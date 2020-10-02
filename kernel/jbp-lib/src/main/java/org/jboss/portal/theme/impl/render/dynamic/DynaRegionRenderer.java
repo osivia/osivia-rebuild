@@ -120,8 +120,20 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
          markup.print(jsBase);
          markup.print("/dyna.js'></script>\n");
          markup.print("<link rel=\"stylesheet\" id=\"dyna_css\" href=\"" + jsBase + "/style.css\" type=\"text/css\"/>\n");
-         markup.print("<script type='text/javascript'>\n");
 
+         
+//         markup.print("<script type='text/javascript' src='");
+//         markup.print(jsBase);
+//         markup.print("/react.production.min.js'></script>\n");
+//         markup.print("<script type='text/javascript' src='");
+//         markup.print(jsBase);
+//         markup.print("/react-dom.production.min.js'></script>\n");
+//         markup.print("<script type='text/javascript' src='");
+//         markup.print(jsBase);
+//         markup.print("/babel.js'></script>\n");
+         
+         
+         markup.print("<script type='text/javascript'>\n");
          // Async server URL needed for callbacks
          markup.print("server_base_url=\"");
          markup.print(serverBaseURL);

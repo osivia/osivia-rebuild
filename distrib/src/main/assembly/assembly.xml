@@ -41,8 +41,19 @@
                 <include>org.springframework:spring-core</include>
                 <include>org.springframework:spring-expression</include>
                 <include>org.springframework:spring-web</include>
+                <include>org.springframework:spring-aop</include>                
                 <include>org.springframework:spring-webmvc</include>
-                <include>org.springframework:spring-webmvc-portlet</include>
+                <include>org.springframework:spring-webmvc-portlet</include>                
+                <include>org.springframework.security:spring-security-core</include>
+                <include>org.springframework.security:spring-security-web</include>              
+                <include>org.springframework.security:spring-security-config</include>              
+                <include>org.springframework.security:spring-security-taglibs</include>              
+                <include>org.springframework.security.oauth:spring-security-oauth2</include>                     
+                 <!-- Rest services --> 
+
+                <include>com.fasterxml.jackson.core:jackson-core:jar:${jackson.version}</include>     
+                <include>com.fasterxml.jackson.core:jackson-databind:jar:${jackson.version}</include>                    
+                <include>com.fasterxml.jackson.core:jackson-annotations:jar:${jackson.version}</include>                  
                 <include>javax.servlet:jstl</include>
              </includes>
         </dependencySet>  
@@ -54,6 +65,7 @@
                 <include>org.osivia.portal.portlets:osivia-portal-portlets-sample:war:${project.version}</include>
                 <include>org.osivia.portal.portlets:osivia-portal-portlets-cms:war:${project.version}</include>
                 <include>org.osivia.portal.themes:osivia-portal-themes-generic:war:${project.version}</include>
+                <include>org.osivia.portal.ws:osivia-portal-ws:war:${project.version}</include>
              </includes>           
         </dependencySet> 
         <dependencySet>

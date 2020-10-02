@@ -106,7 +106,10 @@ public class SampleController implements PortletContextAware {
         return "view-3";
     }
 
-
+    @RenderMapping(params = "tab=5")
+    public String view5() {
+        return "react";
+    }
     /**
      * Action mapping
      *

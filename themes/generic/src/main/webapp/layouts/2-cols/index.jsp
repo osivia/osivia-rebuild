@@ -12,14 +12,21 @@
    <script type="text/javascript"></script>
    <!-- inject the theme, default to the Renewal theme if nothing is selected for the portal or the page -->
    <p:theme themeName="renewal"/>
-   <!-- insert header content that was possibly set by portlets on the page -->
-   <p:headerContent/>
-
+   
+  <script type="application/javascript" src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
+  <script type="application/javascript" src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
+  <script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+     
+<p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 </head>
 
 <body id="body">
 
-<p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
+
+
+
+<div id="root"></div>
+
 
 
 

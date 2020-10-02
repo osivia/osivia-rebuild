@@ -258,7 +258,32 @@ function ajaxCall(options, url, eventToStop, popViewState){
                    // Create a temporary element and paste the innerHTML in it
                    var srcContainer = document.createElement("div");
 
-                   // Insert the markup in the div
+                   if( markup.includes("babel"))	{
+                	   srcContainer.insertAdjacentHTML('beforeend', markup);
+
+                	   
+//                	   var bdecl = "<script type=\"text/babel\">";
+//                	   
+//                	   var begin = markup.indexOf(bdecl);
+//                	   var end = markup.indexOf("</script>");
+//                	   
+//                	   var script = markup.substr(begin + bdecl.length, end - ( begin + bdecl.length));
+//                	   
+//                	   script = Babel.transform(script,{ presets: [ 'react','es2015'], plugins:["transform-class-properties", "transform-object-rest-spread", "transform-flow-strip-types"], sourceMaps:"inline", babelrc:false, filename:"Inline Babel script" }).code;
+//                	   console.log(script);
+//                	   
+                       // Listen for load event if we're in a browser and then kick off finding and
+                       // running of scripts with "text/babel" type.
+//                       if (typeof window !== 'undefined' && window && window.addEventListener) {
+//                           window.addEventListener('DOMContentLoaded', function() {
+//                               return transformScriptTags();
+//                           }, false);
+//                       }           
+                       
+
+                    }
+                   else
+                	   // Insert the markup in the div
                    new Insertion.Bottom(srcContainer, markup);
 
                    // Copy the region content
@@ -347,6 +372,13 @@ function ajaxCall(options, url, eventToStop, popViewState){
                  }
              }
           }
+           
+           // for babel scripts
+           window.document.dispatchEvent(new Event("DOMContentLoaded", {
+        	   bubbles: true,
+        	   cancelable: true
+        	 })); 
+           
           
           if( newPage){
        	   		observePortlets();

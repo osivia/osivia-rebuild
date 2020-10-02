@@ -19,6 +19,10 @@
     <portlet:param name="step" value="1"/>
 </portlet:renderURL>
 
+<portlet:renderURL var="tab5URL">
+    <portlet:param name="tab" value="5"/>
+</portlet:renderURL>
+
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -36,4 +40,8 @@
     <li class="nav-item">
         <a class="nav-link <c:if test="${tab eq 4}">active</c:if>" href="${tab4URL}">Formulaire</a>
     </li>
+    
+    <li class="nav-item">
+        <a class="nav-link <c:if test="${tab eq 5}">active</c:if>" href="${tab5URL}">React</a>
+    </li>    
 </ul>
