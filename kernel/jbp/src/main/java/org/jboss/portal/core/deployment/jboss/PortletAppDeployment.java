@@ -32,6 +32,7 @@ import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.jboss.portal.security.spi.provider.SecurityConfigurationException;
 import org.jboss.portal.server.deployment.PortalWebApp;
+import org.osivia.portal.api.locator.Locator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
@@ -120,9 +121,9 @@ public class PortletAppDeployment extends org.jboss.portal.portlet.deployment.jb
             {
                Class proxyClass = pwa.getClassLoader().loadClass(serviceClass);
                ObjectName objectName = ObjectName.getInstance(serviceRef);
-               // TODO migration : create proxy for portlets
-               //Object proxy = MBeanProxyExt.create(proxyClass, objectName, mbeanServer, true);
-               // pwa.getServletContext().setAttribute(serviceName, proxy);
+               
+               Object proxy = Locator.getService(objectName.toString(), proxyClass);
+               pwa.getServletContext().setAttribute(serviceName, proxy);
             }
             catch (Exception e)
             {

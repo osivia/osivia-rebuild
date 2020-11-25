@@ -31,4 +31,18 @@
         </portlet-info>
     </portlet>
 
+    <!-- Internationalization customizer -->
+    <portlet>
+        <portlet-name>cloud-ens-internationalization-customizer</portlet-name>
+        <portlet-class>org.osivia.portal.sample.customizer.InternationalizationCustomizer</portlet-class>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Internationalization customizer</title>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>
