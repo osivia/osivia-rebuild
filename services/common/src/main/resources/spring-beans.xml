@@ -14,6 +14,17 @@
 	</bean>
 
 
+	<bean class="org.osivia.portal.core.customization.CustomizationService"
+		id="osivia:service=CustomizationService">
+	</bean>
+
+
+	<bean class="org.osivia.portal.core.internationalization.InternationalizationService"
+		id="osivia:service=InternationalizationService">
+		<property name="CustomizationService" ref="osivia:service=CustomizationService"/>
+	</bean>
+	
+	
 	<bean class="org.osivia.portal.core.tracker.TrackerService" name="osivia:service=Tracker"></bean>
 
 

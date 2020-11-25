@@ -1,7 +1,9 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <%@ page contentType="text/html" isELIgnored="false"%>
+
 
 
 <portlet:defineObjects />
@@ -32,6 +34,8 @@
 <p>  foo : ${foo} </p>
 
 <p>  user : ${user} </p>
+
+<p> <op:translate key="SAMPLE_MSG_1" /> </p>
 
 <div class="input-group">
 

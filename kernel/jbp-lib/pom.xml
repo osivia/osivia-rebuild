@@ -15,7 +15,8 @@
 
 	<name>OSIVIA Portal - Kernel - JBP lib.</name>
 	<description>OSIVIA Portal kernel JBoss Portal Library.</description>
-
+	
+ 
 	<dependencies>
 
 
@@ -43,7 +44,6 @@
 			<artifactId>javax.security.jacc-api</artifactId>
 			<version>1.5</version>
 		</dependency>
-
 
 
 	</dependencies>

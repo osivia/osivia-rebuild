@@ -8,7 +8,6 @@
         <version>5.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.osivia.portal</groupId>
     <artifactId>osivia-portal-distribution</artifactId>
     <name>OSIVIA Portal - Distribution</name>
 
@@ -106,6 +105,13 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+        
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
             <scope>compile</scope>
         </dependency>
         
