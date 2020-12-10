@@ -25,12 +25,6 @@
 
 
 
-
-<div id="root"></div>
-
-
-
-
 <table class="layout" width="100%">
    <tr>
 	<td width="100%" colspan="2" valign="top">    

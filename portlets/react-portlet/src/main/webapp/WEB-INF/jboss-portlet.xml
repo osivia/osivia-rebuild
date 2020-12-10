@@ -1,0 +1,14 @@
+
+<!DOCTYPE portlet-app PUBLIC
+   "-//JBoss Portal//DTD JBoss Portlet 2.6//EN"
+   "http://www.jboss.org/portal/dtd/jboss-portlet_2_6.dtd">
+
+<portlet-app>
+   <portlet>
+      <portlet-name>ReactPortlet</portlet-name>
+      <header-content>
+		<script type="text/javascript" src="/react/static/js/main.c2024fbd.js"></script>		  
+      </header-content>
+   </portlet>
+    
+</portlet-app>

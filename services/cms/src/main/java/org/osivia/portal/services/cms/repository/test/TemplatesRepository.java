@@ -84,7 +84,7 @@ public class TemplatesRepository extends NativeMemoryRepository  {
         Map<String,String> aProperties = new ConcurrentHashMap<>();       
         ModuleRef moduleA = new ModuleRef("winA-" + id, "col-2",  "SampleInstance", aProperties);
         Map<String,String> bProperties = new ConcurrentHashMap<>();          
-        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2",  "SampleRemote", bProperties);
+        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2",  "ReactPortletInstance", bProperties);
 
 
         modules.add(moduleA);

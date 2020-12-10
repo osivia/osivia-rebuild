@@ -21,6 +21,7 @@
     <modules>
         <module>sample</module>
 		<module>cms</module>
+		<module>react-portlet</module>		
     </modules>
     
     
