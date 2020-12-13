@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project name="react-sample">
+ 
+    <!-- property name="cxf.home" location="/usr/myapps/cxf-2.5.1" / -->
+ 
+    <path id="cxf.classpath">
+        <pathelement path="${runtime_classpath}"/>
+    </path>
+ 
+	 <target name="generateJbossPortlet2">
+    	
+	 </target>
+	
+    <target name="generateJbossPortlet">
+    	
+    	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+    	<echo>Parsing ${sourceDir}</echo>
+    	
+    	<copy file="${templateFile}" tofile="${destFile}" />
+    	
+		
+		<foreach  target="addResource" param="changedFile" >
+			<param name="destFile" value="${destFile}" />
+			<param name="baseDir" value="${sourceDir}" />
+    		<fileset dir="${sourceDir}" >
+				<include name="**/*.js"/>
+			</fileset>
+		</foreach>
+
+    	
+    </target>
+	
+    <target name="addResource">
+ 
+    	
+    	<loadresource property="relative.dir">
+    	  <propertyresource name="changedFile"/>
+    	  <filterchain>
+    	    <tokenfilter>
+    	      <filetokenizer/>
+    	      <replacestring from= "${basedir}\src\main\react\build\static\js\" to="/react/static/js/"/>
+    	    </tokenfilter>
+    	  </filterchain>
+    	</loadresource>
+
+    	
+	   	<echo>Adding 2 ${relative.dir} to ${destFile}</echo>    
+    	
+    	<replace file="${destFile}">
+    		  <replacefilter token="&lt;!--INSERT-->"  value="&lt;script type=&quot;text/javascript&quot; src=&quot;${relative.dir}&quot;>&lt;/script>    &lt;!--INSERT-->" />
+    	</replace>    	
+	</target>
+ 
+</project>
