@@ -461,17 +461,62 @@ public class EditionController implements PortletContextAware, ApplicationContex
      */
     
     @ActionMapping(name = "submit", params = "update-locale")
-    public void updateLocale(PortletRequest request, PortletResponse response, @ModelAttribute("form") EditionForm form) throws PortletException {
+    public void updateLocale(PortletRequest request, ActionResponse response, @ModelAttribute("form") EditionForm form) throws PortletException {
         // Portal Controller context
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-        
-        try {
-            localService.setLocale(portalCtx, form.getLocale());
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }
+
+
+            
+            try {
+                String contentId = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.navigationId");
+                if (contentId != null) {
+                    UniversalID id = new UniversalID(contentId);
+                    CMSController ctrl = new CMSController(portalCtx); 
+                    CMSContext cmsContext = ctrl.getCMSContext();
+
+                    Document currentDoc = cmsService.getDocument(cmsContext, id);
+                    
+                    localService.setLocale(portalCtx, form.getLocale());                    
+                    
+                    String url = portalUrlFactory.getViewContentUrl(portalCtx, currentDoc.getSpaceId());
+                    response.sendRedirect(url);
+                }
+            } catch (PortalException | IOException e) {
+                throw new PortletException(e);
+            
+            }
+            
+
     }
     
+    
+    /**
+     * Update locale.
+     *
+     * @param form the form
+     */
+    
+    @ActionMapping(name = "home")
+    public void home(PortletRequest request, ActionResponse response) throws PortletException {
+        // Portal Controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        try {
+            String contentId = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.navigationId");
+            if (contentId != null) {
+                UniversalID id = new UniversalID(contentId);
+                CMSController ctrl = new CMSController(portalCtx); 
+                CMSContext cmsContext = ctrl.getCMSContext();
+
+                Document currentDoc = cmsService.getDocument(cmsContext, id);
+                
+                String url = portalUrlFactory.getViewContentUrl(portalCtx, currentDoc.getSpaceId());
+                response.sendRedirect(url);
+            }
+        } catch (PortalException | IOException e) {
+            throw new PortletException(e);
+        
+        }
+    }
     
     /**
      * Search filters form init binder.

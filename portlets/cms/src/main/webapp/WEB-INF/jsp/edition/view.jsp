@@ -14,6 +14,7 @@
 
 
 <portlet:actionURL name="switchMode" var="switchModeURL" />
+<portlet:actionURL name="home" var="homeURL" />
 <portlet:actionURL name="publish" var="publishURL" />
 <portlet:actionURL name="addPage" var="addPageURL" />
 <portlet:actionURL name="addPortlet" var="addPortletURL" />
@@ -28,7 +29,12 @@
 	<form:form action="${submitUrl}" method="post" modelAttribute="form"
 		class="row w-100">
 
+
+
 		<div class="col-2  d-flex align-items-center">
+       		<a class ="text-white pr-2" href="${homeURL}">
+				<i class="glyphicons glyphicons-basic-home"></i>
+			</a>
 			<c:if test="${status.supportPreview}">
 				<c:if test="${status.preview}">
 					<div class="btn-group">
