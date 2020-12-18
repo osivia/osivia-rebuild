@@ -1,5 +1,8 @@
 package org.osivia.portal.services.cms.repository.spi;
 
+import java.util.List;
+import java.util.Locale;
+
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -10,6 +13,6 @@ public interface UserRepository {
     public Document getDocument(String id) throws CMSException;
     public NavigationItem getNavigationItem(String internalId) throws CMSException;
     public boolean supportPreview();
-        
+    public List<Locale> getLocales();        
 
 }

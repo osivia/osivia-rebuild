@@ -1,5 +1,6 @@
 package org.osivia.portal.services.cms.repository.test;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,7 +66,7 @@ public class InMemoryFactory {
 
         InMemoryUserRepository userRepository;
 
-        SharedRepositoryKey repositoryKey = new SharedRepositoryKey(repositoryName, cmsContext.isPreview());
+        SharedRepositoryKey repositoryKey = new SharedRepositoryKey(repositoryName, cmsContext.isPreview(), cmsContext.getlocale());
 
         if (cmsContext instanceof SuperUserContext) {
 
@@ -76,14 +77,11 @@ public class InMemoryFactory {
             }
 
         } else {
-//            ControllerContext ctx = ControllerContextAdapter.getControllerContext(cmsContext.getPortalControllerContext());
-//            HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
-            
             HttpServletRequest request = cmsContext.getPortalControllerContext().getHttpServletRequest();
 
             HttpSession session = request.getSession(true);
 
-            String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName + "." + cmsContext.isPreview();
+            String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName + "." + repositoryKey.isPreview() + "." + repositoryKey.getLocale().toString();
 
             userRepository = (InMemoryUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null) {
@@ -144,16 +142,35 @@ public class InMemoryFactory {
     public void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
 
         UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
-        userRepository.addListener(listener);
 
+
+        addListenerForEachLanguage(cmsContext, repositoryName, listener);
+        
         if (userRepository.supportPreview()) {
             boolean savedPreview = cmsContext.isPreview();
             cmsContext.setPreview(true);
-            userRepository = (InMemoryUserRepository) getUserRepository(cmsContext, repositoryName);
-            userRepository.addListener(listener);
+            addListenerForEachLanguage(cmsContext, repositoryName, listener);
             cmsContext.setPreview(savedPreview);
         }
-
+    }
+    
+    /**
+     * Adds the listener for each language.
+     *
+     * @param cmsContext the cms context
+     * @param repositoryName the repository name
+     * @param listener the listener
+     */
+    public void addListenerForEachLanguage(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+        Locale savedLocale = cmsContext.getlocale();
+        UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
+        for( Locale locale: userRepository.getLocales())    {
+            cmsContext.setLocale(locale);
+            UserRepository localeRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
+            if( localeRepository != null)
+                localeRepository.addListener(listener);
+        }
+        cmsContext.setLocale(savedLocale);
     }
 
 }

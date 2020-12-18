@@ -2,11 +2,13 @@ package org.osivia.portal.core.container.persistent;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -33,6 +35,7 @@ import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.content.IPublicationManager;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -41,7 +44,7 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 
 public class StaticPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
-    private static final String _PREVIEW = "_preview";
+
     Map<String, Map<PortalObjectId, PortalObject>> nodes;
     ContainerContext containerContext = new ContainerContext();
 
@@ -274,9 +277,22 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                 
                 String portalCMSName = portalName;
                 CMSContext cmsContext = new CMSContext(portalCtx);
-                if( portalCMSName.endsWith(_PREVIEW))    {
-                    cmsContext.setPreview(true);
-                    portalCMSName = portalCMSName.substring(0, portalCMSName.length() - _PREVIEW.length());
+                int iCtx = portalCMSName.indexOf(IPublicationManager.PAGEID_CTX);
+                if( iCtx != -1) {
+
+                    String portalCMSCtx = portalCMSName.substring(iCtx + IPublicationManager.PAGEID_CTX.length());
+                    portalCMSName = portalCMSName.substring(0, iCtx);                    
+                    String items[] = portalCMSCtx.split(IPublicationManager.PAGEID_ITEM_SEPARATOR);
+                    
+                    for(int i= 0; i<items.length; i+=1)    {
+                        String values[] = items[i].split(IPublicationManager.PAGEID_VALUE_SEPARATOR);
+                         if( values[0].equals(IPublicationManager.PAGEID_PREVIEW))    {
+                            cmsContext.setPreview(BooleanUtils.toBoolean(values[1]));
+                        }
+                         if( values[0].equals(IPublicationManager.PAGEID_LOCALE))    {
+                             cmsContext.setLocale(new Locale(values[1]));
+                         }
+                    }
                 }
                     
                 Document document = getCMSService().getDocument(cmsContext,  new UniversalID(portalID.getNamespace(), portalCMSName));

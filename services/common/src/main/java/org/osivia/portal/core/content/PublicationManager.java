@@ -23,6 +23,7 @@ import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
@@ -36,6 +37,11 @@ public class PublicationManager implements IPublicationManager {
     
     @Autowired
     private IPreviewModeService previewModeService;
+    
+    
+    /** The locale service. */
+    @Autowired
+    private ILocaleService localeService;
 
     private CMSService getCMSService() {
         if (cmsService == null) {
@@ -57,6 +63,13 @@ public class PublicationManager implements IPublicationManager {
 
         return previewModeService;       
     }
+    
+    private ILocaleService getLocaleService() {
+
+        return localeService;       
+    }
+    
+    
 
     protected PortalObjectId getPageTemplate(CMSContext cmsContext, Document doc, NavigationItem navigation) throws ControllerException {
 
@@ -66,9 +79,13 @@ public class PublicationManager implements IPublicationManager {
 
 
             String spaceTemplateID =  space.getId().getInternalID();
+
+            spaceTemplateID += IPublicationManager.PAGEID_CTX;
             if( cmsContext.isPreview()) {
-                spaceTemplateID += "_preview";
+                spaceTemplateID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_PREVIEW + IPublicationManager.PAGEID_VALUE_SEPARATOR +"true";
             }
+            spaceTemplateID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_LOCALE + IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
+            
             
             String spacePath = space.getId().getRepositoryName() + ":" + "/" + spaceTemplateID + "/" + DefaultCMSPageFactory.getRootPageName();
 
@@ -116,6 +133,7 @@ public class PublicationManager implements IPublicationManager {
         try {
             CMSContext cmsContext = new CMSContext(portalCtx);
             cmsContext.setPreview(getPreviewModeService().isPreviewing(portalCtx, docId));
+            cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
             
 
             Document doc = getCMSService().getDocument(cmsContext, docId);
@@ -145,10 +163,11 @@ public class PublicationManager implements IPublicationManager {
             // TODO : get current portal
             
             String pageDynamicID =  "space_" + navigation.getSpaceId().getInternalID();
+            pageDynamicID += IPublicationManager.PAGEID_CTX;
             if( cmsContext.isPreview()) {
-                pageDynamicID += "_preview";
+                pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_PREVIEW + IPublicationManager.PAGEID_VALUE_SEPARATOR +"true";
             }
-            
+            pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_LOCALE + IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
              
             String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", pageDynamicID,
                     displayNames, templatePath, properties, parameters);

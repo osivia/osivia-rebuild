@@ -1,5 +1,6 @@
 package org.osivia.portal.services.cms.repository.cache;
 
+import java.util.Locale;
 
 /**
  * The Class SharedRepositoryKey.
@@ -11,8 +12,23 @@ public class SharedRepositoryKey {
     
     /** The preview. */
     private boolean preview;
+    
+    /** The repository name. */
+    private Locale locale;
 
     
+    
+    public Locale getLocale() {
+        return locale;
+    }
+
+
+    
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+
     /**
      * Gets the repository name.
      *
@@ -39,10 +55,14 @@ public class SharedRepositoryKey {
      * @param repositoryName the repository name
      * @param preview the preview
      */
-    public SharedRepositoryKey(String repositoryName, boolean preview) {
+    public SharedRepositoryKey(String repositoryName, boolean preview,  Locale locale) {
         super();
         this.repositoryName = repositoryName;
         this.preview = preview;
+        if( locale != null)
+            this.locale = locale;
+        else 
+            this.locale = Locale.FRENCH;
     }
 
 
@@ -50,6 +70,7 @@ public class SharedRepositoryKey {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((locale == null) ? 0 : locale.hashCode());
         result = prime * result + (preview ? 1231 : 1237);
         result = prime * result + ((repositoryName == null) ? 0 : repositoryName.hashCode());
         return result;
@@ -65,6 +86,11 @@ public class SharedRepositoryKey {
         if (getClass() != obj.getClass())
             return false;
         SharedRepositoryKey other = (SharedRepositoryKey) obj;
+        if (locale == null) {
+            if (other.locale != null)
+                return false;
+        } else if (!locale.equals(other.locale))
+            return false;
         if (preview != other.preview)
             return false;
         if (repositoryName == null) {
@@ -74,6 +100,8 @@ public class SharedRepositoryKey {
             return false;
         return true;
     }
+
+
     
 
 }

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -15,6 +16,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.windows.WindowFactory;
 
@@ -32,6 +34,9 @@ public class NuxeoController {
 
     /** The cms service. */
     private CMSService cmsService;
+    
+    /** The locale service. */
+    private ILocaleService localeService;
 
 
     /** The cms context. */
@@ -62,6 +67,19 @@ public class NuxeoController {
         return cmsService;
     }
 
+    /**
+     * Gets the locale service.
+     *
+     * @return the locale service
+     */
+    public ILocaleService getLocaleService() {
+        if (localeService == null) {
+            localeService =  Locator.getService(ILocaleService.class);
+        }
+        return localeService;
+
+       
+    }
 
     /**
      * Gets the CMS context.
@@ -73,7 +91,12 @@ public class NuxeoController {
             cmsContext = new CMSContext(portalCtx);
             String sPreview = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.preview");
             cmsContext.setPreview(BooleanUtils.toBoolean(sPreview));
-         }
+            try {
+                cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
+            } catch (PortalException e) {
+               throw new RuntimeException(e);
+            }
+          }
         return cmsContext;
     }
 

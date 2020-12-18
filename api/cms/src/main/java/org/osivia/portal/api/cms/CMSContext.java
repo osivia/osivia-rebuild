@@ -1,12 +1,8 @@
 package org.osivia.portal.api.cms;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.util.Locale;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.windows.WindowFactory;
 
 /**
  * The Class CMSContext.
@@ -16,6 +12,10 @@ public class CMSContext {
 
     /** The portal ctx. */
     private final PortalControllerContext portalCtx;
+    
+    /** The language. */
+    private Locale locale;
+    
 
     /** The preview. */
     private boolean preview;
@@ -43,9 +43,34 @@ public class CMSContext {
     
 
 
+    /**
+     * Gets the portal controller context.
+     *
+     * @return the portal controller context
+     */
     public PortalControllerContext getPortalControllerContext() {
         return portalCtx;
     }
 
+    
+    /**
+     * Gets the language.
+     *
+     * @return the language
+     */
+    public Locale getlocale() {
+        return locale;
+    }
+
+
+    
+    /**
+     * Sets the language.
+     *
+     * @param language the new language
+     */
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
 
 }

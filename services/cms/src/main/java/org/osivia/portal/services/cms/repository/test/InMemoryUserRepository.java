@@ -1,8 +1,10 @@
 package org.osivia.portal.services.cms.repository.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -161,9 +163,16 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
         }
     }
 
-    
-    
 
+
+    @Override
+    public List<Locale> getLocales() {
+        return Arrays.asList(Locale.FRENCH);
+    }
+
+    
+    
+    
    
 
    

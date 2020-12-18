@@ -1,6 +1,10 @@
 package org.osivia.portal.cms.portlets.edition.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +29,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -33,8 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
@@ -69,6 +76,13 @@ public class EditionController implements PortletContextAware, ApplicationContex
     
     @Autowired
     private IPreviewModeService previewModeService;
+    
+    @Autowired
+    private ILocaleService localService;
+    
+    /** Locale property editor. */
+    @Autowired
+    private LocalePropertyEditor localPropertyEditor;
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(EditionController.class);
@@ -179,6 +193,30 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
     }
 
+    /**
+     * Add page sample
+     */
+    @ActionMapping(name = "setLocale")
+    public void setLocale(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+
+        try {
+
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+ 
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
+            UniversalID id = new UniversalID(contentId);
+            
+            previewModeService.changePreviewMode(portalControllerContext, id);
+  
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
+            response.sendRedirect(url);
+
+        } catch (PortalException | IOException e) {
+            throw new PortletException(e);
+        }
+    }
+    
 
     /**
      * Add portlet sample
@@ -384,5 +422,66 @@ public class EditionController implements PortletContextAware, ApplicationContex
         this.applicationContext = applicationContext;
     }
 
+    /**
+     * Get search filters form model attribute.
+     *
+     * @param request  portlet request
+     * @param response portlet response
+     * @return form
+     */
+    @ModelAttribute("form")
+    public EditionForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal Controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+
+        EditionForm form = this.applicationContext.getBean(EditionForm.class);
+        try {
+            form.setLocale( localService.getLocale(portalCtx));
+            Map<String, String> locales = new HashMap<>();
+            locales.put(Locale.FRENCH.getLanguage().toString(), Locale.FRENCH.getDisplayLanguage());
+            locales.put(Locale.ENGLISH.getLanguage().toString(), Locale.ENGLISH.getDisplayLanguage());    
+            locales.put(Locale.GERMAN.getLanguage().toString(), Locale.GERMAN.getDisplayLanguage());
+            form.setLocales(locales);
+            
+        } catch (PortalException e) {
+            throw new PortletException( e);
+        }
+        
+        return form;
+    }
+
+    
+
+    
+ 
+    /**
+     * Update locale.
+     *
+     * @param form the form
+     */
+    
+    @ActionMapping(name = "submit", params = "update-locale")
+    public void updateLocale(PortletRequest request, PortletResponse response, @ModelAttribute("form") EditionForm form) throws PortletException {
+        // Portal Controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        
+        try {
+            localService.setLocale(portalCtx, form.getLocale());
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+    }
+    
+    
+    /**
+     * Search filters form init binder.
+     *
+     * @param binder portlet request data binder
+     */
+    @InitBinder("form")
+    public void formInitBinder(PortletRequestDataBinder binder) {
+        binder.registerCustomEditor(Locale.class, this.localPropertyEditor);
+
+    }
 
 }

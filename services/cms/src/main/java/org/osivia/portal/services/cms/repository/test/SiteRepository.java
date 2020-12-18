@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +31,11 @@ public class SiteRepository extends NativeMemoryRepository  {
     }
 
 
+    
+    private String generateTitle( String originalTitle) {
+        return "["+repositoryKey.getLocale().getLanguage().toString()+"]" + originalTitle;
+    }
+    
     /**
      * Adds the site space.
      *
@@ -38,7 +44,7 @@ public class SiteRepository extends NativeMemoryRepository  {
      */
     private void addSiteSpace(String id, List<String> children) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Site." + id);
+        properties.put("dc:title", generateTitle("Site "+ id));
 
         List<ModuleRef> modules = new ArrayList<>();
         SpaceImpl space = new SpaceImpl(this, id, id, new UniversalID("templates", "ID_TEMPLATE_SITE"), children, properties, modules);
@@ -61,7 +67,7 @@ public class SiteRepository extends NativeMemoryRepository  {
      */
     private void addSitePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Site." + id);
+        properties.put("dc:title", generateTitle("Page "+ id));
 
 
         PageImpl page = new PageImpl(this, id, name, null, parentId, spaceId, children, properties, modules);
@@ -103,5 +109,9 @@ public class SiteRepository extends NativeMemoryRepository  {
     public boolean supportPageEdition() {
         return true;
     }
-
+    
+    @Override
+    public List<Locale> getLocales() {
+        return Arrays.asList(Locale.FRENCH, Locale.ENGLISH, Locale.GERMAN);
+    }
 }

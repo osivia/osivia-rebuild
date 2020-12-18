@@ -2,6 +2,8 @@ package org.osivia.portal.api.cms;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locale.ILocaleService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.windows.WindowFactory;
 
 public class CMSController {
@@ -9,6 +11,9 @@ public class CMSController {
     /** The portal ctx. */
     private final PortalControllerContext portalCtx;
 
+    /** The locale service. */
+    private ILocaleService localeService;
+    
     public CMSController(PortalControllerContext portalCtx) {
         super();
         this.portalCtx = portalCtx;
@@ -20,6 +25,19 @@ public class CMSController {
         
     }
 
+    /**
+     * Gets the locale service.
+     *
+     * @return the locale service
+     */
+    public ILocaleService getLocaleService() {
+        if (localeService == null) {
+            localeService =  Locator.getService(ILocaleService.class);
+        }
+        return localeService;
+
+       
+    }
 
     /** The preview. */
     private boolean preview;
@@ -36,6 +54,12 @@ public class CMSController {
         CMSContext cmsContext = new CMSContext(portalCtx);
         
         cmsContext.setPreview(this.preview);
+        
+        try {
+        cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
+        } catch( Exception e) {
+            throw new RuntimeException(e);
+        }
         return cmsContext;
     }
     

@@ -2,6 +2,7 @@ package org.osivia.portal.cms.portlets.edition.configuration;
 
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -62,5 +63,10 @@ public class EditionConfiguration {
     @Bean
     public IPreviewModeService getPreviewModeService() {
         return Locator.getService(IPreviewModeService.class);
+    }
+    
+    @Bean
+    public ILocaleService getLocaleService() {
+        return Locator.getService(ILocaleService.class);
     }
 }
