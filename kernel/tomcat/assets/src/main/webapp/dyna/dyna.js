@@ -103,6 +103,14 @@ function bilto(event)
       var options = new Object();
       var url;
 
+      
+      // if unknow source (IMG, SPAN, ...) , search the ancestor A, INPUT or BUTTON
+      if ((source.nodeName != "A") && (source.nodeName != "INPUT") && (source.nodeName != "BUTTON")) {
+          source = Element.up(source, "A, INPUT, BUTTON");
+          if (source == null)
+              return;
+      }
+      
       //
       if (source.nodeName == "A")
       {

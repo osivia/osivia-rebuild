@@ -217,7 +217,8 @@ public final class Constants {
     public static final String WINDOW_PROP_SCOPE = "osivia.cms.scope";
     /** Maximized CMS URL window property name. */
     public static final String WINDOW_PROP_MAXIMIZED_CMS_URL = "osivia.maximized.cms.url";
-
+    /** The cache parent window property name. */
+    public static final String WINDOW_PROP_CACHE_PARENT_URI = "osivia.cms.cache.parent.uri";
 
     // REQUEST
 

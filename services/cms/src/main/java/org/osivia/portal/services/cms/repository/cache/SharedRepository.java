@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
@@ -88,9 +89,9 @@ public class SharedRepository {
     }
     
 
-    public void notifyChanges() {
+    public void notifyChanges( CMSEvent e) {
         for (RepositoryListener listener : listeners) {
-            listener.contentModified();
+            listener.contentModified(e);
         }
     }
     

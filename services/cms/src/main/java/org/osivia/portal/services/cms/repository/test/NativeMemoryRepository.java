@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.service.ParentRequest;
+import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.test.FolderImpl;
 import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
@@ -81,7 +84,10 @@ public abstract class NativeMemoryRepository extends InMemoryUserRepository impl
         
         addDocument(id, doc);
         updatePaths();
-        notifyChanges();           
+        
+        List<Request> dirtyRequests = new ArrayList<>();
+        dirtyRequests.add(new ParentRequest(parent.getId()));
+        notifyChanges( doc,dirtyRequests);           
     }
 
 

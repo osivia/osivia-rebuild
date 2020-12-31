@@ -34,16 +34,35 @@ import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.spi.UserContext;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.service.CMSEvent;
+import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.ParentRequest;
+import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.api.cms.service.Request;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.cache.CMSPortalCacheCacheListener;
+import org.osivia.portal.core.cms.cache.CMSPortalCacheEvent;
+import org.osivia.portal.core.cms.cache.RequestCacheManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.jboss.portal.portlet.cache.CacheControl;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.portlet.WindowContextImpl;
 import org.jboss.portal.WindowState;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.Mode;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,10 +74,15 @@ import java.util.Map;
 public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 {
 
+    @Autowired
+    private RequestCacheManager requestCacheMgr;
+    
    public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException
    {
       // Compute the cache key
       String scopeKey = "cached_markup." + invocation.getWindowContext().getId();
+      
+
 
       // We use the principal scope to avoid security issues like a user loggedout seeing a cached entry
       // by a previous logged in user
@@ -76,19 +100,44 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          Map<String, String[]> publicNavigationalState = renderInvocation.getPublicNavigationalState();
          WindowState windowState = renderInvocation.getWindowState();
          Mode mode = renderInvocation.getMode();
+         
+         
+         
+       
 
          //
-         CacheEntry cachedEntry = (CacheEntry)userContext.getAttribute(scopeKey);
+         CacheEntry cachedEntry = (CacheEntry) userContext.getAttribute(scopeKey);
          
          
-         // Window has been modified
-         if( cachedEntry != null) {
+         Window window = null;
+
+         if (invocation.getWindowContext() instanceof WindowContextImpl) {
              String windowId = invocation.getWindowContext().getId();
-             PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);             
-             Window window =  (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
-             if( cachedEntry.getCreationTs() < window.getUpdateTs() )
-                 cachedEntry= null;
+             PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
+             window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
          }
+         
+         
+        // Window has been modified
+        if (cachedEntry != null && window != null) {
+            if (cachedEntry.getCreationTs() < window.getUpdateTs())
+                cachedEntry = null;
+        }
+
+
+        // CMS cache has been modified
+        if (cachedEntry != null && window != null) {
+
+            Long updateTs = requestCacheMgr.getCMSRequestUpdateTs(ctx, window);
+
+            if (updateTs != null) {
+                if (cachedEntry.creationTs < updateTs) {
+                    cachedEntry = null;
+                }
+            }
+        }         
+      
+         
          
 
          //
@@ -217,6 +266,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             // Cache if we can
             if (expirationTimeMillis > 0)
             {
+
+                
                CacheEntry cacheEntry = new CacheEntry(
                   navigationalState,
                   publicNavigationalState,
@@ -225,7 +276,10 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                   fragment,
                   expirationTimeMillis,
                   System.currentTimeMillis(),
-                  validationToken);
+                  validationToken
+                  );
+               
+               
                userContext.setAttribute(scopeKey, cacheEntry);
             }
 
@@ -248,10 +302,13 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
       }
    }
 
+   
+   
+
    /**
     * Encapsulate cache information.
     */
-   private static class CacheEntry implements Serializable
+   private static class CacheEntry implements RepositoryListener, Serializable
    {
 
       /** The entry navigational state. */
@@ -278,6 +335,9 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
       /** . */
       private final String validationToken;
+      
+
+    
 
       public CacheEntry(
          StateString navigationalState,
@@ -301,11 +361,21 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          this.expirationTimeMillis = expirationTimeMillis;
          this.creationTs = creationTs;
          this.validationToken = validationToken;
+
       }
 
     
+
+
     public long getCreationTs() {
         return creationTs;
+    }
+
+
+    @Override
+    public void contentModified(CMSEvent event) {
+        // TODO Auto-generated method stub
+        
     }
    }
 }

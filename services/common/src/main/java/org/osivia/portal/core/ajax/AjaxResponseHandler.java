@@ -79,11 +79,13 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
+import org.osivia.portal.core.cms.cache.RequestCacheManager;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.resources.ResourceHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import javax.servlet.http.HttpServletRequest;
@@ -118,6 +120,10 @@ public class AjaxResponseHandler implements ResponseHandler {
     private PortalObjectContainer portalObjectContainer;
 
     private DynamicLayoutService dynamicLayoutService;
+    
+    
+    @Autowired
+    private RequestCacheManager requestCacheMgr;
 
 
     /** . */
@@ -354,7 +360,27 @@ public class AjaxResponseHandler implements ResponseHandler {
                             }
                         }
 
-
+                        
+                        // Windows
+                        Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+                        
+                        
+                        for (PortalObject window : windows) {
+                            if (!dirtyWindowIds.contains(window.getId())) {
+                                // CMS Cache windows
+                                Long updateTs = requestCacheMgr.getCMSRequestUpdateTs(controllerContext, (Window) window);
+                                if (updateTs != null) {
+                                    Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
+                                            "osivia.ajax.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                                    if (lastSentTs == null || updateTs > lastSentTs) {
+                                        dirtyWindowIds.add(window.getId());
+                                    }
+                                }
+                            }
+                        }
+                        
+                        
+                        
                         for (Object dirtyWindowId : dirtyWindowIds) {
                             PortalObjectId poid = (PortalObjectId) dirtyWindowId;
                             String windowName = poid.getPath().getLastComponentName();
@@ -494,6 +520,11 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                                     // Add render to the page
                                     updatePage.addFragment(wc.getId(), buffer.toString());
+                                    
+                                    
+                                    controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajax.ts."+ wc.getId(), System.currentTimeMillis());
+
+                                    
                                 } else {
                                     //TODO:display error
                                     //updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT), "An error occured during rendering");

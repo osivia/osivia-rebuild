@@ -6,5 +6,11 @@ package org.osivia.portal.api.cms.service;
  */
 
 public interface RepositoryListener {
-    public void contentModified()  ;
+    
+    /**
+     * Content modified.
+     *
+     * @param event the event
+     */
+    public void contentModified( CMSEvent event)  ;
 }

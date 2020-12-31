@@ -13,14 +13,17 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.test.FolderImpl;
 import org.osivia.portal.services.cms.model.test.NavigationItemImpl;
 import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
+import org.osivia.portal.services.cms.service.CMSEventImpl;
 
 import fr.toutatice.portail.cms.producers.test.TestRepository;
 
@@ -69,8 +72,12 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
         listeners.add(listener);
     }
 
+    public void notifyChanges( Document src, List<Request> requests) {
+        getSharedRepository().notifyChanges( new CMSEventImpl( src, requests));
+    }
+    
     public void notifyChanges() {
-        getSharedRepository().notifyChanges();
+        getSharedRepository().notifyChanges( new CMSEventImpl());
     }
 
     
@@ -157,9 +164,9 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
     }
     
     @Override
-    public void contentModified() {
+    public void contentModified( CMSEvent e) {
         for (RepositoryListener listener : listeners) {
-            listener.contentModified();
+            listener.contentModified( e);
         }
     }
 
