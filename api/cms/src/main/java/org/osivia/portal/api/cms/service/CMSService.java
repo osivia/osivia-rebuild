@@ -24,6 +24,17 @@ public interface CMSService {
      * @throws CMSException the CMS exception
      */
     Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException;
+    
+    
+    /**
+     * Execute the request.
+     *
+     * @param cmsContext the cms context
+     * @param id the id
+     * @return the document
+     * @throws CMSException the CMS exception
+     */
+    Result executeRequest(CMSContext cmsContext, Request request) throws CMSException;
 
 
     /**

@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.SuperUserContext;
@@ -38,22 +39,24 @@ public class InMemoryFactory {
      * @param publishRepository the publish repository
      * @return the in memory user repository
      */
-    InMemoryUserRepository createRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository) {
+    InMemoryUserRepository createRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository, String userId) {
 
         InMemoryUserRepository userRepository = null;
 
         if ("templates".equals(repositoryKey.getRepositoryName())) {
-            userRepository = new TemplatesRepository(repositoryKey);
+            userRepository = new TemplatesRepository(repositoryKey, userId);
         }
         if ("myspace".equals(repositoryKey.getRepositoryName())) {
-            userRepository = new UserWorkspacesRepository(repositoryKey);
+            userRepository = new UserWorkspacesRepository(repositoryKey, userId);
         }
         if ("sites".equals(repositoryKey.getRepositoryName())) {
-            userRepository = new SiteRepository(repositoryKey, publishRepository);
+            userRepository = new SiteRepository(repositoryKey, publishRepository, userId);
         }
 
         return userRepository;
     }
+    
+    
 
     /**
      * Gets the user repository.
@@ -72,20 +75,22 @@ public class InMemoryFactory {
 
             userRepository = (InMemoryUserRepository) superUserRepositories.get(repositoryKey);
             if (userRepository == null) {
-                userRepository = createRepository(repositoryKey, publishRepository);
+                userRepository = createRepository(repositoryKey, publishRepository, "superuser");
                 superUserRepositories.put(repositoryKey, userRepository);
             }
 
         } else {
             HttpServletRequest request = cmsContext.getPortalControllerContext().getHttpServletRequest();
+            
+            String userName = request.getRemoteUser();
 
             HttpSession session = request.getSession(true);
 
             String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName + "." + repositoryKey.isPreview() + "." + repositoryKey.getLocale().toString();
 
             userRepository = (InMemoryUserRepository) session.getAttribute(repositoryAttributeName);
-            if (userRepository == null) {
-                userRepository = createRepository(repositoryKey, publishRepository);
+            if (userRepository == null || (!StringUtils.equals(userRepository.getUserName(), userName))) {
+                userRepository = createRepository(repositoryKey, publishRepository, userName);
 
                 session.setAttribute(repositoryAttributeName, userRepository);
             }

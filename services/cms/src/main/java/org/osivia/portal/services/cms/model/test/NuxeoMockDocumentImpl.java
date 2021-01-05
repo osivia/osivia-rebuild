@@ -48,6 +48,8 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     
     private transient boolean preview = false;
     
+    private List<String> acls = new ArrayList<>();
+    
     public  String getType()    {
         return "document";
     }
@@ -131,23 +133,7 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
         return this.nativeItem.getName();
     }
 
-
-    public NuxeoMockDocumentImpl getNavigationParent()  throws CMSException{
-        return userRepository.getParent(this);
-    }
-
-
-    public List<NuxeoMockDocumentImpl> getNavigationChildren()  throws CMSException {
-        List<NuxeoMockDocumentImpl> navChildren = new ArrayList<>();
-        for( NuxeoMockDocumentImpl doc: userRepository.getChildren(this)) {
-            if( doc.isNavigable())
-                navChildren.add(doc);
-        }
-        
-       return navChildren;
-       
-       
-    }
+  
     
     public boolean isNavigable()    {
         return false;
@@ -185,7 +171,12 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     } 
 
 
+    public void setACL( List<String> acls)   {
+        this.acls = acls;
+    }
 
-
+    public List<String> getACL( )   {
+       return this.acls;
+    }
 
 }

@@ -21,6 +21,7 @@
 <portlet:actionURL name="addPortletNav" var="addPortletNavURL" />
 <portlet:actionURL name="addFolder" var="addFolderURL" />
 <portlet:actionURL name="addDocument" var="addDocumentURL" />
+<portlet:actionURL name="setACL" var="setACLURL" />
 
 <portlet:actionURL name="submit" var="submitUrl" />
 
@@ -99,6 +100,13 @@
 					</span>
 				</c:if>
 			</c:if>
+			
+
+					<span> <a href="${setACLURL}"
+						class=" btn-sm btn-light m-1"> ACL</a>
+					</span>
+
+			
 		</div>
 		<div class="col-2  d-flex align-items-center">
 			<form:select path="locale" items="${form.locales}"

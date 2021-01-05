@@ -3,10 +3,11 @@ package org.osivia.portal.api.cms.service;
 import org.osivia.portal.api.cms.UniversalID;
 
 /**
- * The Class ParentRequest.
+ * The Class ChildrenRequest.
  */
-public class ParentRequest extends Request{
-    
+public class GetChildrenRequest extends Request{
+
+
     private final UniversalID parentId;
 
     
@@ -15,7 +16,7 @@ public class ParentRequest extends Request{
      *
      * @param parentId the parent id
      */
-    public ParentRequest(UniversalID parentId) {
+    public GetChildrenRequest(UniversalID parentId) {
         super();
         this.parentId = parentId;
     }
@@ -30,5 +31,13 @@ public class ParentRequest extends Request{
         return parentId;
     }
     
+    
+    
+    @Override
+    public String getRepositoryName() {
+        
+        return parentId.getRepositoryName();
+    }
+
 
 }

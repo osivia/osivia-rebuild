@@ -40,7 +40,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.api.cms.service.ParentRequest;
+import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -101,7 +101,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          WindowState windowState = renderInvocation.getWindowState();
          Mode mode = renderInvocation.getMode();
          
-         
+
          
        
 
@@ -116,6 +116,9 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
              PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
              window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
          }
+         
+         if( window != null)
+             requestCacheMgr.registerListener(ctx, window);
          
          
         // Window has been modified

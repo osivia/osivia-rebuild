@@ -149,6 +149,36 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
 
     }
+    
+    /**
+     * Add page sample
+     */
+    @ActionMapping(name = "setACL")
+    public void setACL(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+
+        try {
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
+            if (contentId != null) {
+
+                UniversalID id = new UniversalID(contentId);
+                
+                CMSController ctrl = new CMSController(portalControllerContext);
+
+                CMSContext cmsContext = ctrl.getCMSContext();
+
+                TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                ((TestRepository) repository).setACL(id.getInternalID(), "group:members");
+            }
+        } catch (PortalException   e) {
+            throw new PortletException(e);
+        }
+
+    }
+    
 
     /**
      * Add page sample

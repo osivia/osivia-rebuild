@@ -8,6 +8,8 @@ import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.api.cms.service.Request;
+import org.osivia.portal.api.cms.service.Result;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.test.InMemoryFactory;
 import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
@@ -40,12 +42,9 @@ public class CMSServiceImpl implements CMSService {
 
     @Override
     public Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException {
-
-        UserRepository userRepository =  (UserRepository) getUserRepository(cmsContext, id.getRepositoryName());
+       UserRepository userRepository =  (UserRepository) getUserRepository(cmsContext, id.getRepositoryName());
         Document document = userRepository.getDocument(id.getInternalID());
-
         return document;
-
     }
 
 
@@ -65,6 +64,13 @@ public class CMSServiceImpl implements CMSService {
     @Override
     public NativeRepository getUserRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
         return repositoryFactory.getUserRepository(cmsContext, repositoryName);
+    }
+
+
+    @Override
+    public Result executeRequest(CMSContext cmsContext, Request request) throws CMSException {
+        UserRepository userRepository =  (UserRepository) getUserRepository(cmsContext, request.getRepositoryName());
+        return userRepository.executeRequest(request);
     }
 
 

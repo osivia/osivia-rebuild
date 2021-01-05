@@ -17,8 +17,8 @@ import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 public class UserWorkspacesRepository extends NativeMemoryRepository {
 
     
-    public UserWorkspacesRepository(SharedRepositoryKey repositoryKey) {
-        super(repositoryKey, null);
+    public UserWorkspacesRepository(SharedRepositoryKey repositoryKey, String userName) {
+        super(repositoryKey, null, userName);
     }
 
     

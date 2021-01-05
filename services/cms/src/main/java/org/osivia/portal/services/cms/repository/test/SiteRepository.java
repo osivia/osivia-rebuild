@@ -26,8 +26,8 @@ import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
 public class SiteRepository extends NativeMemoryRepository  {
 
-    public SiteRepository(SharedRepositoryKey repositoryKey,  InMemoryUserRepository publishRepository) {
-        super(repositoryKey, publishRepository);
+    public SiteRepository(SharedRepositoryKey repositoryKey,  InMemoryUserRepository publishRepository, String userName) {
+        super(repositoryKey, publishRepository, userName);
     }
 
 
@@ -78,7 +78,7 @@ public class SiteRepository extends NativeMemoryRepository  {
 
     @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        NuxeoMockDocumentImpl parent = getInternalDocument(parentId);
+        NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
         parent.getChildrenId().add(id);
         addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
         

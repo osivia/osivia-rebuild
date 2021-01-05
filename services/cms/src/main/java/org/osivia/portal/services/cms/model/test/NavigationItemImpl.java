@@ -11,6 +11,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
@@ -21,6 +22,7 @@ public class NavigationItemImpl implements NavigationItem {
 
 
     private NuxeoMockDocumentImpl document;
+    private InMemoryUserRepository repository;
 
 
     /**
@@ -29,9 +31,10 @@ public class NavigationItemImpl implements NavigationItem {
      * @param id the id
      * @param properties the properties
      */
-    public NavigationItemImpl(NuxeoMockDocumentImpl document) {
+    public NavigationItemImpl(InMemoryUserRepository repository,NuxeoMockDocumentImpl document) {
         super();
         this.document = document;
+        this.repository = repository;
     }
 
     @Override
@@ -46,15 +49,14 @@ public class NavigationItemImpl implements NavigationItem {
 
     @Override
     public NavigationItem getParent() throws CMSException {
-        NuxeoMockDocumentImpl parent = document.getNavigationParent();
-        return new NavigationItemImpl(parent);
+        return new NavigationItemImpl(repository, repository.getNavigationParent(document));
     }
 
     @Override
     public List<NavigationItem> getChildren() throws CMSException {
         List<NavigationItem> children = new ArrayList<>();
-        for (NuxeoMockDocumentImpl doc : document.getNavigationChildren()) {
-            children.add(new NavigationItemImpl(doc));
+        for (NuxeoMockDocumentImpl doc : repository.getNavigationChildren(document)) {
+            children.add(new NavigationItemImpl(repository, doc));
         }
         return children;
     }

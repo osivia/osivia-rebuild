@@ -29,8 +29,8 @@ import fr.toutatice.portail.cms.producers.test.TestRepository;
 public class TemplatesRepository extends NativeMemoryRepository  {
 
       
-      public TemplatesRepository(SharedRepositoryKey repositoryKey) {
-          super(repositoryKey, null);
+      public TemplatesRepository(SharedRepositoryKey repositoryKey, String userName) {
+          super(repositoryKey, null, userName);
       }
     /**
      * {@inheritDoc}
@@ -132,7 +132,7 @@ public class TemplatesRepository extends NativeMemoryRepository  {
 
 @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        NuxeoMockDocumentImpl parent = getInternalDocument(parentId);
+        NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
         parent.getChildrenId().add(id);
         addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
         updatePaths();

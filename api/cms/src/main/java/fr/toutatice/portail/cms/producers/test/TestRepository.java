@@ -28,4 +28,6 @@ public interface TestRepository extends NativeRepository {
     boolean supportPageEdition();
     
     List<Document> getChildren(String id) throws CMSException;
+    
+    void setACL(String id, String acl) throws CMSException ;
 }

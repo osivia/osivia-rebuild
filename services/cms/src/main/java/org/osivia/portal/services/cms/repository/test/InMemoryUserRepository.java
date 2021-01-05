@@ -8,7 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.dom4j.DocumentException;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -47,11 +49,13 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
     
     private static Map<SharedRepositoryKey, SharedRepository>  sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
     
-    private boolean previewRepository = false;;
+    private boolean previewRepository = false;
+    
+    private String userName = null;
+    
 
 
-
-    public InMemoryUserRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository) {
+    public InMemoryUserRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository, String userName) {
         super();
         this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
@@ -59,10 +63,17 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
             this.publishRepository = publishRepository;
             this.previewRepository = true;        
         }
+        this.userName = userName;
         init(repositoryKey);
     }
 
     
+
+    
+    public String getUserName() {
+        return userName;
+    }
+
     
     /**
      * {@inheritDoc}
@@ -114,50 +125,74 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
         return repositoryKey.getRepositoryName();
     }
 
-
-    
+   
 
     public SharedRepository getSharedRepository() {
          return sharedRepositories.get(repositoryKey);
     }
 
 
-    
-    /**
-     * {@inheritDoc}
-     */
 
-
-    public NuxeoMockDocumentImpl getInternalDocument(String internalId) throws CMSException {
+    protected NuxeoMockDocumentImpl getSharedDocument(String internalId) throws CMSException {
         return getSharedRepository().getDocument(internalId);
     }
 
     
     public Document getDocument(String internalId) throws CMSException {
-        return getSharedRepository().getDocument(internalId);
+        
+        NuxeoMockDocumentImpl document = getSharedRepository().getDocument(internalId);
+        if( checkACL(document))
+            return document;
+        else
+            throw new DocumentForbiddenException();
     }
 
     public NavigationItem getNavigationItem(String internalId) throws CMSException {
-        NuxeoMockDocumentImpl document = (NuxeoMockDocumentImpl) getInternalDocument(internalId);
+        NuxeoMockDocumentImpl document = (NuxeoMockDocumentImpl) getSharedDocument(internalId);
         if (!document.isNavigable()) {
-            document = document.getNavigationParent();
+            document = getNavigationParent( document);
         }
-        return new NavigationItemImpl(document);
+        return new NavigationItemImpl(this, document);
     }
 
 
-    public NuxeoMockDocumentImpl getParent(Document document) throws CMSException {
+    
+    
+    private boolean checkACL(NuxeoMockDocumentImpl doc)   {
+        List<String> acls = doc.getACL();
+        if( acls.size() == 0)
+            return true;
+        if( userName != null && acls.contains("group:members"))
+            return true;
+        return false;
+        
+    }
+
+    public NuxeoMockDocumentImpl getNavigationParent(Document document) throws CMSException {
         NuxeoMockDocumentImpl docImpl = (NuxeoMockDocumentImpl) document;
-        return (NuxeoMockDocumentImpl) getInternalDocument(docImpl.getParentInternalId());
+        NuxeoMockDocumentImpl parent = null;
+        do  {
+            NuxeoMockDocumentImpl parentTmp = (NuxeoMockDocumentImpl) getSharedDocument(docImpl.getParentInternalId());
+            if( checkACL(parentTmp))
+                parent = parentTmp;
+            else
+                docImpl = parentTmp;
+        } while(parent == null);
+        
+        return parent;
 
     }
 
-    public List<NuxeoMockDocumentImpl> getChildren(NuxeoMockDocumentImpl document) throws CMSException {
+    public List<NuxeoMockDocumentImpl> getNavigationChildren(NuxeoMockDocumentImpl document) throws CMSException {
         NuxeoMockDocumentImpl docImpl = (NuxeoMockDocumentImpl) document;
         List<String> childrenId = docImpl.getChildrenId();
         List<NuxeoMockDocumentImpl> children = new ArrayList<>();
         for (String id : childrenId) {
-            children.add(getInternalDocument(id));
+            NuxeoMockDocumentImpl sharedDocument = getSharedDocument(id);
+            if( sharedDocument.isNavigable())   {
+                if( checkACL(sharedDocument))
+                    children.add(sharedDocument);
+            }
         }
 
         return children;
