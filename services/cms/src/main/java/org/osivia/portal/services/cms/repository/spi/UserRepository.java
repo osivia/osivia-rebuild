@@ -61,5 +61,13 @@ public interface UserRepository {
      * @return the locales
      */
     public List<Locale> getLocales();        
+    
+    /**
+     * Publish.
+     *
+     * @param id the id
+     * @throws CMSException the CMS exception
+     */
+    void publish(String id) throws CMSException;
 
 }

@@ -433,6 +433,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     }
                 }
                 
+                status.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
+                
+                
             }
         } catch (PortalException e) {
             throw new PortletException(e);

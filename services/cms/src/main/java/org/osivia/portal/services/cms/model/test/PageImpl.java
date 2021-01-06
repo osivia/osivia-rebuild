@@ -9,7 +9,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
 public class PageImpl extends NuxeoMockDocumentImpl implements Page {
 
@@ -23,7 +23,7 @@ public class PageImpl extends NuxeoMockDocumentImpl implements Page {
         this.inheritedRegions = inheritedRegions;
     }
 
-    public PageImpl(InMemoryUserRepository repository, String id, String name, UniversalID templateId, String parentId, String spaceId, List<String> childrenId,Map<String, Object> properties, List<ModuleRef> moduleRefs) {
+    public PageImpl(BaseUserRepository repository, String id, String name, UniversalID templateId, String parentId, String spaceId, List<String> childrenId,Map<String, Object> properties, List<ModuleRef> moduleRefs) {
         super(repository, id, name, parentId, spaceId,childrenId, properties);
         this.templateId = templateId;
         this.moduleRefs = moduleRefs;

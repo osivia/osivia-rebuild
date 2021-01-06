@@ -11,8 +11,8 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
-import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
 /**
@@ -22,7 +22,7 @@ public class NavigationItemImpl implements NavigationItem {
 
 
     private NuxeoMockDocumentImpl document;
-    private InMemoryUserRepository repository;
+    private BaseUserRepository repository;
 
 
     /**
@@ -31,7 +31,7 @@ public class NavigationItemImpl implements NavigationItem {
      * @param id the id
      * @param properties the properties
      */
-    public NavigationItemImpl(InMemoryUserRepository repository,NuxeoMockDocumentImpl document) {
+    public NavigationItemImpl(BaseUserRepository repository,NuxeoMockDocumentImpl document) {
         super();
         this.document = document;
         this.repository = repository;

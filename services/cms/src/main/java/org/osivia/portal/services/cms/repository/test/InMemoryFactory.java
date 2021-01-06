@@ -14,6 +14,7 @@ import org.osivia.portal.api.cms.SuperUserContext;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 
@@ -24,12 +25,12 @@ import org.osivia.portal.services.cms.repository.spi.UserRepository;
 public class InMemoryFactory {
 
     /** The super user repositories. */
-    private Map<SharedRepositoryKey, InMemoryUserRepository> superUserRepositories;
+    private Map<SharedRepositoryKey, BaseUserRepository> superUserRepositories;
 
 
     public InMemoryFactory() {
         super();
-        superUserRepositories = new ConcurrentHashMap<SharedRepositoryKey, InMemoryUserRepository>();
+        superUserRepositories = new ConcurrentHashMap<SharedRepositoryKey, BaseUserRepository>();
     }
 
     /**
@@ -39,9 +40,9 @@ public class InMemoryFactory {
      * @param publishRepository the publish repository
      * @return the in memory user repository
      */
-    InMemoryUserRepository createRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository, String userId) {
+    BaseUserRepository createRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userId) {
 
-        InMemoryUserRepository userRepository = null;
+        BaseUserRepository userRepository = null;
 
         if ("templates".equals(repositoryKey.getRepositoryName())) {
             userRepository = new TemplatesRepository(repositoryKey, userId);
@@ -65,15 +66,15 @@ public class InMemoryFactory {
      * @param id the id
      * @return the user repository
      */
-    public InMemoryUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName, InMemoryUserRepository publishRepository) {
+    public BaseUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName, BaseUserRepository publishRepository) {
 
-        InMemoryUserRepository userRepository;
+        BaseUserRepository userRepository;
 
         SharedRepositoryKey repositoryKey = new SharedRepositoryKey(repositoryName, cmsContext.isPreview(), cmsContext.getlocale());
 
         if (cmsContext instanceof SuperUserContext) {
 
-            userRepository = (InMemoryUserRepository) superUserRepositories.get(repositoryKey);
+            userRepository = (BaseUserRepository) superUserRepositories.get(repositoryKey);
             if (userRepository == null) {
                 userRepository = createRepository(repositoryKey, publishRepository, "superuser");
                 superUserRepositories.put(repositoryKey, userRepository);
@@ -86,9 +87,9 @@ public class InMemoryFactory {
 
             HttpSession session = request.getSession(true);
 
-            String repositoryAttributeName = InMemoryUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName + "." + repositoryKey.isPreview() + "." + repositoryKey.getLocale().toString();
+            String repositoryAttributeName = BaseUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName + "." + repositoryKey.isPreview() + "." + repositoryKey.getLocale().toString();
 
-            userRepository = (InMemoryUserRepository) session.getAttribute(repositoryAttributeName);
+            userRepository = (BaseUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null || (!StringUtils.equals(userRepository.getUserName(), userName))) {
                 userRepository = createRepository(repositoryKey, publishRepository, userName);
 
@@ -114,7 +115,7 @@ public class InMemoryFactory {
         if (supportsPreview(repositoryName)) {
             boolean savedPreview = cmsContext.isPreview();
             cmsContext.setPreview(false);
-            InMemoryUserRepository publishRespository = getOrCreateUserRepository(cmsContext, repositoryName, null);
+            BaseUserRepository publishRespository = getOrCreateUserRepository(cmsContext, repositoryName, null);
             cmsContext.setPreview(true);
             getOrCreateUserRepository(cmsContext, repositoryName, publishRespository);
             cmsContext.setPreview(savedPreview);

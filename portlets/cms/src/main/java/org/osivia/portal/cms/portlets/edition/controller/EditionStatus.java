@@ -19,7 +19,26 @@ public class EditionStatus {
     public boolean pageEdition = false;
     public boolean supportPreview = false;
     public boolean havingPublication = false;
+    public String remoteUser = null;
+
+
     
+
+
+
+
+    
+    public String getRemoteUser() {
+        return remoteUser;
+    }
+
+
+
+    
+    public void setRemoteUser(String remoteUser) {
+        this.remoteUser = remoteUser;
+    }
+
 
 
     public EditionStatus() {

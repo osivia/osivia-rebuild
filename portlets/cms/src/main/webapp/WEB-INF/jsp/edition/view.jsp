@@ -101,11 +101,11 @@
 				</c:if>
 			</c:if>
 			
-
+			<c:if test="${not empty status.remoteUser}">
 					<span> <a href="${setACLURL}"
 						class=" btn-sm btn-light m-1"> ACL</a>
 					</span>
-
+			</c:if>
 			
 		</div>
 		<div class="col-2  d-flex align-items-center">

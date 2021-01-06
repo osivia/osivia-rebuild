@@ -19,14 +19,15 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.test.PageImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
+import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
 
 
 
-public class SiteRepository extends NativeMemoryRepository  {
+public class SiteRepository extends MemoryRepository  {
 
-    public SiteRepository(SharedRepositoryKey repositoryKey,  InMemoryUserRepository publishRepository, String userName) {
+    public SiteRepository(SharedRepositoryKey repositoryKey,  BaseUserRepository publishRepository, String userName) {
         super(repositoryKey, publishRepository, userName);
     }
 
@@ -68,10 +69,7 @@ public class SiteRepository extends NativeMemoryRepository  {
     private void addSitePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", generateTitle("Page "+ id));
-
-
         PageImpl page = new PageImpl(this, id, name, null, parentId, spaceId, children, properties, modules);
-
         addDocument(id, page);
     }
 
@@ -79,11 +77,7 @@ public class SiteRepository extends NativeMemoryRepository  {
     @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
         NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
-        parent.getChildrenId().add(id);
         addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
-        
-        updatePaths();
-        notifyChanges(); 
     }
 
 

@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.services.cms.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ import fr.toutatice.portail.cms.producers.test.TestRepository;
  */
 
 
-public abstract class InMemoryUserRepository implements UserRepository, RepositoryListener {
+public abstract class BaseUserRepository implements UserRepository, RepositoryListener {
 
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
 
@@ -45,7 +45,7 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
 
     protected List<RepositoryListener> listeners;
     
-    protected InMemoryUserRepository publishRepository;
+    protected BaseUserRepository publishRepository;
     
     private static Map<SharedRepositoryKey, SharedRepository>  sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
     
@@ -53,9 +53,11 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
     
     private String userName = null;
     
+    private boolean batchMode = false;
+    
 
 
-    public InMemoryUserRepository(SharedRepositoryKey repositoryKey, InMemoryUserRepository publishRepository, String userName) {
+    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
         super();
         this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
@@ -83,14 +85,6 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
         listeners.add(listener);
     }
 
-    public void notifyChanges( Document src, List<Request> requests) {
-        getSharedRepository().notifyChanges( new CMSEventImpl( src, requests));
-    }
-    
-    public void notifyChanges() {
-        getSharedRepository().notifyChanges( new CMSEventImpl());
-    }
-
     
     public boolean isPreviewRepository() {
         return previewRepository;
@@ -108,8 +102,13 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
         sharedRepositories.get(repositoryKey).addListener(this);
         
         if(initRepository)  {
+            batchMode = true;
+            try {
             initDocuments();
-            updatePaths();     
+            } finally    {
+                batchMode = false;
+            }
+            getSharedRepository().updatePaths();    
         }
         
         
@@ -133,7 +132,7 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
 
 
 
-    protected NuxeoMockDocumentImpl getSharedDocument(String internalId) throws CMSException {
+    public NuxeoMockDocumentImpl getSharedDocument(String internalId) throws CMSException {
         return getSharedRepository().getDocument(internalId);
     }
 
@@ -213,12 +212,104 @@ public abstract class InMemoryUserRepository implements UserRepository, Reposito
     }
 
     
+    @Override
+    public void publish( String id) throws CMSException {
+        try {
+        
+        NuxeoMockDocumentImpl doc = getSharedDocument(id);
+        NuxeoMockDocumentImpl existingPublishedDoc = null;
+        try {
+            existingPublishedDoc = publishRepository.getSharedDocument(id);
+        } catch(CMSException e)    {
+            // not found
+        }
+        
+        // Search for first published parent
+        NuxeoMockDocumentImpl publishedParent = null;
+        String parentId = doc.getParentInternalId();
+        
+        while(  publishedParent == null && parentId != null)   {
+            try {
+                publishedParent = publishRepository.getSharedDocument(parentId);
+            } catch(CMSException e)    {
+                // not found
+                NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
+                parentId = parent.getParentInternalId();                
+            }
+        }
+        
+        
+        List<String> childToRemoveFromParent = new ArrayList<>();
+        
+        // Get parent
+        String publishedParentId;
+        if( publishedParent != null) {
+            publishedParentId = publishedParent.getInternalID();
+        }   else
+            publishedParentId = null;
+        
+        
+        
+        // Update hierarchy
+        List<String> childrenId;
+        if( existingPublishedDoc != null)   {
+            // replacement
+            childrenId = existingPublishedDoc.getChildrenId();
+        }
+        else    {
+            // new object : look for published children
+            childrenId = new ArrayList<>();
+            for(String childId: doc.getChildrenId())    {
+                NuxeoMockDocumentImpl publishedChild = null;
+                try {
+                    publishedChild = publishRepository.getSharedDocument(childId);
+                } catch(CMSException e)    {
+                    // not found
+                }    
+                if( publishedChild != null) {
+                    // Add to current node
+                    childrenId.add(childId);
+                    // Remove child from parent
+                    childToRemoveFromParent.add(childId);
+                    // reset child parent
+                    publishedChild.setParentInternalId( id);
+                }
+            }            
+        }
+        
+        
+        // Set parent children
+        if( publishedParent != null) {
+            if( ! publishedParent.getChildrenId().contains(id))
+                publishedParent.getChildrenId().add( id);
+            
+            for (String childId:childToRemoveFromParent)    {
+                publishedParent.getChildrenId().remove(childId);
+            }
+        }     
+        
+        
+        // create published object
+        NuxeoMockDocumentImpl publishedDoc = (NuxeoMockDocumentImpl) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
+        publishRepository.getSharedRepository().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
+        
+        
+        
+        } catch( Exception e)   {
+            throw new CMSException( e);
+        }
+     }
     
     
    
 
-   
-
+    protected void addDocument(String internalID, NuxeoMockDocumentImpl document) {
+        getSharedRepository().addDocument(internalID, document, batchMode);
+    }
+    
+    protected void updateDocument(String internalID, NuxeoMockDocumentImpl document) {
+        getSharedRepository().updateDocument(internalID, document, batchMode);
+    }
 
 
 }

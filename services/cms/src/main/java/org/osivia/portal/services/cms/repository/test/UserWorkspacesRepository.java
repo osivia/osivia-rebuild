@@ -14,7 +14,7 @@ import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
-public class UserWorkspacesRepository extends NativeMemoryRepository {
+public class UserWorkspacesRepository extends MemoryRepository {
 
     
     public UserWorkspacesRepository(SharedRepositoryKey repositoryKey, String userName) {

@@ -1,11 +1,17 @@
 package org.osivia.portal.api.cms;
 
+import java.io.Serializable;
 
 /**
  * @author Jean-Sébastien
  */
-public class UniversalID {
+public class UniversalID implements Serializable {
     
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     /** The store name. */
     private final String repositoryName;

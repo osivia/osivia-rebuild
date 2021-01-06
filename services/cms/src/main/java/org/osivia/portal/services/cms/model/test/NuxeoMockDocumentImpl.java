@@ -10,7 +10,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
+import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
 /**
  * The Class DocumentImpl.
@@ -37,7 +37,7 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     private transient  List<String> childrenId;
     
     /** The user repository. */
-    private transient InMemoryUserRepository userRepository;
+    private transient BaseUserRepository userRepository;
     
 
     /** The native item. */
@@ -61,7 +61,7 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
      * @param id the id
      * @param properties the properties
      */
-    public NuxeoMockDocumentImpl( InMemoryUserRepository userRepository,  String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
+    public NuxeoMockDocumentImpl( BaseUserRepository userRepository,  String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
         super();
         this.userRepository = userRepository;
         this.internalID = internalID;
@@ -156,7 +156,7 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     }
 
 
-    public NuxeoMockDocumentImpl duplicate( String parentInternalId,List<String> childrenId,InMemoryUserRepository userRepository) throws CloneNotSupportedException {
+    public NuxeoMockDocumentImpl duplicateForPublication( String parentInternalId,List<String> childrenId,BaseUserRepository userRepository) throws CloneNotSupportedException {
         NuxeoMockDocumentImpl newDoc = SerializationUtils.clone(this);
         newDoc.parentInternalId = parentInternalId;
         newDoc.childrenId = childrenId;
@@ -164,6 +164,14 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
         return newDoc;
     }
 
+    public NuxeoMockDocumentImpl duplicate( ) throws CloneNotSupportedException {
+        NuxeoMockDocumentImpl newDoc = SerializationUtils.clone(this);
+        newDoc.parentInternalId = getParentInternalId();
+        newDoc.childrenId = getChildrenId();
+        newDoc.userRepository = userRepository;
+        newDoc.preview = isPreview();
+        return newDoc;
+    }
 
     @Override
     public List<String> getSubTypes() {

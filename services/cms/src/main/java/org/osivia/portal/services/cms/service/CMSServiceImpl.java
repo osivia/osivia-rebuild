@@ -10,9 +10,9 @@ import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.test.InMemoryFactory;
-import org.osivia.portal.services.cms.repository.test.InMemoryUserRepository;
 import org.springframework.stereotype.Service;
 
 /**

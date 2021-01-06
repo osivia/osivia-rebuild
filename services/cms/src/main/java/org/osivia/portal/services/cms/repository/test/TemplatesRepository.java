@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import fr.toutatice.portail.cms.producers.test.TestRepository;
 
 
-public class TemplatesRepository extends NativeMemoryRepository  {
+public class TemplatesRepository extends MemoryRepository  {
 
       
       public TemplatesRepository(SharedRepositoryKey repositoryKey, String userName) {
@@ -133,11 +133,7 @@ public class TemplatesRepository extends NativeMemoryRepository  {
 @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
         NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
-        parent.getChildrenId().add(id);
         addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
-        updatePaths();
-        
-        notifyChanges();
     }
     
 
