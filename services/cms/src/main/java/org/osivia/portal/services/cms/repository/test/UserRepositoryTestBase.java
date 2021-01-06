@@ -34,7 +34,13 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
 
 {
     public UserRepositoryTestBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
-        super(repositoryKey, publishRepository, userName, new InMemoryRepository());
+        super(repositoryKey, publishRepository, userName);
+    }
+    
+
+    @Override
+    protected StorageRepository createStorageRepository() {
+        return new InMemoryRepository();
     }
     
     protected void addDocument(String internalID, DocumentImpl document) {

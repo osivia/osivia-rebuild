@@ -31,7 +31,6 @@ public class SiteRepository extends UserRepositoryTestBase  {
         super(repositoryKey, publishRepository, userName);
     }
 
-
     
     private String generateTitle( String originalTitle) {
         return "["+repositoryKey.getLocale().getLanguage().toString()+"]" + originalTitle;
@@ -108,4 +107,8 @@ public class SiteRepository extends UserRepositoryTestBase  {
     public List<Locale> getLocales() {
         return Arrays.asList(Locale.FRENCH, Locale.ENGLISH, Locale.GERMAN);
     }
+
+
+
+
 }

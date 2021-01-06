@@ -18,6 +18,7 @@ import org.osivia.portal.services.cms.model.test.NavigationItemImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
+import org.osivia.portal.services.cms.repository.test.InMemoryRepository;
 import org.osivia.portal.services.cms.repository.test.StorageRepository;
 
 /**
@@ -46,10 +47,9 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     protected boolean batchMode = false;
     
-    private StorageRepository storageRepository;
     
 
-    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, StorageRepository storageRepository) {
+    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
         super();
         this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
@@ -58,10 +58,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             this.previewRepository = true;        
         }
         this.userName = userName;
-        this.storageRepository = storageRepository;
-        
         init(repositoryKey);
-        
     }
 
     
@@ -90,6 +87,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
         boolean initRepository = false;
         if( getSharedRepository() == null)    {
+            StorageRepository storageRepository = createStorageRepository();
             sharedRepositories.put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName(), storageRepository));   
             storageRepository.setSharedRepository(sharedRepositories.get(repositoryKey));
             initRepository = true;
@@ -111,7 +109,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
     }
 
-
+    protected abstract StorageRepository createStorageRepository();
 
     protected abstract void initDocuments();
 
@@ -296,7 +294,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     
     public StorageRepository getStorageRepository()  {
-        return storageRepository;
+        return getSharedRepository().getStorageRepository();
     }
 
 
