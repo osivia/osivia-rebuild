@@ -21,7 +21,7 @@ import org.osivia.portal.services.cms.service.CMSServiceImpl;
 public class NavigationItemImpl implements NavigationItem {
 
 
-    private NuxeoMockDocumentImpl document;
+    private DocumentImpl document;
     private BaseUserRepository repository;
 
 
@@ -31,7 +31,7 @@ public class NavigationItemImpl implements NavigationItem {
      * @param id the id
      * @param properties the properties
      */
-    public NavigationItemImpl(BaseUserRepository repository,NuxeoMockDocumentImpl document) {
+    public NavigationItemImpl(BaseUserRepository repository,DocumentImpl document) {
         super();
         this.document = document;
         this.repository = repository;
@@ -55,7 +55,7 @@ public class NavigationItemImpl implements NavigationItem {
     @Override
     public List<NavigationItem> getChildren() throws CMSException {
         List<NavigationItem> children = new ArrayList<>();
-        for (NuxeoMockDocumentImpl doc : repository.getNavigationChildren(document)) {
+        for (DocumentImpl doc : repository.getNavigationChildren(document)) {
             children.add(new NavigationItemImpl(repository, doc));
         }
         return children;

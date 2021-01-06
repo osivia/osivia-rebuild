@@ -22,13 +22,13 @@ import org.osivia.portal.services.cms.repository.spi.UserRepository;
  * A factory for creating InMemory objects.
  */
 
-public class InMemoryFactory {
+public class TestRepositoryFactory {
 
     /** The super user repositories. */
     private Map<SharedRepositoryKey, BaseUserRepository> superUserRepositories;
 
 
-    public InMemoryFactory() {
+    public TestRepositoryFactory() {
         super();
         superUserRepositories = new ConcurrentHashMap<SharedRepositoryKey, BaseUserRepository>();
     }

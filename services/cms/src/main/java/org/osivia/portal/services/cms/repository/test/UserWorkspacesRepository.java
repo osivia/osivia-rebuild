@@ -10,11 +10,11 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.services.cms.model.test.FolderImpl;
-import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
-public class UserWorkspacesRepository extends MemoryRepository {
+public class UserWorkspacesRepository extends UserRepositoryTestBase {
 
     
     public UserWorkspacesRepository(SharedRepositoryKey repositoryKey, String userName) {
@@ -35,7 +35,7 @@ public class UserWorkspacesRepository extends MemoryRepository {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Document." + id);
 
-        NuxeoMockDocumentImpl doc = new NuxeoMockDocumentImpl(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
+        DocumentImpl doc = new DocumentImpl(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
         addDocument(id, doc);
     }
 

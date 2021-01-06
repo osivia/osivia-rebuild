@@ -15,7 +15,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.model.test.PageImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import fr.toutatice.portail.cms.producers.test.TestRepository;
 
 
-public class TemplatesRepository extends MemoryRepository  {
+public class TemplatesRepository extends UserRepositoryTestBase  {
 
       
       public TemplatesRepository(SharedRepositoryKey repositoryKey, String userName) {
@@ -132,7 +132,7 @@ public class TemplatesRepository extends MemoryRepository  {
 
 @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
+        DocumentImpl parent = getSharedDocument(parentId);
         addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
     }
     

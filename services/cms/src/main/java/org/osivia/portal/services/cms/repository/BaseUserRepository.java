@@ -21,7 +21,7 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.test.FolderImpl;
 import org.osivia.portal.services.cms.model.test.NavigationItemImpl;
-import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
@@ -108,15 +108,13 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             } finally    {
                 batchMode = false;
             }
-            getSharedRepository().updatePaths();    
+            getSharedRepository().endBatch();    
         }
         
         
     }
 
-    public void updatePaths() {
-        getSharedRepository().updatePaths();
-    }
+
 
     protected abstract void initDocuments();
 
@@ -132,14 +130,14 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
 
 
-    public NuxeoMockDocumentImpl getSharedDocument(String internalId) throws CMSException {
+    public DocumentImpl getSharedDocument(String internalId) throws CMSException {
         return getSharedRepository().getDocument(internalId);
     }
 
     
     public Document getDocument(String internalId) throws CMSException {
         
-        NuxeoMockDocumentImpl document = getSharedRepository().getDocument(internalId);
+        DocumentImpl document = getSharedRepository().getDocument(internalId);
         if( checkACL(document))
             return document;
         else
@@ -147,7 +145,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     }
 
     public NavigationItem getNavigationItem(String internalId) throws CMSException {
-        NuxeoMockDocumentImpl document = (NuxeoMockDocumentImpl) getSharedDocument(internalId);
+        DocumentImpl document = (DocumentImpl) getSharedDocument(internalId);
         if (!document.isNavigable()) {
             document = getNavigationParent( document);
         }
@@ -157,7 +155,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
     
     
-    private boolean checkACL(NuxeoMockDocumentImpl doc)   {
+    private boolean checkACL(DocumentImpl doc)   {
         List<String> acls = doc.getACL();
         if( acls.size() == 0)
             return true;
@@ -167,11 +165,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
     }
 
-    public NuxeoMockDocumentImpl getNavigationParent(Document document) throws CMSException {
-        NuxeoMockDocumentImpl docImpl = (NuxeoMockDocumentImpl) document;
-        NuxeoMockDocumentImpl parent = null;
+    public DocumentImpl getNavigationParent(Document document) throws CMSException {
+        DocumentImpl docImpl = (DocumentImpl) document;
+        DocumentImpl parent = null;
         do  {
-            NuxeoMockDocumentImpl parentTmp = (NuxeoMockDocumentImpl) getSharedDocument(docImpl.getParentInternalId());
+            DocumentImpl parentTmp = (DocumentImpl) getSharedDocument(docImpl.getParentInternalId());
             if( checkACL(parentTmp))
                 parent = parentTmp;
             else
@@ -182,12 +180,12 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
     }
 
-    public List<NuxeoMockDocumentImpl> getNavigationChildren(NuxeoMockDocumentImpl document) throws CMSException {
-        NuxeoMockDocumentImpl docImpl = (NuxeoMockDocumentImpl) document;
+    public List<DocumentImpl> getNavigationChildren(DocumentImpl document) throws CMSException {
+        DocumentImpl docImpl = (DocumentImpl) document;
         List<String> childrenId = docImpl.getChildrenId();
-        List<NuxeoMockDocumentImpl> children = new ArrayList<>();
+        List<DocumentImpl> children = new ArrayList<>();
         for (String id : childrenId) {
-            NuxeoMockDocumentImpl sharedDocument = getSharedDocument(id);
+            DocumentImpl sharedDocument = getSharedDocument(id);
             if( sharedDocument.isNavigable())   {
                 if( checkACL(sharedDocument))
                     children.add(sharedDocument);
@@ -216,8 +214,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     public void publish( String id) throws CMSException {
         try {
         
-        NuxeoMockDocumentImpl doc = getSharedDocument(id);
-        NuxeoMockDocumentImpl existingPublishedDoc = null;
+        DocumentImpl doc = getSharedDocument(id);
+        DocumentImpl existingPublishedDoc = null;
         try {
             existingPublishedDoc = publishRepository.getSharedDocument(id);
         } catch(CMSException e)    {
@@ -225,7 +223,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         }
         
         // Search for first published parent
-        NuxeoMockDocumentImpl publishedParent = null;
+        DocumentImpl publishedParent = null;
         String parentId = doc.getParentInternalId();
         
         while(  publishedParent == null && parentId != null)   {
@@ -233,7 +231,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
                 publishedParent = publishRepository.getSharedDocument(parentId);
             } catch(CMSException e)    {
                 // not found
-                NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
+                DocumentImpl parent = getSharedDocument(parentId);
                 parentId = parent.getParentInternalId();                
             }
         }
@@ -260,7 +258,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             // new object : look for published children
             childrenId = new ArrayList<>();
             for(String childId: doc.getChildrenId())    {
-                NuxeoMockDocumentImpl publishedChild = null;
+                DocumentImpl publishedChild = null;
                 try {
                     publishedChild = publishRepository.getSharedDocument(childId);
                 } catch(CMSException e)    {
@@ -290,7 +288,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
         
         // create published object
-        NuxeoMockDocumentImpl publishedDoc = (NuxeoMockDocumentImpl) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
+        DocumentImpl publishedDoc = (DocumentImpl) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
         publishRepository.getSharedRepository().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
         
         
@@ -303,11 +301,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
    
 
-    protected void addDocument(String internalID, NuxeoMockDocumentImpl document) {
+    protected void addDocument(String internalID, DocumentImpl document) {
         getSharedRepository().addDocument(internalID, document, batchMode);
     }
     
-    protected void updateDocument(String internalID, NuxeoMockDocumentImpl document) {
+    protected void updateDocument(String internalID, DocumentImpl document) {
         getSharedRepository().updateDocument(internalID, document, batchMode);
     }
 

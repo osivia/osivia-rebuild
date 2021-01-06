@@ -15,7 +15,7 @@ import org.osivia.portal.services.cms.repository.BaseUserRepository;
 /**
  * The Class DocumentImpl.
  */
-public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Document, Serializable {
+public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, Serializable {
     
 
     /** The id. */
@@ -61,7 +61,7 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
      * @param id the id
      * @param properties the properties
      */
-    public NuxeoMockDocumentImpl( BaseUserRepository userRepository,  String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
+    public DocumentImpl( BaseUserRepository userRepository,  String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
         super();
         this.userRepository = userRepository;
         this.internalID = internalID;
@@ -156,16 +156,16 @@ public class NuxeoMockDocumentImpl implements org.osivia.portal.api.cms.model.Do
     }
 
 
-    public NuxeoMockDocumentImpl duplicateForPublication( String parentInternalId,List<String> childrenId,BaseUserRepository userRepository) throws CloneNotSupportedException {
-        NuxeoMockDocumentImpl newDoc = SerializationUtils.clone(this);
+    public DocumentImpl duplicateForPublication( String parentInternalId,List<String> childrenId,BaseUserRepository userRepository) throws CloneNotSupportedException {
+        DocumentImpl newDoc = SerializationUtils.clone(this);
         newDoc.parentInternalId = parentInternalId;
         newDoc.childrenId = childrenId;
         newDoc.userRepository = userRepository;
         return newDoc;
     }
 
-    public NuxeoMockDocumentImpl duplicate( ) throws CloneNotSupportedException {
-        NuxeoMockDocumentImpl newDoc = SerializationUtils.clone(this);
+    public DocumentImpl duplicate( ) throws CloneNotSupportedException {
+        DocumentImpl newDoc = SerializationUtils.clone(this);
         newDoc.parentInternalId = getParentInternalId();
         newDoc.childrenId = getChildrenId();
         newDoc.userRepository = userRepository;

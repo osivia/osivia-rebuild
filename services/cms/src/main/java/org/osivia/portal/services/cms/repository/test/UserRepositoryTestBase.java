@@ -17,7 +17,7 @@ import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
 import org.osivia.portal.services.cms.model.test.FolderImpl;
-import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.model.test.PageImpl;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
@@ -30,10 +30,10 @@ import fr.toutatice.portail.cms.producers.test.TestRepository;
  * (publishing, add content, ...)
  */
 
-public abstract class MemoryRepository extends BaseUserRepository implements TestRepository
+public abstract class UserRepositoryTestBase extends BaseUserRepository implements TestRepository
 
 {
-    public MemoryRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
+    public UserRepositoryTestBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
         super(repositoryKey, publishRepository, userName);
     }
     
@@ -64,7 +64,7 @@ public abstract class MemoryRepository extends BaseUserRepository implements Tes
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Folder." + id);
         
-        NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
+        DocumentImpl parent = getSharedDocument(parentId);
 
         FolderImpl folder = new FolderImpl(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);        
         
@@ -79,8 +79,8 @@ public abstract class MemoryRepository extends BaseUserRepository implements Tes
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Document." + id);
         
-        NuxeoMockDocumentImpl parent = getSharedDocument(parentId);
-        NuxeoMockDocumentImpl doc = new NuxeoMockDocumentImpl(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
+        DocumentImpl parent = getSharedDocument(parentId);
+        DocumentImpl doc = new DocumentImpl(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
         
         addDocument(id, doc);
      }
@@ -125,7 +125,7 @@ public abstract class MemoryRepository extends BaseUserRepository implements Tes
     public void setACL(String id, String acl) throws CMSException {
         List<String> acls = new ArrayList<>();
         acls.add(acl);
-        NuxeoMockDocumentImpl doc = (NuxeoMockDocumentImpl) getDocument(id);
+        DocumentImpl doc = (DocumentImpl) getDocument(id);
         doc.setACL(acls);
         updateDocument(id, doc);
         

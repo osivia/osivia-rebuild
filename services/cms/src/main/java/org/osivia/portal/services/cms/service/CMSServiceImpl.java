@@ -12,7 +12,7 @@ import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
-import org.osivia.portal.services.cms.repository.test.InMemoryFactory;
+import org.osivia.portal.services.cms.repository.test.TestRepositoryFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,11 +29,11 @@ public class CMSServiceImpl implements CMSService {
      */
     public CMSServiceImpl() {
         super();
-        repositoryFactory = new InMemoryFactory();
+        repositoryFactory = new TestRepositoryFactory();
 
     }
 
-    InMemoryFactory repositoryFactory;
+    TestRepositoryFactory repositoryFactory;
 
     /**
      * {@inheritDoc}

@@ -11,8 +11,9 @@ import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
-import org.osivia.portal.services.cms.model.test.NuxeoMockDocumentImpl;
+import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
+import org.osivia.portal.services.cms.repository.test.InMemoryRepository;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
 import org.springframework.util.CollectionUtils;
 
@@ -27,13 +28,16 @@ public class SharedRepository {
     
     private final List<RepositoryListener> listeners;
     
-    private Map<String, NuxeoMockDocumentImpl> documents;
+    private Map<String, DocumentImpl> cachedDocument;
+    
+    private InMemoryRepository internalRepository;
     
     public SharedRepository(String repositoryName) {
         super();
         this.repositoryName = repositoryName;
         this.listeners = new ArrayList<>();
-        this.documents= new Hashtable<String, NuxeoMockDocumentImpl>();
+        this.cachedDocument= new Hashtable<String, DocumentImpl>();
+        internalRepository = new InMemoryRepository(repositoryName);
    }
 
 
@@ -47,24 +51,17 @@ public class SharedRepository {
 
     
     
-    public void addDocument(String internalID, NuxeoMockDocumentImpl document, boolean batchMode)  {
+    public void endBatch()  {
+        internalRepository.endBatch();
+    }
+    
+    public void addDocument(String internalID, DocumentImpl document, boolean batchMode)  {
         
-        documents.put(internalID, document);
+        internalRepository.addDocument(internalID, document, batchMode);
         
-        // update parent
-        String parentID = document.getParentInternalId();
-        if( parentID != null)   {
-            NuxeoMockDocumentImpl parent = documents.get(parentID);
-            if( parent != null) {
-                if( !parent.getChildrenId().contains(internalID))  {
-                    parent.getChildrenId().add(internalID);
-                }
-            }
-        }
-        
+        cachedDocument.put(internalID, document);
+       
         if(!batchMode)  {
-        
-            updatePaths();
             
             if(CollectionUtils.isEmpty(document.getSubTypes()))    {
                 List<Request> dirtyRequests = new ArrayList<>();
@@ -76,20 +73,26 @@ public class SharedRepository {
         }
     }
     
-    public void updateDocument(String internalID, NuxeoMockDocumentImpl document, boolean batchMode)  {
+    public void updateDocument(String internalID, DocumentImpl document, boolean batchMode)  {
         
-        documents.put(internalID, document);
+        internalRepository.addDocument(internalID, document, batchMode);
+        
+        cachedDocument.put(internalID, document);
         
         if(!batchMode)  {
-            updatePaths();
             notifyChanges( new CMSEventImpl());    
         }
     } 
     
     
-    public NuxeoMockDocumentImpl getDocument(String internalID) throws CMSException {
+    public DocumentImpl getDocument(String internalID) throws CMSException {
         try {
-        NuxeoMockDocumentImpl doc = documents.get(internalID);
+        DocumentImpl doc = cachedDocument.get(internalID);
+        if( doc == null) {
+            doc = internalRepository.getDocument(internalID);
+            if( doc != null)
+                cachedDocument.put(internalID, doc);
+        }
         if( doc == null)
             throw new CMSException();
         return doc.duplicate();
@@ -104,36 +107,7 @@ public class SharedRepository {
     }
     
     
-    public void updatePaths() {
-        // Set paths
-        for (NuxeoMockDocumentImpl doc : new ArrayList<NuxeoMockDocumentImpl>(documents.values())) {
-            try {
-                String path = "";
-                NuxeoMockDocumentImpl hDoc = doc;
-
-                path = "/" + hDoc.getName() + path;
-
-                while (!(hDoc instanceof SpaceImpl)) {
-                    hDoc = getDocument(hDoc.getParentInternalId());
-                    path = "/" + hDoc.getName() + path;
-                }
-
-                path = "/" + getRepositoryName() + path;
-
-                // add path to document
-                doc.setPath(path);
-
-                // add path entry
-                documents.put(path, doc);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-
-            }
-        }
-    }
-    
-
+ 
     public void notifyChanges( CMSEvent e) {
         for (RepositoryListener listener : listeners) {
             listener.contentModified(e);

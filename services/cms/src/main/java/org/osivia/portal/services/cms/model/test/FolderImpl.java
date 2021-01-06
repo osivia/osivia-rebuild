@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
-public class FolderImpl extends NuxeoMockDocumentImpl  {
+public class FolderImpl extends DocumentImpl  {
 
 
     private static final long serialVersionUID = -4961203732384812600L;
