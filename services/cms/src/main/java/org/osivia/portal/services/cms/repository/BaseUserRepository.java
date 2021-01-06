@@ -6,28 +6,19 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.dom4j.DocumentException;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
-import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.service.CMSEvent;
-import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
-import org.osivia.portal.api.cms.service.Request;
-import org.osivia.portal.services.cms.model.test.FolderImpl;
-import org.osivia.portal.services.cms.model.test.NavigationItemImpl;
 import org.osivia.portal.services.cms.model.test.DocumentImpl;
+import org.osivia.portal.services.cms.model.test.NavigationItemImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
-import org.osivia.portal.services.cms.service.CMSEventImpl;
-
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import org.osivia.portal.services.cms.repository.test.StorageRepository;
 
 /**
  * Minimal user repository
@@ -53,11 +44,12 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     private String userName = null;
     
-    private boolean batchMode = false;
+    protected boolean batchMode = false;
+    
+    private StorageRepository storageRepository;
     
 
-
-    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
+    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, StorageRepository storageRepository) {
         super();
         this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
@@ -66,7 +58,10 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             this.previewRepository = true;        
         }
         this.userName = userName;
+        this.storageRepository = storageRepository;
+        
         init(repositoryKey);
+        
     }
 
     
@@ -95,9 +90,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
         boolean initRepository = false;
         if( getSharedRepository() == null)    {
-            sharedRepositories.put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName()));   
+            sharedRepositories.put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName(), storageRepository));   
+            storageRepository.setSharedRepository(sharedRepositories.get(repositoryKey));
             initRepository = true;
         }
+        
         
         sharedRepositories.get(repositoryKey).addListener(this);
         
@@ -289,8 +286,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
         // create published object
         DocumentImpl publishedDoc = (DocumentImpl) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
-        publishRepository.getSharedRepository().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
-        
+        publishRepository.getStorageRepository().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
         
         
         } catch( Exception e)   {
@@ -299,15 +295,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
      }
     
     
-   
+    public StorageRepository getStorageRepository()  {
+        return storageRepository;
+    }
 
-    protected void addDocument(String internalID, DocumentImpl document) {
-        getSharedRepository().addDocument(internalID, document, batchMode);
-    }
-    
-    protected void updateDocument(String internalID, DocumentImpl document) {
-        getSharedRepository().updateDocument(internalID, document, batchMode);
-    }
+
 
 
 }

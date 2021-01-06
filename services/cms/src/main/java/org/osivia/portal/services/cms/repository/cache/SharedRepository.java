@@ -14,6 +14,7 @@ import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
 import org.osivia.portal.services.cms.repository.test.InMemoryRepository;
+import org.osivia.portal.services.cms.repository.test.StorageRepository;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
 import org.springframework.util.CollectionUtils;
 
@@ -30,14 +31,21 @@ public class SharedRepository {
     
     private Map<String, DocumentImpl> cachedDocument;
     
-    private InMemoryRepository internalRepository;
+    private StorageRepository storageRepository;
     
-    public SharedRepository(String repositoryName) {
+    
+    public StorageRepository getStorageRepository() {
+        return storageRepository;
+    }
+
+
+    public SharedRepository(String repositoryName, StorageRepository storageRepository) {
         super();
         this.repositoryName = repositoryName;
         this.listeners = new ArrayList<>();
         this.cachedDocument= new Hashtable<String, DocumentImpl>();
-        internalRepository = new InMemoryRepository(repositoryName);
+        this.storageRepository = storageRepository;
+
    }
 
 
@@ -52,12 +60,10 @@ public class SharedRepository {
     
     
     public void endBatch()  {
-        internalRepository.endBatch();
+        storageRepository.endBatch();
     }
     
-    public void addDocument(String internalID, DocumentImpl document, boolean batchMode)  {
-        
-        internalRepository.addDocument(internalID, document, batchMode);
+    public void addDocumentToCache(String internalID, DocumentImpl document, boolean batchMode)  {
         
         cachedDocument.put(internalID, document);
        
@@ -73,9 +79,7 @@ public class SharedRepository {
         }
     }
     
-    public void updateDocument(String internalID, DocumentImpl document, boolean batchMode)  {
-        
-        internalRepository.addDocument(internalID, document, batchMode);
+    public void updateDocumentToCache(String internalID, DocumentImpl document, boolean batchMode)  {
         
         cachedDocument.put(internalID, document);
         
@@ -89,7 +93,7 @@ public class SharedRepository {
         try {
         DocumentImpl doc = cachedDocument.get(internalID);
         if( doc == null) {
-            doc = internalRepository.getDocument(internalID);
+            doc = storageRepository.getDocument(internalID);
             if( doc != null)
                 cachedDocument.put(internalID, doc);
         }

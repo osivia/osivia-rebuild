@@ -18,30 +18,30 @@ import org.osivia.portal.services.cms.service.CMSEventImpl;
 import org.springframework.util.CollectionUtils;
 
 /**
- * The shared cache
+ * In memory sample storage
  * 
  */
-public class InMemoryRepository  {
-    
-    /** The repository name. */
-    private final String repositoryName;
+public class InMemoryRepository implements StorageRepository  {
     
 
     private Map<String, DocumentImpl> documents;
+    private SharedRepository sharedRepository;
     
-    public InMemoryRepository(String repositoryName) {
-        this.repositoryName = repositoryName;
+ 
+    public InMemoryRepository() {
         this.documents= new Hashtable<String, DocumentImpl>();
    }
+  
     
-    
-    
-    public String getRepositoryName() {
-        return repositoryName;
+    public void setSharedRepository(SharedRepository sharedRepository) {
+        this.sharedRepository = sharedRepository;
     }
 
-
     
+    /* (non-Javadoc)
+     * @see org.osivia.portal.services.cms.repository.test.StorageRepository#addDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
+     */
+    @Override
     public void addDocument(String internalID, DocumentImpl document, boolean batchMode)  {
         
         documents.put(internalID, document);
@@ -60,8 +60,14 @@ public class InMemoryRepository  {
         if(!batchMode)  {
              updatePaths();
         }
+        
+        sharedRepository.addDocumentToCache(internalID, document, batchMode);
     }
     
+    /* (non-Javadoc)
+     * @see org.osivia.portal.services.cms.repository.test.StorageRepository#updateDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
+     */
+    @Override
     public void updateDocument(String internalID, DocumentImpl document, boolean batchMode)  {
         
         documents.put(internalID, document);
@@ -69,9 +75,15 @@ public class InMemoryRepository  {
         if(!batchMode)  {
             updatePaths();
         }
+        
+        sharedRepository.updateDocumentToCache(internalID, document, batchMode);
     } 
     
     
+    /* (non-Javadoc)
+     * @see org.osivia.portal.services.cms.repository.test.StorageRepository#getDocument(java.lang.String)
+     */
+    @Override
     public DocumentImpl getDocument(String internalID) throws CMSException {
         try {
         DocumentImpl doc = documents.get(internalID);
@@ -98,7 +110,7 @@ public class InMemoryRepository  {
                     path = "/" + hDoc.getName() + path;
                 }
 
-                path = "/" + getRepositoryName() + path;
+                path = "/" + sharedRepository.getRepositoryName() + path;
 
                 // add path to document
                 doc.setPath(path);
@@ -113,6 +125,10 @@ public class InMemoryRepository  {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.osivia.portal.services.cms.repository.test.StorageRepository#endBatch()
+     */
+    @Override
     public void endBatch()  {
         updatePaths();
     }

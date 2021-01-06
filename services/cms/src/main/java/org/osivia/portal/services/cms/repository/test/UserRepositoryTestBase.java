@@ -34,9 +34,16 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
 
 {
     public UserRepositoryTestBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
-        super(repositoryKey, publishRepository, userName);
+        super(repositoryKey, publishRepository, userName, new InMemoryRepository());
     }
     
+    protected void addDocument(String internalID, DocumentImpl document) {
+        getStorageRepository().addDocument(internalID, document, batchMode);
+    }
+    
+    protected void updateDocument(String internalID, DocumentImpl document) {
+        getStorageRepository().updateDocument(internalID, document, batchMode);
+    }
 
 
 
@@ -115,7 +122,6 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
             } catch(DocumentForbiddenException e)   {
                 
             }
-               
         }
         
         return childrens;
@@ -128,7 +134,6 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         DocumentImpl doc = (DocumentImpl) getDocument(id);
         doc.setACL(acls);
         updateDocument(id, doc);
-        
-    }
+     }
     
 }
