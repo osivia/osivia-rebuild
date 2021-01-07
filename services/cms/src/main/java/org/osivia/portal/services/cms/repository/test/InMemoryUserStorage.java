@@ -13,7 +13,11 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
+import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
+import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.services.cms.repository.spi.UserRepository;
+import org.osivia.portal.services.cms.repository.spi.UserStorage;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
 import org.springframework.util.CollectionUtils;
 
@@ -21,22 +25,33 @@ import org.springframework.util.CollectionUtils;
  * In memory sample storage
  * 
  */
-public class InMemoryRepository implements StorageRepository  {
+public class InMemoryUserStorage implements UserStorage  {
     
 
-    private Map<String, DocumentImpl> documents;
-    private SharedRepository sharedRepository;
+    private static Map<SharedRepositoryKey, Map<String,DocumentImpl>> allDocuments = new Hashtable<SharedRepositoryKey, Map<String,DocumentImpl>>();
+    private BaseUserRepository userRepository;
     
- 
-    public InMemoryRepository() {
-        this.documents= new Hashtable<String, DocumentImpl>();
-   }
-  
-    
-    public void setSharedRepository(SharedRepository sharedRepository) {
-        this.sharedRepository = sharedRepository;
+    public void setUserRepository(BaseUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
-
+    
+    private SharedRepository getSharedRepository()    {
+        return userRepository.getSharedRepository();
+        
+    }
+    
+    private Map<String,DocumentImpl> getDocuments()   {
+        
+        Map<String,DocumentImpl> documents = allDocuments.get(userRepository.getRepositoryKey());
+        if( documents == null) {
+            documents= new Hashtable<String,DocumentImpl>();
+            allDocuments.put(userRepository.getRepositoryKey(), documents);
+        }
+        
+        return documents;
+        
+    }
+    
     
     /* (non-Javadoc)
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#addDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
@@ -44,24 +59,27 @@ public class InMemoryRepository implements StorageRepository  {
     @Override
     public void addDocument(String internalID, DocumentImpl document, boolean batchMode)  {
         
-        documents.put(internalID, document);
+        getDocuments().put(internalID, document);
         
         // update parent
         String parentID = document.getParentInternalId();
         if( parentID != null)   {
-            DocumentImpl parent = documents.get(parentID);
+            DocumentImpl parent = getDocuments().get(parentID);
             if( parent != null) {
                 if( !parent.getChildrenId().contains(internalID))  {
                     parent.getChildrenId().add(internalID);
+                    
                 }
+                getSharedRepository().addDocumentToCache(parentID, parent, true);
             }
+                        
         }
         
         if(!batchMode)  {
              updatePaths();
         }
         
-        sharedRepository.addDocumentToCache(internalID, document, batchMode);
+        getSharedRepository().addDocumentToCache(internalID, document, batchMode);
     }
     
     /* (non-Javadoc)
@@ -70,13 +88,13 @@ public class InMemoryRepository implements StorageRepository  {
     @Override
     public void updateDocument(String internalID, DocumentImpl document, boolean batchMode)  {
         
-        documents.put(internalID, document);
+        getDocuments().put(internalID, document);
         
         if(!batchMode)  {
             updatePaths();
         }
         
-        sharedRepository.updateDocumentToCache(internalID, document, batchMode);
+        getSharedRepository().updateDocumentToCache(internalID, document, batchMode);
     } 
     
     
@@ -86,7 +104,7 @@ public class InMemoryRepository implements StorageRepository  {
     @Override
     public DocumentImpl getDocument(String internalID) throws CMSException {
         try {
-        DocumentImpl doc = documents.get(internalID);
+        DocumentImpl doc = getDocuments().get(internalID);
         if( doc == null)
             throw new CMSException();
         return doc.duplicate();
@@ -98,7 +116,7 @@ public class InMemoryRepository implements StorageRepository  {
 
     private void updatePaths() {
         // Set paths
-        for (DocumentImpl doc : new ArrayList<DocumentImpl>(documents.values())) {
+        for (DocumentImpl doc : new ArrayList<DocumentImpl>(getDocuments().values())) {
             try {
                 String path = "";
                 DocumentImpl hDoc = doc;
@@ -110,13 +128,13 @@ public class InMemoryRepository implements StorageRepository  {
                     path = "/" + hDoc.getName() + path;
                 }
 
-                path = "/" + sharedRepository.getRepositoryName() + path;
+                path = "/" + getSharedRepository().getRepositoryName() + path;
 
                 // add path to document
                 doc.setPath(path);
 
                 // add path entry
-                documents.put(path, doc);
+                getDocuments().put(path, doc);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);

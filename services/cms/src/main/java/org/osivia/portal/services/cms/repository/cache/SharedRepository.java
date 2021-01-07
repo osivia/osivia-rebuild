@@ -13,8 +13,8 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.test.DocumentImpl;
 import org.osivia.portal.services.cms.model.test.SpaceImpl;
-import org.osivia.portal.services.cms.repository.test.InMemoryRepository;
-import org.osivia.portal.services.cms.repository.test.StorageRepository;
+import org.osivia.portal.services.cms.repository.spi.UserStorage;
+import org.osivia.portal.services.cms.repository.test.InMemoryUserStorage;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
 import org.springframework.util.CollectionUtils;
 
@@ -31,15 +31,15 @@ public class SharedRepository {
     
     private Map<String, DocumentImpl> cachedDocument;
     
-    private StorageRepository storageRepository;
+    private UserStorage storageRepository;
     
     
-    public StorageRepository getStorageRepository() {
+    public UserStorage getStorageRepository() {
         return storageRepository;
     }
 
 
-    public SharedRepository(String repositoryName, StorageRepository storageRepository) {
+    public SharedRepository(String repositoryName, UserStorage storageRepository) {
         super();
         this.repositoryName = repositoryName;
         this.listeners = new ArrayList<>();

@@ -75,7 +75,7 @@ public class SiteRepository extends UserRepositoryTestBase  {
 
     @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        DocumentImpl parent = getSharedDocument(parentId);
+        DocumentImpl parent = (DocumentImpl) getDocument(parentId);
         addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
     }
 

@@ -18,8 +18,8 @@ import org.osivia.portal.services.cms.model.test.NavigationItemImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
-import org.osivia.portal.services.cms.repository.test.InMemoryRepository;
-import org.osivia.portal.services.cms.repository.test.StorageRepository;
+import org.osivia.portal.services.cms.repository.spi.UserStorage;
+import org.osivia.portal.services.cms.repository.test.InMemoryUserStorage;
 
 /**
  * Minimal user repository
@@ -35,6 +35,10 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
     protected SharedRepositoryKey repositoryKey;
 
+    
+  
+
+
     protected List<RepositoryListener> listeners;
     
     protected BaseUserRepository publishRepository;
@@ -47,9 +51,9 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     protected boolean batchMode = false;
     
-    
+    UserStorage userStorage;
 
-    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
+    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, UserStorage userStorage) {
         super();
         this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
@@ -58,10 +62,16 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             this.previewRepository = true;        
         }
         this.userName = userName;
+        this.userStorage = userStorage;
+        userStorage.setUserRepository(this);
         init(repositoryKey);
     }
 
     
+    public SharedRepositoryKey getRepositoryKey() {
+        return repositoryKey;
+    }
+
 
     
     public String getUserName() {
@@ -84,12 +94,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
 
     private void init(SharedRepositoryKey repositoryKey) {
+        
 
         boolean initRepository = false;
         if( getSharedRepository() == null)    {
-            StorageRepository storageRepository = createStorageRepository();
-            sharedRepositories.put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName(), storageRepository));   
-            storageRepository.setSharedRepository(sharedRepositories.get(repositoryKey));
+            sharedRepositories.put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName(), userStorage));   
             initRepository = true;
         }
         
@@ -109,7 +118,6 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
     }
 
-    protected abstract StorageRepository createStorageRepository();
 
     protected abstract void initDocuments();
 
@@ -284,7 +292,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
         // create published object
         DocumentImpl publishedDoc = (DocumentImpl) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
-        publishRepository.getStorageRepository().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
+        publishRepository.getUserStorage().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
         
         
         } catch( Exception e)   {
@@ -293,8 +301,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
      }
     
     
-    public StorageRepository getStorageRepository()  {
-        return getSharedRepository().getStorageRepository();
+    public UserStorage getUserStorage()  {
+        return userStorage;
     }
 
 
