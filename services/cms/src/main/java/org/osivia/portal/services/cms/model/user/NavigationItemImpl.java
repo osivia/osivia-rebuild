@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model.test;
+package org.osivia.portal.services.cms.model.user;
 
 import java.util.ArrayList;
 import java.util.List;

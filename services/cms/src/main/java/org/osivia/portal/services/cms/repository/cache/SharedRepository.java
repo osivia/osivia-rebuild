@@ -13,7 +13,7 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.share.DocumentImpl;
 import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.model.test.UserDocumentImpl;
+import org.osivia.portal.services.cms.model.user.UserDocumentImpl;
 import org.osivia.portal.services.cms.repository.spi.UserStorage;
 import org.osivia.portal.services.cms.repository.test.InMemoryUserStorage;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
