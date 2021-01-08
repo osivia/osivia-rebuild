@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model.test;
+package org.osivia.portal.services.cms.model.share;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,7 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
-public class SpaceImpl extends DocumentImpl implements Space {
+public class SpaceImpl extends DocumentImpl  {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;
@@ -20,12 +20,11 @@ public class SpaceImpl extends DocumentImpl implements Space {
 
     }
 
-    @Override
+
     public List<ModuleRef> getModuleRefs() {
         return moduleRefs;
     }
     
-    @Override
     public UniversalID getTemplateId() {
         return templateId;
     }

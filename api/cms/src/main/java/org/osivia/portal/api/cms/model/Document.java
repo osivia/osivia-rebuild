@@ -76,6 +76,8 @@ public interface Document {
      */
     public String getType();
     
+    
+    public boolean isTemplateable();
   
     
 }

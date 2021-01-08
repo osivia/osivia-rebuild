@@ -19,7 +19,6 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
-import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -27,6 +26,7 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
+import org.osivia.portal.api.cms.model.Templateable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PublicationManager implements IPublicationManager {

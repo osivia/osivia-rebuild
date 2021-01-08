@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model.test;
+package org.osivia.portal.services.cms.model.share;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ public class FolderImpl extends DocumentImpl  {
 
     public FolderImpl(BaseUserRepository repository, String id, String name, String parentId,String spaceId, List<String> childrenId,Map<String, Object> properties) {
         super(repository, id, name, parentId, spaceId,childrenId, properties);
-        subTypes = Arrays.asList(new String[]{"folder,document"});
+        supportedSubTypes = Arrays.asList(new String[]{"folder,document"});
     }
 
     

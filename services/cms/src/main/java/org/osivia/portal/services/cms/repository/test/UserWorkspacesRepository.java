@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.services.cms.model.test.FolderImpl;
-import org.osivia.portal.services.cms.model.test.DocumentImpl;
-import org.osivia.portal.services.cms.model.test.SpaceImpl;
+import org.osivia.portal.services.cms.model.share.FolderImpl;
+import org.osivia.portal.services.cms.model.share.DocumentImpl;
+import org.osivia.portal.services.cms.model.share.SpaceImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
 public class UserWorkspacesRepository extends UserRepositoryTestBase {

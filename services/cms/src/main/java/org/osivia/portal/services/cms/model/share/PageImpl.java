@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model.test;
+package org.osivia.portal.services.cms.model.share;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
-public class PageImpl extends DocumentImpl implements Page {
+public class PageImpl extends DocumentImpl  {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;
@@ -27,16 +27,18 @@ public class PageImpl extends DocumentImpl implements Page {
         super(repository, id, name, parentId, spaceId,childrenId, properties);
         this.templateId = templateId;
         this.moduleRefs = moduleRefs;
-        subTypes = Arrays.asList(new String[]{"document"});
+        supportedSubTypes = Arrays.asList(new String[]{"document"});
 
     }
+    
+    
 
-    @Override
+
     public List<ModuleRef> getModuleRefs() {
         return moduleRefs;
     }
 
-    @Override
+
     public UniversalID getTemplateId() {
         return templateId;
     }
@@ -46,7 +48,7 @@ public class PageImpl extends DocumentImpl implements Page {
         return true;
     }
 
-    @Override
+
     public List<String> getInheritedRegions() {
          return inheritedRegions;
     }

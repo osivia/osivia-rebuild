@@ -7,15 +7,19 @@ import java.util.Map;
 
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
-import org.osivia.portal.services.cms.model.test.DocumentImpl;
-import org.osivia.portal.services.cms.model.test.SpaceImpl;
+import org.osivia.portal.services.cms.model.share.DocumentImpl;
+import org.osivia.portal.services.cms.model.share.SpaceImpl;
+import org.osivia.portal.services.cms.model.test.UserDocumentImpl;
+import org.osivia.portal.services.cms.model.test.UserDatasImpl;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.services.cms.repository.spi.UserData;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserStorage;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
@@ -102,15 +106,34 @@ public class InMemoryUserStorage implements UserStorage  {
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#getDocument(java.lang.String)
      */
     @Override
-    public DocumentImpl getDocument(String internalID) throws CMSException {
+    public DocumentImpl getSharedDocument(String internalID) throws CMSException {
         try {
         DocumentImpl doc = getDocuments().get(internalID);
         if( doc == null)
             throw new CMSException();
         return doc.duplicate();
+
         } catch(Exception e)    {
             throw new CMSException(e);
         }
+    }
+
+    
+    @Override
+    public UserData getUserData(String internalID) throws CMSException {
+        try {
+            DocumentImpl doc = getDocuments().get(internalID);
+            if( doc == null)
+                throw new CMSException();
+            List<String> subtypes = doc.getSupportedSubTypes();
+            if(userRepository.getUserName() != null) {
+                subtypes.clear();
+            }
+            return new UserDatasImpl( subtypes);
+            } catch(Exception e)    {
+                throw new CMSException(e);
+            }
+
     }
 
 
@@ -124,7 +147,7 @@ public class InMemoryUserStorage implements UserStorage  {
                 path = "/" + hDoc.getName() + path;
 
                 while (!(hDoc instanceof SpaceImpl)) {
-                    hDoc = getDocument(hDoc.getParentInternalId());
+                    hDoc = getSharedDocument(hDoc.getParentInternalId());
                     path = "/" + hDoc.getName() + path;
                 }
 
@@ -150,6 +173,9 @@ public class InMemoryUserStorage implements UserStorage  {
     public void endBatch()  {
         updatePaths();
     }
+
+
+
     
 
     

@@ -18,11 +18,11 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
-import org.osivia.portal.api.cms.model.Page;
-import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.ContainerContext;
+import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.model.Space;
 
 
 public class DefaultCMSPageFactory implements CMSPageFactory {

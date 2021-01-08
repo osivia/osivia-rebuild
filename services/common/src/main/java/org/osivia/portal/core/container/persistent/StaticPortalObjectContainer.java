@@ -31,13 +31,13 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
-import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.content.IPublicationManager;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.tracker.ITracker;
+import org.osivia.portal.api.cms.model.Space;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 

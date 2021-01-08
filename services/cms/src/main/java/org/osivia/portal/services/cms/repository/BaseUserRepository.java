@@ -13,7 +13,12 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
-import org.osivia.portal.services.cms.model.test.DocumentImpl;
+import org.osivia.portal.services.cms.model.share.DocumentImpl;
+import org.osivia.portal.services.cms.model.share.PageImpl;
+import org.osivia.portal.services.cms.model.share.SpaceImpl;
+import org.osivia.portal.services.cms.model.test.UserDocumentImpl;
+import org.osivia.portal.services.cms.model.test.UserPageImpl;
+import org.osivia.portal.services.cms.model.test.UserSpaceImpl;
 import org.osivia.portal.services.cms.model.test.NavigationItemImpl;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
@@ -140,9 +145,15 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     public Document getDocument(String internalId) throws CMSException {
         
-        DocumentImpl document = getSharedRepository().getDocument(internalId);
-        if( checkACL(document))
-            return document;
+        DocumentImpl sharedDocument = getSharedRepository().getDocument(internalId);
+        if( checkACL(sharedDocument)) {
+            if( sharedDocument instanceof PageImpl)
+                return new UserPageImpl((PageImpl)sharedDocument, userStorage.getUserData(internalId));
+            else if( sharedDocument instanceof SpaceImpl)
+                return new UserSpaceImpl((SpaceImpl)sharedDocument, userStorage.getUserData(internalId)); 
+            // default
+            return new UserDocumentImpl(sharedDocument, userStorage.getUserData(internalId));
+        }
         else
             throw new DocumentForbiddenException();
     }
@@ -168,7 +179,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
     }
 
-    public DocumentImpl getNavigationParent(Document document) throws CMSException {
+    public DocumentImpl getNavigationParent(DocumentImpl document) throws CMSException {
         DocumentImpl docImpl = (DocumentImpl) document;
         DocumentImpl parent = null;
         do  {

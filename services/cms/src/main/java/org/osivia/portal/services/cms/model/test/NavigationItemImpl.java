@@ -11,6 +11,8 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.services.cms.model.share.DocumentImpl;
+import org.osivia.portal.services.cms.model.share.SpaceImpl;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;

@@ -16,9 +16,9 @@ import org.osivia.portal.api.cms.service.Documents;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
-import org.osivia.portal.services.cms.model.test.FolderImpl;
-import org.osivia.portal.services.cms.model.test.DocumentImpl;
-import org.osivia.portal.services.cms.model.test.PageImpl;
+import org.osivia.portal.services.cms.model.share.FolderImpl;
+import org.osivia.portal.services.cms.model.share.PageImpl;
+import org.osivia.portal.services.cms.model.share.DocumentImpl;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 

@@ -16,9 +16,9 @@ import org.osivia.portal.api.cms.exception.CMSException;
 
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
-import org.osivia.portal.services.cms.model.test.DocumentImpl;
-import org.osivia.portal.services.cms.model.test.PageImpl;
-import org.osivia.portal.services.cms.model.test.SpaceImpl;
+import org.osivia.portal.services.cms.model.share.PageImpl;
+import org.osivia.portal.services.cms.model.share.DocumentImpl;
+import org.osivia.portal.services.cms.model.share.SpaceImpl;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 
@@ -75,7 +75,7 @@ public class SiteRepository extends UserRepositoryTestBase  {
 
     @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        DocumentImpl parent = (DocumentImpl) getDocument(parentId);
+        DocumentImpl parent = (DocumentImpl) getSharedDocument(parentId);
         addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
     }
 

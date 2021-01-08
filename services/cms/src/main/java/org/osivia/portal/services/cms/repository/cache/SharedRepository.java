@@ -11,8 +11,9 @@ import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
-import org.osivia.portal.services.cms.model.test.DocumentImpl;
-import org.osivia.portal.services.cms.model.test.SpaceImpl;
+import org.osivia.portal.services.cms.model.share.DocumentImpl;
+import org.osivia.portal.services.cms.model.share.SpaceImpl;
+import org.osivia.portal.services.cms.model.test.UserDocumentImpl;
 import org.osivia.portal.services.cms.repository.spi.UserStorage;
 import org.osivia.portal.services.cms.repository.test.InMemoryUserStorage;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
@@ -69,10 +70,10 @@ public class SharedRepository {
        
         if(!batchMode)  {
             
-            if(CollectionUtils.isEmpty(document.getSubTypes()))    {
+            if(CollectionUtils.isEmpty(document.getSupportedSubTypes()))    {
                 List<Request> dirtyRequests = new ArrayList<>();
                 dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
-                notifyChanges( new CMSEventImpl( document, dirtyRequests));    
+                notifyChanges( new CMSEventImpl( new UserDocumentImpl(document, null), dirtyRequests));    
             }   else
                 notifyChanges( new CMSEventImpl());
             
@@ -93,7 +94,7 @@ public class SharedRepository {
         try {
         DocumentImpl doc = cachedDocument.get(internalID);
         if( doc == null) {
-            doc = storageRepository.getDocument(internalID);
+            doc = storageRepository.getSharedDocument(internalID);
             if( doc != null)
                 cachedDocument.put(internalID, doc);
         }

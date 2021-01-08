@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model.test;
+package org.osivia.portal.services.cms.model.share;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import org.osivia.portal.services.cms.repository.BaseUserRepository;
 /**
  * The Class DocumentImpl.
  */
-public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, Serializable {
+public class DocumentImpl implements  Serializable {
     
 
     /** The id. */
@@ -43,17 +43,20 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
     /** The native item. */
     private Document nativeItem;
     
-    /** The sub types. */
-    protected List<String> subTypes;
     
     private transient boolean preview = false;
     
     private List<String> acls = new ArrayList<>();
     
+    public List<String> supportedSubTypes = new ArrayList<>();    
+    
     public  String getType()    {
         return "document";
     }
 
+    public List<String> getSupportedSubTypes()  {
+        return supportedSubTypes;
+    }
 
     /**
      * Instantiates a new document impl.
@@ -73,6 +76,7 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
         this.childrenId = childrenId;
         this.properties = properties;
         this.preview = userRepository.isPreviewRepository();
+
     }
 
      
@@ -89,7 +93,7 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
     /* (non-Javadoc)
      * @see org.osivia.portal.api.cms.model.Document#getId()
      */
-    @Override
+
     public UniversalID getId() {
         return new UniversalID(userRepository.getRepositoryName(), getInternalID());
     }
@@ -97,12 +101,12 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
     /* (non-Javadoc)
      * @see org.osivia.portal.api.cms.model.Document#getProperties()
      */
-    @Override
+
     public Map<String, Object> getProperties() {
         return properties;
     }
 
-    @Override
+
     public String getTitle() {
         return nativeItem.getTitle();
 
@@ -150,7 +154,7 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
     }
 
 
-    @Override
+
     public EcmDocument getNativeItem() {
         return nativeItem;
     }
@@ -173,10 +177,6 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
         return newDoc;
     }
 
-    @Override
-    public List<String> getSubTypes() {
-        return subTypes;
-    } 
 
 
     public void setACL( List<String> acls)   {
