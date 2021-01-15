@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
@@ -21,6 +22,7 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
         super(repositoryKey, null, userName);
     }
 
+    
     
     private void addFolder(String id, String name, String parentId, String spaceId, List<String> children) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
@@ -58,7 +60,6 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
         SpaceImpl space = new SpaceImpl(this,id, id,new UniversalID("templates", "ID_TEMPLATE_WORKSPACE" ),children, properties, modules);
         addDocument(id, space);
     }
-
 
 
     protected void createWorskpace() {

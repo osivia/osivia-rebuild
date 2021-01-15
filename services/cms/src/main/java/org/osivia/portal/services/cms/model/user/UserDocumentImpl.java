@@ -60,6 +60,23 @@ public class UserDocumentImpl implements Document {
         else 
             return new ArrayList<>();
     }
+    
+    @Override
+    public boolean isModifiable() {
+        if(userDatas != null)
+            return userDatas.isModifiable();
+        else 
+            return false;
+    }
+
+    
+    @Override
+    public boolean isManageable() {
+        if(userDatas != null)
+            return userDatas.isManageable();
+        else 
+            return false;
+    }
 
     @Override
     public boolean isPreview() {
@@ -75,5 +92,6 @@ public class UserDocumentImpl implements Document {
     public boolean isTemplateable() {
         return getSharedDocument() instanceof Templateable;
     }
+
 
 }

@@ -15,6 +15,8 @@ public class LocaleService implements ILocaleService {
     @Override
     public void setLocale(PortalControllerContext portalCtx, Locale locale) throws PortalException {
         HttpServletRequest mainRequest = (HttpServletRequest) portalCtx.getHttpServletRequest();
+        if (locale == null)
+            locale = Locale.FRENCH;        
         mainRequest.getSession().setAttribute("osivia.locale", locale);
 
     }

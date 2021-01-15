@@ -15,7 +15,7 @@ public class EditionForm {
     
     private Locale locale;
     
-    private Map<String, String> locales;
+
     
     public Locale getLocale() {
         return locale;
@@ -24,13 +24,6 @@ public class EditionForm {
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
-    
-    public Map<String, String> getLocales() {
-        return locales;
-    }
-    
-    public void setLocales(Map<String, String> locales) {
-        this.locales = locales;
-    }  
+
 
 }

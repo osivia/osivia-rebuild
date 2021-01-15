@@ -2,6 +2,7 @@ package org.osivia.portal.cms.portlets.edition.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -171,7 +172,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();
 
                 TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                ((TestRepository) repository).setACL(id.getInternalID(), "group:members");
+                if( repository.getACL(id.getInternalID()).isEmpty())
+                    ((TestRepository) repository).setACL(id.getInternalID(), Arrays.asList("group:members"));
+                else
+                    ((TestRepository) repository).setACL(id.getInternalID(), new ArrayList<String>());
+                
             }
         } catch (PortalException   e) {
             throw new PortletException(e);
@@ -417,11 +422,21 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 status.setSupportPreview(repository.supportPreview());
                 
+                Map<String, String> locales = new HashMap<>();
+                    for(Locale locale: repository.getLocales()) {
+                    locales.put(locale.toString(), locale.getDisplayLanguage());
+                }
+                status.setLocales(locales);
+                
                 status.setPageEdition(repository.supportPageEdition());
                 
                 
                 Document currentDoc = cmsService.getDocument(cmsContext, id);
                 status.setSubtypes(currentDoc.getSubTypes());
+                status.setManageable(currentDoc.isManageable());
+                
+                status.setModifiable(currentDoc.isModifiable());
+                status.setAcls(repository.getACL(id.getInternalID()));
                 
                 if( cmsContext.isPreview()) {
                     cmsContext.setPreview(false);
@@ -470,11 +485,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         EditionForm form = this.applicationContext.getBean(EditionForm.class);
         try {
             form.setLocale( localService.getLocale(portalCtx));
-            Map<String, String> locales = new HashMap<>();
-            locales.put(Locale.FRENCH.getLanguage().toString(), Locale.FRENCH.getDisplayLanguage());
-            locales.put(Locale.ENGLISH.getLanguage().toString(), Locale.ENGLISH.getDisplayLanguage());    
-            locales.put(Locale.GERMAN.getLanguage().toString(), Locale.GERMAN.getDisplayLanguage());
-            form.setLocales(locales);
+
             
         } catch (PortalException e) {
             throw new PortletException( e);

@@ -77,7 +77,28 @@ public interface Document {
     public String getType();
     
     
+    /**
+     * Checks if is templateable.
+     *
+     * @return true, if is templateable
+     */
     public boolean isTemplateable();
   
+     
+
+   /**
+    * Checks if is administrable.
+    *
+    * @return true, if is administrable
+    */
+   public boolean isManageable();
+   
+   
+   /**
+    * Checks if is modifiable by current user.
+    *
+    * @return true, if is administrable
+    */
+   public boolean isModifiable();
     
 }

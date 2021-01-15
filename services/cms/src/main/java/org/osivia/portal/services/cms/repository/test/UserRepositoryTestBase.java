@@ -129,11 +129,16 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         return childrens;
     }
     
-    
-    public void setACL(String id, String acl) throws CMSException {
-        List<String> acls = new ArrayList<>();
-        acls.add(acl);
-        DocumentImpl doc = (DocumentImpl) getDocument(id);
+    @Override
+    public List<String> getACL(String id) throws CMSException {
+        DocumentImpl doc = (DocumentImpl) getSharedDocument(id);
+        return doc.getACL();
+        
+     }
+
+    @Override
+    public void setACL(String id, List<String> acls) throws CMSException {
+        DocumentImpl doc = (DocumentImpl) getSharedDocument(id);
         doc.setACL(acls);
         updateDocument(id, doc);
      }

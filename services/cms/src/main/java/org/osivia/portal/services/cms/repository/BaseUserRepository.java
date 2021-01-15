@@ -1,5 +1,6 @@
 package org.osivia.portal.services.cms.repository;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -7,12 +8,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.services.cms.model.share.DocumentImpl;
 import org.osivia.portal.services.cms.model.share.PageImpl;
 import org.osivia.portal.services.cms.model.share.SpaceImpl;
@@ -25,6 +28,7 @@ import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserStorage;
 import org.osivia.portal.services.cms.repository.test.InMemoryUserStorage;
+
 
 /**
  * Minimal user repository
@@ -40,9 +44,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
     protected SharedRepositoryKey repositoryKey;
 
-    
-  
-
+ 
 
     protected List<RepositoryListener> listeners;
     
@@ -57,6 +59,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     protected boolean batchMode = false;
     
     UserStorage userStorage;
+    
+    public ThreadLocal<PortalControllerContext> portalCtx = new ThreadLocal<PortalControllerContext>();
 
     public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, UserStorage userStorage) {
         super();
@@ -83,6 +87,28 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         return userName;
     }
 
+    public Principal getPrincipal()   {
+        Principal principal = null;
+        PortalControllerContext ctx = portalCtx.get();
+        if( ctx.getHttpServletRequest() != null)    {
+             principal = ctx.getHttpServletRequest().getUserPrincipal();
+        }
+        return principal;
+    }
+    
+    public boolean isAdministrator()    {
+        Principal principal = getPrincipal();
+        if( principal != null && principal.toString().contains("Administrators")) {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    @Override
+    public void setPortalContext(PortalControllerContext portalContext) {
+        portalCtx.set(portalContext);
+     }
     
     /**
      * {@inheritDoc}

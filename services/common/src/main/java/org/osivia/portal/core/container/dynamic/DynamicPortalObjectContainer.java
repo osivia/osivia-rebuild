@@ -285,7 +285,26 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         }
 
 
+        
+        PortalObject dynamicObject = getExistingDynamicObject(id);
+        
+        if( dynamicObject != null)
+            return dynamicObject;
 
+        // fetch object
+        dynamicObject = fetchDynamicObject(id);
+
+        return dynamicObject;
+    }
+
+    /**
+     * Gets the existing dynamic object.
+     *
+     * @param id the id
+     * @return the existing dynamic object
+     */
+    protected PortalObject getExistingDynamicObject(PortalObjectId id) {
+        
         Object cmd = this.getTracker().getCurrentState();
 
         for (DynamicPageBean dynamicPageBean : this.getDynamicPages()) {
@@ -314,10 +333,30 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
             }
         }
+        
+        return null;
+    }
 
-        PortalObject object = portalObjectContainer.getObject(id);
+   
+    
+    
+    /**
+     * Fetch dynamic object.
+     *
+     * @param id the id
+     * @return the portal object
+     */
+    protected PortalObject fetchDynamicObject(PortalObjectId id) {
+        
+        PortalObject staticObject = portalObjectContainer.getObject(id);
+        
+        if (staticObject instanceof CMSPage) {
+            // fetch portal
+            fetchDynamicObject ( ((CMSPage) staticObject).getPortal().getId());
+            return getExistingDynamicObject(id);
+        }
 
-        if (object instanceof PortalImplBase) {
+        if (staticObject instanceof PortalImplBase) {
 
             /* create CMS PAGES */
 
@@ -326,7 +365,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
             // portal/XXXXXX/id-col2 ---> / XXXXXXXX/col1/col2
 
 
-            PortalImplBase portal = (PortalImplBase) object;
+            PortalImplBase portal = (PortalImplBase) staticObject;
 
 
             Collection children = portal.getChildren();
@@ -335,15 +374,14 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
                 addCMSPage(portal, page);
             }
 
-            return new DynamicPortal(portalObjectContainer, (PortalImplBase) object, this);
+            return new DynamicPortal(portalObjectContainer, (PortalImplBase) staticObject, this);
         }
 
-        if (object instanceof ContextImplBase) {
-            return new DynamicContext(portalObjectContainer, (ContextImplBase) object, this);
-
+        if (staticObject instanceof ContextImplBase) {
+            return new DynamicContext(portalObjectContainer, (ContextImplBase) staticObject, this);
         }
-
-        return object;
+        
+        return null;
     }
 
     private void addCMSPage(Portal portal, Page page) {

@@ -111,6 +111,12 @@ function bilto(event)
               return;
       }
       
+      
+      if (!source.classList.contains("ajax-link")
+    	        && ((Element.up(source, ".no-ajax-link") != null) || source.hasClassName("no-ajax-link"))) {
+    	        return;
+    	    }
+      
       //
       if (source.nodeName == "A")
       {

@@ -19,7 +19,7 @@
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 </head>
 
-<op:translate key="CUSTOMIZER_MSG_1" />
+<!--<op:translate key="CUSTOMIZER_MSG_1" />-->
 
 <body id="body">
 

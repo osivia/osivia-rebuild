@@ -20,6 +20,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
@@ -132,6 +133,17 @@ public class PublicationManager implements IPublicationManager {
 
         try {
             CMSContext cmsContext = new CMSContext(portalCtx);
+            
+            // check if user repository is compatible with context (locale, preview)
+            
+            NativeRepository userRepository = getCMSService().getUserRepository(cmsContext, docId.getRepositoryName());
+            if(  getPreviewModeService().isPreviewing(portalCtx, docId) && !userRepository.supportPreview())
+                getPreviewModeService().changePreviewMode(portalCtx, docId);
+            if( !userRepository.getLocales().contains(getLocaleService().getLocale(portalCtx)))
+                getLocaleService().setLocale(portalCtx, null);
+            
+            
+            
             cmsContext.setPreview(getPreviewModeService().isPreviewing(portalCtx, docId));
             cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
             

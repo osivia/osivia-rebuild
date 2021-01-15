@@ -36,7 +36,7 @@
        		<a class ="text-white pr-2" href="${homeURL}">
 				<i class="glyphicons glyphicons-basic-home"></i>
 			</a>
-			<c:if test="${status.supportPreview}">
+			<c:if test="${status.supportPreview && status.modifiable}">
 				<c:if test="${status.preview}">
 					<div class="btn-group">
 						<c:if test="${status.havingPublication}">
@@ -67,7 +67,7 @@
 		</div>
 		<div class="col-8  d-flex align-items-center">
 
-			<c:if test="${status.supportPreview}">
+			<c:if test="${status.supportPreview && status.modifiable}">
 				<c:if test="${status.preview}">
 					<span> <a href="${publishURL}" class=" btn-sm btn-light m-1">
 							publier</a>
@@ -76,7 +76,7 @@
 			</c:if>
 
 			<c:if
-				test="${status.pageEdition && ( not  status.supportPreview ||  status.preview ) }">
+				test="${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
 				<span> <a href="${addPageURL}" class=" btn-sm btn-light m-1">
 						page</a>
 				</span>
@@ -100,21 +100,46 @@
 					</span>
 				</c:if>
 			</c:if>
+
+			<c:if test="${status.manageable}">
 			
-			<c:if test="${not empty status.remoteUser}">
+					<c:if test="${not empty status.acls}">
+						<c:set var="aclBg">btn-danger</c:set>
+					</c:if>
+					
+					<c:if test="${ empty status.acls}">
+						<c:set var="aclBg">btn-light</c:set>
+					</c:if>					
+					
 					<span> <a href="${setACLURL}"
-						class=" btn-sm btn-light m-1"> ACL</a>
+						class=" btn-sm m-1 ${aclBg}"> ACL</a>
 					</span>
 			</c:if>
 			
 		</div>
-		<div class="col-2  d-flex align-items-center">
-			<form:select path="locale" items="${form.locales}"
+		<div class="col-1  d-flex align-items-center">
+			<form:select path="locale" items="${status.locales}"
 				data-change-submit="${namespace}-update-locale" />
 
 			<input id="${namespace}-update-locale" type="submit"
 				name="update-locale" class="d-none">
 		</div>
+		
+		<div class="col-1  d-flex align-items-center">
+			<c:if test="${not empty status.remoteUser}">
+				<span class="text-white"> ${status.remoteUser} </span>
+				 <a class ="text-white" href="/portal/signout">
+					<i class="glyphicons glyphicons-basic-log-out"></i>
+				</a>				
+			</c:if>	
+			<c:if test="${empty status.remoteUser}">
+				<span> <a href="/portal/auth"
+					class="text-white pr-2 no-ajax-link"> <i class="glyphicons glyphicons-basic-log-in"></i></a>
+				</span>
+
+				
+			</c:if>				
+		</div>		
 
 	</form:form>
 

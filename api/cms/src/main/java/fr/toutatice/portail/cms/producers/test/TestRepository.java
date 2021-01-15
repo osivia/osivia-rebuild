@@ -1,6 +1,7 @@
 package fr.toutatice.portail.cms.producers.test;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -29,5 +30,9 @@ public interface TestRepository extends NativeRepository {
     
     List<Document> getChildren(String id) throws CMSException;
     
-    void setACL(String id, String acl) throws CMSException ;
+    void setACL(String id, List<String> acls) throws CMSException ;
+    
+    List<String> getACL(String id) throws CMSException ;
+     
+    public List<Locale> getLocales() ;
 }

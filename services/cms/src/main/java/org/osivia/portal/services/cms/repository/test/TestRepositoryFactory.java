@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.SuperUserContext;
+import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.context.ControllerContextAdapter;
@@ -121,7 +122,12 @@ public class TestRepositoryFactory {
             cmsContext.setPreview(savedPreview);
         }
 
-        return (NativeRepository) getOrCreateUserRepository(cmsContext, repositoryName, null);
+        NativeRepository repository = (NativeRepository) getOrCreateUserRepository(cmsContext, repositoryName, null);
+        
+
+        ((BaseUserRepository) repository).setPortalContext(cmsContext.getPortalControllerContext());
+        
+        return repository;
     }
 
     /**

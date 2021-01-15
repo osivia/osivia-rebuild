@@ -3,12 +3,14 @@ package org.osivia.portal.services.cms.repository.spi;
 import java.util.List;
 import java.util.Locale;
 
+import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.api.context.PortalControllerContext;
 
 
 /**
@@ -69,5 +71,16 @@ public interface UserRepository {
      * @throws CMSException the CMS exception
      */
     void publish(String id) throws CMSException;
+    
+    
+ 
+    
+    /**
+     * Sets the portal context.
+     *
+     * @param portalContext the new portal context
+     */
+    void setPortalContext(PortalControllerContext portalContext) ;
+    
 
 }

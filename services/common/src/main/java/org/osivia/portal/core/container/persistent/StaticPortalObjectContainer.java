@@ -162,10 +162,6 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
             
             ContextImplBase context = createContext( "templates", PORTAL_A_NAME);
             
-            // this is the default context
-            PortalObjectId rootId = new PortalObjectId("", PortalObjectPath.ROOT_PATH);
-            currentContextNodes.put(rootId, context);
-
             PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
             createPortal(currentContextNodes, new PortalObjectId("templates", defaultPortalPath));
         }
@@ -194,6 +190,13 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         contextNode.setObject(context);
 
         currentContextNodes.put(context.getId(), context);
+        
+        // this is the default context
+        if( "templates".equals(nameSpace))  {
+            PortalObjectId rootId = new PortalObjectId("", PortalObjectPath.ROOT_PATH);
+            currentContextNodes.put(rootId, context);
+        }
+        
         return context;
     }
     
@@ -213,6 +216,8 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         
         if (currentContextNodes.get(contextId) == null) {
             createContext( nameSpace, defaultPortalName);
+            
+            
         }
     }
 

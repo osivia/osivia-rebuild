@@ -2,6 +2,7 @@ package org.osivia.portal.cms.portlets.edition.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,14 +21,50 @@ public class EditionStatus {
     public boolean supportPreview = false;
     public boolean havingPublication = false;
     public String remoteUser = null;
-
-
+    public boolean manageable = false;
+    public boolean modifiable = false;
+    public List<String> acls = new ArrayList<>();   
     
 
 
 
 
+    private Map<String, String> locales;
     
+    
+    
+    public Map<String, String> getLocales() {
+        return locales;
+    }
+
+
+
+
+
+    
+    public void setLocales(Map<String, String> locales) {
+        this.locales = locales;
+    }
+
+
+
+
+
+    public boolean isManageable() {
+        return manageable;
+    }
+
+
+
+
+    
+    public void setManageable(boolean manageable) {
+        this.manageable = manageable;
+    }
+
+
+
+
     public String getRemoteUser() {
         return remoteUser;
     }
@@ -100,6 +137,23 @@ public class EditionStatus {
    
     public void setHavingPublication(boolean havingPublication) {
         this.havingPublication = havingPublication;
+    }
+
+    public boolean isModifiable() {
+        return modifiable;
+    }
+
+    
+    public void setModifiable(boolean modifiable) {
+        this.modifiable = modifiable;
+    }
+
+    public List<String> getAcls() {
+        return acls;
+    }
+    
+    public void setAcls(List<String> acls) {
+        this.acls = acls;
     }
 
     

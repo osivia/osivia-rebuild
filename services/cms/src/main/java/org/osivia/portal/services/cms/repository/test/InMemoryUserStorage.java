@@ -1,10 +1,14 @@
 package org.osivia.portal.services.cms.repository.test;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
@@ -118,21 +122,22 @@ public class InMemoryUserStorage implements UserStorage  {
         }
     }
 
-    
+
     @Override
     public UserData getUserData(String internalID) throws CMSException {
         try {
             DocumentImpl doc = getDocuments().get(internalID);
-            if( doc == null)
+            if (doc == null)
                 throw new CMSException();
-            List<String> subtypes = doc.getSupportedSubTypes();
-            if(userRepository.getUserName() != null) {
+            List<String> subtypes = new ArrayList<String>(doc.getSupportedSubTypes());
+
+            if (!userRepository.isAdministrator())
                 subtypes.clear();
-            }
-            return new UserDatasImpl( subtypes);
-            } catch(Exception e)    {
-                throw new CMSException(e);
-            }
+
+            return new UserDatasImpl(subtypes, userRepository.isAdministrator(), userRepository.isAdministrator());
+        } catch (Exception e) {
+            throw new CMSException(e);
+        }
 
     }
 

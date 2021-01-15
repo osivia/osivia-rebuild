@@ -27,7 +27,7 @@ public class PageImpl extends DocumentImpl  {
         super(repository, id, name, parentId, spaceId,childrenId, properties);
         this.templateId = templateId;
         this.moduleRefs = moduleRefs;
-        supportedSubTypes = Arrays.asList(new String[]{"document"});
+        supportedSubTypes = Arrays.asList(new String[]{"document", "page"});
 
     }
     

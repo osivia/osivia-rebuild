@@ -288,7 +288,17 @@
       <property name="DelegateFactory" ref="portal:commandFactory=PortalObject"/>
    </bean>
    
-   
+   <bean class="org.jboss.portal.core.controller.command.mapper.SignOutCommandFactoryService"
+          id="portal:commandFactory=SignOut" >
+      
+   </bean>
+   <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          id="portal:commandFactory=Delegate,path=signout" >
+      
+      <property name="Path" value="/signout" />
+      <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="DelegateFactory" ref="portal:commandFactory=SignOut"/>
+   </bean>
 
    
       <!-- URL factories -->
@@ -305,6 +315,12 @@
       <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Default"/>
    </bean>
    
+   
+      <bean class="org.jboss.portal.core.controller.command.mapper.SignOutURLFactory" id="portal:urlFactory=SignOut">
+      
+      <property name="Path" value="/signout" />
+      <property name="Factory" ref="portal:urlFactory=Delegating"/>
+   </bean>
    
     <bean class="org.jboss.portal.core.model.portal.PortalObjectCommandFactory" id="portal:commandFactory=Templates">
       <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Templates"/>

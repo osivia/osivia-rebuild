@@ -1,5 +1,6 @@
 package org.osivia.portal.services.cms.model.share;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class SpaceImpl extends DocumentImpl  {
         super(repository, id, name,null, id,childrenId, properties);
         this.templateId = templateId    ;
         this.moduleRefs = moduleRefs;
-
+        supportedSubTypes = Arrays.asList(new String[]{ "page"});
     }
 
 
