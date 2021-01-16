@@ -155,7 +155,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
      * Add page sample
      */
     @ActionMapping(name = "setACL")
-    public void setACL(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+    public void setACL(ActionRequest request, ActionResponse response, @ModelAttribute("status") EditionStatus status) throws PortletException, CMSException {
 
         try {
             // Portal Controller context
@@ -176,6 +176,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     ((TestRepository) repository).setACL(id.getInternalID(), Arrays.asList("group:members"));
                 else
                     ((TestRepository) repository).setACL(id.getInternalID(), new ArrayList<String>());
+                
+                refreshStatus(portalControllerContext, ctrl, status);
                 
             }
         } catch (PortalException   e) {
