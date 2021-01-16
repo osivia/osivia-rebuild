@@ -9,7 +9,7 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
-public class SpaceImpl extends DocumentImpl  {
+public class SpaceImpl extends DocumentImpl implements Space {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;

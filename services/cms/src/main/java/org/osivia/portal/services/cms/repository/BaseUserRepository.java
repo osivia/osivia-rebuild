@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -20,14 +20,11 @@ import org.osivia.portal.services.cms.model.share.DocumentImpl;
 import org.osivia.portal.services.cms.model.share.PageImpl;
 import org.osivia.portal.services.cms.model.share.SpaceImpl;
 import org.osivia.portal.services.cms.model.user.NavigationItemImpl;
-import org.osivia.portal.services.cms.model.user.UserDocumentImpl;
-import org.osivia.portal.services.cms.model.user.UserPageImpl;
-import org.osivia.portal.services.cms.model.user.UserSpaceImpl;
+
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserStorage;
-import org.osivia.portal.services.cms.repository.test.InMemoryUserStorage;
 
 
 /**
@@ -173,16 +170,23 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
         DocumentImpl sharedDocument = getSharedRepository().getDocument(internalId);
         if( checkACL(sharedDocument)) {
-            if( sharedDocument instanceof PageImpl)
-                return new UserPageImpl((PageImpl)sharedDocument, userStorage.getUserData(internalId));
-            else if( sharedDocument instanceof SpaceImpl)
-                return new UserSpaceImpl((SpaceImpl)sharedDocument, userStorage.getUserData(internalId)); 
             // default
-            return new UserDocumentImpl(sharedDocument, userStorage.getUserData(internalId));
+            return sharedDocument;
         }
         else
             throw new DocumentForbiddenException();
     }
+    
+   public Personnalization getPersonnalization(String internalId) throws CMSException {
+        
+        DocumentImpl sharedDocument = getSharedRepository().getDocument(internalId);
+        if( checkACL(sharedDocument)) {
+            return userStorage.getUserData(internalId);
+        }
+        else
+            throw new DocumentForbiddenException();
+    }
+ 
 
     public NavigationItem getNavigationItem(String internalId) throws CMSException {
         DocumentImpl document = (DocumentImpl) getSharedDocument(internalId);

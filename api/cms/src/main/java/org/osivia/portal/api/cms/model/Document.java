@@ -53,12 +53,6 @@ public interface Document {
     public EcmDocument getNativeItem();
     
      
-    /**
-     * Gets the sub types.
-     *
-     * @return the sub types
-     */
-    public List<String> getSubTypes();
     
     
     /**
@@ -86,19 +80,5 @@ public interface Document {
   
      
 
-   /**
-    * Checks if is administrable.
-    *
-    * @return true, if is administrable
-    */
-   public boolean isManageable();
-   
-   
-   /**
-    * Checks if is modifiable by current user.
-    *
-    * @return true, if is administrable
-    */
-   public boolean isModifiable();
     
 }

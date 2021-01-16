@@ -28,6 +28,7 @@ import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locale.ILocaleService;
@@ -433,11 +434,13 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 status.setPageEdition(repository.supportPageEdition());
                 
                 
-                Document currentDoc = cmsService.getDocument(cmsContext, id);
-                status.setSubtypes(currentDoc.getSubTypes());
-                status.setManageable(currentDoc.isManageable());
+                Personnalization personnalization = cmsService.getPersonnalization(cmsContext, id);
                 
-                status.setModifiable(currentDoc.isModifiable());
+                
+                status.setSubtypes(personnalization.getSubTypes());
+                status.setManageable(personnalization.isManageable());
+                status.setModifiable(personnalization.isModifiable());
+                
                 status.setAcls(repository.getACL(id.getInternalID()));
                 
                 if( cmsContext.isPreview()) {

@@ -7,6 +7,7 @@ import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
@@ -72,7 +73,16 @@ public interface UserRepository {
      */
     void publish(String id) throws CMSException;
     
+    /**
+     * Gets the personnalization.
+     *
+     * @param internalId the internal id
+     * @return the personnalization
+     * @throws CMSException the CMS exception
+     */
+    public Personnalization getPersonnalization(String internalId) throws CMSException ;
     
+
  
     
     /**

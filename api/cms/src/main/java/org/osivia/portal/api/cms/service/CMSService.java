@@ -5,6 +5,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.model.Personnalization;
 
 /**
  * CMS service interface.
@@ -24,7 +25,17 @@ public interface CMSService {
      * @throws CMSException the CMS exception
      */
     Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException;
-    
+ 
+    /**
+     * Gets the personnalization.
+     *
+     * @param cmsContext the cms context
+     * @param id the id
+     * @return the personnalization
+     * @throws CMSException the CMS exception
+     */
+    Personnalization getPersonnalization(CMSContext cmsContext, UniversalID id) throws CMSException;
+
     
     /**
      * Execute the request.

@@ -1,33 +1,19 @@
 package org.osivia.portal.services.cms.repository.test;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.service.CMSEvent;
-import org.osivia.portal.api.cms.service.GetChildrenRequest;
-import org.osivia.portal.api.cms.service.RepositoryListener;
-import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.share.DocumentImpl;
 import org.osivia.portal.services.cms.model.share.SpaceImpl;
 import org.osivia.portal.services.cms.model.user.UserDatasImpl;
-import org.osivia.portal.services.cms.model.user.UserDocumentImpl;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepository;
 import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.services.cms.repository.spi.UserData;
-import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserStorage;
-import org.osivia.portal.services.cms.service.CMSEventImpl;
-import org.springframework.util.CollectionUtils;
 
 /**
  * In memory sample storage

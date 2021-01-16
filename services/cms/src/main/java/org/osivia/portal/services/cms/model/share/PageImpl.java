@@ -11,7 +11,7 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
-public class PageImpl extends DocumentImpl  {
+public class PageImpl extends DocumentImpl implements Page {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;

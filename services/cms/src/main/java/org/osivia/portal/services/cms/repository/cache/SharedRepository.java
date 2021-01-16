@@ -12,10 +12,7 @@ import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.model.user.UserDocumentImpl;
 import org.osivia.portal.services.cms.repository.spi.UserStorage;
-import org.osivia.portal.services.cms.repository.test.InMemoryUserStorage;
 import org.osivia.portal.services.cms.service.CMSEventImpl;
 import org.springframework.util.CollectionUtils;
 
@@ -73,7 +70,7 @@ public class SharedRepository {
             if(CollectionUtils.isEmpty(document.getSupportedSubTypes()))    {
                 List<Request> dirtyRequests = new ArrayList<>();
                 dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
-                notifyChanges( new CMSEventImpl( new UserDocumentImpl(document, null), dirtyRequests));    
+                notifyChanges( new CMSEventImpl( document, dirtyRequests));    
             }   else
                 notifyChanges( new CMSEventImpl());
             

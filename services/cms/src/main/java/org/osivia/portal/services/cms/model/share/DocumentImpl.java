@@ -10,12 +10,13 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.services.cms.repository.BaseUserRepository;
 
 /**
  * The Class DocumentImpl.
  */
-public class DocumentImpl implements  Serializable {
+public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, Serializable {
     
 
     /** The id. */
@@ -186,5 +187,12 @@ public class DocumentImpl implements  Serializable {
     public List<String> getACL( )   {
        return this.acls;
     }
+    
+
+    @Override
+    public boolean isTemplateable() {
+        return this instanceof Templateable;
+    }
+
 
 }

@@ -5,12 +5,12 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
-import org.osivia.portal.services.cms.repository.BaseUserRepository;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.repository.test.TestRepositoryFactory;
 import org.springframework.stereotype.Service;
@@ -43,8 +43,8 @@ public class CMSServiceImpl implements CMSService {
     @Override
     public Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException {
        UserRepository userRepository =  (UserRepository) getUserRepository(cmsContext, id.getRepositoryName());
-        Document document = userRepository.getDocument(id.getInternalID());
-        return document;
+        return userRepository.getDocument(id.getInternalID());
+
     }
 
 
@@ -71,6 +71,13 @@ public class CMSServiceImpl implements CMSService {
     public Result executeRequest(CMSContext cmsContext, Request request) throws CMSException {
         UserRepository userRepository =  (UserRepository) getUserRepository(cmsContext, request.getRepositoryName());
         return userRepository.executeRequest(request);
+    }
+
+
+    @Override
+    public Personnalization getPersonnalization(CMSContext cmsContext, UniversalID id) throws CMSException {
+        UserRepository userRepository =  (UserRepository) getUserRepository(cmsContext, id.getRepositoryName());
+        return userRepository.getPersonnalization(id.getInternalID());
     }
 
 
