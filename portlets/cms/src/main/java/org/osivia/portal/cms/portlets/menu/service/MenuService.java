@@ -148,7 +148,7 @@ public class MenuService implements IMenuService {
             NavigationItem navigationItem, int level) throws PortalException {
         // Nuxeo document
         // Nuxeo document
-        Document document = (Document) cmsService.getDocument(cmsContext, navigationItem.getDocumentId());
+        Document document = (Document) cmsService.getCMSSession(cmsContext).getDocument(navigationItem.getDocumentId());
         org.nuxeo.ecm.automation.client.model.Document nuxeoDocument = (org.nuxeo.ecm.automation.client.model.Document) document.getNativeItem();
 
         // Nuxeo document link
@@ -237,7 +237,7 @@ public class MenuService implements IMenuService {
 
             UniversalID spaceId = nuxeoController.getSpaceId();
             CMSContext cmsContext = nuxeoController.getCMSContext();            
-            navigationItem = cmsService.getNavigationItem(cmsContext, spaceId);
+            navigationItem = cmsService.getCMSSession(cmsContext).getNavigationItem(spaceId);
 
 
             // Navigation display item

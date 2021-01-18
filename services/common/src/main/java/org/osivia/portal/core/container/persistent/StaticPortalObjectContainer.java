@@ -300,7 +300,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                     }
                 }
                     
-                Document document = getCMSService().getDocument(cmsContext,  new UniversalID(portalID.getNamespace(), portalCMSName));
+                Document document = getCMSService().getCMSSession(cmsContext).getDocument(new UniversalID(portalID.getNamespace(), portalCMSName));
                 
                 
                 if (document instanceof Space) {
@@ -308,7 +308,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
                    
-                    NavigationItem navRoot = cmsService.getNavigationItem(cmsContext, space.getId());
+                    NavigationItem navRoot = cmsService.getCMSSession(cmsContext).getNavigationItem(space.getId());
                       
                     DefaultCMSPageFactory.createCMSPage(this, containerContext, portal, getCMSService(), cmsContext,  navRoot);
                 }

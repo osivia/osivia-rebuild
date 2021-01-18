@@ -77,7 +77,7 @@ public class DriveRestController {
             Principal principal) throws Exception {
         WSPortalControllerContext ctx = new WSPortalControllerContext(request, response, principal);
         CMSController ctrl = new CMSController(ctx);         
-        Document doc = cmsService.getDocument(ctrl.getCMSContext(), new UniversalID(repository,id));
+        Document doc = cmsService.getCMSSession(ctrl.getCMSContext()).getDocument( new UniversalID(repository,id));
         
         Map<String, Object> contents = new LinkedHashMap<>();
         contents.put("type", doc.getType());

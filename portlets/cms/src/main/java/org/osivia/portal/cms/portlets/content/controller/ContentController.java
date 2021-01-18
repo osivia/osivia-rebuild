@@ -76,7 +76,7 @@ public class ContentController implements PortletContextAware {
         String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
         if( contentId != null)  {
             UniversalID id = new UniversalID(contentId);
-            Document doc = cmsService.getDocument(ctrl.getCMSContext(), id);
+            Document doc = cmsService.getCMSSession(ctrl.getCMSContext()).getDocument( id);
 /*
             final String uri = "http://localhost:8080/osivia-portal-ws-5.0-SNAPSHOT/rest/Drive.content?repository="+id.getRepositoryName()+"&id="+id.getInternalID();
             RestTemplate restTemplate = new RestTemplate();

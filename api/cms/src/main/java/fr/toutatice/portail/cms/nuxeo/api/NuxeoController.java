@@ -111,7 +111,7 @@ public class NuxeoController {
                 try {
                     UniversalID docId = navigationId;
                     org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
-                            .getDocument(getCMSContext(), docId).getNativeItem();
+                            .getCMSSession(getCMSContext()).getDocument( docId).getNativeItem();
 
                     navigationPath = ((org.nuxeo.ecm.automation.client.model.Document) doc).getPath();
                 } catch (CMSException e) {
@@ -134,7 +134,7 @@ public class NuxeoController {
                 try {
                     UniversalID docId = spaceId;
                     org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
-                            .getDocument(getCMSContext(), docId).getNativeItem();
+                            .getCMSSession(getCMSContext()).getDocument(docId).getNativeItem();
                     basePath = doc.getPath();
                 } catch (CMSException e) {
                     throw new RuntimeException(e);
@@ -156,7 +156,7 @@ public class NuxeoController {
                 try {
                     UniversalID docId = contentId;
                     org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
-                            .getDocument(getCMSContext(), docId).getNativeItem();
+                            .getCMSSession(cmsContext).getDocument( docId).getNativeItem();
                     itemNavigationPath = ((org.nuxeo.ecm.automation.client.model.Document) doc).getPath();
                 } catch (CMSException e) {
                     throw new RuntimeException(e);

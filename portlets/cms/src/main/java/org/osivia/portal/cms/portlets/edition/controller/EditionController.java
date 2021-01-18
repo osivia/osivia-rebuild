@@ -434,7 +434,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 status.setPageEdition(repository.supportPageEdition());
                 
                 
-                Personnalization personnalization = cmsService.getPersonnalization(cmsContext, id);
+                Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization( id);
                 
                 
                 status.setSubtypes(personnalization.getSubTypes());
@@ -446,7 +446,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 if( cmsContext.isPreview()) {
                     cmsContext.setPreview(false);
                     try {
-                        cmsService.getDocument(cmsContext, id);
+                        cmsService.getCMSSession(cmsContext).getDocument( id);
                         status.setHavingPublication(true);
                     } catch (CMSException e) {
                         // Not found
@@ -523,7 +523,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     CMSController ctrl = new CMSController(portalCtx); 
                     CMSContext cmsContext = ctrl.getCMSContext();
 
-                    Document currentDoc = cmsService.getDocument(cmsContext, id);
+                    Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument( id);
                     
                     localService.setLocale(portalCtx, form.getLocale());                    
                     
@@ -556,7 +556,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSController ctrl = new CMSController(portalCtx); 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                Document currentDoc = cmsService.getDocument(cmsContext, id);
+                Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument( id);
                 
                 String url = portalUrlFactory.getViewContentUrl(portalCtx, currentDoc.getSpaceId());
                 response.sendRedirect(url);

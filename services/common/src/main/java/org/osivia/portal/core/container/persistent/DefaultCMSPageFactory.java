@@ -49,7 +49,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         this.cmsContext = cmsContext;
         this.navItem = navItem;
         
-        doc = cmsService.getDocument(cmsContext, navItem.getDocumentId());
+        doc = cmsService.getCMSSession(cmsContext).getDocument( navItem.getDocumentId());
 
         String pageName = getRootPageName();
         if (!navItem.isRoot())
@@ -115,15 +115,15 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
             if (templateCMSId != null) {
 
-                Document templateDoc = cmsService.getDocument(cmsContext, templateCMSId);
+                Document templateDoc = cmsService.getCMSSession(cmsContext).getDocument(templateCMSId);
                 String templatePath = "/" + templateDoc.getId().getInternalID();
                 
-                NavigationItem templateNav = cmsService.getNavigationItem(cmsContext, templateDoc.getId());
+                NavigationItem templateNav = cmsService.getCMSSession(cmsContext).getNavigationItem(templateDoc.getId());
                 
 
                 while (! templateNav.getParent().isRoot()) {
                     templateNav = templateNav.getParent();
-                    templateDoc = cmsService.getDocument(cmsContext, templateNav.getDocumentId());
+                    templateDoc = cmsService.getCMSSession(cmsContext).getDocument( templateNav.getDocumentId());
 
                     templatePath = "/" + templateDoc.getId().getInternalID() + templatePath;
                 }

@@ -76,7 +76,7 @@ public class PublicationManager implements IPublicationManager {
 
         Document space;
         try {
-            space = getCMSService().getDocument(cmsContext, navigation.getSpaceId());
+            space = getCMSService().getCMSSession(cmsContext).getDocument(navigation.getSpaceId());
 
 
             String spaceTemplateID =  space.getId().getInternalID();
@@ -96,7 +96,7 @@ public class PublicationManager implements IPublicationManager {
 
             // Find first page
             while (!navigation.isRoot()) {
-                Document navDoc = getCMSService().getDocument(cmsContext, navigation.getDocumentId());
+                Document navDoc = getCMSService().getCMSSession(cmsContext).getDocument(navigation.getDocumentId());
                 if (navDoc instanceof Templateable) {
                     templateDoc = navDoc;
                     break;
@@ -106,7 +106,7 @@ public class PublicationManager implements IPublicationManager {
 
             if (templateDoc != null) {
 
-                NavigationItem nav = getCMSService().getNavigationItem(cmsContext, templateDoc.getId());
+                NavigationItem nav = getCMSService().getCMSSession(cmsContext).getNavigationItem(templateDoc.getId());
 
                 while (!nav.isRoot()) {
                     templateRelativePath = "/" + nav.getDocumentId().getInternalID() + templateRelativePath;
@@ -148,10 +148,10 @@ public class PublicationManager implements IPublicationManager {
             cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
             
 
-            Document doc = getCMSService().getDocument(cmsContext, docId);
+            Document doc = getCMSService().getCMSSession(cmsContext).getDocument( docId);
 
-            NavigationItem navigation = getCMSService().getNavigationItem(cmsContext, docId);
-            Document space = getCMSService().getDocument(cmsContext, navigation.getSpaceId());
+            NavigationItem navigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(docId);
+            Document space = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getSpaceId());
             
              
             String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
