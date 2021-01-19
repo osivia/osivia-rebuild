@@ -8,6 +8,10 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
+	<bean class="org.osivia.portal.core.cms.sessions.CMSSessionInterceptor"
+		id="portal:service=Interceptor,type=Server,name=CMSSessionInterceptor">
+	</bean>
+
 	<bean class="org.osivia.portal.core.tracker.ServerTrackerInterceptor"
 		id="osivia:service=Interceptor,type=Server,name=ServerTracker">
 		<property name="Tracker" ref="osivia:service=Tracker"/>

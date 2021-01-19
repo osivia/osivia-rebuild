@@ -9,21 +9,35 @@ import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.core.sessions.CMSSessionRecycle;
 import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
-public class CMSSessionImpl implements CMSSession{
+public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
 
     private CMSServiceImpl cmsService;
     private CMSContext cmsContext;
     
     
-    public CMSSessionImpl(CMSServiceImpl cmsService, CMSContext cmsContext) {
+    
+
+    public CMSSessionImpl(CMSServiceImpl cmsService) {
         super();
         this.cmsService = cmsService;
-        this.cmsContext = cmsContext;
-
+        
     }
+    
+    public void setCMSContext(CMSContext cmsContext) {
+        // Clone the context
+        this.cmsContext = new CMSContext(cmsContext.getPortalControllerContext());
+        this.cmsContext.setLocale(cmsContext.getlocale());
+        this.cmsContext.setPreview(cmsContext.isPreview());
+    }
+    
+    public CMSContext getCmsContext() {
+        return cmsContext;
+    }
+
 
     @Override
     public Document getDocument(UniversalID id) throws CMSException {

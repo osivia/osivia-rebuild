@@ -1,5 +1,7 @@
 package org.osivia.portal.api.cms.service;
 
+import java.util.Locale;
+
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -17,21 +19,21 @@ import org.osivia.portal.api.cms.model.Personnalization;
 public interface CMSSession {
 
 
+
     
     /**
      * Gets the document.
      *
-     * @param cmsContext the cms context
      * @param id the id
      * @return the document
      * @throws CMSException the CMS exception
      */
     Document getDocument(UniversalID id) throws CMSException;
  
+
     /**
      * Gets the personnalization.
      *
-     * @param cmsContext the cms context
      * @param id the id
      * @return the personnalization
      * @throws CMSException the CMS exception
@@ -39,23 +41,22 @@ public interface CMSSession {
     Personnalization getPersonnalization(UniversalID id) throws CMSException;
 
     
+
     /**
-     * Execute the request.
+     * Execute request.
      *
-     * @param cmsContext the cms context
-     * @param id the id
-     * @return the document
+     * @param request the request
+     * @return the result
      * @throws CMSException the CMS exception
      */
     Result executeRequest(Request request) throws CMSException;
 
 
+
     /**
-     * Gets the navigation item for the current document.
+     * Gets the navigation item.
      *
-     * @param cmsContext the cms context
-     * @param documentId the document id
-     * @param navigationTreeName the navigation tree name
+     * @param id the id
      * @return the navigation item
      * @throws CMSException the CMS exception
      */

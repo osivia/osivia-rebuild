@@ -6,6 +6,9 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.windows.WindowFactory;
 
+/**
+ * The Class CMSController.
+ */
 public class CMSController {
 
     /** The portal ctx. */

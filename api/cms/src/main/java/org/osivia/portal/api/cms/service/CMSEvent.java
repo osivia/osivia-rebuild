@@ -17,7 +17,7 @@ public interface CMSEvent {
     public Document getSourceDocument();
     
     /**
-     * Gets the dirty request.
+     * Gets the dirty requests.
      *
      * @return the dirty request
      */

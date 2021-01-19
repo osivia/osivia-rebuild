@@ -54,9 +54,9 @@ public class CMSContext {
 
     
     /**
-     * Gets the language.
+     * Gets the locale.
      *
-     * @return the language
+     * @return the locale
      */
     public Locale getlocale() {
         return locale;
@@ -65,9 +65,9 @@ public class CMSContext {
 
     
     /**
-     * Sets the language.
+     * Sets the locale.
      *
-     * @param language the new language
+     * @param locale the new locale
      */
     public void setLocale(Locale locale) {
         this.locale = locale;
