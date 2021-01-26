@@ -315,6 +315,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
                     childToRemoveFromParent.add(childId);
                     // reset child parent
                     publishedChild.setParentInternalId( id);
+                    
+                    publishRepository.getUserStorage().updateDocument(publishedChild.getInternalID(), publishedChild, true);
                 }
             }            
         }
@@ -328,6 +330,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             for (String childId:childToRemoveFromParent)    {
                 publishedParent.getChildrenId().remove(childId);
             }
+            
+            publishRepository.getUserStorage().updateDocument(publishedParent.getInternalID(), publishedParent, true);
         }     
         
         

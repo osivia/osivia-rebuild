@@ -49,6 +49,8 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         this.cmsContext = cmsContext;
         this.navItem = navItem;
         
+        System.out.println("create CMSPage" +navItem.getDocumentId());
+        
         doc = cmsService.getCMSSession(cmsContext).getDocument( navItem.getDocumentId());
 
         String pageName = getRootPageName();

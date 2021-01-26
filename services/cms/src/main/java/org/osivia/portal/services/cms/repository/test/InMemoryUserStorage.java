@@ -66,7 +66,6 @@ public class InMemoryUserStorage implements UserStorage  {
                 }
                 getSharedRepository().addDocumentToCache(parentID, parent, true);
             }
-                        
         }
         
         if(!batchMode)  {

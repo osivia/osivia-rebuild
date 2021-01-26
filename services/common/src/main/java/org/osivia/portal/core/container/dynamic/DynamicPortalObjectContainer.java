@@ -87,6 +87,8 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
 
     private void addCMSDynaPage(PortalObject portal, String name, PortalObjectId cmsTemplateID) {
+        
+        System.out.println( "addCMSDynaPage " + cmsTemplateID.toString() );
         Map cmsProperties = new ConcurrentHashMap<String, String>();
 
 
