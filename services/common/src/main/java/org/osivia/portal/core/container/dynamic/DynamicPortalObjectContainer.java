@@ -354,29 +354,13 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         
         if (staticObject instanceof CMSPage) {
             // fetch portal
-            fetchDynamicObject ( ((CMSPage) staticObject).getPortal().getId());
-            return getExistingDynamicObject(id);
+            Portal portal = (Portal) fetchDynamicObject ( ((CMSPage) staticObject).getPortal().getId());
+            addCMSPage(portal, (CMSPage) staticObject);
+            return getExistingDynamicObject(id);            
         }
 
         if (staticObject instanceof PortalImplBase) {
-
-            /* create CMS PAGES */
-
-            // each page is stored by its id end references the real cms path
-
-            // portal/XXXXXX/id-col2 ---> / XXXXXXXX/col1/col2
-
-
-            PortalImplBase portal = (PortalImplBase) staticObject;
-
-
-            Collection children = portal.getChildren();
-            for (Object o : children) {
-                Page page = (Page) o;
-                addCMSPage(portal, page);
-            }
-
-            return new DynamicPortal(portalObjectContainer, (PortalImplBase) staticObject, this);
+             return new DynamicPortal(portalObjectContainer, (PortalImplBase) staticObject, this);
         }
 
         if (staticObject instanceof ContextImplBase) {
@@ -397,13 +381,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
             addCMSDynaPage(portal,pageDynamicName, page.getId());
 
-            Collection children = page.getChildren();
-            for (Object o : children) {
-                if (o instanceof Page) {
-                    Page subPage = (Page) o;
-                    addCMSPage(portal, subPage);
-                }
-            }
+
         }
     }
 
