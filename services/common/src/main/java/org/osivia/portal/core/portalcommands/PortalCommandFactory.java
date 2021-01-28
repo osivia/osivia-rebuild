@@ -20,11 +20,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PageCommand;
+import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
@@ -115,18 +117,29 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                     }
                 }
             }
-        }   else    {
-            // HACK for deault Page
-            if ((cmd instanceof ViewPageCommand) || (cmd instanceof ViewPortalCommand)) {
-                cmd = new ViewContentCommand("templates:ID_PAGE_A", Locale.FRENCH, false);
-            }
+        }   
+        
+
+        // No more static pages :)
+        
+        boolean staticPage = false;
+        if(cmd instanceof ViewPortalCommand)
+            staticPage = true;
+        else if ((cmd instanceof ViewPageCommand))  {
+             PortalObjectId pageId = ((ViewPageCommand) cmd).getTargetId();
+             String pageName = pageId.getPath().getLastComponentName();
+             if (!RestorablePageUtils.isRestorable(pageName))   {
+                 staticPage = true;
+             }
+        }
+        
+        if( staticPage) {
+            // only use case : home page
+                cmd = new ViewContentCommand("templates:portalA", Locale.FRENCH, false);
         }
         
         
-        // HACK for deault Page
-        if ( cmd instanceof ViewPortalCommand) {
-            cmd = new ViewContentCommand("templates:ID_PAGE_A",  Locale.FRENCH, false);
-        }
+ 
         
         
         
