@@ -33,11 +33,21 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locale.ILocaleService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.tracker.RequestContextUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
@@ -50,16 +60,30 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     protected static final Log logger = LogFactory.getLog(PortalCommandFactory.class);
 
 
-   
+
+    private CMSService cmsService;
+
+    
+    
+    /** The locale service. */
+    @Autowired
+    private ILocaleService localeService;
+
+    private CMSService getCMSService() {
+        if (cmsService == null) {
+            cmsService = Locator.getService(CMSService.class);
+        }
+
+        return cmsService;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
 
- 
-
-        
+         
         String viewState = controllerContext.getServerInvocation().getServerContext().getClientRequest().getHeader("view_state");
         
         if (viewState != null) {
@@ -135,7 +159,14 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         if( staticPage) {
             // only use case : home page
-                cmd = new ViewContentCommand("templates:portalA", Locale.FRENCH, false);
+            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+            UniversalID defaultPortalId;
+            try {
+                 defaultPortalId = getCMSService().getDefaultPortal(new CMSContext(portalCtx));
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
+                cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
         }
         
         

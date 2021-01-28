@@ -49,7 +49,6 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     ContainerContext containerContext = new ContainerContext();
 
 
-    private static String PORTAL_A_NAME = "portalA";
 
 
     private ContentProviderRegistry contentProviderRegistry;
@@ -160,12 +159,27 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
             currentContextNodes = new ConcurrentHashMap();
             nodes.put(sessionId, currentContextNodes);
             
-            ContextImplBase context = createContext( "templates", PORTAL_A_NAME);
+            UniversalID defaultId = getDefaultPortal();
             
-            PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + PORTAL_A_NAME, PortalObjectPath.CANONICAL_FORMAT);
-            createPortal(currentContextNodes, new PortalObjectId("templates", defaultPortalPath));
+            ContextImplBase context = createContext( defaultId.getRepositoryName(), defaultId.getInternalID());
+            
+            PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + defaultId.getInternalID(), PortalObjectPath.CANONICAL_FORMAT);
+            createPortal(currentContextNodes, new PortalObjectId(defaultId.getRepositoryName(), defaultPortalPath));
         }
         return currentContextNodes;
+    }
+
+    protected UniversalID getDefaultPortal() {
+        PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
+        CMSContext cmsContext = new CMSContext(portalCtx);
+        
+        UniversalID defaultId;
+        try {
+            defaultId = getCMSService().getDefaultPortal(cmsContext);
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+        return defaultId;
     }
 
     
@@ -191,8 +205,11 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
         currentContextNodes.put(context.getId(), context);
         
+        
+        UniversalID defaultId = getDefaultPortal();
+        
         // this is the default context
-        if( "templates".equals(nameSpace))  {
+        if( defaultId.getRepositoryName().equals(nameSpace))  {
             PortalObjectId rootId = new PortalObjectId("", PortalObjectPath.ROOT_PATH);
             currentContextNodes.put(rootId, context);
         }

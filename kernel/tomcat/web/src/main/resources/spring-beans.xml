@@ -351,6 +351,43 @@
       <property name="Factory" ref="portal:urlFactory=Delegating"/>
       <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Templates"/>
    </bean>
+   
+   
+   
+   <bean class="org.jboss.portal.core.model.portal.PortalObjectCommandFactory" id="portal:commandFactory=Sites">
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Sites"/>
+   </bean>
+   
+    <bean class="org.jboss.portal.core.model.portal.command.mapping.DefaultPortalObjectPathMapper"
+          id="portal:service=PortalObjectPathMapper,type=Sites" >
+      <property name="Container" ref="portal:container=PortalObject"/>
+      <property name="Namespace" value="sites" />
+   </bean>
+   
+  
+   
+   <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          id="portal:commandFactory=Delegate,path=Sites" >
+      <property name="Path" value="/sites" />
+      <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="DelegateFactory" ref="portal:commandFactory=Sites"/>
+   </bean>
+   
+   
+      <bean class="org.jboss.portal.core.model.portal.PortalObjectURLFactory"
+          id="portal:urlFactory=PortalObject,type=Sites" >
+      
+      <property name="Namespace" value="sites" />
+      <property name="Path" value="/sites" />
+      <property name="Factory" ref="portal:urlFactory=Delegating"/>
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=Sites"/>
+   </bean>
+   
+   
+   
+   
+   
+   
 
  <bean class="org.jboss.portal.portlet.federation.impl.FederatingPortletInvokerService"
           id="portal:service=PortletInvoker,type=Federating" >

@@ -48,16 +48,6 @@ public class CMSServiceImpl implements CMSService {
 
     TestRepositoryFactory repositoryFactory;
 
-    /**
-     * {@inheritDoc}
-     */
-
-
-    public Document getDocument(CMSContext cmsContext, UniversalID id) throws CMSException {
-        UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, id.getRepositoryName());
-        return userRepository.getDocument(id.getInternalID());
-
-    }
 
 
     @Override
@@ -72,16 +62,6 @@ public class CMSServiceImpl implements CMSService {
     }
 
 
-    public Result executeRequest(CMSContext cmsContext, Request request) throws CMSException {
-        UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, request.getRepositoryName());
-        return userRepository.executeRequest(request);
-    }
-
-
-    public Personnalization getPersonnalization(CMSContext cmsContext, UniversalID id) throws CMSException {
-        UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, id.getRepositoryName());
-        return userRepository.getPersonnalization(id.getInternalID());
-    }
 
 
     @Override
@@ -104,6 +84,12 @@ public class CMSServiceImpl implements CMSService {
         return (CMSSession) proxy;
 
 
+    }
+
+
+    @Override
+    public UniversalID getDefaultPortal(CMSContext cmsContext) throws CMSException {
+        return repositoryFactory.getDefaultPortal();
     }
 
 

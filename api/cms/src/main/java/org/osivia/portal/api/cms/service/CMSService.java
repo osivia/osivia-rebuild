@@ -1,6 +1,7 @@
 package org.osivia.portal.api.cms.service;
 
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 
 /**
@@ -42,6 +43,15 @@ public interface CMSService {
      * @throws CMSException the CMS exception
      */
     CMSSession getCMSSession(CMSContext cmsContext) throws CMSException;
+    
+    /**
+     * Gets the default portal.
+     *
+     * @param cmsContext the cms context
+     * @return the CMS session
+     * @throws CMSException the CMS exception
+     */
+    UniversalID getDefaultPortal(CMSContext cmsContext) throws CMSException;
    
 
    

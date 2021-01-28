@@ -181,7 +181,11 @@ public class PublicationManager implements IPublicationManager {
             }
             pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_LOCALE + IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
              
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", pageDynamicID,
+            
+            UniversalID defaultPortalId = getCMSService().getDefaultPortal(cmsContext);
+            
+            
+            String pagePath = getDynamicService().startDynamicPage(portalCtx, defaultPortalId.getRepositoryName()+":/"+defaultPortalId.getInternalID(), pageDynamicID,
                     displayNames, templatePath, properties, parameters, null);
 
             if (!(doc instanceof Templateable)) {
