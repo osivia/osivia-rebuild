@@ -70,7 +70,7 @@ public class DynamicService implements IDynamicService {
 
     @Override
     public String startDynamicPage(PortalControllerContext portalControllerContext, String parentPath, String pageName, Map<Locale, String> displayNames,
-            String templatePath, Map<String, String> properties, Map<String, String> parameters) {
+            String templatePath, Map<String, String> properties, Map<String, String> parameters, String pageRestorableName) {
 
         ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
@@ -83,14 +83,18 @@ public class DynamicService implements IDynamicService {
 
         PortalObjectId potemplateid = PortalObjectId.parse(templatePath, PortalObjectPath.CANONICAL_FORMAT);
         
+        System.out.println("StartdynamicPage template="+templatePath);        
+        
+        
         // Base path
         String basePath = properties.get("osivia.contentId");
         
-        String pageResorableName = RestorablePageUtils.createRestorableName(ctx, pageName, potemplateid.toString(PortalObjectPath.SAFEST_FORMAT), basePath, displayNames,
+        if( StringUtils.isEmpty(pageRestorableName))
+            pageRestorableName = RestorablePageUtils.createRestorableName(ctx, pageName, potemplateid.toString(PortalObjectPath.SAFEST_FORMAT), basePath, displayNames,
                 properties, parameters);
         
 
-        DynamicPageBean pageBean = new DynamicPageBean(parent, pageResorableName, pageName, displayNames, potemplateid, properties);
+        DynamicPageBean pageBean = new DynamicPageBean(parent, pageRestorableName, pageName, displayNames, potemplateid, properties);
         poc.addDynamicPage(pageBean);
         
         
@@ -98,7 +102,7 @@ public class DynamicService implements IDynamicService {
         
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(),
-                new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageResorableName), PortalObjectPath.CANONICAL_FORMAT));
+                new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageRestorableName), PortalObjectPath.CANONICAL_FORMAT));
         
         // Remove portlets cache
 

@@ -110,7 +110,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         pageParams = URLDecoder.decode(parameterMap.get("params")[0], CharEncoding.UTF_8);
 
                         return new StartDynamicPageCommand(parentId, pageName, null, templateId, WindowPropertiesEncoder.decodeProperties(pageProps),
-                                WindowPropertiesEncoder.decodeProperties(pageParams));
+                                WindowPropertiesEncoder.decodeProperties(pageParams), null);
                     }
                 }                
                 

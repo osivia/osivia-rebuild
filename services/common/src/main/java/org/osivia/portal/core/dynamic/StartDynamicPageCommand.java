@@ -25,6 +25,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locator.Locator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -47,15 +48,16 @@ public class StartDynamicPageCommand extends DynamicCommand {
     private Map<String, String> properties;
     /** Parameters. */
     private Map<String, String> parameters;
-    /** CMS parameters. */
-    private Map<String, String> cmsParameters;
 
+    private String restorableName;
 
     /** Command info. */
     private final CommandInfo info;
 
 
-    @Autowired IDynamicService dynamicService;
+    public IDynamicService getDynamicPageService() {
+        return Locator.getService(IDynamicService.class);
+    }
 
     /**
      * Constructor.
@@ -78,7 +80,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
      * @param parameters page parameters
      */
     public StartDynamicPageCommand(String parentId, String pageName, Map<Locale, String> displayNames, String templateId, Map<String, String> properties,
-            Map<String, String> parameters) {
+            Map<String, String> parameters, String restorableName) {
         this();
         this.parentId = parentId;
         this.pageName = pageName;
@@ -86,6 +88,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
         this.displayNames = displayNames;
         this.properties = properties;
         this.parameters = parameters;
+        this.restorableName = restorableName;
     }
 
 
@@ -104,9 +107,10 @@ public class StartDynamicPageCommand extends DynamicCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         try {
+            System.out.println("StartdynamicPage template="+templateId);
 
-            String pagePath = dynamicService.startDynamicPage(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), parentId, pageName, displayNames, templateId, properties,
-                    parameters);
+            String pagePath = getDynamicPageService().startDynamicPage(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), parentId, pageName, displayNames, templateId, properties,
+                    parameters, restorableName);
             
             PortalObjectId pageId = PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT);
 

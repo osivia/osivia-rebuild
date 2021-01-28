@@ -37,5 +37,17 @@ public class PreviewModeService implements IPreviewModeService {
 
         return false;
     }
+    
+    
+    @Override
+    public void setPreview(PortalControllerContext portalCtx, UniversalID content,boolean preview) throws PortalException {
+        HttpServletRequest mainRequest = (HttpServletRequest) portalCtx.getHttpServletRequest();
+        String editionModeKey = "editionMode."+content.getRepositoryName();
+        if (!preview) {
+            mainRequest.getSession().removeAttribute(editionModeKey);
+         } else
+            mainRequest.getSession().setAttribute(editionModeKey, "preview");
+    }
+ 
 
 }

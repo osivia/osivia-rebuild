@@ -1,5 +1,7 @@
 package org.osivia.portal.api.cms;
 
+import java.util.Locale;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locale.ILocaleService;
@@ -23,7 +25,11 @@ public class CMSController {
         
         if( portalCtx.getRequest() != null) {
             String sPreview = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.preview");
+            String sLocale = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.locale");
             preview = BooleanUtils.toBoolean(sPreview);
+            if( sLocale != null) {
+                locale = new Locale(sLocale);
+            }
         }
         
     }
@@ -44,13 +50,18 @@ public class CMSController {
 
     /** The preview. */
     private boolean preview;
+    
+    /** The preview. */
+    private Locale locale;
 
     
     public boolean isPreview() {
         return preview;
     }
 
-    
+    public Locale getLocale()  {
+        return locale;
+    }
     
     
     public CMSContext getCMSContext()   {
@@ -59,7 +70,7 @@ public class CMSController {
         cmsContext.setPreview(this.preview);
         
         try {
-        cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
+        cmsContext.setLocale( this.locale);
         } catch( Exception e) {
             throw new RuntimeException(e);
         }

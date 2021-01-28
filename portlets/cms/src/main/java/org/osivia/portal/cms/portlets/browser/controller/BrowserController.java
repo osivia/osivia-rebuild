@@ -1,6 +1,8 @@
 package org.osivia.portal.cms.portlets.browser.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -47,10 +49,8 @@ public class BrowserController implements PortletContextAware {
     private PortletContext portletContext;
 
 
-
-    /** CMS service. */
     @Autowired
-    private CMSService cmsService;
+    private IPortalUrlFactory portalUrlFactory;
 
 
     /**
@@ -68,10 +68,10 @@ public class BrowserController implements PortletContextAware {
      * @param response render response
      * @param count count request parameter.
      * @return render view path
-     * @throws CMSException 
+     * @throws PortalException 
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response) throws CMSException {
+    public String view(RenderRequest request, RenderResponse response) throws PortalException {
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
         CMSController ctrl = new CMSController(portalCtx);
         
@@ -81,7 +81,14 @@ public class BrowserController implements PortletContextAware {
             CMSContext cmsContext = ctrl.getCMSContext();
 
             TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-            request.setAttribute("children", repository.getChildren(id.getInternalID()));
+            
+            List<Child> children = new ArrayList<>();
+            for( Document child : repository.getChildren(id.getInternalID()))   {
+                children.add(new Child(portalUrlFactory.getViewContentUrl(portalCtx, child.getId()), child.getTitle()));
+            }
+            
+            
+            request.setAttribute("children", children);
         }
         
         

@@ -1,6 +1,7 @@
 package org.osivia.portal.api.cms.model;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.osivia.portal.api.cms.EcmDocument;
@@ -79,6 +80,10 @@ public interface Document {
     public boolean isTemplateable();
   
      
-
-    
+    /**
+     * Gets the locale.
+     *
+     * @return the locale
+     */
+    public Locale getLocale();
 }

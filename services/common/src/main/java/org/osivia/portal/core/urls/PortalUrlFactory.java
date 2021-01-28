@@ -16,6 +16,7 @@ package org.osivia.portal.core.urls;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.CharEncoding;
@@ -27,7 +28,12 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locale.ILocaleService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.context.ControllerContextAdapter;
@@ -35,6 +41,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -50,6 +57,26 @@ import org.springframework.stereotype.Service;
 public class PortalUrlFactory implements IPortalUrlFactory {
 
    
+    @Autowired
+    private IPreviewModeService previewModeService;
+    
+    
+    /** The locale service. */
+    @Autowired
+    private ILocaleService localeService;
+
+    private IPreviewModeService getPreviewModeService() {
+
+        return previewModeService;       
+    }
+    
+    private ILocaleService getLocaleService() {
+
+        return localeService;       
+    }
+    
+    
+    
     @Override
     public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties) throws PortalException {
        
@@ -109,8 +136,12 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException {
 
 
-        final ViewContentCommand cmd = new ViewContentCommand(id.toString());
-
+        Locale locale = getLocaleService().getLocale(portalControllerContext);
+        Boolean preview = getPreviewModeService().isPreviewing(portalControllerContext, id);
+        
+        final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview);
+        
+ 
 
         final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
 

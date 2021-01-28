@@ -69,8 +69,12 @@ public interface IDynamicService {
      * @param parameters the parameters
      * @return the string
      */
-    public String startDynamicPage(PortalControllerContext portalControllerContext, String parentId, String pageName, Map<Locale, String> displayNames, String templateId, Map<String, String> properties,
-            Map<String, String> parameters);
+
+
+
+
+    String startDynamicPage(PortalControllerContext portalControllerContext, String parentPath, String pageName, Map<Locale, String> displayNames,
+            String templatePath, Map<String, String> properties, Map<String, String> parameters, String pageRestorableName);
 
   
 }

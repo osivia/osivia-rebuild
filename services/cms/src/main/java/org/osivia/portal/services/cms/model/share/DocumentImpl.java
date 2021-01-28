@@ -3,6 +3,7 @@ package org.osivia.portal.services.cms.model.share;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -44,7 +45,11 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
     /** The native item. */
     private Document nativeItem;
     
+    private Locale locale;
     
+    
+
+
     private transient boolean preview = false;
     
     private List<String> acls = new ArrayList<>();
@@ -77,10 +82,14 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
         this.childrenId = childrenId;
         this.properties = properties;
         this.preview = userRepository.isPreviewRepository();
+        this.locale = userRepository.getRepositoryKey().getLocale();
 
     }
 
-     
+    public Locale getLocale() {
+        return locale;
+    }
+
     
     public boolean isPreview() {
         return preview;

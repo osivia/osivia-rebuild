@@ -1,5 +1,7 @@
 package fr.toutatice.portail.cms.nuxeo.api;
 
+import java.util.Locale;
+
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -91,11 +93,9 @@ public class NuxeoController {
             cmsContext = new CMSContext(portalCtx);
             String sPreview = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.preview");
             cmsContext.setPreview(BooleanUtils.toBoolean(sPreview));
-            try {
-                cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
-            } catch (PortalException e) {
-               throw new RuntimeException(e);
-            }
+            String sLocale = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.locale");
+            cmsContext.setLocale(new Locale(sLocale));
+
           }
         return cmsContext;
     }

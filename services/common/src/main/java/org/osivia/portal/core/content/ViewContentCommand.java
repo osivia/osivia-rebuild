@@ -43,7 +43,9 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.preview.IPreviewModeService;
 
 
 /**
@@ -61,14 +63,39 @@ public class ViewContentCommand extends ControllerCommand {
 
     /** . */
     private String contentId;
+    private Locale locale;
+    
 
-    public ViewContentCommand() {
-        this(null);
-    }
 
-    public ViewContentCommand(String contentId) {
+    private boolean preview;
+
+    
+    
+    public ViewContentCommand(String contentId, Locale locale, boolean preview) {
         this.contentId = contentId;
+        this.locale = locale;
+        this.preview = preview;
     }
+    
+    public Locale getLocale() {
+        return locale;
+    }
+
+    
+    public boolean isPreview() {
+        return preview;
+    }
+
+    private IPreviewModeService getPreviewModeService() {
+
+        return Locator.getService(IPreviewModeService.class);      
+    }
+    
+    private ILocaleService getLocaleService() {
+
+        return Locator.getService(ILocaleService.class);     
+    }
+
 
 
     private IPublicationManager getPublicationManager() {
@@ -93,10 +120,16 @@ public class ViewContentCommand extends ControllerCommand {
 
         try {
 
+            
             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+            
+            UniversalID contentId = new UniversalID(getContentId().replaceAll("/", ":"));
+            
+            getLocaleService().setLocale(portalCtx, locale);
+            getPreviewModeService().setPreview(portalCtx, contentId, preview);
 
 
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, new UniversalID(getContentId().replaceAll("/", ":")));
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, contentId);
 
             return new UpdatePageResponse(pageId);
 

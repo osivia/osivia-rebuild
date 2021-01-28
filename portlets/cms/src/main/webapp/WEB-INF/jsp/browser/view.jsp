@@ -16,7 +16,7 @@
 				<c:forEach var="child" items="${children}">
 
 					<!-- Link -->
-					<a href="/portal/content/${child.id}"> ${child.title} </a>
+					<a href="${child.url} "> ${child.title} </a>
 					</br>
 
 

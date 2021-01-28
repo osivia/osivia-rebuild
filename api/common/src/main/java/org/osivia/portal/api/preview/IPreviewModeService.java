@@ -29,4 +29,14 @@ public interface IPreviewModeService {
      */
     public boolean changePreviewMode( PortalControllerContext portalCtx, UniversalID content) throws PortalException;
 
+    /**
+     * Sets the preview.
+     *
+     * @param portalCtx the portal ctx
+     * @param content the content
+     * @param preview the preview
+     * @throws PortalException the portal exception
+     */
+    void setPreview(PortalControllerContext portalCtx, UniversalID content, boolean preview) throws PortalException;
+
 }

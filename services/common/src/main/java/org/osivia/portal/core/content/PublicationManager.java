@@ -162,7 +162,7 @@ public class PublicationManager implements IPublicationManager {
             properties.put("osivia.navigationId", navigation.getDocumentId().toString());
             properties.put("osivia.spaceId", navigation.getSpaceId().toString());
             properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));            
-
+            properties.put("osivia.content.locale", doc.getLocale().toString()); 
 
             Map<String, String> parameters = new HashMap<String, String>();
 
@@ -182,7 +182,7 @@ public class PublicationManager implements IPublicationManager {
             pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_LOCALE + IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
              
             String pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", pageDynamicID,
-                    displayNames, templatePath, properties, parameters);
+                    displayNames, templatePath, properties, parameters, null);
 
             if (!(doc instanceof Templateable)) {
 

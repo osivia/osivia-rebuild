@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -58,16 +59,20 @@ public class RestorablePageUtils {
         String pageType = decodePath(names[1]);
                
         if (pageType.startsWith(TEMPLATE_ID)) {
-            templateId = names[1].substring(TEMPLATE_ID.length());
+            templateId = PortalObjectId.parse(names[1].substring(TEMPLATE_ID.length()), PortalObjectPath.SAFEST_FORMAT).toString(PortalObjectPath.CANONICAL_FORMAT);
 
-            restoreCmd = new StartDynamicPageCommand(portalId.toString(PortalObjectPath.SAFEST_FORMAT), businessName, displayNames, templateId,
-                    props, params);
+            restoreCmd = new StartDynamicPageCommand(portalId.toString(PortalObjectPath.CANONICAL_FORMAT), businessName, displayNames, templateId,
+                    props, params, completeName);
         }
  
         if (pageType.startsWith(CONTENT_PATH)) {
             String contentId = names[1].substring(CONTENT_PATH.length());
-            restoreCmd = new ViewContentCommand(contentId);
-        }        
+            
+            Boolean isPreviewing = BooleanUtils.toBooleanObject(props.get("osivia.content.preview"));            
+            Locale locale = new Locale(props.get("osivia.content.locale"));
+            
+            restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing);
+          }        
 
 
         try {
@@ -90,12 +95,7 @@ public class RestorablePageUtils {
         Map pageDisplayName = displayNames; 
         
         
-        if( contentId != null)   {
-            pageDisplayName = null;
-            pageProps= null;
-        }
-        
-        
+      
         
         String names[] = new String[5];
         names[0] = encodePath(businessName);

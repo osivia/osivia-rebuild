@@ -22,6 +22,9 @@
  ******************************************************************************/
 package org.osivia.portal.core.content;
 
+import java.util.Locale;
+
+import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
@@ -60,6 +63,12 @@ public class ContentURLFactory extends URLFactoryDelegate
          if( contentId != null)	{
         	 portalRequestPath += "/" +contentId.replaceAll(":", "/");
          }
+         
+         Locale locale = cmsCommand.getLocale();
+         portalRequestPath += "/" +locale.toString();
+         
+         boolean preview = cmsCommand.isPreview();
+         portalRequestPath += "/" + BooleanUtils.toStringTrueFalse(preview) ; 
 
          asu.setPortalRequestPath(portalRequestPath);
 

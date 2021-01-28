@@ -13,6 +13,8 @@
  */
 package org.osivia.portal.core.portalcommands;
 
+import java.util.Locale;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +31,7 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -112,9 +115,18 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                     }
                 }
             }
+        }   else    {
+            // HACK for deault Page
+            if ((cmd instanceof ViewPageCommand) || (cmd instanceof ViewPortalCommand)) {
+                cmd = new ViewContentCommand("templates:ID_PAGE_A", Locale.FRENCH, false);
+            }
         }
         
         
+        // HACK for deault Page
+        if ( cmd instanceof ViewPortalCommand) {
+            cmd = new ViewContentCommand("templates:ID_PAGE_A",  Locale.FRENCH, false);
+        }
         
         
         
