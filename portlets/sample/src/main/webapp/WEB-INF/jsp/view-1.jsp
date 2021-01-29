@@ -49,7 +49,7 @@
        <a href="${startWindowURL}" class="btn btn-secondary">startWindow</a>
     </span>
       <span >
-       <a href="/portal/templates/portalA/ID_PAGE_B" class="btn btn-secondary">goToPage</a>
+       <a href="${pageURL}" class="btn btn-secondary">goToPageA</a>
     </span>  
         <span >
        <a href="${throwExceptionURL}" class="btn btn-secondary">Exception</a>
@@ -61,7 +61,7 @@
        <a href="${normalURL}" class="btn btn-secondary">normal</a>
     </span>   
    <span >
-       <a href="/portal/content/myspace/ID_DOC_1" class="btn btn-secondary">cms</a>
+       <a href="${docURL}" class="btn btn-secondary">goToDoc1</a>
     </span>  
     
     <span >

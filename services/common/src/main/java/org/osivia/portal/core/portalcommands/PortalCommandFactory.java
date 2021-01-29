@@ -144,6 +144,37 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }   
         
 
+        // No more static pages :)
+        
+
+        boolean staticPage = false;
+        if(cmd instanceof ViewPortalCommand)
+            staticPage = true;
+        else if ((cmd instanceof ViewPageCommand))  {
+             PortalObjectId pageId = ((ViewPageCommand) cmd).getTargetId();
+             String pageName = pageId.getPath().getLastComponentName();
+             if (!RestorablePageUtils.isRestorable(pageName))   {
+                 staticPage = true;
+             }
+        }
+        
+        if( staticPage) {
+            // only use case : home page
+            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+            UniversalID defaultPortalId;
+            try {
+                 defaultPortalId = getCMSService().getDefaultPortal(new CMSContext(portalCtx));
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
+                cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+        }
+
+        
+ 
+        
+        
+        
         
         
         

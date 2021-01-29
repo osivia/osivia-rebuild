@@ -64,12 +64,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
         pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
         
-        // Navigation
-        // TODO : facorize with publicationManager
-        pageProperties.put("osivia.contentId", doc.getId().toString());      
-        pageProperties.put("osivia.navigationId", doc.getId().toString());     
-        pageProperties.put("osivia.spaceId", navItem.getSpaceId().toString());   
-        pageProperties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));
+
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 

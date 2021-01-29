@@ -157,7 +157,7 @@ public class PublicationManager implements IPublicationManager {
             String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
 
             Map<String, String> properties = new HashMap<String, String>();
-            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
+
             properties.put("osivia.contentId", docId.toString());
             properties.put("osivia.navigationId", navigation.getDocumentId().toString());
             properties.put("osivia.spaceId", navigation.getSpaceId().toString());
