@@ -119,6 +119,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
 
 
     protected void createTemplateSpace() {
+        // PortalA
         pageA("ID_PAGE_A", "pageA", "portalA", "portalA", new ArrayList<String>(Arrays.asList("ID_TEMPLATE_WORKSPACE")));
         pageA1("ID_TEMPLATE_WORKSPACE", "workspace", "ID_PAGE_A", "portalA", new ArrayList<String>());
         pageB("ID_TEMPLATE_SITE", "site", "portalA", "portalA", new ArrayList<String>());
@@ -128,7 +129,34 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         portalChildren.add("ID_PAGE_A");
         portalChildren.add("ID_TEMPLATE_SITE");
         addTemplateSpace("portalA", portalChildren);
+        
+         
+        
+
     }
+    
+    protected void createUtilsSpace() {
+        
+        // osivia-utils
+        List<ModuleRef> modules = new ArrayList<ModuleRef>();
+        List<String> children = new ArrayList<String>();
+        
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        properties.put("dc:title", "Modal");
+        properties.put("layout.id", "osivia-modal");
+        
+
+        PageImpl page = new PageImpl(this,"OSIVIA_PAGE_MODAL", "modal", null, "OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS", children, properties, modules);
+        addDocument("OSIVIA_PAGE_MODAL", page);
+        
+        List<String> portalChildren = new ArrayList<String>();
+        portalChildren.add("OSIVIA_PAGE_MODAL");
+        Map<String, Object> portalProperties = new ConcurrentHashMap<String, Object>();
+        portalProperties.put("dc:title", "Utils" );
+  
+        SpaceImpl space = new SpaceImpl(this,"OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS",null,portalChildren, portalProperties, new ArrayList<ModuleRef>());
+        addDocument("OSIVIA_PORTAL_UTILS", space);
+     }
 
 @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
@@ -140,6 +168,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
 
     protected void initDocuments() {
         createTemplateSpace();
+        createUtilsSpace();
     }
 
 

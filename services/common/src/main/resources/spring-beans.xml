@@ -38,6 +38,11 @@
 	</bean>
 	
 	
+	 <bean class="org.osivia.portal.core.page.PageCustomizerInterceptor"
+		id="osivia:service=Interceptor,type=Command,name=PageCustomizer">
+	</bean>
+	
+	
 	<bean class="org.osivia.portal.core.window.WindowThemingInterceptor"
 		id="osivia:service=Interceptor,type=Command,name=WindowTheming">
 	</bean>	

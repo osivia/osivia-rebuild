@@ -93,6 +93,16 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         
         addDocument(id, doc);
      }
+    
+    @Override
+    public void renameDocument(String id,String title) throws CMSException {
+        
+        
+        DocumentImpl doc = getSharedDocument(id);
+        doc.setTitle(title);
+        
+        updateDocument(id, doc);
+     }
 
 
     @Override

@@ -116,6 +116,8 @@
 					</span>
 			</c:if>
 			
+			${status.toolbar}
+			
 		</div>
 		<div class="col-1  d-flex align-items-center">
 			<form:select path="locale" items="${status.locales}"

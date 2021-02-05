@@ -25,6 +25,8 @@ import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.PortalObjectPath.CanonicalFormat;
+import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
@@ -84,15 +86,42 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
 
          
-        String viewState = controllerContext.getServerInvocation().getServerContext().getClientRequest().getHeader("view_state");
-        
-        if (viewState != null) {
-            PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
-            PageMarkerUtils.restorePageState(controllerContext, viewState);
+        //TODO
+        // Comme la modal n'est pas créée en ajax le viewState n'est pas à jour
+        // La window virtual est perdue ....
+        // donc on ne peut pas restorer
+        boolean nonAjaxInitialisation = false;
+        if( requestPath.startsWith("/templates/OSIVIA_PORTAL_UTILS")) {
+            nonAjaxInitialisation = true;
         }
+        if( !nonAjaxInitialisation)  {
+            String viewState = controllerContext.getServerInvocation().getServerContext().getClientRequest().getHeader("view_state");
+            
+            if (viewState != null) {
+                PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
+                PageMarkerUtils.restorePageState(controllerContext, viewState);
+            }
+           
+         }
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         
+
+        //TODO
+        // De plus la ajaxPageID n'est pas bon ....
+        if( nonAjaxInitialisation)   {
+            if( cmd instanceof PageCommand) {
+                PortalObject po = controllerContext.getController().getPortalObjectContainer().getObject(((PageCommand) cmd).getTargetId());
+                PortalObjectId pageId = null;
+                if( po instanceof Window)   {
+                    pageId = ((Window) po).getPage().getId();
+                }
+                if( pageId != null) {  
+                    controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajaxPageId", pageId);
+                 }
+            }
+        }
+
         
         
         // Restauration of pages in case of loose of sessions

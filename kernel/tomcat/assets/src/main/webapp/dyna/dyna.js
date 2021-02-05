@@ -258,6 +258,8 @@ function ajaxCall(options, url, eventToStop, popViewState){
           // Iterate all changes
           for (var id in resp.fragments)
           {
+        	 originalId = id;
+        	 id = id.replace(':','_');
              var matchingElt = document.getElementById(id);
 
              // Different than 1 is not good
@@ -267,7 +269,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
                 if (dstContainer != null)
                 {
                    // Get markup fragment
-                   var markup = resp.fragments[id];
+                   var markup = resp.fragments[originalId];
 
                    // Create a temporary element and paste the innerHTML in it
                    var srcContainer = document.createElement("div");
@@ -287,7 +289,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
            	  
                  for (var regionName in resp.regions)	{
              		  for( var i=0; i< resp.regions[regionName].length; i++)	{
-             		      var windowId = resp.regions[regionName][i];
+             		      var windowId = resp.regions[regionName][i].replace(':','_');
              		      
              		      if( windowId == id){
              			      var matchingWindow  = document.getElementById(windowId);
@@ -340,7 +342,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
 			             				
 			
 			                            // Get markup fragment
-			                            var markup = resp.fragments[id];
+			                            var markup = resp.fragments[originalId];
 			
 			                            // Create a temporary element and paste the innerHTML in it
 			                            var srcContainer = document.createElement("div");
@@ -364,6 +366,9 @@ function ajaxCall(options, url, eventToStop, popViewState){
            
           
           if( newPage){
+        	  
+        	  $JQry('#osivia-modal').modal('hide')
+        	  
        	   		observePortlets();
           }
 

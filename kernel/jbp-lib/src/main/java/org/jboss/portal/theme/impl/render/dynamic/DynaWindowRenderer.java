@@ -85,7 +85,7 @@ public class DynaWindowRenderer extends AbstractObjectRenderer implements Window
          {
             out.print("<div class=\"dyna-window\">");
             out.print("<div id=\"");
-            out.print(wrc.getId());
+            out.print(wrc.getId().replaceAll(":", "_"));
             if (options.isDnDEnabled())
             {
                if (options.isPartialRefreshEnabled())

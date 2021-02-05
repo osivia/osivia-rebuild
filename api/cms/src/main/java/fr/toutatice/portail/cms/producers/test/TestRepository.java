@@ -35,4 +35,6 @@ public interface TestRepository extends NativeRepository {
     List<String> getACL(String id) throws CMSException ;
      
     public List<Locale> getLocales() ;
+
+    void renameDocument(String id, String title) throws CMSException;
 }

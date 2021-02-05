@@ -129,7 +129,7 @@ public class ViewContentCommand extends ControllerCommand {
             getPreviewModeService().setPreview(portalCtx, contentId, preview);
 
 
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, contentId);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentId);
 
             return new UpdatePageResponse(pageId);
 

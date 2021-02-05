@@ -72,7 +72,7 @@ public class JSONMarshaller {
                 writer.key("fragments").object();
                 for (Iterator i = umr.getFragments().entrySet().iterator(); i.hasNext();) {
                     Map.Entry entry = (Map.Entry) i.next();
-                    String id = ((String) entry.getKey()).replaceAll(":", "_");
+                    String id = ((String) entry.getKey());
                     String fragment = (String) entry.getValue();
                     writer.key(id).value(fragment);
                 }
@@ -115,7 +115,7 @@ public class JSONMarshaller {
 
                     writer.array();
                     for (String windowId : (List<String>) entry.getValue()) {
-                        writer.value(windowId.replaceAll(":", "_"));
+                        writer.value(windowId);
                     }
 
                     writer.endArray();

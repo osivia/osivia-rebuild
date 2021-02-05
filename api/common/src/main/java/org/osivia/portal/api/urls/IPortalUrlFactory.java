@@ -39,7 +39,7 @@ public interface IPortalUrlFactory {
      * @param windowProperties        window properties
      * @return URL
      */
-    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties)
+    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, PortalUrlType type)
             throws PortalException;
     
     /**

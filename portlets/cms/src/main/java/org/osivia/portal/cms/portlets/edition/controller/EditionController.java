@@ -1,6 +1,8 @@
 package org.osivia.portal.cms.portlets.edition.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,8 +21,11 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
+import org.dom4j.io.HTMLWriter;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
@@ -31,9 +36,12 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -411,11 +419,62 @@ public class EditionController implements PortletContextAware, ApplicationContex
         return status;
     }
 
+    
+    
+    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
+        // Base HTML classes
+        String baseHtmlClasses = "btn btn-primary btn-sm ml-1";
+
+        // Item
+        Element item;
+        if (StringUtils.isEmpty(url)) {
+            item = DOM4JUtils.generateLinkElement("#", null, null, baseHtmlClasses + " disabled", null, icon);
+        } else {
+            // Data attributes
+            Map<String, String> data = new HashMap<>();
+
+            if ("#osivia-modal".equals(target)) {
+                data.put("target", "#osivia-modal");
+                data.put("load-url", url);
+                data.put("title", title);
+
+                url = "javascript:";
+                target = null;
+            } else if ("modal".equals(target)) {
+                data.put("toggle", "modal");
+
+                target = null;
+            }
+
+            item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses + " no-ajax-link", null, icon);
+
+            // Title
+            DOM4JUtils.addAttribute(item, "title", title);
+
+            // Data attributes
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                DOM4JUtils.addDataAttribute(item, entry.getKey(), entry.getValue());
+            }
+        }
+
+        // Text
+        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", title);
+        item.add(text);
+
+        toolbar.add(item);
+    }
+
 
     protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl ,EditionStatus status) throws PortletException {
         try {
 
             String contentId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
+            
+            // Toolbar
+            Element container = DOM4JUtils.generateDivElement(null);
+            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);       
+            container.add(toolbar);
+            
             if (contentId != null) {
                 UniversalID id = new UniversalID(contentId);
 
@@ -441,6 +500,24 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 status.setManageable(personnalization.isManageable());
                 status.setModifiable(personnalization.isModifiable());
                 
+                if( status.isModifiable()) {
+                   
+
+
+                    
+                    // Rename URL
+                    Map<String, String> properties = new HashMap<>();
+//                    properties.put("osivia.rename.path", path);
+//                    properties.put("osivia.rename.redirection-path", form.getPath());
+                    properties.put("osivia.rename.id", id.toString());
+                    String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
+                    this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", "Rename", "glyphicons glyphicons-basic-square-edit");
+                    
+                    
+   
+                    
+                }
+                
                 status.setAcls(repository.getACL(id.getInternalID()));
                 
                 if( cmsContext.isPreview()) {
@@ -454,6 +531,28 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 }
                 
                 status.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
+                
+                
+                
+                
+                // Toolbar
+                String popupUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "SampleInstance", new HashMap<String,String>(), PortalUrlType.MODAL);
+                this.addToolbarItem(toolbar, popupUrl, "#osivia-modal", "popup", "glyphicons glyphicons-basic-square-edit");
+
+                
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+                HTMLWriter htmlWriter;
+                try {
+                    htmlWriter = new HTMLWriter(stream);
+
+                htmlWriter.write(container);
+                htmlWriter.close();
+                } catch (Exception e) {
+                    throw new PortletException(e);
+                }                    
+
+                status.setToolbar(new String(stream.toByteArray()));
                 
                 
             }

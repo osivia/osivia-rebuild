@@ -60,6 +60,8 @@ import org.jboss.portal.server.ServerInvocation;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -212,7 +214,10 @@ public final class RenderPageCommand extends PageCommand
          
          // Pour le moment en tout cas, le render des windows se fait uniquement en Ajax
 
-         /*
+         HttpServletRequest req = this.context.getServerInvocation().getServerContext().getClientRequest();
+         String value = req.getHeader("ajax");
+         
+         if (!"true".equalsIgnoreCase(value))    {
 
          // The window context factory
          WindowContextFactory wcFactory = new WindowContextFactory(context);
@@ -257,8 +262,9 @@ public final class RenderPageCommand extends PageCommand
                }
             }
          }
+         }
        
-*/
+
          //
          return new PageRendition(layout, theme, pageResult, pageService);
       }

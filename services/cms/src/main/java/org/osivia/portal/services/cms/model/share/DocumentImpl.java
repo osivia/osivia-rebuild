@@ -122,6 +122,9 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
 
     }
 
+    public void setTitle( String title)  {
+        this.nativeItem.setTitle(title);
+    }
 
     public String getSpaceInternalId() {
         return spaceInternalId;

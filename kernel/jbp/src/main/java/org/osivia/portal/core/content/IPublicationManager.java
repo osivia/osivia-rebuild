@@ -25,7 +25,7 @@ public interface IPublicationManager {
      * @return the page id
      * @throws ControllerException the controller exception
      */
-    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID docId) throws ControllerException;
+    PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId) throws ControllerException; 
     
     
     /** The Constant PAGEID_PREFIX. */
@@ -40,8 +40,9 @@ public interface IPublicationManager {
     public static final String PAGEID_PREVIEW = "preview";
     
     /** The Constant PAGEID_LOCALE. */
-    public static final String PAGEID_LOCALE =  "locale"; 
-    
+    public static final String PAGEID_LOCALE =  "locale";
+
+
     
     
 

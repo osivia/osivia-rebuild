@@ -169,7 +169,9 @@
          <ref bean="portal:service=Interceptor,type=Command,name=BackwardCompatibility"/>
          <ref bean="portal:service=Interceptor,type=Command,name=PortalNode"/>
          <ref bean="portal:service=Interceptor,type=Command,name=PolicyEnforcement"/>
-         <ref bean="portal:service=Interceptor,type=Command,name=PageCustomizer"/>
+         -->
+         <value>osivia:service=Interceptor,type=Command,name=PageCustomizer</value>
+<!--          
          <ref bean="portal:service=Interceptor,type=Command,name=EventBroadcaster"/>
 -->         
          </list>
@@ -385,7 +387,35 @@
    
    
    
+      
+   <bean class="org.jboss.portal.core.model.portal.PortalObjectCommandFactory" id="portal:commandFactory=MySpace">
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=MySpace"/>
+   </bean>
    
+    <bean class="org.jboss.portal.core.model.portal.command.mapping.DefaultPortalObjectPathMapper"
+          id="portal:service=PortalObjectPathMapper,type=MySpace" >
+      <property name="Container" ref="portal:container=PortalObject"/>
+      <property name="Namespace" value="myspace" />
+   </bean>
+   
+  
+   
+   <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          id="portal:commandFactory=Delegate,path=MySpace" >
+      <property name="Path" value="/myspace" />
+      <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+      <property name="DelegateFactory" ref="portal:commandFactory=MySpace"/>
+   </bean>
+   
+   
+      <bean class="org.jboss.portal.core.model.portal.PortalObjectURLFactory"
+          id="portal:urlFactory=PortalObject,type=MySpace" >
+      
+      <property name="Namespace" value="myspace" />
+      <property name="Path" value="/myspace" />
+      <property name="Factory" ref="portal:urlFactory=Delegating"/>
+      <property name="Mapper" ref="portal:service=PortalObjectPathMapper,type=MySpace"/>
+   </bean>
    
    
 

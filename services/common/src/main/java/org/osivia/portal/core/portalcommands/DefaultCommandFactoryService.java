@@ -22,8 +22,10 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +114,32 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new StartDynamicPageCommand(parentId, pageName, null, templateId, WindowPropertiesEncoder.decodeProperties(pageProps),
                                 WindowPropertiesEncoder.decodeProperties(pageParams), null);
                     }
-                }                
+                }           
+                
+                if ("startDynamicWindowInNewPage".equals(action)) {
+
+                    String parentId = null;
+                    String pageId = null;
+                    String pageDisplayName = null;
+                    String instanceId = null;
+                    String windowProps = null;
+                    String params = null;
+
+
+                    if ((parameterMap.get("parentId") != null) && (parameterMap.get("instanceId") != null)) {
+
+                        parentId = URLDecoder.decode(parameterMap.get("parentId")[0], CharEncoding.UTF_8);
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        pageDisplayName = URLDecoder.decode(parameterMap.get("pageDisplayName")[0], CharEncoding.UTF_8);
+                        instanceId = URLDecoder.decode(parameterMap.get("instanceId")[0], CharEncoding.UTF_8);
+                        windowProps = URLDecoder.decode(parameterMap.get("props")[0], CharEncoding.UTF_8);
+                        params = URLDecoder.decode(parameterMap.get("params")[0], CharEncoding.UTF_8);
+
+                        return this.applicationContext.getBean(StartDynamicWindowInNewPageCommand.class, new UniversalID(parentId), new UniversalID(pageId), pageDisplayName, instanceId,
+                                WindowPropertiesEncoder.decodeProperties(windowProps), WindowPropertiesEncoder.decodeProperties(params));
+                    }
+                }
+                
                 
                 if ("restore".equals(action)) {
  
@@ -126,7 +153,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
             }
         } catch (Exception e) {
             // DO NOTHING
-
+            System.out.println("erreur DefaultCommandFactoryService");
         }
 
         return null;

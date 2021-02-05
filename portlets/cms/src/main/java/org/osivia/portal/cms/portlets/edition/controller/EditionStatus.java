@@ -24,7 +24,10 @@ public class EditionStatus {
     public boolean manageable = false;
     public boolean modifiable = false;
     public List<String> acls = new ArrayList<>();   
+    public String toolbar = null;
     
+
+
 
 
 
@@ -154,6 +157,18 @@ public class EditionStatus {
     
     public void setAcls(List<String> acls) {
         this.acls = acls;
+    }
+
+    
+    public String getToolbar() {
+        return toolbar;
+    }
+
+
+
+    
+    public void setToolbar(String toolbar) {
+        this.toolbar = toolbar;
     }
 
     

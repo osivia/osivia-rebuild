@@ -126,7 +126,7 @@ public class PublicationManager implements IPublicationManager {
 
 
     @Override
-    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID docId) throws ControllerException {
+    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId) throws ControllerException {
 
 
         PortalObjectId pageId = null;
@@ -172,7 +172,6 @@ public class PublicationManager implements IPublicationManager {
                 displayNames.put(Locale.FRENCH, displayName);
             }
 
-            // TODO : get current portal
             
             String pageDynamicID =  "space_" + navigation.getSpaceId().getInternalID();
             pageDynamicID += IPublicationManager.PAGEID_CTX;
@@ -182,10 +181,13 @@ public class PublicationManager implements IPublicationManager {
             pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_LOCALE + IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
              
             
-            UniversalID defaultPortalId = getCMSService().getDefaultPortal(cmsContext);
+            if( parentID == null)   {
+                //parentID = getCMSService().getDefaultPortal(cmsContext);
+                parentID = doc.getSpaceId();
+            }
             
             
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, defaultPortalId.getRepositoryName()+":/"+defaultPortalId.getInternalID(), pageDynamicID,
+            String pagePath = getDynamicService().startDynamicPage(portalCtx, parentID.getRepositoryName()+":/"+parentID.getInternalID(), pageDynamicID,
                     displayNames, templatePath, properties, parameters, null);
 
             if (!(doc instanceof Templateable)) {

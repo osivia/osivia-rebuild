@@ -64,7 +64,12 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
         pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
         
-
+        // Add doc properties
+        Map<String, Object> docProperties = doc.getProperties();
+        for( String key: docProperties.keySet())    {
+            pageProperties.put(key, (String) docProperties.get(key));
+        }
+        
 
         PortalObjectId pageId = new PortalObjectId(parent.getId().getNamespace(), new PortalObjectPath(path, PortalObjectPath.CANONICAL_FORMAT));
 

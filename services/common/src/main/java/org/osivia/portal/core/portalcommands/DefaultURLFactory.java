@@ -29,6 +29,7 @@ import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
 
 
@@ -73,6 +74,15 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
 
         }
+        
+        if (cmd instanceof StartDynamicWindowInNewPageCommand) {
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            asu.setParameterValue("action", "startDynamicWindowInNewPage");
+            return asu;
+        }
+        
 
      
         if (cmd instanceof RestorePageCommand) {

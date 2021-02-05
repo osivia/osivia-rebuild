@@ -37,6 +37,7 @@
   </tr>
 </table>
            
+<%@include file="../includes/modal.jsp" %>
 
 
 <p:region regionName='AJAXFooter' regionID='AJAXFooter'/>

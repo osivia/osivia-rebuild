@@ -17,6 +17,7 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -87,7 +88,7 @@ public class SampleController implements PortletContextAware {
         request.setAttribute("foo", foo);
         
         Map<String, String> properties = new HashMap<String, String>();
-        String startWindowUrl = portalUrlFactory.getStartPortletUrl(portalCtx, "SampleInstance", properties);
+        String startWindowUrl = portalUrlFactory.getStartPortletUrl(portalCtx, "SampleInstance", properties, PortalUrlType.DEFAULT);
         request.setAttribute("startWindowCommand", startWindowUrl);
         
         

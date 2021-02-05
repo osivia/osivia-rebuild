@@ -45,4 +45,12 @@
          <portlet-ref>Edition</portlet-ref>
       </instance>      
    </deployment>   
+   <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS rename portlet</display-name>
+         <display-name xml:lang="fr">Portlet renommage contenu</display-name>
+         <instance-id>RenameInstance</instance-id>
+         <portlet-ref>Rename</portlet-ref>
+      </instance>      
+   </deployment>     
 </deployments>
