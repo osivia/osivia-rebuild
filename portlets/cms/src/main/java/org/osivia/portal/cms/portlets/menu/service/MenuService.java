@@ -152,7 +152,7 @@ public class MenuService implements IMenuService {
         org.nuxeo.ecm.automation.client.model.Document nuxeoDocument = (org.nuxeo.ecm.automation.client.model.Document) document.getNativeItem();
 
         // Nuxeo document link
-        Link link = new Link(portalUrlFactory.getViewContentUrl(portalControllerContext, document.getId()), false);
+        Link link = new Link(portalUrlFactory.getViewContentUrl(portalControllerContext, cmsContext, document.getId()), false);
 
         // Selected item indicator
         boolean selected = false;

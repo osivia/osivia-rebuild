@@ -92,9 +92,9 @@ public class SampleController implements PortletContextAware {
         request.setAttribute("startWindowCommand", startWindowUrl);
         
         
-        request.setAttribute("docURL", portalUrlFactory.getViewContentUrl(portalCtx, docId));
+        request.setAttribute("docURL", portalUrlFactory.getViewContentUrl(portalCtx, new CMSContext(portalCtx),docId));
         
-        request.setAttribute("pageURL",portalUrlFactory.getViewContentUrl(portalCtx, pageId));
+        request.setAttribute("pageURL",portalUrlFactory.getViewContentUrl(portalCtx, new CMSContext(portalCtx),pageId));
         
         request.setAttribute("user", request.getRemoteUser());
         

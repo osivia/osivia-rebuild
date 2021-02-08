@@ -16,6 +16,7 @@ package org.osivia.portal.api.urls;
 
 
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -45,7 +46,7 @@ public interface IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException;
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id) throws PortalException;
 
 
 

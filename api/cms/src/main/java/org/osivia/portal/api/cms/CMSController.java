@@ -1,6 +1,7 @@
 package org.osivia.portal.api.cms;
 
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -24,8 +25,17 @@ public class CMSController {
         this.portalCtx = portalCtx;
         
         if( portalCtx.getRequest() != null) {
-            String sPreview = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.preview");
-            String sLocale = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.locale");
+            
+            
+            String sPreview = WindowFactory.getWindow(portalCtx.getRequest()).getProperty("osivia.content.preview");
+            if( sPreview == null)
+                sPreview = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.preview");                
+            String sLocale = WindowFactory.getWindow(portalCtx.getRequest()).getProperty("osivia.content.locale");
+            if( sLocale == null)
+                sLocale = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.content.locale");
+            
+            
+            
             preview = BooleanUtils.toBoolean(sPreview);
             if( sLocale != null) {
                 locale = new Locale(sLocale);
@@ -33,6 +43,19 @@ public class CMSController {
         }
         
     }
+  
+    
+    public void addContentToProperties( Map<String, String> properties, String propertyName, UniversalID id) {
+        properties.put(propertyName, id.toString());
+        writeContextToProperty(  properties) ;
+     }
+    
+    public void writeContextToProperty( Map<String, String> properties) {
+        properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse( getCMSContext().isPreview()));
+        if( getCMSContext().getlocale() != null) {
+            properties.put("osivia.content.locale", getCMSContext().getlocale().toString()); 
+        }
+     }
 
     /**
      * Gets the locale service.

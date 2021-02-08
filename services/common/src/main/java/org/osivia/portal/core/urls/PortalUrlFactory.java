@@ -28,6 +28,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -169,11 +170,12 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
     @Override
-    public String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException {
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id) throws PortalException {
 
 
-        Locale locale = getLocaleService().getLocale(portalControllerContext);
-        Boolean preview = getPreviewModeService().isPreviewing(portalControllerContext, id);
+        Locale locale = cmsContext.getlocale();
+
+        Boolean preview = cmsContext.isPreview();
         
         final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview);
         

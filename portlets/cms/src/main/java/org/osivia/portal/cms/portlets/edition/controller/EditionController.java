@@ -149,7 +149,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 ((TestRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
 
 
-                String url = portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID(id.getRepositoryName(), newID));
+                String url = portalUrlFactory.getViewContentUrl(portalControllerContext, ctrl.getCMSContext(), new UniversalID(id.getRepositoryName(), newID));
                 response.sendRedirect(url);
 
 
@@ -230,8 +230,13 @@ public class EditionController implements PortletContextAware, ApplicationContex
             UniversalID id = new UniversalID(contentId);
             
             previewModeService.changePreviewMode(portalControllerContext, id);
+            
+            // update cms context
+            CMSController ctrl = new CMSController(portalControllerContext); 
+            CMSContext cmsCtx = ctrl.getCMSContext();
+            cmsCtx.setPreview(previewModeService.isPreviewing(portalControllerContext, id));
   
-            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsCtx, id);
             response.sendRedirect(url);
 
         } catch (PortalException | IOException e) {
@@ -254,8 +259,12 @@ public class EditionController implements PortletContextAware, ApplicationContex
             UniversalID id = new UniversalID(contentId);
             
             previewModeService.changePreviewMode(portalControllerContext, id);
+            
+            // Reload cms context
+            CMSController ctrl = new CMSController(portalControllerContext); 
+            CMSContext cmsCtx = ctrl.getCMSContext();            
   
-            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, id);
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext,cmsCtx, id);
             response.sendRedirect(url);
 
         } catch (PortalException | IOException e) {
@@ -509,12 +518,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     Map<String, String> properties = new HashMap<>();
 //                    properties.put("osivia.rename.path", path);
 //                    properties.put("osivia.rename.redirection-path", form.getPath());
-                    properties.put("osivia.rename.id", id.toString());
+                    
+                    ctrl.addContentToProperties(properties,"osivia.rename.id", id );
+                    
+                    
                     String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
                     this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", "Rename", "glyphicons glyphicons-basic-square-edit");
                     
-                    
-   
+    
                     
                 }
                 
@@ -624,9 +635,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                     Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument( id);
                     
-                    localService.setLocale(portalCtx, form.getLocale());                    
+                    localService.setLocale(portalCtx, form.getLocale()); 
                     
-                    String url = portalUrlFactory.getViewContentUrl(portalCtx, currentDoc.getSpaceId());
+                    cmsContext.setLocale(form.getLocale());
+                    
+                    String url = portalUrlFactory.getViewContentUrl(portalCtx, cmsContext, currentDoc.getSpaceId());
                     response.sendRedirect(url);
                 }
             } catch (PortalException | IOException e) {
@@ -657,7 +670,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument( id);
                 
-                String url = portalUrlFactory.getViewContentUrl(portalCtx, currentDoc.getSpaceId());
+                String url = portalUrlFactory.getViewContentUrl(portalCtx, ctrl.getCMSContext(), currentDoc.getSpaceId());
                 response.sendRedirect(url);
             }
         } catch (PortalException | IOException e) {

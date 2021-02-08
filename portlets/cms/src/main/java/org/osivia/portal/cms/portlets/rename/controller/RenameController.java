@@ -93,7 +93,7 @@ public class RenameController implements PortletContextAware {
     public String view(RenderRequest request, RenderResponse response) throws CMSException {
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
         CMSController ctrl = new CMSController(portalCtx);
-        
+
         String contentId = WindowFactory.getWindow(request).getProperty("osivia.rename.id");
         if( contentId != null)  {
             UniversalID id = new UniversalID(contentId);
@@ -187,7 +187,7 @@ public class RenameController implements PortletContextAware {
             }
 
             // Nuxeo document link
-            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, contentId);
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, ctrl.getCMSContext(), contentId);
 
             response.sendRedirect(url);
         }

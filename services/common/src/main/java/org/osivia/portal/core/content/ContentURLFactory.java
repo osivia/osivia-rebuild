@@ -65,6 +65,8 @@ public class ContentURLFactory extends URLFactoryDelegate
          }
          
          Locale locale = cmsCommand.getLocale();
+         if( locale == null)
+             locale = Locale.FRENCH;
          portalRequestPath += "/" +locale.toString();
          
          boolean preview = cmsCommand.isPreview();
