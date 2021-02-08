@@ -84,7 +84,7 @@ public class BrowserController implements PortletContextAware {
             
             List<Child> children = new ArrayList<>();
             for( Document child : repository.getChildren(id.getInternalID()))   {
-                children.add(new Child(portalUrlFactory.getViewContentUrl(portalCtx, child.getId()), child.getTitle()));
+                children.add(new Child(portalUrlFactory.getViewContentUrl(portalCtx, ctrl.getCMSContext(), child.getId()), child.getTitle()));
             }
             
             
