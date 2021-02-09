@@ -519,7 +519,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 //                    properties.put("osivia.rename.path", path);
 //                    properties.put("osivia.rename.redirection-path", form.getPath());
                     
-                    ctrl.addContentToProperties(properties,"osivia.rename.id", id );
+                    ctrl.addContentRefToProperties(properties,"osivia.rename.id", id );
                     
                     
                     String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
@@ -538,6 +538,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
                         status.setHavingPublication(true);
                     } catch (CMSException e) {
                         // Not found
+                    } finally   {
+                        cmsContext.setPreview(true);
                     }
                 }
                 

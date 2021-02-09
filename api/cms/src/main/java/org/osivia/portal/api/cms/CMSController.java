@@ -45,7 +45,7 @@ public class CMSController {
     }
   
     
-    public void addContentToProperties( Map<String, String> properties, String propertyName, UniversalID id) {
+    public void addContentRefToProperties( Map<String, String> properties, String propertyName, UniversalID id) {
         properties.put(propertyName, id.toString());
         writeContextToProperty(  properties) ;
      }
