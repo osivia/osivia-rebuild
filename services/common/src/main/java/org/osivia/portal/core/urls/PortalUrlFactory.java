@@ -106,6 +106,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 // Modal
                 UniversalID pageID = new UniversalID("templates", "OSIVIA_PAGE_MODAL");
                 UniversalID parentID = new UniversalID("templates", "OSIVIA_PORTAL_UTILS");
+                
+                windowProperties.put("osivia.windowState", "normal");
+                windowProperties.put("osivia.hideTitle", "1");
 
                 regionId = "modal-region";
                 windowName = "modal-window";

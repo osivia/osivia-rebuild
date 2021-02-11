@@ -214,6 +214,9 @@ function ajaxCall(options, url, eventToStop, popViewState){
         popState = true;
     }
     
+	if( session_check != null)	{
+		headers.push('session_check', session_check);
+	}
     
     // note : we don't convert query string to prototype parameters as in the case
     // of a post, the parameters will be appended to the body of the query which
@@ -224,7 +227,16 @@ function ajaxCall(options, url, eventToStop, popViewState){
     options.onSuccess = function(t)
     {
        var resp = "";
-       eval("resp =" + t.responseText + ";");
+       
+       try	{
+    	   eval("resp =" + t.responseText + ";");
+       } catch ( e){
+    	   // Non ajax response (ie login) -> print
+    	   document.open();
+    	   document.write(t.responseText);
+    	   document.close();
+    	   return;
+       }
        if (resp.type == "update_markup")
        {
        	
@@ -328,7 +340,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
 				             					 for( var j=i+1; j< resp.regions[regionName].length && insertBefore == null; j++)	{
 				             						 if( resp.regions[regionName][j] == insertedId)	{
 				             							 insertBefore = domWindow;
-				             							 console.log("found "+ insertedId)
+				             							 //console.log("found "+ insertedId)
 				             						 }
 				             					 }
 			             					  }

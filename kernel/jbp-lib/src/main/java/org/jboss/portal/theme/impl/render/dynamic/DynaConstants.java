@@ -40,6 +40,9 @@ public final class DynaConstants
 
    /** The id for view state. */
    public static final String VIEW_STATE = "theme.dyna.view_state";
+   
+   /** The session check for ajax. */
+   public static final String SESSION_CHECK = "theme.dyna.session_check";
 
    /** . */
    public static final String RENDER_OPTIONS = "dyna_render_options";

@@ -65,27 +65,32 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             title = drc.getTitle();
         }
 
+     // Display title indicator
+        boolean displayTitle = ! "1".equals(drc.getProperty("osivia.hideTitle"));
+        
+        if( displayTitle)   {
   
-        // Title container
-        Element titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, null, StringUtils.EMPTY);
-        StringBuilder builder = new StringBuilder();
-        builder.append("portlet-titlebar-title");
-
-
-        DOM4JUtils.addAttribute(titleContainer, HTMLConstants.CLASS, builder.toString());
-
-        Element titleText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, title);
-        titleContainer.add(titleText);
-
-     
-
-        // Write HTML
-        HTMLWriter htmlWriter = new HTMLWriter(markup);
-        htmlWriter.setEscapeText(false);
-        try {
-            htmlWriter.write(titleContainer);
-        } catch (IOException e) {
-            // Do nothing
+            // Title container
+            Element titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, null, StringUtils.EMPTY);
+            StringBuilder builder = new StringBuilder();
+            builder.append("portlet-titlebar-title");
+    
+    
+            DOM4JUtils.addAttribute(titleContainer, HTMLConstants.CLASS, builder.toString());
+    
+            Element titleText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, title);
+            titleContainer.add(titleText);
+    
+         
+    
+            // Write HTML
+            HTMLWriter htmlWriter = new HTMLWriter(markup);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(titleContainer);
+            } catch (IOException e) {
+                // Do nothing
+            }
         }
     }
 

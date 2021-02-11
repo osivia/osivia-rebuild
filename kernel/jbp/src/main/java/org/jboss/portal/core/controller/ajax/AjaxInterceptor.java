@@ -34,8 +34,11 @@ import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.ServerURL;
 import org.jboss.portal.server.request.URLFormat;
 import org.jboss.portal.theme.impl.render.dynamic.DynaConstants;
+import org.osivia.portal.core.constants.InternalConstants;
 
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
@@ -79,6 +82,10 @@ public class AjaxInterceptor extends ControllerInterceptor
          pageProps.put(DynaConstants.RESOURCE_BASE_URL, targetContextPath + "/dyna");
          pageProps.put(DynaConstants.SERVER_BASE_URL, url);
          pageProps.put(DynaConstants.VIEW_STATE, viewId);
+         
+         
+         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+         pageProps.put(DynaConstants.SESSION_CHECK, request.getSession().getAttribute(InternalConstants.SESSION_CHECK));
 
          // If user is logged in and is on dashboard we enable ajax
 //         if (cmd instanceof RenderPageCommand)

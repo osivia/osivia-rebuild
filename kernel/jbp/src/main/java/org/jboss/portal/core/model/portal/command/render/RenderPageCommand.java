@@ -215,10 +215,8 @@ public final class RenderPageCommand extends PageCommand
          // Pour le moment en tout cas, le render des windows se fait uniquement en Ajax
 
          HttpServletRequest req = this.context.getServerInvocation().getServerContext().getClientRequest();
-         String value = req.getHeader("ajax");
-         
-         if (!"true".equalsIgnoreCase(value))    {
 
+/*
          // The window context factory
          WindowContextFactory wcFactory = new WindowContextFactory(context);
 
@@ -262,7 +260,8 @@ public final class RenderPageCommand extends PageCommand
                }
             }
          }
-         }
+         
+         */
        
 
          //

@@ -58,6 +58,10 @@ public class JSONMarshaller {
                 if (umr.getViewState() != null) {
                     writer.key("view_state").value(umr.getViewState());
                 }
+                
+                if (umr.getSessionCheck() != null) {
+                    writer.key("session_check").value(umr.getSessionCheck());
+                }
 
                 if (umr.getRestoreUrl() != null) {
                     writer.key("pop_url").value(umr.getRestoreUrl());

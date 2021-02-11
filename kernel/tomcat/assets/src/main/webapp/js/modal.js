@@ -34,6 +34,17 @@ $JQry(function() {
 				// Body
 				$window.children().clone().appendTo($clone);
 				$window.load(url, function() {
+					
+					// (ajax call) eq. footer
+				    var options = new Object();
+						// We have a get
+				    options.method = "get"
+				    // We don't block
+				    options.asynchronous = false;
+					ajaxCall(options, url);
+
+					
+					
 					if (callbackFunction) {
 						window[callbackFunction](callbackFunctionArgs);
 					}

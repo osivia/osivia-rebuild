@@ -48,9 +48,24 @@ public class UpdatePageStateResponse extends DynaResponse {
     private String layout;
     private String restoreUrl;
     private String fullStateUrl;
+    private String sessionCheck;
+    private Set<PageResource> resources;
+    
+    
+    
+    public String getSessionCheck() {
+        return sessionCheck;
+    }
+
+
 
     
-    
+    public void setSessionCheck(String sessionCheck) {
+        this.sessionCheck = sessionCheck;
+    }
+
+
+
     public String getFullStateUrl() {
         return fullStateUrl;
     }
@@ -72,7 +87,6 @@ public class UpdatePageStateResponse extends DynaResponse {
     }
 
 
-    private Set<PageResource> resources;
 
 
     public UpdatePageStateResponse(String viewState) {

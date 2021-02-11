@@ -329,7 +329,8 @@ public final class InternalConstants {
 
     public static final String USER_DOMAINS_ATTRIBUTE = "osivia.user.domains";
 
-
+    /** The Constant SESSION_CHECK. */
+    public static final String SESSION_CHECK = "osivia.session.check";
     
     
     /**

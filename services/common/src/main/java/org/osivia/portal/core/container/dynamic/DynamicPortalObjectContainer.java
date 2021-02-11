@@ -100,12 +100,12 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
     private Object getNavigationalItem(String attribute) {
         // le request ne marche pas dans la popup, je passe en session
-        return this.getTracker().getHttpSession().getAttribute(attribute);
+        return this.getTracker().getHttpRequest().getAttribute(attribute);
     }
 
     private void setNavigationalItem(String attribute, Object value) {
         // le request ne marche pas dans la popup, je passe en session
-        this.getTracker().getHttpSession().setAttribute(attribute, value);
+        this.getTracker().getHttpRequest().setAttribute(attribute, value);
     }
 
     public void addDynamicWindow(DynamicWindowBean newWindow) {

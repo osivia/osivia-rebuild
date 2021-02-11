@@ -80,6 +80,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.core.cms.cache.RequestCacheManager;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -162,8 +163,9 @@ public class AjaxResponseHandler implements ResponseHandler {
             
             controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.controllerContext", controllerContext);
             
-
-            
+            String redirectUrl = (String) controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.full_refresh_url");
+            if( redirectUrl != null)
+                 return HTTPResponse.sendRedirect(redirectUrl);
             
             if (controllerResponse instanceof PortletWindowActionResponse) {
                 PortletWindowActionResponse pwr = (PortletWindowActionResponse) controllerResponse;
@@ -401,6 +403,7 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     //
                     UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId());
+                    updatePage.setSessionCheck((String) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute(InternalConstants.SESSION_CHECK));
                     
                     RestorePageCommand restoreCmd = new RestorePageCommand();
                     updatePage.setRestoreUrl(controllerContext.renderURL(restoreCmd, null, null));

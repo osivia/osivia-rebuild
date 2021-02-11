@@ -103,6 +103,7 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
       String jsBase = rendererContext.getProperty(DynaConstants.RESOURCE_BASE_URL);
       String serverBaseURL = rendererContext.getProperty(DynaConstants.SERVER_BASE_URL);
       String viewState = rendererContext.getProperty(DynaConstants.VIEW_STATE);
+      String sessionCheck = rendererContext.getProperty(DynaConstants.SESSION_CHECK);
 
       // Handle special ajax region here
       if ("AJAXScripts".equals(rrc.getId()))
@@ -151,6 +152,19 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
          {
             markup.print("view_state = null;");
          }
+         
+         // Session check
+         if (sessionCheck != null)
+         {
+            markup.print("session_check = \"");
+            markup.print(sessionCheck);
+            markup.print("\";\n");
+         }
+         else
+         {
+            markup.print("session_check = null;");
+         }
+
 
          //
          markup.print("</script>\n");

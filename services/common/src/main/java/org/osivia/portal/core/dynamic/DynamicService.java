@@ -61,9 +61,21 @@ public class DynamicService implements IDynamicService {
         WindowNavigationalState windowNavState = WindowNavigationalState.create();
         Map<String, String[]> parameters = new HashMap<String, String[]>();
 
+        
+        WindowNavigationalState newNS;
+        
+        if (StringUtils.equals(properties.get("osivia.windowState"), "normal")) {
+            // On force la maximisation
 
-        WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED, windowNavState.getMode(),
-                ParametersStateString.create(parameters));
+
+             newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
+                    ParametersStateString.create(parameters));
+        }   else    {
+            newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED, windowNavState.getMode(),
+                    ParametersStateString.create(parameters));
+        }
+
+
 
         ctx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
     }

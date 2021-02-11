@@ -15,11 +15,14 @@ package org.osivia.portal.core.portalcommands;
 
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -35,6 +38,7 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationResponse;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -44,6 +48,7 @@ import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -85,43 +90,51 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     @Override
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
 
-         
-        //TODO
-        // Comme la modal n'est pas créée en ajax le viewState n'est pas à jour
-        // La window virtual est perdue ....
-        // donc on ne peut pas restorer
-        boolean nonAjaxInitialisation = false;
-        if( requestPath.startsWith("/templates/OSIVIA_PORTAL_UTILS")) {
-            nonAjaxInitialisation = true;
-        }
-        if( !nonAjaxInitialisation)  {
-            String viewState = controllerContext.getServerInvocation().getServerContext().getClientRequest().getHeader("view_state");
-            
-            if (viewState != null) {
-                PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
-                PageMarkerUtils.restorePageState(controllerContext, viewState);
+  
+        HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        
+        // update server session check
+        // session check controls wether session is shared between browser and server
+        
+        String currentServerCheck = (String) request.getSession().getAttribute(InternalConstants.SESSION_CHECK);
+        String currentUSer = (request.getRemoteUser() != null) ? request.getRemoteUser() : "_anonymous";
+        
+        boolean updateServerCheck = false;
+        if( StringUtils.isNotEmpty(currentServerCheck))   {
+            String[] tokens = currentServerCheck.split(":");
+            String userName = tokens[0];
+            String sessionId = tokens[1];
+            if( !StringUtils.equals(request.getSession().getId(), sessionId) || ! StringUtils.equals(userName, request.getRemoteUser()))    {
+                updateServerCheck = true;
             }
-           
-         }
+        }   else
+            updateServerCheck = true;
 
+        if( updateServerCheck) {
+            currentServerCheck = currentUSer + ":" + request.getSession().getId();
+            request.getSession().setAttribute(InternalConstants.SESSION_CHECK, currentServerCheck);
+        }
+        
+          
+        
+        String viewState = request.getHeader("view_state");
+        
+        if (viewState != null) {
+            PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
+            PageMarkerUtils.restorePageState(controllerContext, viewState);
+        }
+        
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         
-
-        //TODO
-        // De plus la ajaxPageID n'est pas bon ....
-        if( nonAjaxInitialisation)   {
-            if( cmd instanceof PageCommand) {
-                PortalObject po = controllerContext.getController().getPortalObjectContainer().getObject(((PageCommand) cmd).getTargetId());
-                PortalObjectId pageId = null;
-                if( po instanceof Window)   {
-                    pageId = ((Window) po).getPage().getId();
-                }
-                if( pageId != null) {  
-                    controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajaxPageId", pageId);
-                 }
-            }
-        }
-
+        
+        // En cas de reconnexion, la page de login JPB redirige après authentificationen mode AJAX 
+        // alors que le fonctionnement AJAX est rompu dans le navigateur
+        // Du coup, on repasse en NON AJAX
+        if( controllerContext.getType() == ControllerContext.AJAX_TYPE && !StringUtils.equals(currentServerCheck, request.getHeader("session_check"))) {
+            String url = controllerContext.renderURL(cmd, null, null);         
+            request.setAttribute("osivia.full_refresh_url", url);
+         }
+               
         
         
         // Restauration of pages in case of loose of sessions
@@ -174,8 +187,6 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
 
         // No more static pages :)
-        
-
         boolean staticPage = false;
         if(cmd instanceof ViewPortalCommand)
             staticPage = true;
