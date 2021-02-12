@@ -1,11 +1,10 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"     pageEncoding="UTF-8"%>
 
 <html>
 <head>
 <title>Login Page</title>
-<link href="/osivia-portal-themes-generic-5.0-SNAPSHOT/css/socle.css"
-	rel="stylesheet">
-<script async
-	src="/osivia-portal-themes-generic-5.0-SNAPSHOT/js/bootstrap.bundle.js"></script>
+<link href="/osivia-portal-themes-generic-5.0-SNAPSHOT/css/socle.css" 	rel="stylesheet"/>
+<script src="/portal-assets/components/bootstrap/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 

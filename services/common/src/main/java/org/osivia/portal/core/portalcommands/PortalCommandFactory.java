@@ -93,9 +93,11 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
   
         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
         
+        // HACK 
         // update server session check
         // session check controls wether session is shared between browser and server
         
+        /*
         String currentServerCheck = (String) request.getSession().getAttribute(InternalConstants.SESSION_CHECK);
         String currentUSer = (request.getRemoteUser() != null) ? request.getRemoteUser() : "_anonymous";
         
@@ -114,6 +116,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             currentServerCheck = currentUSer + ":" + request.getSession().getId();
             request.getSession().setAttribute(InternalConstants.SESSION_CHECK, currentServerCheck);
         }
+        */
         
           
         
@@ -126,14 +129,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         
-        
-        // En cas de reconnexion, la page de login JPB redirige après authentificationen mode AJAX 
-        // alors que le fonctionnement AJAX est rompu dans le navigateur
-        // Du coup, on repasse en NON AJAX
-        if( controllerContext.getType() == ControllerContext.AJAX_TYPE && !StringUtils.equals(currentServerCheck, request.getHeader("session_check"))) {
-            String url = controllerContext.renderURL(cmd, null, null);         
-            request.setAttribute("osivia.full_refresh_url", url);
-         }
+
                
         
         
@@ -186,6 +182,18 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }   
         
 
+        
+        // En cas de reconnexion, la page de login JPB redirige après authentificationen mode AJAX 
+        // alors que le fonctionnement AJAX est rompu dans le navigateur
+        // Du coup, on repasse en NON AJAX
+        /*
+        if( StringUtils.isNotEmpty(request.getRemoteUser()) && controllerContext.getType() == ControllerContext.AJAX_TYPE && !StringUtils.equals(currentServerCheck, request.getHeader("session_check"))) {
+            String url = controllerContext.renderURL(cmd, null, null);         
+            request.setAttribute("osivia.full_refresh_url", url);
+            System.out.println("portalcommandfactory full refresh");
+         }
+        */
+        
         // No more static pages :)
         boolean staticPage = false;
         if(cmd instanceof ViewPortalCommand)

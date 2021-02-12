@@ -231,11 +231,10 @@ function ajaxCall(options, url, eventToStop, popViewState){
        try	{
     	   eval("resp =" + t.responseText + ";");
        } catch ( e){
-    	   // Non ajax response (ie login) -> print
-    	   document.open();
-    	   document.write(t.responseText);
-    	   document.close();
-    	   return;
+    	   
+    		   window.location = url;
+    		   return;
+    	   
        }
        if (resp.type == "update_markup")
        {
@@ -571,14 +570,18 @@ function observePortlet(refreshWindow)
 
 function footer()
 {  
-    var options = new Object();
-	
-	// We have a get
-    options.method = "get"
 
-    // We don't block
-    options.asynchronous = false;
+    	// Non Ajax Response
+        var options = new Object();
+    	
+    	// We have a get
+        options.method = "get"
 
-	ajaxCall(options, window.location.href);
+        // We don't block
+        options.asynchronous = false;
+
+    	ajaxCall(options, window.location.href);
+
+
 }
 

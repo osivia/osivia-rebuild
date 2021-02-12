@@ -52,6 +52,9 @@ public class AjaxResponse extends HandlerResponse
    {
       HttpServletResponse resp = ctx.getClientResponse();
       resp.setContentType("text/html");
+      resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+      resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+      resp.setDateHeader("Expires", 0); // Proxies.
       marshaller.write(dynaResponse, resp.getWriter());
    }
 }

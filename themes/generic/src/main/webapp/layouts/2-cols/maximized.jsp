@@ -8,6 +8,9 @@
 <head>
     <title><p:title default="<%= PortalConstants.VERSION.toString() %>"/></title>
    <meta http-equiv="Content-Type" content="text/html;"/>
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />      
    <!-- to correct the unsightly Flash of Unstyled Content. -->
    <script type="text/javascript"></script>
    <!-- inject the theme, default to the Renewal theme if nothing is selected for the portal or the page -->
