@@ -21,11 +21,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
@@ -44,6 +46,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.portalcommands.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -134,7 +137,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     
                 url = builder.toString();
                 
-
+                url = this.adaptPortalUrlToModal(portalControllerContext, builder.toString());
 
             } else  {
                 // Default
@@ -161,6 +164,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 builder.append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties));
                 builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(new HashMap<String, String>()));            
                 
+                
     
                 url = builder.toString();
         }
@@ -171,6 +175,55 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return url;
     }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+
+    public String adaptPortalUrlToModal(PortalControllerContext portalCtx, String originalUrl) {
+
+
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
+        // Server context
+        final ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+        // Portal context path
+        final String portalContextPath = serverContext.getPortalContextPath();
+
+
+        final String prefix = StringUtils.substringBefore(originalUrl, portalContextPath);
+        String suffix = StringUtils.substringAfter(originalUrl, portalContextPath);
+
+
+
+        boolean auth = false;
+        if (suffix.startsWith("/auth/")) {
+            suffix = StringUtils.removeStart(suffix, "/auth/");
+            auth = true;
+        } else {
+            suffix = StringUtils.removeStart(suffix, "/");
+        }
+
+        // Popup command
+        String popupCommand = PortalCommandFactory.NO_AUTHREDIRECT+PortalCommandFactory.SESSION+"/";
+
+
+        // URL
+        final StringBuilder url = new StringBuilder();
+        url.append(prefix);
+        url.append(portalContextPath);
+        if (auth) {
+            url.append("/auth");
+        }
+        if (popupCommand != null) {
+            url.append(popupCommand);
+        }
+        url.append(suffix);
+
+        return url.toString();
+    }
+    
 
     @Override
     public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id) throws PortalException {

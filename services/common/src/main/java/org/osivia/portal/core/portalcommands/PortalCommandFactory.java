@@ -66,8 +66,11 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
     protected static final Log logger = LogFactory.getLog(PortalCommandFactory.class);
 
-
-
+    public static String NO_AUTHREDIRECT = "/nr";
+    private static String NO_AUTHREDIRECT_SLASH = NO_AUTHREDIRECT+"/";
+    public static String SESSION = "/session";
+    public static String SESSION_SLASH = SESSION + "/";
+    
     private CMSService cmsService;
 
     
@@ -91,7 +94,32 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
 
   
+        boolean noredirect = false;
+        String browserSession = null;
+        
         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        
+        
+        // Just to prevent from redirection
+        if (requestPath.startsWith(NO_AUTHREDIRECT_SLASH)) {
+            requestPath = requestPath.substring(NO_AUTHREDIRECT.length() );
+            noredirect = true;
+        }
+        
+        
+        // Just to prevent from redirection
+        if (requestPath.startsWith(SESSION_SLASH)) {
+            int sessionIndex = requestPath.substring(SESSION_SLASH.length()).indexOf("/");
+            if( sessionIndex != -1)    {
+                browserSession = requestPath.substring(SESSION_SLASH.length() , sessionIndex+SESSION.length() +1);
+                requestPath = requestPath.substring(SESSION_SLASH.length()+sessionIndex );
+            }
+        }
+        if( browserSession == null)
+            browserSession = request.getHeader("session_check");
+        
+        
+
         
 
         // compute  server session check
@@ -125,6 +153,10 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
             PageMarkerUtils.restorePageState(controllerContext, viewState);
         }
+        
+
+        
+        
         
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         
@@ -185,6 +217,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         // Force reload of page is session is not consistent
         // Example of use case : go back to anonymous page once logged ...
         // TODO : validate this hack
+        
 
 //        if( StringUtils.isNotEmpty(request.getRemoteUser()) && controllerContext.getType() == ControllerContext.AJAX_TYPE && !StringUtils.equals(currentServerCheck, request.getHeader("session_check"))) {
 //            String url = controllerContext.renderURL(cmd, null, null);         
@@ -193,8 +226,14 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 //         }
 
         
+        
+        boolean returnToDefaultPage = false;
+        
         // No more static pages :)
         boolean staticPage = false;
+        
+        
+        
         if(cmd instanceof ViewPortalCommand)
             staticPage = true;
         else if ((cmd instanceof ViewPageCommand))  {
@@ -204,8 +243,18 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                  staticPage = true;
              }
         }
-        
         if( staticPage) {
+            returnToDefaultPage = true;
+        }
+        
+        // reopen a modal after a session lose
+        if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
+            // TODO : the url of the popup should contain the original page
+            // maybe other use case, so wait
+            returnToDefaultPage = true;
+        }
+        
+        if( returnToDefaultPage) {
             // only use case : home page
             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
             UniversalID defaultPortalId;
@@ -214,7 +263,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             } catch (CMSException e) {
                 throw new RuntimeException(e);
             }
-                cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+           cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
         }
 
         

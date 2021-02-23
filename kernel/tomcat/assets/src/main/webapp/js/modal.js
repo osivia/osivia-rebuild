@@ -12,6 +12,9 @@ $JQry(function() {
 				var $footer = $dialog.find(".modal-footer");
 				var $clone = $target.children(".modal-clone");
 				var $window = $dialog.find(".dyna-window");
+				
+				
+				
                 var url = $target.data("load-url");
                 //var url = adaptAjaxRedirection(url);
 				var callbackFunction = $target.data("load-callback-function");
@@ -33,6 +36,9 @@ $JQry(function() {
 				
 				// Body
 				$window.children().clone().appendTo($clone);
+				url = url.replace("/session/","/session/"+session_check+"/");
+
+				
 				$window.load(url, function() {
 					
 					// (ajax call) eq. footer
@@ -117,6 +123,7 @@ $JQry(function() {
 				// Body
 				$window.empty();
 				$clone.children().appendTo($window);
+
 
 				// Size
                 $dialog.removeClass("modal-xl modal-lg modal-sm");

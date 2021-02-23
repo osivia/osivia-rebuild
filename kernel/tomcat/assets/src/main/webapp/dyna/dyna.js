@@ -217,6 +217,9 @@ function ajaxCall(options, url, eventToStop, popViewState){
 	if( session_check != null)	{
 		headers.push('session_check', session_check);
 	}
+	
+    var preventHistory = false;
+
     
     // note : we don't convert query string to prototype parameters as in the case
     // of a post, the parameters will be appended to the body of the query which
@@ -271,6 +274,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
           {
         	 originalId = id;
         	 id = id.replace(':','_');
+        	 
              var matchingElt = document.getElementById(id);
 
              // Different than 1 is not good
@@ -312,6 +316,15 @@ function ajaxCall(options, url, eventToStop, popViewState){
 	             				  var divRegion =  document.getElementById(regionName);
 	             				  
 	             				  if( divRegion != null)	{
+	             					  
+	             					  	  if( regionName == "modal-region")	{
+	             					  		// Modal region contains a default window that must be replaced
+	             					  		var $target = $JQry(divRegion);
+	             					  		$target.empty();
+	             					  		
+	             					  		// Modal window must not be reloadable
+	             					  		preventHistory = true;
+	             					  	  }
 	             					  
 	             					  	  // Prepare new window
 			             				  var newWindowDiv = document.createElement("div");
@@ -380,7 +393,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
         	  
         	  $JQry('#osivia-modal').modal('hide')
         	  
-       	   		observePortlets();
+       	   	  observePortlets();
           }
 
 
@@ -392,7 +405,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
 
           
           
-          if (popState === undefined  && resp.restore_url != "") {
+          if (popState === undefined  && resp.restore_url != "" && preventHistory == false) {
 
               // Add the current page
               var stateObject = {
