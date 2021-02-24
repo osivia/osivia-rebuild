@@ -51,6 +51,7 @@ import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
+import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.tracker.RequestContextUtil;
@@ -228,6 +229,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         
         boolean returnToDefaultPage = false;
+        boolean popupRedirection = false;
+        
         
         // No more static pages :)
         boolean staticPage = false;
@@ -247,12 +250,30 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             returnToDefaultPage = true;
         }
         
-        // reopen a modal after a session lose
+        
+        
+        
+
+        // no redirect url (example : reopen a modal after a session losed)
         if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
-            // TODO : the url of the popup should contain the original page
-            // maybe other use case, so wait
             returnToDefaultPage = true;
         }
+
+        
+        // navigation inside the modal after session losed
+        if( requestPath.startsWith("/templates/OSIVIA_PORTAL_UTILS") && !StringUtils.equals(currentServerCheck, browserSession)) {
+            returnToDefaultPage = true;
+        }
+        
+        
+        // back after a session losed
+        if( cmd instanceof RestorePageCommand && !StringUtils.equals(currentServerCheck, browserSession) )    {
+            returnToDefaultPage = true;
+        }
+        
+        
+        
+        
         
         if( returnToDefaultPage) {
             // only use case : home page
@@ -264,6 +285,10 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 throw new RuntimeException(e);
             }
            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+           
+           String url = controllerContext.renderURL(cmd, null, null);         
+           request.setAttribute("osivia.full_refresh_url", url);
+           System.out.println("portalcommandfactory full refresh");
         }
 
         

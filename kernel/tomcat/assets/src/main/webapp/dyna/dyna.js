@@ -318,7 +318,7 @@ function ajaxCall(options, url, eventToStop, popViewState){
 	             				  if( divRegion != null)	{
 	             					  
 	             					  	  if( regionName == "modal-region")	{
-	             					  		// Modal region contains a default window that must be replaced
+	             					  		// Modal region already contains a default window that must be replaced
 	             					  		var $target = $JQry(divRegion);
 	             					  		$target.empty();
 	             					  		

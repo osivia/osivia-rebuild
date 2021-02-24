@@ -14,10 +14,13 @@
  */
 package org.osivia.portal.core.page;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
@@ -54,7 +57,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         // Controller context
         ControllerContext controllerContext = cmd.getControllerContext();
 
-
+        HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        
+        String url = (String) request.getAttribute("osivia.full_refresh_url");
+        if( url != null)
+            return new RedirectionResponse(url);
+        
+        
         if (cmd instanceof RenderPageCommand) {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
 

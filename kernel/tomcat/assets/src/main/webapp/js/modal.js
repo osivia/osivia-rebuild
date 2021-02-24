@@ -16,7 +16,7 @@ $JQry(function() {
 				
 				
                 var url = $target.data("load-url");
-                //var url = adaptAjaxRedirection(url);
+                //url = adaptAjaxRedirection(url);
 				var callbackFunction = $target.data("load-callback-function");
 				var callbackFunctionArgs = $target.data("load-callback-function-args");
 				var title = $target.data("title");
@@ -39,7 +39,10 @@ $JQry(function() {
 				url = url.replace("/session/","/session/"+session_check+"/");
 
 				
-				$window.load(url, function() {
+				$window.load(url, function(response, status, xhr) {
+					
+					if( !response.includes("modal_do_not_delete"))
+						window.top.location.reload(true);
 					
 					// (ajax call) eq. footer
 				    var options = new Object();
