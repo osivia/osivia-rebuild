@@ -1,5 +1,11 @@
 version: "3"
 services:
+  opendj:
+    image: osivia/opendj:cloud-ens
+    ports:
+      - 389:389
+    volumes:
+      - opendj-data:/opt/opendj/db
   portal:
     image: osivia/portal:5.0
     environment:
@@ -13,3 +19,5 @@ services:
       - /usr/local/tomcat/bin/catalina.sh
       - jpda
       - run
+volumes:
+  opendj-data:

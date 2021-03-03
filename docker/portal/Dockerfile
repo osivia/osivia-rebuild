@@ -36,6 +36,8 @@ RUN cd / \
 
 #Logs
 COPY logging.properties /usr/local/tomcat/conf
+COPY catalina.properties /usr/local/tomcat/conf
+COPY portal.properties /
 # Entrypoint
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh

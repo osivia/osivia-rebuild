@@ -1,5 +1,11 @@
 package org.osivia.portal.kernel.tomcat;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
@@ -113,6 +119,28 @@ public class TomcatContainerServlet extends HttpServlet implements ContainerServ
                 this.containerContext = new TomcatServletContainerContext(engine);
                 this.containerContext.start();
                 break;
+            }
+        }
+
+        // Load system properties
+        
+        String fileName = System.getProperty("org.osivia.portal.kernel.tomcat.ExternalPropertySource.file");
+        if (fileName != null) {
+
+            try (InputStream input = new FileInputStream(fileName)) {
+
+                Properties props = new Properties();
+
+                // load a properties file
+                props.load(input);
+                
+                for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                    System.setProperty((String)entry.getKey(), (String)entry.getValue());
+                }
+
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
     }
