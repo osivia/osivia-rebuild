@@ -19,5 +19,36 @@ services:
       - /usr/local/tomcat/bin/catalina.sh
       - jpda
       - run
+  nuxeo:
+    image: osivia/index-nuxeo:5.0
+    environment:
+      - LDAP_HOST=opendj
+      - NUXEO_DB_HOST=postgres
+      - NUXEO_ES_CLUSTER=cloud-ens-cluster
+      - NUXEO_ES_NODES=es:9300
+    ports:
+      - 8081:8081
+      - 8788:8000
+    volumes:
+      - nuxeo-data:/data
+    depends_on:
+      - postgres
+      - es
+  postgres:
+    image: postgres:9.5
+    environment:
+      - POSTGRES_PASSWORD=osivia
+      - POSTGRES_USER=nuxeo
+      - POSTGRES_DB=nuxeodb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  es:
+    image: elasticsearch:1.7.6
+    command: elasticsearch -Des.cluster.name=cloud-ens-cluster
+    volumes:
+      - es-data:/usr/share/elasticsearch/data      
 volumes:
+  nuxeo-data:
   opendj-data:
+  postgres-data:
+  es-data:
