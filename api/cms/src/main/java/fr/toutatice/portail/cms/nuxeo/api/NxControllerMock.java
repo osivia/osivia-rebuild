@@ -22,7 +22,7 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.windows.WindowFactory;
 
-public class NuxeoController {
+public class NxControllerMock {
 
 
     /** The navigation path. */
@@ -110,10 +110,10 @@ public class NuxeoController {
             if (navigationId != null) {
                 try {
                     UniversalID docId = navigationId;
-                    org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
+                    org.nuxeo.ecm.automation.client.model.NxDocumentMock doc = (org.nuxeo.ecm.automation.client.model.NxDocumentMock) getCMSService()
                             .getCMSSession(getCMSContext()).getDocument( docId).getNativeItem();
 
-                    navigationPath = ((org.nuxeo.ecm.automation.client.model.Document) doc).getPath();
+                    navigationPath = ((org.nuxeo.ecm.automation.client.model.NxDocumentMock) doc).getPath();
                 } catch (CMSException e) {
                     throw new RuntimeException(e);
                 }
@@ -133,7 +133,7 @@ public class NuxeoController {
             if (spaceId != null) {
                 try {
                     UniversalID docId = spaceId;
-                    org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
+                    org.nuxeo.ecm.automation.client.model.NxDocumentMock doc = (org.nuxeo.ecm.automation.client.model.NxDocumentMock) getCMSService()
                             .getCMSSession(getCMSContext()).getDocument(docId).getNativeItem();
                     basePath = doc.getPath();
                 } catch (CMSException e) {
@@ -155,9 +155,9 @@ public class NuxeoController {
             if (contentId != null) {
                 try {
                     UniversalID docId = contentId;
-                    org.nuxeo.ecm.automation.client.model.Document doc = (org.nuxeo.ecm.automation.client.model.Document) getCMSService()
+                    org.nuxeo.ecm.automation.client.model.NxDocumentMock doc = (org.nuxeo.ecm.automation.client.model.NxDocumentMock) getCMSService()
                             .getCMSSession(cmsContext).getDocument( docId).getNativeItem();
-                    itemNavigationPath = ((org.nuxeo.ecm.automation.client.model.Document) doc).getPath();
+                    itemNavigationPath = ((org.nuxeo.ecm.automation.client.model.NxDocumentMock) doc).getPath();
                 } catch (CMSException e) {
                     throw new RuntimeException(e);
                 }
@@ -185,7 +185,7 @@ public class NuxeoController {
      * @param portletCtx the portlet ctx
      * @throws RuntimeException the runtime exception
      */
-    public NuxeoController(PortletRequest request, PortletResponse response, PortletContext portletCtx) throws RuntimeException {
+    public NxControllerMock(PortletRequest request, PortletResponse response, PortletContext portletCtx) throws RuntimeException {
 
         this.request = request;
         this.contentId = new UniversalID(WindowFactory.getWindow(request).getPageProperty("osivia.contentId"));
@@ -200,7 +200,7 @@ public class NuxeoController {
      *
      * @param portalControllerContext portal controller context
      */
-    public NuxeoController(PortalControllerContext portalControllerContext) {
+    public NxControllerMock(PortalControllerContext portalControllerContext) {
         this(portalControllerContext.getRequest(), portalControllerContext.getResponse(), portalControllerContext.getPortletCtx());
     }
 

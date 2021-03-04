@@ -39,7 +39,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.NxControllerMock;
 
 /**
  * Sample controller.
@@ -91,7 +91,7 @@ public class MenuController implements PortletContextAware {
         
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        NxControllerMock nuxeoController = new NxControllerMock(portalControllerContext);
         
         String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
         if( navigationId != null)   {

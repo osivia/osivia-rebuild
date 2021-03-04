@@ -56,7 +56,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.NxControllerMock;
 import fr.toutatice.portail.cms.producers.test.TestRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
@@ -130,7 +130,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+            NxControllerMock nuxeoController = new NxControllerMock(portalControllerContext);
 
             String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
             if (navigationId != null) {

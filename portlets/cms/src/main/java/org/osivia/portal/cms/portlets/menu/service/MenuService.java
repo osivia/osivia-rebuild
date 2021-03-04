@@ -28,7 +28,7 @@ import org.osivia.portal.cms.portlets.menu.model.NavigationDisplayItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.NxControllerMock;
 
 @Service
 public class MenuService implements IMenuService {
@@ -50,7 +50,7 @@ public class MenuService implements IMenuService {
      * @param nuxeoController Nuxeo controller
      * @return menu options
      */
-    private MenuOptions getMenuOptions(NuxeoController nuxeoController) {
+    private MenuOptions getMenuOptions(NxControllerMock nuxeoController) {
         // Request
         PortletRequest request = nuxeoController.getRequest();
 
@@ -102,7 +102,7 @@ public class MenuService implements IMenuService {
     }
 
     
-    private List<NavigationDisplayItem> getNavigationDisplayItemChildren(PortalControllerContext portalControllerContext, NuxeoController nuxeoController, CMSContext cmsContext, MenuOptions options,
+    private List<NavigationDisplayItem> getNavigationDisplayItemChildren(PortalControllerContext portalControllerContext, NxControllerMock nuxeoController, CMSContext cmsContext, MenuOptions options,
             NavigationItem navigationItem, int level) throws PortalException {
 
 
@@ -144,12 +144,12 @@ public class MenuService implements IMenuService {
      * @return navigation display item
      * @throws PortalException 
      */
-    private NavigationDisplayItem getNavigationDisplayItem(PortalControllerContext portalControllerContext, NuxeoController nuxeoController, CMSContext cmsContext, MenuOptions options,
+    private NavigationDisplayItem getNavigationDisplayItem(PortalControllerContext portalControllerContext, NxControllerMock nuxeoController, CMSContext cmsContext, MenuOptions options,
             NavigationItem navigationItem, int level) throws PortalException {
         // Nuxeo document
         // Nuxeo document
         Document document = (Document) cmsService.getCMSSession(cmsContext).getDocument(navigationItem.getDocumentId());
-        org.nuxeo.ecm.automation.client.model.Document nuxeoDocument = (org.nuxeo.ecm.automation.client.model.Document) document.getNativeItem();
+        org.nuxeo.ecm.automation.client.model.NxDocumentMock nuxeoDocument = (org.nuxeo.ecm.automation.client.model.NxDocumentMock) document.getNativeItem();
 
         // Nuxeo document link
         Link link = new Link(portalUrlFactory.getViewContentUrl(portalControllerContext, cmsContext, document.getId()), false);
@@ -226,7 +226,7 @@ public class MenuService implements IMenuService {
 
 
         try {
-            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+            NxControllerMock nuxeoController = new NxControllerMock(portalControllerContext);
 
             MenuOptions options = getMenuOptions(nuxeoController);
 

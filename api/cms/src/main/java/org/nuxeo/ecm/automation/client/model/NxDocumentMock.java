@@ -30,7 +30,7 @@ import org.osivia.portal.api.cms.EcmDocument;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class Document implements EcmDocument {
+public class NxDocumentMock implements EcmDocument {
 
     
     
@@ -82,7 +82,7 @@ public class Document implements EcmDocument {
      * @param id the id
      * @param properties the properties
      */
-    public Document( ) {
+    public NxDocumentMock( ) {
         super();
 
     }

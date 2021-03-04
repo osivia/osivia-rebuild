@@ -7,7 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.NxDocumentMock;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -43,7 +43,7 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
     
 
     /** The native item. */
-    private Document nativeItem;
+    private NxDocumentMock nativeItem;
     
     private Locale locale;
     
@@ -74,7 +74,7 @@ public class DocumentImpl implements org.osivia.portal.api.cms.model.Document, S
         super();
         this.userRepository = userRepository;
         this.internalID = internalID;
-        this.nativeItem = new Document();
+        this.nativeItem = new NxDocumentMock();
         this.nativeItem.setName(name);
         this.nativeItem.setTitle(properties.get("dc:title").toString());
         this.parentInternalId = parentId;
