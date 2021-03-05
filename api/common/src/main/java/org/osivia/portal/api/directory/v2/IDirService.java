@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2016 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,23 +10,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
-package org.osivia.portal.api.cms;
+package org.osivia.portal.api.directory.v2;
 
 /**
- * Document.
- * 
+ * Top level interface of a directory service
  * @author Loïc Billon
- * @author Cédric Krommenhoek
+ * @since 4.4
  */
-public interface EcmDocument {
-
-    /**
-     * Get document title.
-     * 
-     * @return title
-     */
-    String getTitle();
+public interface IDirService {
 
 }

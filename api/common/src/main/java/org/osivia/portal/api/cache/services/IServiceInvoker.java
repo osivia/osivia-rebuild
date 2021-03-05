@@ -12,21 +12,15 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.cms;
+package org.osivia.portal.api.cache.services;
 
-/**
- * Document.
- * 
- * @author Loïc Billon
- * @author Cédric Krommenhoek
- */
-public interface EcmDocument {
+import java.io.Serializable;
 
-    /**
-     * Get document title.
-     * 
-     * @return title
-     */
-    String getTitle();
+import org.osivia.portal.api.PortalException;
 
+public interface IServiceInvoker extends Serializable{
+
+	public Object invoke() throws PortalException;
+	
+	
 }

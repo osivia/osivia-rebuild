@@ -15,9 +15,14 @@
     
     <name>OSIVIA Portal - API - Common library</name>
     <description>OSIVIA Portal API common library.</description>
-    
-  
-    
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+		</dependency>
+
+	</dependencies>
     
     <build>
         <plugins>

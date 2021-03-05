@@ -19,14 +19,6 @@
 
     <dependencies>
     
-        <!-- Easymock (A SUPPRIMER) -->
-        
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
 
         <!-- OSIVIA Portal services -->
 		

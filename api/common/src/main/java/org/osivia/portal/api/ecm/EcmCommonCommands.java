@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,21 +12,32 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.cms;
+package org.osivia.portal.api.ecm;
 
 /**
- * Document.
- * 
- * @author Loïc Billon
- * @author Cédric Krommenhoek
+ * Main commands on the ecm
+ * @author lbi
+ *
  */
-public interface EcmDocument {
+public enum EcmCommonCommands {
 
-    /**
-     * Get document title.
-     * 
-     * @return title
-     */
-    String getTitle();
+	synchronizeFolder,
 
+	unsynchronizeFolder,
+
+	lock,
+
+	unlock,
+
+	subscribe,
+
+    unsubscribe,
+
+    eraseModifications,
+    
+    deleteDocument,
+
+    addToQuickAccess,
+    
+    removeFromQuickAccess
 }

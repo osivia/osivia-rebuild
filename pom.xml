@@ -68,7 +68,9 @@
 		<module>portlets</module>
 		<module>themes</module>
 		<module>ws</module>
-		<module>distrib</module>
+		<module>osivia-portal-dependencies</module>
+		<module>osivia-portal-dependencies-test</module>
+		<module>distrib</module>		
 	</modules>
 
 
@@ -137,15 +139,25 @@
 		<commons-lang3.version>3.4</commons-lang3.version>
 		<commons-logging.version>1.2</commons-logging.version>
       	<commons-collections.version>3.2.1</commons-collections.version>	    
- 		
+        <commons-beanutils.version>1.9.2</commons-beanutils.version>
+		<commons-io.version>2.2</commons-io.version>
 
 		<!-- Others -->
 		<log4j.version>1.2.14</log4j.version>
 		<taglib-standard.version>1.1.2</taglib-standard.version>
 		<dom4j.version>1.6.1</dom4j.version>
-
+		<portlet-api.version>2.0</portlet-api.version>
+        <el-api.version>1.0</el-api.version>
+        <servlet-api.version>2.5</servlet-api.version>
+        
         <!-- REST -->
+        <json.version>2.4</json.version>
         <jackson.version>2.10.1</jackson.version>
+        
+        <!-- Test -->
+        <junit.version>4.11</junit.version>
+        <easymock.version>3.1</easymock.version>
+        <powermock.version>1.6.5</powermock.version>
 
 
 	</properties>
@@ -234,6 +246,22 @@
 	            <version>${commons-collections.version}</version>
 	            <scope>provided</scope>
 	        </dependency>
+	        
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+                <scope>provided</scope>
+            </dependency>	        
+	        
+			
+			<dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+                <scope>provided</scope>
+            </dependency>
+			
 			<!-- JBoss portlet container -->
 
 			<dependency>
@@ -282,6 +310,13 @@
 				<scope>provided</scope>
 			</dependency>
 
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
@@ -303,12 +338,7 @@
 				<scope>provided</scope>
 			</dependency>
 			
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-aop</artifactId>
-				<version>${springframework.version}</version>
-				<scope>provided</scope>
-			</dependency>			
+		
 
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -355,11 +385,7 @@
 				<version>${org.springframework.security.oauth2.version}</version>
 				<scope>provided</scope>
 			</dependency>
-	        <dependency>
-	            <groupId>org.springframework.security.oauth</groupId>
-	            <artifactId>spring-security-oauth2</artifactId>
-	            <version>${org.springframework.security.oauth2.version}</version>
-	        </dependency>
+
 
 			<!-- DOM -->
 
@@ -370,7 +396,12 @@
 				<scope>provided</scope>
 			</dependency>
 
-
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>${jackson.version}</version>
+                <scope>provided</scope>
+            </dependency>
 			<!-- taglibs -->
 
 			<dependency>
@@ -387,22 +418,46 @@
 				<version>${log4j.version}</version>
 				<scope>provided</scope>
 			</dependency>
-
-			<!-- Test -->
-
+			
+			
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-				<scope>test</scope>
-			</dependency>
+                <groupId>net.sf.json-lib</groupId>
+                <artifactId>json-lib</artifactId>
+                <version>${json.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-			<dependency>
-				<groupId>org.easymock</groupId>
-				<artifactId>easymock</artifactId>
-				<version>3.3.1</version>
-				<scope>test</scope>
-			</dependency>
+	 <!-- Test -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>${easymock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-easymock</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
 
 		</dependencies>
 	</dependencyManagement>
@@ -437,7 +492,11 @@
 			<artifactId>jstl</artifactId>
 		</dependency>
 
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+        
 		<!-- Apache commons -->
 
 		<dependency>
@@ -449,6 +508,16 @@
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 		</dependency>
+		
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>		
 
 		<!-- DOM -->
 
@@ -517,17 +586,24 @@
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
 		</dependency>		
-		<!-- Test -->
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-		</dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+        </dependency>
 
 	</dependencies>
 

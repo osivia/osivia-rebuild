@@ -31,7 +31,16 @@ import java.util.Map;
  */
 public interface IPortalUrlFactory {
 
-
+    /**
+     * Permalink type "CMS".
+     */
+    String PERM_LINK_TYPE_CMS = "cms";
+    
+    /**
+     * Contextualization type "portlet".
+     */
+    String CONTEXTUALIZATION_PORTLET = "portlet";
+    
     /**
      * Get start portlet URL.
      *
@@ -48,7 +57,45 @@ public interface IPortalUrlFactory {
      */
     public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id) throws PortalException;
 
+    
+    /**
+     * Get CMS URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param pagePath                page path
+     * @param cmsPath                 CMS path
+     * @param pageParams              page parameters
+     * @param contextualization       contextualization
+     * @param displayContext          display context
+     * @param hideMetaDatas           hide meta datas
+     * @param scope                   scope
+     * @param displayLiveVersion      display live version
+     * @param windowPermReference     window perm reference
+     * @return CMS url
+     */
+    @Deprecated
+    String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams, String contextualization,
+            String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference);
 
+
+    /**
+     * Get HTTP error page URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param httpErrorCode           HTTP error code (example : 404)
+     * @return HTTP error page URL
+     */
+    String getHttpErrorUrl(PortalControllerContext portalControllerContext, int httpErrorCode);
+
+    @Deprecated
+    String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance,
+            Map<String, String> windowProperties, Map<String, String> params) throws PortalException;
+
+    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties)
+            throws PortalException;
+    @Deprecated
+    String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
+            throws PortalException;
 
   
 }

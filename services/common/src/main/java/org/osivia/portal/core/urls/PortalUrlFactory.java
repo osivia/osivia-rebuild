@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.api.PortalURL;
@@ -48,6 +50,7 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalcommands.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.utils.URLUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -244,6 +247,59 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return url;
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
+                            String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
+
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHttpErrorUrl(PortalControllerContext portalControllerContext, int httpErrorCode) {
+        final HttpServletRequest request = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
+                .getClientRequest();
+        final String uri = System.getProperty("error.defaultPageUri");
+        final String url = URLUtils.createUrl(request, uri, null);
+        return URLUtils.addParameter(url, "httpCode", String.valueOf(httpErrorCode));
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance,
+                                           Map<String, String> windowProperties, Map<String, String> params) throws PortalException {
+        
+        return null;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties)
+            throws PortalException {
+        return this.getStartPortletUrl(portalControllerContext, portletInstance, windowProperties, PortalUrlType.DEFAULT);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
+            throws PortalException {
+        
+        return null;
     }
 
 

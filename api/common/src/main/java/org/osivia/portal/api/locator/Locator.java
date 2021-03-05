@@ -3,6 +3,7 @@ package org.osivia.portal.api.locator;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
+
 import org.springframework.context.ApplicationContext;
 
 public class Locator {
@@ -42,4 +43,8 @@ public class Locator {
         return result;
     }
 
+    @Deprecated
+    public static <T> T findMBean( Class<T> requiredType, String name) {
+        return Locator.getService(name,requiredType);
+    }
 }

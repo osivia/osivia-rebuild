@@ -6,7 +6,7 @@ import javax.portlet.PortletConfig;
 import javax.servlet.ServletContext;
 
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.portlets.AnnotationPortletApplicationContext;
+import org.osivia.portal.api.portlet.AnnotationPortletApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
 /**

@@ -12,21 +12,28 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.cms;
+package org.osivia.portal.api.cache.services;
+
+import java.io.Serializable;
+
 
 /**
- * Document.
- * 
- * @author Loïc Billon
- * @author Cédric Krommenhoek
+ * The listener interface for receiving ICacheData events.
+ * The class that is interested in processing a ICacheData
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addICacheDataListener<code> method. When
+ * the ICacheData event occurs, that object's appropriate
+ * method is invoked.
+ *
+ * @see ICacheDataEvent
  */
-public interface EcmDocument {
+public interface ICacheDataListener extends Serializable{
 
-    /**
-     * Get document title.
-     * 
-     * @return title
-     */
-    String getTitle();
-
+	/**
+	 * Removes the.
+	 */
+	public void remove();
+	
+	
 }

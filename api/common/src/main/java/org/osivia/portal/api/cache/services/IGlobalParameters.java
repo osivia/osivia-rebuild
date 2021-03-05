@@ -12,21 +12,15 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.cms;
+package org.osivia.portal.api.cache.services;
 
 /**
- * Document.
+ * Identify cache elements that can be dynamically reloaded by the administrator
  * 
- * @author Loïc Billon
- * @author Cédric Krommenhoek
+ * @author Jean-Sébastien Steux
+ *
  */
-public interface EcmDocument {
 
-    /**
-     * Get document title.
-     * 
-     * @return title
-     */
-    String getTitle();
+public interface IGlobalParameters {
 
 }

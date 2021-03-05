@@ -12,21 +12,23 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.cms;
+package org.osivia.portal.api.directory;
 
-/**
- * Document.
- * 
- * @author Loïc Billon
- * @author Cédric Krommenhoek
- */
-public interface EcmDocument {
 
+public interface IDirectoryServiceLocator {
+    
+    
+    /** MBean name. */
+    static final String MBEAN_NAME = "osivia:service=DirectoryServiceLocator";
+    
+    public void register(IDirectoryService service);
+	
     /**
-     * Get document title.
-     * 
-     * @return title
+     * get a directory service
+     * @return
+     * @deprecated use org.osivia.portal.api.directory.v2.IDirProvider.getDirService(Class<D>)
      */
-    String getTitle();
+    @Deprecated
+	public IDirectoryService getDirectoryService();
 
 }

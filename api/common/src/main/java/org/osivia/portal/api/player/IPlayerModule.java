@@ -12,21 +12,25 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.cms;
+package org.osivia.portal.api.player;
+
+import org.osivia.portal.api.cms.DocumentContext;
+
 
 /**
- * Document.
+ * Module defined by a portlet to display a document in a specific portlet.
  * 
  * @author Loïc Billon
- * @author Cédric Krommenhoek
+ * @param <D> document context type
  */
-public interface EcmDocument {
-
-    /**
-     * Get document title.
+public interface IPlayerModule<D extends DocumentContext> {
+    
+	/**
+     * Make a player with the document.
      * 
-     * @return title
+     * @param documentContext document context
+     * @return player
      */
-    String getTitle();
+    Player getCMSPlayer(D documentContext);
 
 }

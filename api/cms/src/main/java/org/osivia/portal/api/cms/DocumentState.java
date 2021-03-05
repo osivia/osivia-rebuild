@@ -15,18 +15,48 @@
 package org.osivia.portal.api.cms;
 
 /**
- * Document.
- * 
+ * State of a document
  * @author Loïc Billon
- * @author Cédric Krommenhoek
+ *
  */
-public interface EcmDocument {
+public enum DocumentState {
 
-    /**
-     * Get document title.
-     * 
-     * @return title
-     */
-    String getTitle();
+	/** live (draft) */
+	LIVE,
+	
+	/** published */
+	PUBLISHED,
+	
+	/** show the state depending of his parents state */
+	INHERITED;
+	
+	private DocumentState() {
+		
+	}
 
+	public static DocumentState parse(String s) {
+		if("1".equals(s)) {
+			return LIVE;
+		}
+		else if ("__inherited".equals(s)) {
+			return INHERITED;
+		}
+		else return PUBLISHED;
+	}
+	
+	public DocumentState parse(Boolean b) {
+		if(Boolean.TRUE.equals(b)) {
+			return LIVE;
+		}
+		else return PUBLISHED;
+	}
+	
+	@Override
+	public String toString() {
+		
+		if(this == LIVE) {
+			return "1";
+		}
+		else return "0";
+	}
 }

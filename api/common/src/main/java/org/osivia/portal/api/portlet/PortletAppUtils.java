@@ -1,4 +1,4 @@
-package org.osivia.portal.api.portlets;
+package org.osivia.portal.api.portlet;
 
 import java.util.Enumeration;
 

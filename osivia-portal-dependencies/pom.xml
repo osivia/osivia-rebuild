@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <parent>
+        <groupId>org.osivia.portal</groupId>
+        <artifactId>osivia-portal-parent</artifactId>
+        <version>5.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.osivia.portal</groupId>
+    <artifactId>osivia-portal-dependencies</artifactId>
+    <packaging>jar</packaging>
+    <name>OSIVIA Portal - Dependencies</name>
+
+
+    <dependencies>
+
+        <!-- OSIVIA Portal API -->
+        <dependency>
+            <groupId>org.osivia.portal.api</groupId>
+            <artifactId>osivia-portal-api-common</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.portal.api</groupId>
+            <artifactId>osivia-portal-api-cms</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>        
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-jbp-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>  
+			<groupId>org.jboss.portal.common</groupId>
+			<artifactId>common-common</artifactId>
+			<version>1.2.5</version>
+			<scope>runtime</scope>
+        </dependency>  
+         <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>   
+			<artifactId>osivia-portal-kernel-jbp</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Apache commons -->
+		
+		<dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+   
+        <!-- Spring framework -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Other provided libs -->
+         <dependency>
+            <groupId>javax.portlet</groupId>
+            <artifactId>portlet-api</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+	    <dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <scope>runtime</scope>
+        </dependency>      
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <scope>runtime</scope>
+        </dependency>		
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>		
+    </dependencies>
+
+</project>
