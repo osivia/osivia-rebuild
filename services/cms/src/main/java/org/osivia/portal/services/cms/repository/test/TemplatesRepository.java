@@ -89,6 +89,10 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
 
         modules.add(moduleA);
         modules.add(moduleB);
+        
+        Map<String,String> cProperties = new ConcurrentHashMap<>();   
+        ModuleRef indexContent = new ModuleRef("index-" + id, "col-2", "IndexContentInstance", cProperties);
+        modules.add(indexContent);
 
 
         addTemplatePage(id, name, parentId, spaceId, children, modules);
@@ -112,7 +116,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> bProperties = new ConcurrentHashMap<>();    
         ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "SampleInstance", bProperties);
+        ModuleRef indexContent = new ModuleRef("index-" + id, "col-2", "IndexContentInstance", bProperties);
         modules.add(moduleB);
+        modules.add(indexContent);
 
         addTemplatePage(id, name, parentId, spaceId, children, modules);
     }

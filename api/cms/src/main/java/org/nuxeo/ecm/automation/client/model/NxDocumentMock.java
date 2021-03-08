@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.model;
 
+import java.io.Serializable;
+
 import org.osivia.portal.api.cms.EcmDocument;
 
 /**
@@ -30,7 +32,7 @@ import org.osivia.portal.api.cms.EcmDocument;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class NxDocumentMock implements EcmDocument {
+public class NxDocumentMock implements EcmDocument, Serializable {
 
     
     
