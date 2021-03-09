@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository;
+package org.osivia.portal.api.cms.repository;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -13,18 +13,15 @@ import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Personnalization;
+import org.osivia.portal.api.cms.repository.cache.SharedRepository;
+import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
+import org.osivia.portal.api.cms.repository.model.user.NavigationItemImpl;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.model.share.PageImpl;
-import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.model.user.NavigationItemImpl;
-
-import org.osivia.portal.services.cms.repository.cache.SharedRepository;
-import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
-import org.osivia.portal.services.cms.repository.spi.UserRepository;
-import org.osivia.portal.services.cms.repository.spi.UserStorage;
 
 
 /**
@@ -161,14 +158,14 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
 
 
-    public DocumentImpl getSharedDocument(String internalId) throws CMSException {
+    public RepositoryDocument getSharedDocument(String internalId) throws CMSException {
         return getSharedRepository().getDocument(internalId);
     }
 
     
     public Document getDocument(String internalId) throws CMSException {
         
-        DocumentImpl sharedDocument = getSharedRepository().getDocument(internalId);
+        RepositoryDocument sharedDocument = getSharedRepository().getDocument(internalId);
         if( checkACL(sharedDocument)) {
             // default
             return sharedDocument;
@@ -179,7 +176,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
    public Personnalization getPersonnalization(String internalId) throws CMSException {
         
-        DocumentImpl sharedDocument = getSharedRepository().getDocument(internalId);
+        RepositoryDocument sharedDocument = getSharedRepository().getDocument(internalId);
         if( checkACL(sharedDocument)) {
             return userStorage.getUserData(internalId);
         }
@@ -189,7 +186,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
  
 
     public NavigationItem getNavigationItem(String internalId) throws CMSException {
-        DocumentImpl document = (DocumentImpl) getSharedDocument(internalId);
+        RepositoryDocument document = (RepositoryDocument) getSharedDocument(internalId);
         if (!document.isNavigable()) {
             document = getNavigationParent( document);
         }
@@ -199,7 +196,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
     
     
-    private boolean checkACL(DocumentImpl doc)   {
+    private boolean checkACL(RepositoryDocument doc)   {
         List<String> acls = doc.getACL();
         if( acls.size() == 0)
             return true;
@@ -209,11 +206,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
     }
 
-    public DocumentImpl getNavigationParent(DocumentImpl document) throws CMSException {
-        DocumentImpl docImpl = (DocumentImpl) document;
-        DocumentImpl parent = null;
+    public RepositoryDocument getNavigationParent(RepositoryDocument document) throws CMSException {
+        RepositoryDocument docImpl = (RepositoryDocument) document;
+        RepositoryDocument parent = null;
         do  {
-            DocumentImpl parentTmp = (DocumentImpl) getSharedDocument(docImpl.getParentInternalId());
+            RepositoryDocument parentTmp = (RepositoryDocument) getSharedDocument(docImpl.getParentInternalId());
             if( checkACL(parentTmp))
                 parent = parentTmp;
             else
@@ -224,12 +221,12 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
     }
 
-    public List<DocumentImpl> getNavigationChildren(DocumentImpl document) throws CMSException {
-        DocumentImpl docImpl = (DocumentImpl) document;
+    public List<RepositoryDocument> getNavigationChildren(RepositoryDocument document) throws CMSException {
+        RepositoryDocument docImpl = (RepositoryDocument) document;
         List<String> childrenId = docImpl.getChildrenId();
-        List<DocumentImpl> children = new ArrayList<>();
+        List<RepositoryDocument> children = new ArrayList<>();
         for (String id : childrenId) {
-            DocumentImpl sharedDocument = getSharedDocument(id);
+            RepositoryDocument sharedDocument = getSharedDocument(id);
             if( sharedDocument.isNavigable())   {
                 if( checkACL(sharedDocument))
                     children.add(sharedDocument);
@@ -258,8 +255,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     public void publish( String id) throws CMSException {
         try {
         
-        DocumentImpl doc = getSharedDocument(id);
-        DocumentImpl existingPublishedDoc = null;
+        RepositoryDocument doc = getSharedDocument(id);
+        RepositoryDocument existingPublishedDoc = null;
         try {
             existingPublishedDoc = publishRepository.getSharedDocument(id);
         } catch(CMSException e)    {
@@ -267,7 +264,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         }
         
         // Search for first published parent
-        DocumentImpl publishedParent = null;
+        RepositoryDocument publishedParent = null;
         String parentId = doc.getParentInternalId();
         
         while(  publishedParent == null && parentId != null)   {
@@ -275,7 +272,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
                 publishedParent = publishRepository.getSharedDocument(parentId);
             } catch(CMSException e)    {
                 // not found
-                DocumentImpl parent = getSharedDocument(parentId);
+                RepositoryDocument parent = getSharedDocument(parentId);
                 parentId = parent.getParentInternalId();                
             }
         }
@@ -302,7 +299,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             // new object : look for published children
             childrenId = new ArrayList<>();
             for(String childId: doc.getChildrenId())    {
-                DocumentImpl publishedChild = null;
+                RepositoryDocument publishedChild = null;
                 try {
                     publishedChild = publishRepository.getSharedDocument(childId);
                 } catch(CMSException e)    {
@@ -336,7 +333,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
         
         // create published object
-        DocumentImpl publishedDoc = (DocumentImpl) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
+        RepositoryDocument publishedDoc = (RepositoryDocument) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
         publishRepository.getUserStorage().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
         
         

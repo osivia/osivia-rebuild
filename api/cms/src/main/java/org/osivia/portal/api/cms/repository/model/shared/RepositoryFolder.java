@@ -1,18 +1,18 @@
-package org.osivia.portal.services.cms.model.share;
+package org.osivia.portal.api.cms.repository.model.shared;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.osivia.portal.services.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
 
-public class FolderImpl extends DocumentImpl  {
+public class RepositoryFolder extends RepositoryDocument  {
 
 
     private static final long serialVersionUID = -4961203732384812600L;
 
 
-    public FolderImpl(BaseUserRepository repository, String id, String name, String parentId,String spaceId, List<String> childrenId,Map<String, Object> properties) {
+    public RepositoryFolder(BaseUserRepository repository, String id, String name, String parentId,String spaceId, List<String> childrenId,Map<String, Object> properties) {
         super(repository, id, name, parentId, spaceId,childrenId, properties);
         supportedSubTypes = Arrays.asList(new String[]{"folder,document"});
     }

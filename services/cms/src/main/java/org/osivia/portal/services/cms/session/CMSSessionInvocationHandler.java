@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
+import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.service.CMSSession;
-import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.springframework.context.ApplicationContext;
 
 

@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.cache;
+package org.osivia.portal.api.cms.repository.cache;
 
 import java.util.Locale;
 

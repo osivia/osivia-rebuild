@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.cache;
+package org.osivia.portal.api.cms.repository.cache;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -7,13 +7,14 @@ import java.util.Map;
 
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.repository.UserStorage;
+import org.osivia.portal.api.cms.repository.model.RepositoryEvent;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.repository.spi.UserStorage;
-import org.osivia.portal.services.cms.service.CMSEventImpl;
+
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -27,7 +28,7 @@ public class SharedRepository {
     
     private final List<RepositoryListener> listeners;
     
-    private Map<String, DocumentImpl> cachedDocument;
+    private Map<String, RepositoryDocument> cachedDocument;
     
     private UserStorage storageRepository;
     
@@ -41,7 +42,7 @@ public class SharedRepository {
         super();
         this.repositoryName = repositoryName;
         this.listeners = new ArrayList<>();
-        this.cachedDocument= new Hashtable<String, DocumentImpl>();
+        this.cachedDocument= new Hashtable<String, RepositoryDocument>();
         this.storageRepository = storageRepository;
 
    }
@@ -61,7 +62,7 @@ public class SharedRepository {
         storageRepository.endBatch();
     }
     
-    public void addDocumentToCache(String internalID, DocumentImpl document, boolean batchMode)  {
+    public void addDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode)  {
         
         cachedDocument.put(internalID, document);
        
@@ -70,26 +71,26 @@ public class SharedRepository {
             if(CollectionUtils.isEmpty(document.getSupportedSubTypes()))    {
                 List<Request> dirtyRequests = new ArrayList<>();
                 dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
-                notifyChanges( new CMSEventImpl( document, dirtyRequests));    
+                notifyChanges( new RepositoryEvent( document, dirtyRequests));    
             }   else
-                notifyChanges( new CMSEventImpl());
+                notifyChanges( new RepositoryEvent());
             
         }
     }
     
-    public void updateDocumentToCache(String internalID, DocumentImpl document, boolean batchMode)  {
+    public void updateDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode)  {
         
         cachedDocument.put(internalID, document);
         
         if(!batchMode)  {
-            notifyChanges( new CMSEventImpl());    
+            notifyChanges( new RepositoryEvent());    
         }
     } 
     
     
-    public DocumentImpl getDocument(String internalID) throws CMSException {
+    public RepositoryDocument getDocument(String internalID) throws CMSException {
         try {
-        DocumentImpl doc = cachedDocument.get(internalID);
+        RepositoryDocument doc = cachedDocument.get(internalID);
         if( doc == null) {
             doc = storageRepository.getSharedDocument(internalID);
             if( doc != null)

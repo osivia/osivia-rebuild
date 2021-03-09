@@ -12,16 +12,15 @@ import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryFolder;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
 import org.osivia.portal.api.cms.service.Documents;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
-import org.osivia.portal.services.cms.model.share.FolderImpl;
-import org.osivia.portal.services.cms.model.share.PageImpl;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.repository.BaseUserRepository;
-import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
-
 
 import fr.toutatice.portail.cms.producers.test.TestRepository;
 
@@ -39,11 +38,11 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
     
 
     
-    protected void addDocument(String internalID, DocumentImpl document) {
+    protected void addDocument(String internalID, RepositoryDocument document) {
         getUserStorage().addDocument(internalID, document, batchMode);
     }
     
-    protected void updateDocument(String internalID, DocumentImpl document) {
+    protected void updateDocument(String internalID, RepositoryDocument document) {
         getUserStorage().updateDocument(internalID, document, batchMode);
     }
 
@@ -56,7 +55,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
 
     @Override  
     public void addWindow(String id, String name, String portletName, String region, int position, String pageId,  Map<String,String> properties) throws CMSException {
-        PageImpl page = (PageImpl) getSharedDocument(pageId);
+        RepositoryPage page = (RepositoryPage) getSharedDocument(pageId);
         ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region,  portletName, properties);
         
         if( position == POSITION_END)
@@ -73,9 +72,9 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Folder." + id);
         
-        DocumentImpl parent = getSharedDocument(parentId);
+        RepositoryDocument parent = getSharedDocument(parentId);
 
-        FolderImpl folder = new FolderImpl(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);        
+        RepositoryFolder folder = new RepositoryFolder(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);        
         
         addDocument(id, folder);
   
@@ -88,8 +87,8 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Document." + id);
         
-        DocumentImpl parent = getSharedDocument(parentId);
-        DocumentImpl doc = new DocumentImpl(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
+        RepositoryDocument parent = getSharedDocument(parentId);
+        RepositoryDocument doc = new RepositoryDocument(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
         
         addDocument(id, doc);
      }
@@ -98,7 +97,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
     public void renameDocument(String id,String title) throws CMSException {
         
         
-        DocumentImpl doc = getSharedDocument(id);
+        RepositoryDocument doc = getSharedDocument(id);
         doc.setTitle(title);
         
         updateDocument(id, doc);
@@ -141,14 +140,14 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
     
     @Override
     public List<String> getACL(String id) throws CMSException {
-        DocumentImpl doc = (DocumentImpl) getSharedDocument(id);
+        RepositoryDocument doc = (RepositoryDocument) getSharedDocument(id);
         return doc.getACL();
         
      }
 
     @Override
     public void setACL(String id, List<String> acls) throws CMSException {
-        DocumentImpl doc = (DocumentImpl) getSharedDocument(id);
+        RepositoryDocument doc = (RepositoryDocument) getSharedDocument(id);
         doc.setACL(acls);
         updateDocument(id, doc);
      }

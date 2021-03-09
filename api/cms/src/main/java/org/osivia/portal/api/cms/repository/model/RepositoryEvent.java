@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.service;
+package org.osivia.portal.api.cms.repository.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.Request;
 
 
-public class CMSEventImpl implements CMSEvent {
+public class RepositoryEvent implements CMSEvent {
 
     /** The src. */
     private final Document src;
@@ -21,7 +21,7 @@ public class CMSEventImpl implements CMSEvent {
      *
      * @param src the src
      */
-    public CMSEventImpl(Document src, List<Request> dirtyRequests) {
+    public RepositoryEvent(Document src, List<Request> dirtyRequests) {
         super();
         this.src = src;
         this.dirtyRequests = dirtyRequests;
@@ -32,7 +32,7 @@ public class CMSEventImpl implements CMSEvent {
      *
      * @param src the src
      */
-    public CMSEventImpl() {
+    public RepositoryEvent() {
         super();
         this.src = null;
         this.dirtyRequests = new ArrayList<>();

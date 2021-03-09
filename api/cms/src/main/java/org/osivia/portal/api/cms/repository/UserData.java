@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.spi;
+package org.osivia.portal.api.cms.repository;
 
 import java.util.List;
 

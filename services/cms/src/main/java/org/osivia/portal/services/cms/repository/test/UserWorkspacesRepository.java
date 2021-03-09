@@ -10,10 +10,10 @@ import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.services.cms.model.share.FolderImpl;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryFolder;
+import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
 
 public class UserWorkspacesRepository extends UserRepositoryTestBase {
 
@@ -28,7 +28,7 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Folder." + id);
 
-        FolderImpl folder = new FolderImpl(this, id, name, parentId, spaceId, children, properties);
+        RepositoryFolder folder = new RepositoryFolder(this, id, name, parentId, spaceId, children, properties);
         addDocument(id, folder);
     }
 
@@ -37,7 +37,7 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Document." + id);
 
-        DocumentImpl doc = new DocumentImpl(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
+        RepositoryDocument doc = new RepositoryDocument(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
         addDocument(id, doc);
     }
 
@@ -57,7 +57,7 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
         Map<String,String> moduleProperties = new ConcurrentHashMap<>();         
         ModuleRef module = new ModuleRef("win-" + id, "col-1",  "SampleInstance", moduleProperties);
         modules.add(module);
-        SpaceImpl space = new SpaceImpl(this,id, id,new UniversalID("templates", "ID_TEMPLATE_WORKSPACE" ),children, properties, modules);
+        RepositorySpace space = new RepositorySpace(this,id, id,new UniversalID("templates", "ID_TEMPLATE_WORKSPACE" ),children, properties, modules);
         addDocument(id, space);
     }
 

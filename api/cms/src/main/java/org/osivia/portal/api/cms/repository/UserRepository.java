@@ -1,9 +1,9 @@
-package org.osivia.portal.services.cms.repository.spi;
+package org.osivia.portal.api.cms.repository;
 
 import java.util.List;
 import java.util.Locale;
 
-import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
+
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;

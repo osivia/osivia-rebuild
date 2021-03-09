@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model.share;
+package org.osivia.portal.api.cms.repository.model.shared;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,14 +7,14 @@ import java.util.Map;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.services.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
 
-public class SpaceImpl extends DocumentImpl implements Space {
+public class RepositorySpace extends RepositoryDocument implements Space {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;
 
-    public SpaceImpl(BaseUserRepository repository, String id, String name, UniversalID templateId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
+    public RepositorySpace(BaseUserRepository repository, String id, String name, UniversalID templateId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
         super(repository, id, name,null, id,childrenId, properties);
         this.templateId = templateId    ;
         this.moduleRefs = moduleRefs;

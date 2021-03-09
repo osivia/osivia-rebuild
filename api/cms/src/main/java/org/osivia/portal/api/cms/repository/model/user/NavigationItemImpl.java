@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.model.user;
+package org.osivia.portal.api.cms.repository.model.user;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +10,12 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Space;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.UserRepository;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.repository.BaseUserRepository;
-import org.osivia.portal.services.cms.repository.spi.UserRepository;
-import org.osivia.portal.services.cms.service.CMSServiceImpl;
+
 
 /**
  * The Class DocumentImpl.
@@ -23,7 +23,7 @@ import org.osivia.portal.services.cms.service.CMSServiceImpl;
 public class NavigationItemImpl implements NavigationItem {
 
 
-    private DocumentImpl document;
+    private RepositoryDocument document;
     private BaseUserRepository repository;
 
 
@@ -33,7 +33,7 @@ public class NavigationItemImpl implements NavigationItem {
      * @param id the id
      * @param properties the properties
      */
-    public NavigationItemImpl(BaseUserRepository repository,DocumentImpl document) {
+    public NavigationItemImpl(BaseUserRepository repository,RepositoryDocument document) {
         super();
         this.document = document;
         this.repository = repository;
@@ -57,7 +57,7 @@ public class NavigationItemImpl implements NavigationItem {
     @Override
     public List<NavigationItem> getChildren() throws CMSException {
         List<NavigationItem> children = new ArrayList<>();
-        for (DocumentImpl doc : repository.getNavigationChildren(document)) {
+        for (RepositoryDocument doc : repository.getNavigationChildren(document)) {
             children.add(new NavigationItemImpl(repository, doc));
         }
         return children;
@@ -65,7 +65,7 @@ public class NavigationItemImpl implements NavigationItem {
 
     @Override
     public boolean isRoot() {
-        if (document instanceof SpaceImpl)
+        if (document instanceof RepositorySpace)
             return true;
         else
             return false;

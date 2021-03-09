@@ -16,11 +16,11 @@ import org.osivia.portal.api.cms.exception.CMSException;
 
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
-import org.osivia.portal.services.cms.model.share.PageImpl;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.repository.BaseUserRepository;
-import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
 
 
 
@@ -47,7 +47,7 @@ public class SiteRepository extends UserRepositoryTestBase  {
         properties.put("dc:title", generateTitle("Site "+ id));
 
         List<ModuleRef> modules = new ArrayList<>();
-        SpaceImpl space = new SpaceImpl(this, id, id, new UniversalID("templates", "ID_TEMPLATE_SITE"), children, properties, modules);
+        RepositorySpace space = new RepositorySpace(this, id, id, new UniversalID("templates", "ID_TEMPLATE_SITE"), children, properties, modules);
         addDocument(id, space);
     }
 
@@ -68,14 +68,14 @@ public class SiteRepository extends UserRepositoryTestBase  {
     private void addSitePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", generateTitle("Page "+ id));
-        PageImpl page = new PageImpl(this, id, name, null, parentId, spaceId, children, properties, modules);
+        RepositoryPage page = new RepositoryPage(this, id, name, null, parentId, spaceId, children, properties, modules);
         addDocument(id, page);
     }
 
 
     @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        DocumentImpl parent = (DocumentImpl) getSharedDocument(parentId);
+        RepositoryDocument parent = (RepositoryDocument) getSharedDocument(parentId);
         addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
     }
 

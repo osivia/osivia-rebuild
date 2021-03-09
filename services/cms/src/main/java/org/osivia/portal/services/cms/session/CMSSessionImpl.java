@@ -6,11 +6,11 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Personnalization;
+import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
 import org.osivia.portal.core.sessions.CMSSessionRecycle;
-import org.osivia.portal.services.cms.repository.spi.UserRepository;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
 public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {

@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.model.user.UserDatasImpl;
-import org.osivia.portal.services.cms.repository.BaseUserRepository;
-import org.osivia.portal.services.cms.repository.cache.SharedRepository;
-import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
-import org.osivia.portal.services.cms.repository.spi.UserData;
-import org.osivia.portal.services.cms.repository.spi.UserStorage;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.UserData;
+import org.osivia.portal.api.cms.repository.UserStorage;
+import org.osivia.portal.api.cms.repository.cache.SharedRepository;
+import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
+import org.osivia.portal.api.cms.repository.model.user.UserDatasImpl;
 
 /**
  * In memory sample storage
@@ -22,7 +22,7 @@ import org.osivia.portal.services.cms.repository.spi.UserStorage;
 public class InMemoryUserStorage implements UserStorage  {
     
 
-    private static Map<SharedRepositoryKey, Map<String,DocumentImpl>> allDocuments = new Hashtable<SharedRepositoryKey, Map<String,DocumentImpl>>();
+    private static Map<SharedRepositoryKey, Map<String,RepositoryDocument>> allDocuments = new Hashtable<SharedRepositoryKey, Map<String,RepositoryDocument>>();
     private BaseUserRepository userRepository;
     
     public void setUserRepository(BaseUserRepository userRepository) {
@@ -34,11 +34,11 @@ public class InMemoryUserStorage implements UserStorage  {
         
     }
     
-    private Map<String,DocumentImpl> getDocuments()   {
+    private Map<String,RepositoryDocument> getDocuments()   {
         
-        Map<String,DocumentImpl> documents = allDocuments.get(userRepository.getRepositoryKey());
+        Map<String,RepositoryDocument> documents = allDocuments.get(userRepository.getRepositoryKey());
         if( documents == null) {
-            documents= new Hashtable<String,DocumentImpl>();
+            documents= new Hashtable<String,RepositoryDocument>();
             allDocuments.put(userRepository.getRepositoryKey(), documents);
         }
         
@@ -51,14 +51,14 @@ public class InMemoryUserStorage implements UserStorage  {
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#addDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
      */
     @Override
-    public void addDocument(String internalID, DocumentImpl document, boolean batchMode)  {
+    public void addDocument(String internalID, RepositoryDocument document, boolean batchMode)  {
         
         getDocuments().put(internalID, document);
         
         // update parent
         String parentID = document.getParentInternalId();
         if( parentID != null)   {
-            DocumentImpl parent = getDocuments().get(parentID);
+            RepositoryDocument parent = getDocuments().get(parentID);
             if( parent != null) {
                 if( !parent.getChildrenId().contains(internalID))  {
                     parent.getChildrenId().add(internalID);
@@ -79,7 +79,7 @@ public class InMemoryUserStorage implements UserStorage  {
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#updateDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
      */
     @Override
-    public void updateDocument(String internalID, DocumentImpl document, boolean batchMode)  {
+    public void updateDocument(String internalID, RepositoryDocument document, boolean batchMode)  {
         
         getDocuments().put(internalID, document);
         
@@ -95,9 +95,9 @@ public class InMemoryUserStorage implements UserStorage  {
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#getDocument(java.lang.String)
      */
     @Override
-    public DocumentImpl getSharedDocument(String internalID) throws CMSException {
+    public RepositoryDocument getSharedDocument(String internalID) throws CMSException {
         try {
-        DocumentImpl doc = getDocuments().get(internalID);
+        RepositoryDocument doc = getDocuments().get(internalID);
         if( doc == null)
             throw new CMSException();
         return doc.duplicate();
@@ -111,7 +111,7 @@ public class InMemoryUserStorage implements UserStorage  {
     @Override
     public UserData getUserData(String internalID) throws CMSException {
         try {
-            DocumentImpl doc = getDocuments().get(internalID);
+            RepositoryDocument doc = getDocuments().get(internalID);
             if (doc == null)
                 throw new CMSException();
             List<String> subtypes = new ArrayList<String>(doc.getSupportedSubTypes());
@@ -129,14 +129,14 @@ public class InMemoryUserStorage implements UserStorage  {
 
     private void updatePaths() {
         // Set paths
-        for (DocumentImpl doc : new ArrayList<DocumentImpl>(getDocuments().values())) {
+        for (RepositoryDocument doc : new ArrayList<RepositoryDocument>(getDocuments().values())) {
             try {
                 String path = "";
-                DocumentImpl hDoc = doc;
+                RepositoryDocument hDoc = doc;
 
                 path = "/" + hDoc.getName() + path;
 
-                while (!(hDoc instanceof SpaceImpl)) {
+                while (!(hDoc instanceof RepositorySpace)) {
                     hDoc = getSharedDocument(hDoc.getParentInternalId());
                     path = "/" + hDoc.getName() + path;
                 }

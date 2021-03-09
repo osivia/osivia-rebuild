@@ -14,11 +14,11 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.services.cms.model.share.PageImpl;
-import org.osivia.portal.services.cms.model.share.DocumentImpl;
-import org.osivia.portal.services.cms.model.share.SpaceImpl;
-import org.osivia.portal.services.cms.repository.cache.SharedRepositoryKey;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         ModuleRef nav = new ModuleRef("nav" , "nav",  "MenuInstance", navProperties); 
         
         modules.add(nav);     
-        SpaceImpl space = new SpaceImpl(this,id, id,null,children, properties, modules);
+        RepositorySpace space = new RepositorySpace(this,id, id,null,children, properties, modules);
         addDocument(id, space);
     }
 
@@ -71,7 +71,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         properties.put("dc:title", "Space." + id);
 
         
-        PageImpl page = new PageImpl(this,id, name, null, parentId, spaceId, children, properties, modules);
+        RepositoryPage page = new RepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
         page.setInheritedRegions(Arrays.asList("top","nav"));
 
         addDocument(id, page);
@@ -152,7 +152,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         properties.put("layout.id", "osivia-modal");
         
 
-        PageImpl page = new PageImpl(this,"OSIVIA_PAGE_MODAL", "modal", null, "OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS", children, properties, modules);
+        RepositoryPage page = new RepositoryPage(this,"OSIVIA_PAGE_MODAL", "modal", null, "OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS", children, properties, modules);
         addDocument("OSIVIA_PAGE_MODAL", page);
         
         List<String> portalChildren = new ArrayList<String>();
@@ -160,13 +160,13 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         Map<String, Object> portalProperties = new ConcurrentHashMap<String, Object>();
         portalProperties.put("dc:title", "Utils" );
   
-        SpaceImpl space = new SpaceImpl(this,"OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS",null,portalChildren, portalProperties, new ArrayList<ModuleRef>());
+        RepositorySpace space = new RepositorySpace(this,"OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS",null,portalChildren, portalProperties, new ArrayList<ModuleRef>());
         addDocument("OSIVIA_PORTAL_UTILS", space);
      }
 
 @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        DocumentImpl parent = getSharedDocument(parentId);
+        RepositoryDocument parent = getSharedDocument(parentId);
         addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
     }
     

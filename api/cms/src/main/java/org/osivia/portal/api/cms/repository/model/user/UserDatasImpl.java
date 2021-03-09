@@ -1,9 +1,9 @@
-package org.osivia.portal.services.cms.model.user;
+package org.osivia.portal.api.cms.repository.model.user;
 
 import java.util.List;
 
 import org.osivia.portal.api.cms.model.Personnalization;
-import org.osivia.portal.services.cms.repository.spi.UserData;
+import org.osivia.portal.api.cms.repository.UserData;
 
 public class UserDatasImpl implements UserData {
 
