@@ -13,6 +13,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.BaseUserStorage;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryFolder;
@@ -33,7 +34,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
 
 {
     public UserRepositoryTestBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
-        super(repositoryKey, publishRepository, userName, new InMemoryUserStorage());
+        super(repositoryKey, publishRepository, userName, new TestUserStorage());
     }
     
 

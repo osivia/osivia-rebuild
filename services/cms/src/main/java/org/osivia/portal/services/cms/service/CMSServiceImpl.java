@@ -36,6 +36,9 @@ public class CMSServiceImpl implements CMSService {
 
     @Autowired
     ICMSSessionStorage sessionStorage;
+    
+    @Autowired
+    private RuntimeBeanBuilder builder;
 
     /**
      * Constructor.
@@ -43,6 +46,7 @@ public class CMSServiceImpl implements CMSService {
     public CMSServiceImpl() {
         super();
         repositoryFactory = new TestRepositoryFactory();
+        
 
     }
 

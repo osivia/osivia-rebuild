@@ -39,7 +39,8 @@ public class TomcatContainerServlet extends HttpServlet implements ContainerServ
      * Constructor.
      */
     public TomcatContainerServlet() {
-        super();
+        super(); 
+        
     }
 
 
@@ -122,27 +123,7 @@ public class TomcatContainerServlet extends HttpServlet implements ContainerServ
             }
         }
 
-        // Load system properties
-        
-        String fileName = System.getProperty("org.osivia.portal.kernel.tomcat.ExternalPropertySource.file");
-        if (fileName != null) {
-
-            try (InputStream input = new FileInputStream(fileName)) {
-
-                Properties props = new Properties();
-
-                // load a properties file
-                props.load(input);
-                
-                for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                    System.setProperty((String)entry.getKey(), (String)entry.getValue());
-                }
-
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
+      
     }
 
 

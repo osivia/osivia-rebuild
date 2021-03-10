@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.api.cms.repository;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -19,7 +19,7 @@ import org.osivia.portal.api.cms.repository.model.user.UserDatasImpl;
  * In memory sample storage
  * 
  */
-public class InMemoryUserStorage implements UserStorage  {
+public class BaseUserStorage implements UserStorage  {
     
 
     private static Map<SharedRepositoryKey, Map<String,RepositoryDocument>> allDocuments = new Hashtable<SharedRepositoryKey, Map<String,RepositoryDocument>>();
@@ -29,12 +29,12 @@ public class InMemoryUserStorage implements UserStorage  {
         this.userRepository = userRepository;
     }
     
-    private SharedRepository getSharedRepository()    {
+    protected SharedRepository getSharedRepository()    {
         return userRepository.getSharedRepository();
         
     }
     
-    private Map<String,RepositoryDocument> getDocuments()   {
+    protected Map<String,RepositoryDocument> getDocuments()   {
         
         Map<String,RepositoryDocument> documents = allDocuments.get(userRepository.getRepositoryKey());
         if( documents == null) {
@@ -127,7 +127,7 @@ public class InMemoryUserStorage implements UserStorage  {
     }
 
 
-    private void updatePaths() {
+    protected void updatePaths() {
         // Set paths
         for (RepositoryDocument doc : new ArrayList<RepositoryDocument>(getDocuments().values())) {
             try {
