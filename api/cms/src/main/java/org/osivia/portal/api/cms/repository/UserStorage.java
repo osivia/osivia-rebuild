@@ -20,7 +20,7 @@ public interface UserStorage {
 
     UserData getUserData(String internalID) throws CMSException;
     
-    RepositoryDocument getSharedDocument(String internalID) throws CMSException;
+    RepositoryDocument reloadDocument(String internalID) throws CMSException;
 
     void endBatch();
 

@@ -31,7 +31,10 @@ public class BaseUserStorage implements UserStorage  {
     
     protected SharedRepository getSharedRepository()    {
         return userRepository.getSharedRepository();
-        
+    }
+    
+    protected BaseUserRepository getUserRepository() {
+        return userRepository;
     }
     
     protected Map<String,RepositoryDocument> getDocuments()   {
@@ -95,7 +98,7 @@ public class BaseUserStorage implements UserStorage  {
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#getDocument(java.lang.String)
      */
     @Override
-    public RepositoryDocument getSharedDocument(String internalID) throws CMSException {
+    public RepositoryDocument reloadDocument(String internalID) throws CMSException {
         try {
         RepositoryDocument doc = getDocuments().get(internalID);
         if( doc == null)
@@ -137,7 +140,7 @@ public class BaseUserStorage implements UserStorage  {
                 path = "/" + hDoc.getName() + path;
 
                 while (!(hDoc instanceof RepositorySpace)) {
-                    hDoc = getSharedDocument(hDoc.getParentInternalId());
+                    hDoc = reloadDocument(hDoc.getParentInternalId());
                     path = "/" + hDoc.getName() + path;
                 }
 

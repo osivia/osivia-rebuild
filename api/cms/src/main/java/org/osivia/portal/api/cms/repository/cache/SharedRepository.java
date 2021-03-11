@@ -92,7 +92,7 @@ public class SharedRepository {
         try {
         RepositoryDocument doc = cachedDocument.get(internalID);
         if( doc == null) {
-            doc = storageRepository.getSharedDocument(internalID);
+            doc = storageRepository.reloadDocument(internalID);
             if( doc != null)
                 cachedDocument.put(internalID, doc);
         }
