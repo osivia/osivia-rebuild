@@ -16,8 +16,8 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
-import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -56,7 +56,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         ModuleRef nav = new ModuleRef("nav" , "nav",  "MenuInstance", navProperties); 
         
         modules.add(nav);     
-        RepositorySpace space = new RepositorySpace(this,id, id,null,children, properties, modules);
+        MemoryRepositorySpace space = new MemoryRepositorySpace(this,id, id,null,children, properties, modules);
         addDocument(id, space);
     }
 
@@ -71,7 +71,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         properties.put("dc:title", "Space." + id);
 
         
-        RepositoryPage page = new RepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
         page.setInheritedRegions(Arrays.asList("top","nav"));
 
         addDocument(id, page);
@@ -152,7 +152,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         properties.put("layout.id", "osivia-modal");
         
 
-        RepositoryPage page = new RepositoryPage(this,"OSIVIA_PAGE_MODAL", "modal", null, "OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS", children, properties, modules);
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this,"OSIVIA_PAGE_MODAL", "modal", null, "OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS", children, properties, modules);
         addDocument("OSIVIA_PAGE_MODAL", page);
         
         List<String> portalChildren = new ArrayList<String>();
@@ -160,7 +160,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         Map<String, Object> portalProperties = new ConcurrentHashMap<String, Object>();
         portalProperties.put("dc:title", "Utils" );
   
-        RepositorySpace space = new RepositorySpace(this,"OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS",null,portalChildren, portalProperties, new ArrayList<ModuleRef>());
+        MemoryRepositorySpace space = new MemoryRepositorySpace(this,"OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS",null,portalChildren, portalProperties, new ArrayList<ModuleRef>());
         addDocument("OSIVIA_PORTAL_UTILS", space);
      }
 

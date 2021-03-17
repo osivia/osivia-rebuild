@@ -11,7 +11,7 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 
-public class RepositoryPage extends RepositoryDocument implements Page {
+public class MemoryRepositoryPage extends MemoryRepositoryDocument implements Page {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;
@@ -23,7 +23,7 @@ public class RepositoryPage extends RepositoryDocument implements Page {
         this.inheritedRegions = inheritedRegions;
     }
 
-    public RepositoryPage(BaseUserRepository repository, String id, String name, UniversalID templateId, String parentId, String spaceId, List<String> childrenId,Map<String, Object> properties, List<ModuleRef> moduleRefs) {
+    public MemoryRepositoryPage(BaseUserRepository repository, String id, String name, UniversalID templateId, String parentId, String spaceId, List<String> childrenId,Map<String, Object> properties, List<ModuleRef> moduleRefs) {
         super(repository, id, name, parentId, spaceId,childrenId, properties);
         this.templateId = templateId;
         this.moduleRefs = moduleRefs;

@@ -15,9 +15,10 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.BaseUserStorage;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryFolder;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryFolder;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.service.Documents;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.Request;
@@ -56,7 +57,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
 
     @Override  
     public void addWindow(String id, String name, String portletName, String region, int position, String pageId,  Map<String,String> properties) throws CMSException {
-        RepositoryPage page = (RepositoryPage) getSharedDocument(pageId);
+        MemoryRepositoryPage page = (MemoryRepositoryPage) getSharedDocument(pageId);
         ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region,  portletName, properties);
         
         if( position == POSITION_END)
@@ -75,7 +76,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         
         RepositoryDocument parent = getSharedDocument(parentId);
 
-        RepositoryFolder folder = new RepositoryFolder(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);        
+        MemoryRepositoryFolder folder = new MemoryRepositoryFolder(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);        
         
         addDocument(id, folder);
   
@@ -89,7 +90,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         properties.put("dc:title", "Document." + id);
         
         RepositoryDocument parent = getSharedDocument(parentId);
-        RepositoryDocument doc = new RepositoryDocument(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
+        RepositoryDocument doc = new MemoryRepositoryDocument(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
         
         addDocument(id, doc);
      }
@@ -139,18 +140,20 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         return childrens;
     }
     
+
+    
     @Override
     public List<String> getACL(String id) throws CMSException {
-        RepositoryDocument doc = (RepositoryDocument) getSharedDocument(id);
-        return doc.getACL();
+        MemoryRepositoryDocument memDoc = (MemoryRepositoryDocument) getSharedDocument(id);
+        return memDoc.getACL();
         
      }
 
     @Override
     public void setACL(String id, List<String> acls) throws CMSException {
-        RepositoryDocument doc = (RepositoryDocument) getSharedDocument(id);
-        doc.setACL(acls);
-        updateDocument(id, doc);
+        MemoryRepositoryDocument memDoc = (MemoryRepositoryDocument) getSharedDocument(id);
+        memDoc.setACL(acls);
+        updateDocument(id, memDoc);
      }
     
 }

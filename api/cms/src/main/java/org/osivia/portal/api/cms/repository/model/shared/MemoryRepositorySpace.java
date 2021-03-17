@@ -9,12 +9,12 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 
-public class RepositorySpace extends RepositoryDocument implements Space {
+public class MemoryRepositorySpace extends MemoryRepositoryDocument implements Space {
 
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;
 
-    public RepositorySpace(BaseUserRepository repository, String id, String name, UniversalID templateId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
+    public MemoryRepositorySpace(BaseUserRepository repository, String id, String name, UniversalID templateId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
         super(repository, id, name,null, id,childrenId, properties);
         this.templateId = templateId    ;
         this.moduleRefs = moduleRefs;

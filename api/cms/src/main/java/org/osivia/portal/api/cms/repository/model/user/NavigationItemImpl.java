@@ -13,7 +13,7 @@ import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.service.CMSService;
 
 
@@ -65,7 +65,7 @@ public class NavigationItemImpl implements NavigationItem {
 
     @Override
     public boolean isRoot() {
-        if (document instanceof RepositorySpace)
+        if (document instanceof MemoryRepositorySpace)
             return true;
         else
             return false;

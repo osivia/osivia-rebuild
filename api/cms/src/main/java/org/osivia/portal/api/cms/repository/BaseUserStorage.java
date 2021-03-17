@@ -12,14 +12,14 @@ import org.osivia.portal.api.cms.repository.UserStorage;
 import org.osivia.portal.api.cms.repository.cache.SharedRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.user.UserDatasImpl;
 
 /**
  * In memory sample storage
  * 
  */
-public class BaseUserStorage implements UserStorage  {
+public abstract class BaseUserStorage implements UserStorage  {
     
 
     private static Map<SharedRepositoryKey, Map<String,RepositoryDocument>> allDocuments = new Hashtable<SharedRepositoryKey, Map<String,RepositoryDocument>>();
@@ -112,22 +112,7 @@ public class BaseUserStorage implements UserStorage  {
 
 
     @Override
-    public UserData getUserData(String internalID) throws CMSException {
-        try {
-            RepositoryDocument doc = getDocuments().get(internalID);
-            if (doc == null)
-                throw new CMSException();
-            List<String> subtypes = new ArrayList<String>(doc.getSupportedSubTypes());
-
-            if (!userRepository.isAdministrator())
-                subtypes.clear();
-
-            return new UserDatasImpl(subtypes, userRepository.isAdministrator(), userRepository.isAdministrator());
-        } catch (Exception e) {
-            throw new CMSException(e);
-        }
-
-    }
+    public abstract UserData getUserData(String internalID) throws CMSException ;
 
 
     protected void updatePaths() {
@@ -139,7 +124,7 @@ public class BaseUserStorage implements UserStorage  {
 
                 path = "/" + hDoc.getName() + path;
 
-                while (!(hDoc instanceof RepositorySpace)) {
+                while (!(hDoc instanceof MemoryRepositorySpace)) {
                     hDoc = reloadDocument(hDoc.getParentInternalId());
                     path = "/" + hDoc.getName() + path;
                 }

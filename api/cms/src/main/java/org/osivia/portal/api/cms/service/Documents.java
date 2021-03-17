@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.osivia.portal.api.cms.model.Document;
 
-public class Documents extends Result {
+public class Documents implements Result {
     
     private final List<Document> documents;
     

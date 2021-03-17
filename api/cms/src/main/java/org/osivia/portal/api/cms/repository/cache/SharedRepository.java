@@ -30,12 +30,9 @@ public class SharedRepository {
     
     private Map<String, RepositoryDocument> cachedDocument;
     
-    private UserStorage storageRepository;
     
     
-    public UserStorage getStorageRepository() {
-        return storageRepository;
-    }
+
 
 
     public SharedRepository(String repositoryName, UserStorage storageRepository) {
@@ -43,8 +40,6 @@ public class SharedRepository {
         this.repositoryName = repositoryName;
         this.listeners = new ArrayList<>();
         this.cachedDocument= new Hashtable<String, RepositoryDocument>();
-        this.storageRepository = storageRepository;
-
    }
 
 
@@ -58,7 +53,7 @@ public class SharedRepository {
 
     
     
-    public void endBatch()  {
+    public void endBatch(UserStorage storageRepository)  {
         storageRepository.endBatch();
     }
     
@@ -88,7 +83,7 @@ public class SharedRepository {
     } 
     
     
-    public RepositoryDocument getDocument(String internalID) throws CMSException {
+    public RepositoryDocument getDocument(UserStorage storageRepository,String internalID) throws CMSException {
         try {
         RepositoryDocument doc = cachedDocument.get(internalID);
         if( doc == null) {

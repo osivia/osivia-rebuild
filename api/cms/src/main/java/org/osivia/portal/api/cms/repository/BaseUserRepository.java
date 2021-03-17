@@ -16,8 +16,8 @@ import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.repository.cache.SharedRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
-import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.user.NavigationItemImpl;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
@@ -25,7 +25,11 @@ import org.osivia.portal.api.context.PortalControllerContext;
 
 
 /**
- * Minimal user repository
+ * Base user repository
+ * 
+ * Associated to a context (user, repository, state, language)
+ * 
+ * Manage cache, request, hierarchy, navigation, notification, transaction cooredination ...
  * 
  * Stores data in memory
  * Doesn't support user rights.
@@ -45,6 +49,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     protected BaseUserRepository publishRepository;
     
     private static Map<SharedRepositoryKey, SharedRepository>  sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
+    
+    private Map<String, Personnalization>  personnalizationMap = new Hashtable<String, Personnalization>();
     
     private boolean previewRepository = false;
     
@@ -137,7 +143,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             } finally    {
                 batchMode = false;
             }
-            getSharedRepository().endBatch();    
+            getSharedRepository().endBatch(userStorage);    
         }
         
         
@@ -159,14 +165,14 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
 
     public RepositoryDocument getSharedDocument(String internalId) throws CMSException {
-        return getSharedRepository().getDocument(internalId);
+        return getSharedRepository().getDocument(getUserStorage(),internalId);
     }
 
     
     public Document getDocument(String internalId) throws CMSException {
         
-        RepositoryDocument sharedDocument = getSharedRepository().getDocument(internalId);
-        if( checkACL(sharedDocument)) {
+        RepositoryDocument sharedDocument = getSharedRepository().getDocument(getUserStorage(),internalId);
+        if( checkSecurity(sharedDocument)) {
             // default
             return sharedDocument;
         }
@@ -175,13 +181,14 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     }
     
    public Personnalization getPersonnalization(String internalId) throws CMSException {
-        
-        RepositoryDocument sharedDocument = getSharedRepository().getDocument(internalId);
-        if( checkACL(sharedDocument)) {
-            return userStorage.getUserData(internalId);
+
+        Personnalization personnalization = personnalizationMap.get(internalId);
+
+        if (personnalization == null) {
+            personnalizationMap.put(internalId, userStorage.getUserData(internalId));
         }
-        else
-            throw new DocumentForbiddenException();
+
+        return personnalizationMap.get(internalId);
     }
  
 
@@ -193,25 +200,23 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         return new NavigationItemImpl(this, document);
     }
 
-
     
-    
-    private boolean checkACL(RepositoryDocument doc)   {
-        List<String> acls = doc.getACL();
-        if( acls.size() == 0)
-            return true;
-        if( userName != null && acls.contains("group:members"))
-            return true;
-        return false;
-        
+    private boolean checkSecurity(RepositoryDocument document)  {
+        try {
+            getPersonnalization(document.getInternalID());
+        } catch(Exception e) {
+            return false;
+        }
+        return true;
     }
+    
 
     public RepositoryDocument getNavigationParent(RepositoryDocument document) throws CMSException {
         RepositoryDocument docImpl = (RepositoryDocument) document;
         RepositoryDocument parent = null;
         do  {
             RepositoryDocument parentTmp = (RepositoryDocument) getSharedDocument(docImpl.getParentInternalId());
-            if( checkACL(parentTmp))
+            if( checkSecurity(parentTmp))
                 parent = parentTmp;
             else
                 docImpl = parentTmp;
@@ -228,7 +233,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         for (String id : childrenId) {
             RepositoryDocument sharedDocument = getSharedDocument(id);
             if( sharedDocument.isNavigable())   {
-                if( checkACL(sharedDocument))
+                if( checkSecurity(sharedDocument))
                     children.add(sharedDocument);
             }
         }

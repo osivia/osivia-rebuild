@@ -20,6 +20,12 @@ import org.osivia.portal.api.cms.repository.BaseUserRepository;
 public class RepositoryDocument implements org.osivia.portal.api.cms.model.Document, Serializable {
     
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6260858468002991204L;
+
+
     /** The id. */
     private final String internalID;
 
@@ -32,27 +38,24 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
     private final String spaceInternalId;
     
     /** The parent id. */
-    private transient  String parentInternalId;
+    protected transient  String parentInternalId;
     
  
     /** The id. */
-    private transient  List<String> childrenId;
+    protected transient  List<String> childrenId;
     
     /** The user repository. */
-    private transient BaseUserRepository userRepository;
+    protected transient BaseUserRepository userRepository;
     
 
     /** The native item. */
-    private NxDocumentMock nativeItem;
+    private EcmDocument nativeItem;
     
     private Locale locale;
     
+  
+    protected transient boolean preview = false;
     
-
-
-    private transient boolean preview = false;
-    
-    private List<String> acls = new ArrayList<>();
     
     public List<String> supportedSubTypes = new ArrayList<>();    
     
@@ -70,13 +73,11 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
      * @param id the id
      * @param properties the properties
      */
-    public RepositoryDocument( BaseUserRepository userRepository,  String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
+    public RepositoryDocument( BaseUserRepository userRepository, EcmDocument nativeItem, String internalID, String name, String parentId, String spaceId, List<String> childrenId, Map<String, Object> properties) {
         super();
         this.userRepository = userRepository;
         this.internalID = internalID;
-        this.nativeItem = new NxDocumentMock();
-        this.nativeItem.setName(name);
-        this.nativeItem.setTitle(properties.get("dc:title").toString());
+        this.nativeItem = nativeItem;
         this.parentInternalId = parentId;
         this.spaceInternalId = spaceId;
         this.childrenId = childrenId;
@@ -85,6 +86,9 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
         this.locale = userRepository.getRepositoryKey().getLocale();
 
     }
+    
+    
+    
 
     public Locale getLocale() {
         return locale;
@@ -123,7 +127,7 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
     }
 
     public void setTitle( String title)  {
-        this.nativeItem.setTitle(title);
+        ((NxDocumentMock) this.nativeItem).setTitle(title);
     }
 
     public String getSpaceInternalId() {
@@ -147,7 +151,7 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
 
 
     public String getName() {
-        return this.nativeItem.getName();
+        return ((NxDocumentMock) this.nativeItem).getName();
     }
 
   
@@ -163,7 +167,7 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
 
 
     public void setPath(String path) {
-        this.nativeItem.setPath( path);
+        ((NxDocumentMock) this.nativeItem).setPath( path);
     }
 
 
@@ -192,14 +196,6 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
 
 
 
-    public void setACL( List<String> acls)   {
-        this.acls = acls;
-    }
-
-    public List<String> getACL( )   {
-       return this.acls;
-    }
-    
 
     @Override
     public boolean isTemplateable() {

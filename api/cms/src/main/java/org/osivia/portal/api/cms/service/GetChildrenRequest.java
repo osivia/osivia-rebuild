@@ -5,7 +5,7 @@ import org.osivia.portal.api.cms.UniversalID;
 /**
  * The Class ChildrenRequest.
  */
-public class GetChildrenRequest extends Request{
+public class GetChildrenRequest implements Request{
 
 
     private final UniversalID parentId;

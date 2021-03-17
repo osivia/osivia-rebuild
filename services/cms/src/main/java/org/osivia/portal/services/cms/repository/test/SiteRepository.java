@@ -19,8 +19,8 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryPage;
-import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 
 
 
@@ -47,7 +47,7 @@ public class SiteRepository extends UserRepositoryTestBase  {
         properties.put("dc:title", generateTitle("Site "+ id));
 
         List<ModuleRef> modules = new ArrayList<>();
-        RepositorySpace space = new RepositorySpace(this, id, id, new UniversalID("templates", "ID_TEMPLATE_SITE"), children, properties, modules);
+        MemoryRepositorySpace space = new MemoryRepositorySpace(this, id, id, new UniversalID("templates", "ID_TEMPLATE_SITE"), children, properties, modules);
         addDocument(id, space);
     }
 
@@ -68,7 +68,7 @@ public class SiteRepository extends UserRepositoryTestBase  {
     private void addSitePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", generateTitle("Page "+ id));
-        RepositoryPage page = new RepositoryPage(this, id, name, null, parentId, spaceId, children, properties, modules);
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this, id, name, null, parentId, spaceId, children, properties, modules);
         addDocument(id, page);
     }
 
