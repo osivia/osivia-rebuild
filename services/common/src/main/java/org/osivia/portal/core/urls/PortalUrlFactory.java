@@ -14,7 +14,6 @@
 package org.osivia.portal.core.urls;
 
 
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Locale;
@@ -25,18 +24,23 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.api.PortalURL;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
-import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.ecm.EcmCommand;
+import org.osivia.portal.api.ecm.EcmCommonCommands;
+import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
@@ -44,12 +48,13 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalcommands.PortalCommandFactory;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.utils.URLUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,9 +91,19 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
     
     
-    
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, PortalUrlType type) throws PortalException {
+    public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties,  PortalUrlType type) throws PortalException {
+        return getStartPortletUrl(portalControllerContext, portletInstance, windowProperties, new HashMap<String,String>(), type);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, Map<String, String> windowParams, PortalUrlType type) throws PortalException {
        
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
@@ -135,7 +150,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 builder.append("&windowName=").append(windowName);
                 builder.append("&instanceId=").append(portletInstance);
                 builder.append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties));
-                builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(new HashMap<String, String>()));            
+                builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(windowParams));            
                 
     
                 url = builder.toString();
@@ -144,7 +159,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
             } else  {
                 // Default
-                PortalObjectId pageObjectId = PortalObjectUtils.getPageId(controllerContext);
+                PortalObjectId pageObjectId = PortalObjectUtilsInternal.getPageId(controllerContext);
                 pageId = URLEncoder.encode(pageObjectId.toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
                 regionId = "virtual";
                 windowName = "dynamicPortlet";
@@ -165,7 +180,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 builder.append("&windowName=").append(windowName);
                 builder.append("&instanceId=").append(portletInstance);
                 builder.append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties));
-                builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(new HashMap<String, String>()));            
+                builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(windowParams));            
                 
                 
     
@@ -302,5 +317,68 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartPageUrl(PortalControllerContext ctx, String parentName, String pageName, String templateName, Map<String, String> props,
+                                  Map<String, String> params) throws PortalException {
 
+        try {
+            // TODO : refonte a valider après report
+            final ControllerCommand cmd = new StartDynamicPageCommand();
+            final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+
+            final String parentId = URLEncoder
+                    .encode(PortalObjectId.parse(parentName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+            final String templateId = URLEncoder
+                    .encode(PortalObjectId.parse(templateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+
+            String url = portalURL.toString();
+            url += "&parentId=" + parentId + "&pageName=" + pageName + "&templateId=" + templateId + "&props=" + WindowPropertiesEncoder.encodeProperties(props)
+                    + "&params=" + WindowPropertiesEncoder.encodeProperties(params);
+            return url;
+        } catch (final Exception e) {
+            throw new PortalException(e);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartPageUrl(PortalControllerContext ctx, String pageName, String templateName, Map<String, String> props, Map<String, String> params)
+            throws PortalException {
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+        // if (portalName == null)
+        // portalName = "default";
+
+        portalName = "/" + portalName;
+
+        return this.getStartPageUrl(ctx, portalName, pageName, templateName, props, params);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHomePageUrl(PortalControllerContext portalControllerContext, boolean refresh) throws PortalException {
+        // Controller context
+
+
+        return "";
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getBasePortalUrl(PortalControllerContext portalControllerContext) {
+        final HttpServletRequest request = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
+                .getClientRequest();
+        return URLUtils.createUrl(request);
+    }
+  
+   
 }

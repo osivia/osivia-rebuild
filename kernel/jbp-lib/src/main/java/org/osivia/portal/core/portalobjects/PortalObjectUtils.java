@@ -9,26 +9,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringUtils;
+import javax.servlet.ServletContext;
+
+import org.apache.commons.lang3.*;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
-import org.jboss.portal.core.controller.ControllerCommand;
-import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
+
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateKey;
+
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ecm.EcmCommand;
+import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 
@@ -57,31 +60,17 @@ public class PortalObjectUtils {
      * @param controllerContext controller context
      * @return current page portal object identifier
      */
-    public static final PortalObjectId getPageId(ControllerContext controllerContext) {
+    public static final PortalObjectId getPageId(PortalControllerContext portalCtx) {
         PortalObjectId pageId = null;
 
-        if (controllerContext != null) {
-            // Page identifier
-            //TODO : navigation scope
-            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_PAGE_ID);
-        }
+//        if (controllerContext != null) {
+//            // Page identifier
+//            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
+//        }
 
         return pageId;
     }
 
-    
-    
-    /**
-     * Set current page portal object identifier.
-     *
-     * @param controllerContext controller context
-     * @param pageId the page id
-
-     */
-    public static final void setPageId(ControllerContext controllerContext, PortalObjectId pageId) {
-        controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_PAGE_ID, pageId);
-
-    }
 
     /**
      * Get current page.
@@ -89,20 +78,20 @@ public class PortalObjectUtils {
      * @param controllerContext controller context
      * @return current page
      */
-    public static final Page getPage(ControllerContext controllerContext) {
+    public static final Page getPage(PortalControllerContext controllerContext) {
         Page page = null;
 
-        if (controllerContext != null) {
-            // Page identifier
-            PortalObjectId pageId = getPageId(controllerContext);
-
-            if (pageId != null) {
-                // Portal object container
-                PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
-
-                page = portalObjectContainer.getObject(pageId, Page.class);
-            }
-        }
+//        if (controllerContext != null) {
+//            // Page identifier
+//            PortalObjectId pageId = getPageId(controllerContext);
+//
+//            if (pageId != null) {
+//                // Portal object container
+//                PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
+//
+//                page = portalObjectContainer.getObject(pageId, Page.class);
+//            }
+//        }
 
         return page;
     }
@@ -114,24 +103,36 @@ public class PortalObjectUtils {
      * @param controllerContext controller context
      * @return current portal
      */
-    public static final Portal getPortal(ControllerContext controllerContext) {
+    public static final Portal getPortal(PortalControllerContext controllerContext) {
         Portal portal = null;
 
-        // Portal name
-        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
-        if ((controllerContext != null) && (portalName != null)) {
-            PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
-            PortalObject portalObject = portalObjectContainer.getObject(PortalObjectId.parse(StringUtils.EMPTY, "/" + portalName,
-                    PortalObjectPath.CANONICAL_FORMAT));
-            if (portalObject instanceof Portal) {
-                portal = (Portal) portalObject;
-            }
-        }
+//        // Portal name
+//        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+//        if ((controllerContext != null) && (portalName != null)) {
+//            PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
+//            PortalObject portalObject = portalObjectContainer.getObject(PortalObjectId.parse(StringUtils.EMPTY, "/" + portalName,
+//                    PortalObjectPath.CANONICAL_FORMAT));
+//            if (portalObject instanceof Portal) {
+//                portal = (Portal) portalObject;
+//            }
+//        }
 
         return portal;
     }
 
+    public static final String getPortalName(PortalControllerContext controllerContext) {
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+        return portalName;
+    }
 
+    public static final boolean  isAdmin(PortalControllerContext controllerContext) {
+
+        //isAdmin = (Boolean) invocation.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
+        return false;
+        
+    }
+    
+    
     /**
      * Get current portal from any portal object.
      *
@@ -422,23 +423,64 @@ public class PortalObjectUtils {
      * @param page page
      * @return maximized window
      */
-    public static Window getMaximizedWindow(ControllerContext controllerContext, Page page) {
+    public static Window getMaximizedWindow(PortalControllerContext portalControllerContext, Page page) {
         Window maximizedWindow = null;
-        if ((controllerContext != null) && (page != null)) {
-            Collection<PortalObject> portalObjects = page.getChildren(PortalObject.WINDOW_MASK);
-            for (PortalObject portalObject : portalObjects) {
-                Window window = (Window) portalObject;
-                NavigationalStateKey navigationalStateKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
-                WindowNavigationalState windowNavigationalState = (WindowNavigationalState) controllerContext.getAttribute(
-                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, navigationalStateKey);
-
-                if ((windowNavigationalState != null) && WindowState.MAXIMIZED.equals(windowNavigationalState.getWindowState())) {
-                    maximizedWindow = window;
-                    break;
-                }
-            }
-        }
+//        if ((controllerContext != null) && (page != null)) {
+//            Collection<PortalObject> portalObjects = page.getChildren(PortalObject.WINDOW_MASK);
+//            for (PortalObject portalObject : portalObjects) {
+//                Window window = (Window) portalObject;
+//                NavigationalStateKey navigationalStateKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+//                WindowNavigationalState windowNavigationalState = (WindowNavigationalState) controllerContext.getAttribute(
+//                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, navigationalStateKey);
+//
+//                if ((windowNavigationalState != null) && WindowState.MAXIMIZED.equals(windowNavigationalState.getWindowState())) {
+//                    maximizedWindow = window;
+//                    break;
+//                }
+//            }
+//        }
         return maximizedWindow;
     }
 
+    
+    public static PortalObject  getObject(PortalControllerContext portalCtx, PortalObjectId id) throws IllegalArgumentException {
+        return null;
+    }
+    
+    public static List<?>  getDomains(PortalControllerContext portalCtx) throws IllegalArgumentException {
+        //List<?> domains = (List<?>) invocation.getAttribute(Scope.SESSION_SCOPE, InternalConstants.USER_DOMAINS_ATTRIBUTE);        
+        return null;
+    }
+    
+    public static String getPortalContextPath(PortalControllerContext portalControllerContext )    {
+    // Controller context
+//    ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+//    // Server context
+//    ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+//    String contextPath = serverContext.getPortalContextPath();
+        return "/portal";
+    }
+    
+    public static String getRedirectionPath(PortalControllerContext portalControllerContext )    {
+
+    return null;
+    
+ //   String refreshCmsPath = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, EcmCommand.REDIRECTION_PATH_ATTRIBUTE);
+ 
+    
+    }
+    
+    
+    public static void setPortalSessionAttribute(PortalControllerContext portalControllerContext, String name, Object object)    {
+//        controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, SORT_CRITERIA_PRINCIPAL_ATTRIBUTE, criteria);
+
+    }
+    
+    public static Object getPortalSessionAttribute(PortalControllerContext portalControllerContext, String name)    {
+        return null;
+    //Object attribute = controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, SORT_CRITERIA_PRINCIPAL_ATTRIBUTE);
+    }
+    
+    
+    
 }

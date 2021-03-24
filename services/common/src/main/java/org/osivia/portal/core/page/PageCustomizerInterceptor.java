@@ -22,7 +22,7 @@ import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 
 
 /**

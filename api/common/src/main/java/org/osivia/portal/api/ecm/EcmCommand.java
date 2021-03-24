@@ -16,6 +16,8 @@ package org.osivia.portal.api.ecm;
 
 import java.util.Map;
 
+import org.osivia.portal.api.context.PortalControllerContext;
+
 
 
 
@@ -108,7 +110,7 @@ public abstract class EcmCommand  {
 	}
 
  //   public abstract void notifyAfterCommand(ControllerContext controllerContext);
-    public abstract void notifyAfterCommand(Object controllerContext);
+    public abstract void notifyAfterCommand(PortalControllerContext controllerContext);
 
 	
 	public EcmCommonCommands getCommonCommandName() {

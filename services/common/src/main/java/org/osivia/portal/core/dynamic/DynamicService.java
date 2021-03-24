@@ -24,7 +24,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
 import org.osivia.portal.core.context.ControllerContextAdapter;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -139,7 +139,7 @@ public class DynamicService implements IDynamicService {
         
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         
-        Page page = PortalObjectUtils.getPage(controllerContext);
+        Page page = PortalObjectUtilsInternal.getPage(controllerContext);
 
 
         String parentPath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);

@@ -28,7 +28,7 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;

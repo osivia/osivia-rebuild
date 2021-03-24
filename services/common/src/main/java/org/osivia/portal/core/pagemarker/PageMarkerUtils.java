@@ -40,7 +40,7 @@ import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 
 
 /**
@@ -74,9 +74,9 @@ public class PageMarkerUtils {
 
         if (viewState != null) {
 
-            PortalObjectId pageId = PortalObjectUtils.getPageId(controllerCtx);
+            PortalObjectId pageId = PortalObjectUtilsInternal.getPageId(controllerCtx);
 
-            Page page = PortalObjectUtils.getPage(controllerCtx);
+            Page page = PortalObjectUtilsInternal.getPage(controllerCtx);
 
             if (page != null) {
 
@@ -269,7 +269,7 @@ public class PageMarkerUtils {
         ctx.applyChanges();
 
         if (markerInfo.getPageId() != null) {
-            PortalObjectUtils.setPageId(controllerContext, markerInfo.getPageId());
+            PortalObjectUtilsInternal.setPageId(controllerContext, markerInfo.getPageId());
         }
 
         return page;

@@ -84,7 +84,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.resources.ResourceHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
@@ -185,7 +185,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 PortalObjectId pageId = upw.getPageId();
 
                 
-                PortalObjectUtils.setPageId(controllerContext, pageId);
+                PortalObjectUtilsInternal.setPageId(controllerContext, pageId);
                 
                 
                 //TODO : conversation scope

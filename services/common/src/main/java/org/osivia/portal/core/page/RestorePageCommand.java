@@ -22,7 +22,7 @@ import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -55,7 +55,7 @@ public  class RestorePageCommand extends ControllerCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         
-        PortalObjectId pageId = PortalObjectUtils.getPageId(getControllerContext());
+        PortalObjectId pageId = PortalObjectUtilsInternal.getPageId(getControllerContext());
         
         return  this.context.execute( new ViewPageCommand(pageId));
 

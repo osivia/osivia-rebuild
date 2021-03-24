@@ -20,7 +20,7 @@ import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 
 /**
  * Utility class with null-safe methods for internationalization.
@@ -58,7 +58,7 @@ public class InternationalizationUtils {
         // Internationalization service
         IInternationalizationService service = getInternationalizationService();
         // Portal
-        Portal portal = PortalObjectUtils.getPortal(portalObject);
+        Portal portal = PortalObjectUtilsInternal.getPortal(portalObject);
         // Brand name internationalization key
         String key = portal.getDeclaredProperty("osivia.brand.key");
         if (key == null) {

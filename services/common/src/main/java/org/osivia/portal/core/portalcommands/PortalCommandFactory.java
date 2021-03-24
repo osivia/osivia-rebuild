@@ -53,7 +53,7 @@ import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -300,7 +300,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         
         if(cmd instanceof RenderPageCommand)    {
-            PortalObjectUtils.setPageId(controllerContext, ((RenderPageCommand) cmd).getTargetId());
+            PortalObjectUtilsInternal.setPageId(controllerContext, ((RenderPageCommand) cmd).getTargetId());
         }
         
  
