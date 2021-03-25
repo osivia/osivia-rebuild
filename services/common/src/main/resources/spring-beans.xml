@@ -21,6 +21,10 @@
 	<bean class="org.osivia.portal.core.customization.CustomizationService"
 		id="osivia:service=CustomizationService">
 	</bean>
+	
+	<bean class="org.osivia.portal.core.cms.CMSServiceLocator"
+		id="osivia:service=CmsServiceLocator">
+	</bean>
 
 
 	<bean class="org.osivia.portal.core.internationalization.InternationalizationService"

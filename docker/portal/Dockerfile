@@ -35,7 +35,6 @@ RUN cd / \
     && rm -f ${PORTAL_DISTRIBUTION_ZIP}
 
 #Logs
-COPY logging.properties /usr/local/tomcat/conf
 COPY catalina.properties /usr/local/tomcat/conf
 COPY portal.properties /
 # Entrypoint
