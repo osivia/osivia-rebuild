@@ -1,4 +1,4 @@
-FROM tomcat:8.0
+FROM tomcat:8-jdk8
 MAINTAINER Cédric Krommenhoek <ckrommenhoek@osivia.com>
 
 RUN apt-get update && apt-get install -y locales vim  \

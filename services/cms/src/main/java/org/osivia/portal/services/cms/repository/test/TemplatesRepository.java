@@ -93,6 +93,12 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         Map<String,String> cProperties = new ConcurrentHashMap<>();   
         ModuleRef indexContent = new ModuleRef("index-" + id, "col-2", "IndexContentInstance", cProperties);
         modules.add(indexContent);
+        
+        Map<String,String> vProperties = new ConcurrentHashMap<>();    
+        vProperties.put("osivia.cms.uri","/default-domain/UserWorkspaces/a/d/m/admin/documents/facture-copie-docx");
+        ModuleRef viewContent = new ModuleRef("view-" + id, "col-2", "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance", vProperties);
+        modules.add(viewContent);       
+        
 
 
         addTemplatePage(id, name, parentId, spaceId, children, modules);

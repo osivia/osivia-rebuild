@@ -87,13 +87,7 @@ public class RuntimeBeanBuilder {
         }        
  
 
-        
-        
-        
-        
-        
-        
-        
+            
         
         
         Properties properties = System.getProperties();
@@ -168,7 +162,25 @@ public class RuntimeBeanBuilder {
         .addPropertyReference("DelegatingFactory", "portal:commandFactory=Delegating")
         .addPropertyReference("DelegateFactory", "portal:commandFactory="+repositoryName);
         createBean( "portal:commandFactory=Delegate,path="+repositoryName, portalCommandFactoryDelegate);
+
+        /*
+        <mbean
+        code="fr.toutatice.portail.cms.nuxeo.services.NuxeoService"
+        name="osivia:service=NuxeoService">
         
+             <depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>
+             */
+        
+        BeanDefinitionBuilder nuxeoService;
+        try {
+            nuxeoService = BeanDefinitionBuilder.rootBeanDefinition(Class.forName("fr.toutatice.portail.cms.nuxeo.services.NuxeoService")).setScope(BeanDefinition.SCOPE_SINGLETON)
+            .addPropertyReference("Profiler", "osivia:service=ProfilerService");
+            createBean( "osivia:service=NuxeoService", nuxeoService);
+        } catch (ClassNotFoundException e) {
+            System.err.println("Can't start Nuxeo Service : class not found");
+        }
+
+       
          
     }
 }

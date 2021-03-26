@@ -143,6 +143,11 @@
         <property name="Factory" ref="portal:urlFactory=Delegating"/>        
 	</bean>
 
+   	<bean class="org.osivia.portal.core.profiler.ProfilerService" id="osivia:service=ProfilerService" >
+        <property name="Tracker" ref="osivia:service=Tracker"/>        
+	</bean>
+
+	
    	<bean class="org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor" id="osivia:service=Interceptor,type=Portlet,name=ConsumerCache" >
      
 	</bean>
