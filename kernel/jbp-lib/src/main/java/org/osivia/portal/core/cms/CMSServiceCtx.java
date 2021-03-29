@@ -269,6 +269,10 @@ public class CMSServiceCtx {
         }
         // Portlet context
         this.setPortletCtx(portalControllerContext.getPortletCtx());
+        
+        this.setServletRequest(portalControllerContext.getHttpServletRequest());
+        
+        this.portalControllerContext = portalControllerContext;
     }
 
 

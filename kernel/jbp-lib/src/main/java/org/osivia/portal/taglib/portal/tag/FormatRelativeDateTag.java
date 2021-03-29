@@ -49,7 +49,7 @@ public class FormatRelativeDateTag extends SimpleTagSupport {
         // Internationalization bundle factory
         IInternationalizationService internationalizationService = Locator.getService(
                 IInternationalizationService.MBEAN_NAME, IInternationalizationService.class);
-        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        this.bundleFactory = internationalizationService.getBundleFactory(Thread.currentThread().getContextClassLoader());
     }
 
 
