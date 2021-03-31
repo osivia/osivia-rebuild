@@ -20,6 +20,12 @@ public class CMSController {
     /** The locale service. */
     private ILocaleService localeService;
     
+    private boolean superUserMode = false;;
+    
+    
+
+
+
     public CMSController(PortalControllerContext portalCtx) {
         super();
         this.portalCtx = portalCtx;
@@ -41,9 +47,11 @@ public class CMSController {
                 locale = new Locale(sLocale);
             }
         }
-        
     }
-  
+    
+    public void setSuperUserMode(boolean superUserMode) {
+        this.superUserMode = superUserMode;
+    }
     
     public void addContentRefToProperties( Map<String, String> properties, String propertyName, UniversalID id) {
         properties.put(propertyName, id.toString());
@@ -86,9 +94,11 @@ public class CMSController {
         return locale;
     }
     
+
     
     public CMSContext getCMSContext()   {
-        CMSContext cmsContext = new CMSContext(portalCtx);
+        CMSContext cmsContext = new CMSContext(portalCtx);    
+
         
         cmsContext.setPreview(this.preview);
         
@@ -97,6 +107,9 @@ public class CMSController {
         } catch( Exception e) {
             throw new RuntimeException(e);
         }
+        
+        cmsContext.setSuperUserMode(this.superUserMode);
+        
         return cmsContext;
     }
     

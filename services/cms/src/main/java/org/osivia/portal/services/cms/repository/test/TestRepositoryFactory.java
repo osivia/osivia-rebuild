@@ -10,17 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.cms.CMSContext;
-import org.osivia.portal.api.cms.SuperUserContext;
 import org.osivia.portal.api.cms.UniversalID;
-import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
-import org.osivia.portal.core.context.ControllerContextAdapter;
 
 /**
  * A factory for creating InMemory objects.
@@ -135,11 +131,11 @@ public class TestRepositoryFactory {
 
         SharedRepositoryKey repositoryKey = new SharedRepositoryKey(repositoryName, cmsContext.isPreview(), cmsContext.getlocale());
 
-        if (cmsContext instanceof SuperUserContext) {
+        if (cmsContext.isSuperUserMode()) {
 
             userRepository = (BaseUserRepository) superUserRepositories.get(repositoryKey);
             if (userRepository == null) {
-                userRepository = createRepository(repositoryKey, publishRepository, "superuser");
+                userRepository = createRepository(repositoryKey, publishRepository, BaseUserRepository.SUPERUSER_NAME);
                 superUserRepositories.put(repositoryKey, userRepository);
             }
 

@@ -32,6 +32,7 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
         this.cmsContext = new CMSContext(cmsContext.getPortalControllerContext());
         this.cmsContext.setLocale(cmsContext.getlocale());
         this.cmsContext.setPreview(cmsContext.isPreview());
+        this.cmsContext.setSuperUserMode(cmsContext.isSuperUserMode());
     }
     
     public CMSContext getCmsContext() {

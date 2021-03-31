@@ -19,16 +19,13 @@ public class CMSContext {
 
     /** The preview. */
     private boolean preview;
+    
+    /** The preview. */
+    private boolean superUserMode;
 
 
-    public boolean isPreview() {
-        return preview;
-    }
+    
 
-
-    public void setPreview(boolean preview) {
-        this.preview = preview;
-    }
 
 
     /**
@@ -73,4 +70,25 @@ public class CMSContext {
         this.locale = locale;
     }
 
+    
+    public boolean isSuperUserMode() {
+        return superUserMode;
+    }
+
+
+    
+    public void setSuperUserMode(boolean superUserMode) {
+        this.superUserMode = superUserMode;
+    }
+
+
+    public boolean isPreview() {
+        return preview;
+    }
+
+
+    public void setPreview(boolean preview) {
+        this.preview = preview;
+    }
+    
 }

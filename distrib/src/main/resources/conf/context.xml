@@ -18,7 +18,9 @@
 <!-- The contents of this file will be loaded for each web application -->
 <!-- Redeployment of portal.war under windows needs antiResource locking -->
 
-<Context antiResourceLocking="true">
+<!-- sessionCookiePath is set as unique to share delagations between portal and binary servlet -->
+
+<Context antiResourceLocking="true" sessionCookiePath="/">
 
     <!-- Default set of monitored resources. If one of these changes, the    -->
     <!-- web application will be reloaded.                                   -->
