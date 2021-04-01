@@ -164,7 +164,7 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	 *            variables
 	 */
 	protected void addNotification(PortalControllerContext pcc, String label, NotificationsType notificationType, Object... args) {
-		String string = this.getMessage(pcc, label, args);
+		String string = this.getMessage(pcc, label, args); 
 		this.getNotificationsService().addSimpleNotification(pcc, string, notificationType);
 	}
 }

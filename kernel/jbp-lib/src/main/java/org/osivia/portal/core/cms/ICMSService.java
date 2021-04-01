@@ -16,8 +16,6 @@ package org.osivia.portal.core.cms;
 
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.EcmDocument;
-import org.osivia.portal.api.ecm.EcmCommand;
-import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.editor.EditorModule;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.panels.PanelPlayer;
@@ -264,17 +262,6 @@ public interface ICMSService {
     String getEcmDomain(CMSServiceCtx cmsCtx);
 
 
-    /**
-     * Get urls used to access ECM specific views.
-     *
-     * @param cmsCtx            CMS context
-     * @param command           type of command acceded (ex : create, edit, etc.)
-     * @param path              the path of the page
-     * @param requestParameters GET params added in the URL
-     * @return url
-     * @throws CMSException
-     */
-    String getEcmUrl(CMSServiceCtx cmsCtx, EcmViews command, String path, Map<String, String> requestParameters) throws CMSException;
 
 
     /**
@@ -425,15 +412,6 @@ public interface ICMSService {
     public BinaryDelegation validateBinaryDelegation(CMSServiceCtx cmsCtx, String path);
 
 
-    /**
-     * Execute and ECM command
-     *
-     * @param cmsCtx
-     * @param command
-     * @param cmsPath
-     * @throws CMSException
-     */
-    void executeEcmCommand(CMSServiceCtx cmsCtx, EcmCommand command, String cmsPath) throws CMSException;
 
 
     /**

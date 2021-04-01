@@ -29,6 +29,7 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 
@@ -107,6 +108,31 @@ public class PortalObjectUtilsInternal {
         return page;
     }
 
+    public static final boolean isAdmin(ControllerContext controllerContext) {
+        // TODO
+        return false;
+    }
+    
+    
+    /**
+     * Get current portal object
+     *
+     * @param controllerContext controller context
+     * @return current portal
+     */
+    public static final PortalObject getObject(ControllerContext controllerContext, PortalObjectId id) {
+        PortalObject portalObject = null;
+
+        // Portal name
+        if ((controllerContext != null) && (id != null)) {
+            PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
+            portalObject = portalObjectContainer.getObject(id);
+
+        }
+
+        return portalObject;
+    }
+    
 
     /**
      * Get current portal from controller context.
