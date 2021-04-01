@@ -31,7 +31,10 @@
    <listener>
       <listener-class>org.jboss.portal.server.listener.SessionListener</listener-class>
    </listener>  
-   
+      <!--   CMS listener to kill all CMS sessions -->
+   <listener>
+      <listener-class>org.osivia.portal.core.cms.sessions.SessionListener</listener-class>
+   </listener>
    <servlet>
       <servlet-name>PortalServletWithPathMapping</servlet-name>
       <servlet-class>org.jboss.portal.server.servlet.PortalServlet</servlet-class>

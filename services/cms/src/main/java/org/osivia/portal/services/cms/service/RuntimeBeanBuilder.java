@@ -31,8 +31,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class RuntimeBeanBuilder {
     private static final String OSIVIA_CMS_REPOSITORY_SUFFIX = ".className";
-
     private static final String OSIVIA_CMS_REPOSITORY_PREFIX = "osivia.cms.repository.";
+
+    private static final String OSIVIA_CMS_SERVICE_INTEGRATION_PREFIX = "osivia.cms.integration.";    
+    private static final String OSIVIA_CMS_SERVICE_INTEGRATION_BEAN_NAME_SUFFIX = ".beanName";
+    private static final String OSIVIA_CMS_SERVICE_INTEGRATION_CLASSNAME_SUFFIX = ".className";
+
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -88,7 +92,7 @@ public class RuntimeBeanBuilder {
  
 
             
-        
+        /* Portal namespace beans */
         
         Properties properties = System.getProperties();
         for(Object propertyName : properties.keySet())  {
@@ -97,17 +101,32 @@ public class RuntimeBeanBuilder {
                 if( sPropertyName.startsWith(OSIVIA_CMS_REPOSITORY_PREFIX) && sPropertyName.endsWith(OSIVIA_CMS_REPOSITORY_SUFFIX)) {
                     String repositoryName = sPropertyName.substring(OSIVIA_CMS_REPOSITORY_PREFIX.length() , sPropertyName.indexOf(OSIVIA_CMS_REPOSITORY_SUFFIX));
                     
-                    build( repositoryName) ;
+                    buildPortalBeans( repositoryName) ;
                 }
             }
-            
-        }
+         }
+        
+        /* Service integration beans */
+        
+
+        for(Object propertyName : properties.keySet())  {
+            if( propertyName instanceof String) {
+                String sPropertyName = (String) propertyName;
+                if( sPropertyName.startsWith(OSIVIA_CMS_SERVICE_INTEGRATION_PREFIX) && sPropertyName.endsWith(OSIVIA_CMS_SERVICE_INTEGRATION_BEAN_NAME_SUFFIX)) {
+                    String integrationServiceName = sPropertyName.substring(OSIVIA_CMS_SERVICE_INTEGRATION_PREFIX.length() , sPropertyName.indexOf(OSIVIA_CMS_SERVICE_INTEGRATION_BEAN_NAME_SUFFIX));
+                    String beanName = System.getProperty(OSIVIA_CMS_SERVICE_INTEGRATION_PREFIX+integrationServiceName+OSIVIA_CMS_SERVICE_INTEGRATION_BEAN_NAME_SUFFIX);
+                    String className = System.getProperty(OSIVIA_CMS_SERVICE_INTEGRATION_PREFIX+integrationServiceName+OSIVIA_CMS_SERVICE_INTEGRATION_CLASSNAME_SUFFIX);
+
+                    buildIntegrationBean( beanName, className) ;
+                }
+            }
+         }
         
 
     }
     
 
-    public void build( String repositoryName) {
+    public void buildPortalBeans( String repositoryName) {
         
 /*
         <bean class="org.jboss.portal.core.model.portal.command.mapping.DefaultPortalObjectPathMapper"
@@ -163,24 +182,30 @@ public class RuntimeBeanBuilder {
         .addPropertyReference("DelegateFactory", "portal:commandFactory="+repositoryName);
         createBean( "portal:commandFactory=Delegate,path="+repositoryName, portalCommandFactoryDelegate);
 
+        
+    }
+    
+    public void buildIntegrationBean(String beanName, String className) {
+
+        // Integration service
+
         /*
-        <mbean
-        code="fr.toutatice.portail.cms.nuxeo.services.NuxeoService"
-        name="osivia:service=NuxeoService">
-        
-             <depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>
-             */
-        
+         * <mbean
+         * code="fr.toutatice.portail.cms.nuxeo.services.NuxeoService"
+         * name="osivia:service=NuxeoService">
+         * 
+         * <depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>
+         */
+
+
         BeanDefinitionBuilder nuxeoService;
         try {
-            nuxeoService = BeanDefinitionBuilder.rootBeanDefinition(Class.forName("fr.toutatice.portail.cms.nuxeo.services.NuxeoService")).setScope(BeanDefinition.SCOPE_SINGLETON)
-            .addPropertyReference("Profiler", "osivia:service=ProfilerService");
-            createBean( "osivia:service=NuxeoService", nuxeoService);
+            nuxeoService = BeanDefinitionBuilder.rootBeanDefinition(Class.forName(className)).setScope(BeanDefinition.SCOPE_SINGLETON)
+                    .addPropertyReference("Profiler", "osivia:service=ProfilerService");
+            createBean(beanName, nuxeoService);
         } catch (ClassNotFoundException e) {
-            System.err.println("Can't start Nuxeo Service : class not found");
+            System.err.println("Can't start " + className + " : class not found");
         }
 
-       
-         
     }
 }
