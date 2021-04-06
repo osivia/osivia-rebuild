@@ -313,6 +313,26 @@
 			<scope>compile</scope>    	
 		</dependency>
 		
+		
+		<dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.httpcomponents.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${apache.httpcomponents.version}</version>
+            <scope>compile</scope>
+        </dependency>        
+         <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${javax-mail.version}</version>
+            <scope>compile</scope>
+        </dependency>	
+		
         <!-- REST -->       	
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>

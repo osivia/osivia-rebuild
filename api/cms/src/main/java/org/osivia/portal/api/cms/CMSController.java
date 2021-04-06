@@ -22,9 +22,7 @@ public class CMSController {
     
     private boolean superUserMode = false;;
     
-    
-
-
+  
 
     public CMSController(PortalControllerContext portalCtx) {
         super();
@@ -99,17 +97,14 @@ public class CMSController {
     public CMSContext getCMSContext()   {
         CMSContext cmsContext = new CMSContext(portalCtx);    
 
-        
-        cmsContext.setPreview(this.preview);
+         cmsContext.setPreview(this.preview);
         
         try {
         cmsContext.setLocale( this.locale);
         } catch( Exception e) {
             throw new RuntimeException(e);
         }
-        
-        cmsContext.setSuperUserMode(this.superUserMode);
-        
+         
         return cmsContext;
     }
     

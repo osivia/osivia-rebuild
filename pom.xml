@@ -126,6 +126,7 @@
 		<javax-activation.version>1.0.2</javax-activation.version>
 		<javax-security-jacc.version>1.5</javax-security-jacc.version>
 		<javax-ccpp.version>1.0</javax-ccpp.version>
+		<javax-mail.version>1.4</javax-mail.version>
 
 		<!-- JBoss portlet container -->
 		<jboss-portlet-container.version>2.0.9</jboss-portlet-container.version>
@@ -149,6 +150,7 @@
 		<portlet-api.version>2.0</portlet-api.version>
         <el-api.version>1.0</el-api.version>
         <servlet-api.version>2.5</servlet-api.version>
+        <apache.httpcomponents.version>4.1</apache.httpcomponents.version>        
         
         <!-- REST -->
         <json.version>2.4</json.version>
@@ -223,6 +225,12 @@
 				<version>${javax-ccpp.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			
+	         <dependency>
+	            <groupId>javax.mail</groupId>
+	            <artifactId>mail</artifactId>
+	            <version>${javax-mail.version}</version>
+	        </dependency>				
 
 			<!-- Apache commons -->
 
@@ -386,6 +394,21 @@
 				<scope>provided</scope>
 			</dependency>
 
+	 		<dependency>
+	            <groupId>org.apache.httpcomponents</groupId>
+	            <artifactId>httpclient</artifactId>
+	            <version>${apache.httpcomponents.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.apache.httpcomponents</groupId>
+	            <artifactId>httpcore</artifactId>
+	            <version>${apache.httpcomponents.version}</version>
+	        </dependency>        
+	         <dependency>
+	            <groupId>javax.mail</groupId>
+	            <artifactId>mail</artifactId>
+	            <version>${javax-mail.version}</version>
+	        </dependency>	 
 
 			<!-- DOM -->
 

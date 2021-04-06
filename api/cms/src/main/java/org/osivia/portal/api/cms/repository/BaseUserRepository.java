@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.portlet.PortletContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
@@ -98,6 +101,9 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         return principal;
     }
     
+
+    
+    
     public boolean isAdministrator()    {
         Principal principal = getPrincipal();
         if( principal != null && principal.toString().contains("Administrators")) {
@@ -110,6 +116,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     @Override
     public void setPortalContext(PortalControllerContext portalContext) {
         portalCtx.set(portalContext);
+     }
+    
+
+    public PortalControllerContext getPortalContext() {
+        return portalCtx.get();
      }
     
     /**

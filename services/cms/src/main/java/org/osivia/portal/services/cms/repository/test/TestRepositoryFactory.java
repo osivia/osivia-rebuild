@@ -25,12 +25,12 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 public class TestRepositoryFactory {
 
     /** The super user repositories. */
-    private Map<SharedRepositoryKey, BaseUserRepository> superUserRepositories;
+    private Map<SharedRepositoryKey, BaseUserRepository> staticRepositories;
 
 
     public TestRepositoryFactory() {
         super();
-        superUserRepositories = new ConcurrentHashMap<SharedRepositoryKey, BaseUserRepository>();
+        staticRepositories = new ConcurrentHashMap<SharedRepositoryKey, BaseUserRepository>();
     }
 
     
@@ -131,12 +131,12 @@ public class TestRepositoryFactory {
 
         SharedRepositoryKey repositoryKey = new SharedRepositoryKey(repositoryName, cmsContext.isPreview(), cmsContext.getlocale());
 
-        if (cmsContext.isSuperUserMode()) {
+        if (cmsContext.getPortalControllerContext().getHttpServletRequest() == null ) {
 
-            userRepository = (BaseUserRepository) superUserRepositories.get(repositoryKey);
+            userRepository = (BaseUserRepository) staticRepositories.get(repositoryKey);
             if (userRepository == null) {
                 userRepository = createRepository(repositoryKey, publishRepository, BaseUserRepository.SUPERUSER_NAME);
-                superUserRepositories.put(repositoryKey, userRepository);
+                staticRepositories.put(repositoryKey, userRepository);
             }
 
         } else {

@@ -70,16 +70,7 @@ public class CMSContext {
         this.locale = locale;
     }
 
-    
-    public boolean isSuperUserMode() {
-        return superUserMode;
-    }
 
-
-    
-    public void setSuperUserMode(boolean superUserMode) {
-        this.superUserMode = superUserMode;
-    }
 
 
     public boolean isPreview() {
