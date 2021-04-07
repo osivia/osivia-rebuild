@@ -83,13 +83,13 @@ public class EditionController implements PortletContextAware, ApplicationContex
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
-    
+
     @Autowired
     private IPreviewModeService previewModeService;
-    
+
     @Autowired
     private ILocaleService localService;
-    
+
     /** Locale property editor. */
     @Autowired
     private LocalePropertyEditor localPropertyEditor;
@@ -136,7 +136,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             if (navigationId != null) {
 
                 UniversalID id = new UniversalID(navigationId);
-                
+
                 CMSController ctrl = new CMSController(portalControllerContext);
 
                 CMSContext cmsContext = ctrl.getCMSContext();
@@ -159,7 +159,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
 
     }
-    
+
     /**
      * Add page sample
      */
@@ -175,26 +175,26 @@ public class EditionController implements PortletContextAware, ApplicationContex
             if (contentId != null) {
 
                 UniversalID id = new UniversalID(contentId);
-                
+
                 CMSController ctrl = new CMSController(portalControllerContext);
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
                 TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if( repository.getACL(id.getInternalID()).isEmpty())
+                if (repository.getACL(id.getInternalID()).isEmpty())
                     ((TestRepository) repository).setACL(id.getInternalID(), Arrays.asList("group:members"));
                 else
                     ((TestRepository) repository).setACL(id.getInternalID(), new ArrayList<String>());
-                
+
                 refreshStatus(portalControllerContext, ctrl, status);
-                
+
             }
-        } catch (PortalException   e) {
+        } catch (PortalException e) {
             throw new PortletException(e);
         }
 
     }
-    
+
 
     /**
      * Add page sample
@@ -208,7 +208,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSController ctrl = new CMSController(portalControllerContext);
 
 
-            addPortletToRegion(request, portalControllerContext,ctrl, "SampleInstance", "col-2", TestRepository.POSITION_END);
+            addPortletToRegion(request, portalControllerContext, ctrl, "SampleInstance", "col-2", TestRepository.POSITION_END);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -225,17 +225,17 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
- 
+
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
             UniversalID id = new UniversalID(contentId);
-            
+
             previewModeService.changePreviewMode(portalControllerContext, id);
-            
+
             // update cms context
-            CMSController ctrl = new CMSController(portalControllerContext); 
+            CMSController ctrl = new CMSController(portalControllerContext);
             CMSContext cmsCtx = ctrl.getCMSContext();
             cmsCtx.setPreview(previewModeService.isPreviewing(portalControllerContext, id));
-  
+
             String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsCtx, id);
             response.sendRedirect(url);
 
@@ -254,24 +254,24 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
- 
+
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
             UniversalID id = new UniversalID(contentId);
-            
+
             previewModeService.changePreviewMode(portalControllerContext, id);
-            
+
             // Reload cms context
-            CMSController ctrl = new CMSController(portalControllerContext); 
-            CMSContext cmsCtx = ctrl.getCMSContext();            
-  
-            String url = portalUrlFactory.getViewContentUrl(portalControllerContext,cmsCtx, id);
+            CMSController ctrl = new CMSController(portalControllerContext);
+            CMSContext cmsCtx = ctrl.getCMSContext();
+
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsCtx, id);
             response.sendRedirect(url);
 
         } catch (PortalException | IOException e) {
             throw new PortletException(e);
         }
     }
-    
+
 
     /**
      * Add portlet sample
@@ -284,7 +284,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
             CMSController ctrl = new CMSController(portalControllerContext);
 
-            addPortletToRegion(request, portalControllerContext, ctrl,"FragmentInstance", "logo", TestRepository.POSITION_BEGIN);
+            addPortletToRegion(request, portalControllerContext, ctrl, "FragmentInstance", "logo", TestRepository.POSITION_BEGIN);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -292,8 +292,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl, String portletName, String region, int position)
-            throws CMSException {
+    protected void addPortletToRegion(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl, String portletName,
+            String region, int position) throws CMSException {
         String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
         if (navigationId != null) {
 
@@ -305,8 +305,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
             TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
             String windowID = "" + System.currentTimeMillis();
-            
-            Map<String,String> editionProperties = new ConcurrentHashMap<>();
+
+            Map<String, String> editionProperties = new ConcurrentHashMap<>();
             editionProperties.put("osivia.hideTitle", "1");
 
             ((TestRepository) repository).addWindow(windowID, windowID, portletName, region, position, id.getInternalID(), editionProperties);
@@ -314,17 +314,16 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
     }
 
-    
 
     /**
      * publish sample
      */
     @ActionMapping(name = "publish")
-    public void publish(ActionRequest request, ActionResponse response,   @ModelAttribute("status") EditionStatus status) throws PortletException, CMSException {
+    public void publish(ActionRequest request, ActionResponse response, @ModelAttribute("status") EditionStatus status) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         CMSController ctrl = new CMSController(portalControllerContext);
-        
+
         try {
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
             if (contentId != null) {
@@ -334,22 +333,22 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();
 
                 TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if( repository instanceof TestRepository) {
+                if (repository instanceof TestRepository) {
                     ((TestRepository) repository).publish(id.getInternalID());
                 }
 
-                
+
             }
         } catch (PortalException e) {
             throw new PortletException(e);
         }
-        
-        
-        refreshStatus(portalControllerContext, ctrl, status) ;
+
+
+        refreshStatus(portalControllerContext, ctrl, status);
 
     }
 
-    
+
     /**
      * add folder
      */
@@ -357,8 +356,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
     public void addFolder(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        CMSController ctrl = new CMSController(portalControllerContext);       
-        
+        CMSController ctrl = new CMSController(portalControllerContext);
+
         try {
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
             if (contentId != null) {
@@ -368,20 +367,20 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();
 
                 TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if( repository instanceof TestRepository) {
+                if (repository instanceof TestRepository) {
                     String newID = "" + System.currentTimeMillis();
 
                     ((TestRepository) repository).addFolder(newID, newID, id.getInternalID());
                 }
 
-                
+
             }
         } catch (PortalException e) {
             throw new PortletException(e);
         }
 
     }
-    
+
     /**
      * add document
      */
@@ -389,8 +388,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
     public void addDocument(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        CMSController ctrl = new CMSController(portalControllerContext); 
-        
+        CMSController ctrl = new CMSController(portalControllerContext);
+
         try {
             String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
             if (contentId != null) {
@@ -400,36 +399,35 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();
 
                 TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if( repository instanceof TestRepository) {
+                if (repository instanceof TestRepository) {
                     String newID = "" + System.currentTimeMillis();
 
                     ((TestRepository) repository).addDocument(newID, newID, id.getInternalID());
                 }
 
-                
+
             }
         } catch (PortalException e) {
             throw new PortletException(e);
         }
 
     }
-    
+
     @ModelAttribute("status")
     public EditionStatus getStatus(PortletRequest request, PortletResponse response) throws PortletException {
-        // Portal controller context 
+        // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
-        CMSController ctrl = new CMSController(portalControllerContext); 
+        CMSController ctrl = new CMSController(portalControllerContext);
 
         // application form
         EditionStatus status = this.applicationContext.getBean(EditionStatus.class);
 
-        refreshStatus( portalControllerContext, ctrl, status);
+        refreshStatus(portalControllerContext, ctrl, status);
 
         return status;
     }
 
-    
-    
+
     protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
         // Base HTML classes
         String baseHtmlClasses = "btn btn-primary btn-sm ml-1";
@@ -474,108 +472,105 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl ,EditionStatus status) throws PortletException {
+    protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status) throws PortletException {
         try {
 
-            String contentId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
-            
+            String navigationId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
+
             // Toolbar
             Element container = DOM4JUtils.generateDivElement(null);
-            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);       
+            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
             container.add(toolbar);
-            
-            if (contentId != null) {
-                UniversalID id = new UniversalID(contentId);
+
+            if (navigationId != null) {
+                UniversalID id = new UniversalID(navigationId);
 
                 CMSContext cmsContext = ctrl.getCMSContext();
                 status.setPreview(cmsContext.isPreview());
 
                 TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 status.setSupportPreview(repository.supportPreview());
-                
+
                 Map<String, String> locales = new HashMap<>();
-                    for(Locale locale: repository.getLocales()) {
+                for (Locale locale : repository.getLocales()) {
                     locales.put(locale.toString(), locale.getDisplayLanguage());
                 }
                 status.setLocales(locales);
-                
+
                 status.setPageEdition(repository.supportPageEdition());
-                
-                
-                Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization( id);
-                
-                
+
+
+                Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
+
+
                 status.setSubtypes(personnalization.getSubTypes());
                 status.setManageable(personnalization.isManageable());
                 status.setModifiable(personnalization.isModifiable());
-                
-                if( status.isModifiable()) {
-                   
+
+                if (status.isModifiable()) {
 
 
-                    
                     // Rename URL
                     Map<String, String> properties = new HashMap<>();
-//                    properties.put("osivia.rename.path", path);
-//                    properties.put("osivia.rename.redirection-path", form.getPath());
-                    
-                    ctrl.addContentRefToProperties(properties,"osivia.rename.id", id );
-                    
-                    
+                    // properties.put("osivia.rename.path", path);
+                    // properties.put("osivia.rename.redirection-path", form.getPath());
+
+                    ctrl.addContentRefToProperties(properties, "osivia.rename.id", id);
+
+
                     String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
                     this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", "Rename", "glyphicons glyphicons-basic-square-edit");
-                    
-    
-                    
+
+
                 }
-                
+
                 status.setAcls(repository.getACL(id.getInternalID()));
-                
-                if( cmsContext.isPreview()) {
+
+                if (cmsContext.isPreview()) {
                     cmsContext.setPreview(false);
                     try {
-                        cmsService.getCMSSession(cmsContext).getDocument( id);
+                        cmsService.getCMSSession(cmsContext).getDocument(id);
                         status.setHavingPublication(true);
                     } catch (CMSException e) {
                         // Not found
-                    } finally   {
+                    } finally {
                         cmsContext.setPreview(true);
                     }
                 }
-                
-                status.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
-                
-                
-                
-                
-                // Toolbar
-                String popupUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "SampleInstance", new HashMap<String,String>(), PortalUrlType.MODAL);
-                this.addToolbarItem(toolbar, popupUrl, "#osivia-modal", "popup", "glyphicons glyphicons-basic-square-edit");
+            }
 
-                
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            status.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
 
-                HTMLWriter htmlWriter;
-                try {
-                    htmlWriter = new HTMLWriter(stream);
+
+            // Toolbar
+            String popupUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "SampleInstance", new HashMap<String, String>(),
+                    PortalUrlType.MODAL);
+            this.addToolbarItem(toolbar, popupUrl, "#osivia-modal", "popup", "glyphicons glyphicons-basic-square-edit");
+
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            HTMLWriter htmlWriter;
+            try {
+                htmlWriter = new HTMLWriter(stream);
 
                 htmlWriter.write(container);
                 htmlWriter.close();
-                } catch (Exception e) {
-                    throw new PortletException(e);
-                }                    
-
-                status.setToolbar(new String(stream.toByteArray()));
-                
-                
+            } catch (Exception e) {
+                throw new PortletException(e);
             }
-        } catch (PortalException e) {
+
+            status.setToolbar(new String(stream.toByteArray()));
+
+
+        } catch (
+
+        PortalException e) {
             throw new PortletException(e);
         }
     }
 
 
- 
     @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;
@@ -590,7 +585,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     /**
      * Get search filters form model attribute.
      *
-     * @param request  portlet request
+     * @param request portlet request
      * @param response portlet response
      * @return form
      */
@@ -601,64 +596,60 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
         EditionForm form = this.applicationContext.getBean(EditionForm.class);
         try {
-            form.setLocale( localService.getLocale(portalCtx));
+            form.setLocale(localService.getLocale(portalCtx));
 
-            
+
         } catch (PortalException e) {
-            throw new PortletException( e);
+            throw new PortletException(e);
         }
-        
+
         return form;
     }
 
-    
 
-    
- 
     /**
      * Update locale.
      *
      * @param form the form
      */
-    
+
     @ActionMapping(name = "submit", params = "update-locale")
     public void updateLocale(PortletRequest request, ActionResponse response, @ModelAttribute("form") EditionForm form) throws PortletException {
         // Portal Controller context
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
 
 
-            
-            try {
-                String contentId = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.navigationId");
-                if (contentId != null) {
-                    UniversalID id = new UniversalID(contentId);
-                    CMSController ctrl = new CMSController(portalCtx); 
-                    CMSContext cmsContext = ctrl.getCMSContext();
+        try {
+            String contentId = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.navigationId");
+            if (contentId != null) {
+                UniversalID id = new UniversalID(contentId);
+                CMSController ctrl = new CMSController(portalCtx);
+                CMSContext cmsContext = ctrl.getCMSContext();
 
-                    Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument( id);
-                    
-                    localService.setLocale(portalCtx, form.getLocale()); 
-                    
-                    cmsContext.setLocale(form.getLocale());
-                    
-                    String url = portalUrlFactory.getViewContentUrl(portalCtx, cmsContext, currentDoc.getSpaceId());
-                    response.sendRedirect(url);
-                }
-            } catch (PortalException | IOException e) {
-                throw new PortletException(e);
-            
+                Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument(id);
+
+                localService.setLocale(portalCtx, form.getLocale());
+
+                cmsContext.setLocale(form.getLocale());
+
+                String url = portalUrlFactory.getViewContentUrl(portalCtx, cmsContext, currentDoc.getSpaceId());
+                response.sendRedirect(url);
             }
-            
+        } catch (PortalException | IOException e) {
+            throw new PortletException(e);
+
+        }
+
 
     }
-    
-    
+
+
     /**
      * Update locale.
      *
      * @param form the form
      */
-    
+
     @ActionMapping(name = "home")
     public void home(PortletRequest request, ActionResponse response) throws PortletException {
         // Portal Controller context
@@ -667,20 +658,20 @@ public class EditionController implements PortletContextAware, ApplicationContex
             String contentId = WindowFactory.getWindow(portalCtx.getRequest()).getPageProperty("osivia.navigationId");
             if (contentId != null) {
                 UniversalID id = new UniversalID(contentId);
-                CMSController ctrl = new CMSController(portalCtx); 
+                CMSController ctrl = new CMSController(portalCtx);
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument( id);
-                
+                Document currentDoc = cmsService.getCMSSession(cmsContext).getDocument(id);
+
                 String url = portalUrlFactory.getViewContentUrl(portalCtx, ctrl.getCMSContext(), currentDoc.getSpaceId());
                 response.sendRedirect(url);
             }
         } catch (PortalException | IOException e) {
             throw new PortletException(e);
-        
+
         }
     }
-    
+
     /**
      * Search filters form init binder.
      *

@@ -77,6 +77,23 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         addDocument(id, page);
     }
 
+    
+    /**
+     * Adds the space.
+     *
+     * @param id the id
+     * @param properties the properties
+     */
+    private void addTemplatePageWithoutMenu(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        properties.put("dc:title", "Space." + id);
+
+        
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
+        page.setInheritedRegions(Arrays.asList("top"));
+
+        addDocument(id, page);
+    }
 
     protected void pageA(String id, String name, String parentId, String spaceId, List<String> children) {
 
@@ -95,7 +112,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         modules.add(indexContent);
         
         Map<String,String> vProperties = new ConcurrentHashMap<>();    
-        vProperties.put("osivia.cms.uri","/default-domain/UserWorkspaces/a/d/m/admin/documents/facture-copie-docx");
+        //vProperties.put("osivia.cms.uri","/default-domain/UserWorkspaces/a/d/m/admin/documents/facture-copie-docx");
+        vProperties.put("osivia.cms.uri","/default-domain/UserWorkspaces/d/e/m/demo/documents/etat-des-lieux-osivia");
+                
         ModuleRef viewContent = new ModuleRef("view-" + id, "col-2", "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance", vProperties);
         modules.add(viewContent);       
         
@@ -129,17 +148,25 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         addTemplatePage(id, name, parentId, spaceId, children, modules);
     }
 
+    protected void pageC(String id, String name, String parentId, String spaceId, List<String> children) {
+
+        List<ModuleRef> modules = new ArrayList<ModuleRef>();
+
+        addTemplatePageWithoutMenu(id, name, parentId, spaceId, children, modules);
+    }
+    
 
     protected void createTemplateSpace() {
         // PortalA
         pageA("ID_PAGE_A", "pageA", "portalA", "portalA", new ArrayList<String>(Arrays.asList("ID_TEMPLATE_WORKSPACE")));
         pageA1("ID_TEMPLATE_WORKSPACE", "workspace", "ID_PAGE_A", "portalA", new ArrayList<String>());
         pageB("ID_TEMPLATE_SITE", "site", "portalA", "portalA", new ArrayList<String>());
-
+        pageC("ID_EMPTY", "empty", "portalA", "portalA", new ArrayList<String>());
 
         List<String> portalChildren = new ArrayList<String>();
         portalChildren.add("ID_PAGE_A");
         portalChildren.add("ID_TEMPLATE_SITE");
+        portalChildren.add("ID_EMPTY");
         addTemplateSpace("portalA", portalChildren);
         
          

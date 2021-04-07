@@ -149,46 +149,71 @@ public class PublicationManager implements IPublicationManager {
             
 
             Document doc = getCMSService().getCMSSession(cmsContext).getDocument( docId);
-
-            NavigationItem navigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(docId);
-            Document space = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getSpaceId());
             
-             
-            String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
-
-            Map<String, String> properties = new HashMap<String, String>();
-
-            properties.put("osivia.contentId", docId.toString());
-            properties.put("osivia.navigationId", navigation.getDocumentId().toString());
-            properties.put("osivia.spaceId", navigation.getSpaceId().toString());
-            properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));            
-            properties.put("osivia.content.locale", doc.getLocale().toString()); 
-
-            Map<String, String> parameters = new HashMap<String, String>();
-
-            Map<Locale, String> displayNames = new HashMap<Locale, String>();
-            String displayName = space.getTitle();
-            if (StringUtils.isNotEmpty(displayName)) {
-                displayNames.put(Locale.FRENCH, displayName);
-            }
-
             
-            String pageDynamicID =  "space_" + navigation.getSpaceId().getInternalID();
-            pageDynamicID += IPublicationManager.PAGEID_CTX;
-            if( cmsContext.isPreview()) {
-                pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_PREVIEW + IPublicationManager.PAGEID_VALUE_SEPARATOR +"true";
-            }
-            pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_LOCALE + IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
-             
+            NavigationItem navigation;
+            String pagePath = null;
             
-            if( parentID == null)   {
-                //parentID = getCMSService().getDefaultPortal(cmsContext);
-                parentID = doc.getSpaceId();
+
+            try {
+                 navigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(docId);
+            } catch( CMSException e) {
+                navigation = null;
             }
             
+            if( navigation != null) {
             
-            String pagePath = getDynamicService().startDynamicPage(portalCtx, parentID.getRepositoryName()+":/"+parentID.getInternalID(), pageDynamicID,
-                    displayNames, templatePath, properties, parameters, null);
+                Document space = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getSpaceId());
+                
+                 
+                String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
+    
+                Map<String, String> properties = new HashMap<String, String>();
+    
+                properties.put("osivia.contentId", docId.toString());
+                properties.put("osivia.navigationId", navigation.getDocumentId().toString());
+                properties.put("osivia.spaceId", navigation.getSpaceId().toString());
+                properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));            
+                properties.put("osivia.content.locale", doc.getLocale().toString()); 
+    
+                Map<String, String> parameters = new HashMap<String, String>();
+    
+                Map<Locale, String> displayNames = new HashMap<Locale, String>();
+                String displayName = space.getTitle();
+                if (StringUtils.isNotEmpty(displayName)) {
+                    displayNames.put(Locale.FRENCH, displayName);
+                }
+    
+                
+                String pageDynamicID =  "space_" + navigation.getSpaceId().getInternalID();
+                pageDynamicID += IPublicationManager.PAGEID_CTX;
+                if( cmsContext.isPreview()) {
+                    pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_PREVIEW + IPublicationManager.PAGEID_VALUE_SEPARATOR +"true";
+                }
+                pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR +IPublicationManager.PAGEID_LOCALE + IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
+                 
+                
+                if( parentID == null)   {
+                    //parentID = getCMSService().getDefaultPortal(cmsContext);
+                    parentID = doc.getSpaceId();
+                }
+                
+                 pagePath = getDynamicService().startDynamicPage(portalCtx, parentID.getRepositoryName()+":/"+parentID.getInternalID(), pageDynamicID,
+                        displayNames, templatePath, properties, parameters, null);
+                
+            }   else    {
+                // Empty page
+                Map<Locale, String> displayNames = new HashMap<Locale, String>();
+                String displayName = "content";
+                if (StringUtils.isNotEmpty(displayName)) {
+                    displayNames.put(Locale.FRENCH, displayName);
+                }
+                pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "content",
+                        displayNames, "templates:/portalA__ctx__locale_fr/root/ID_EMPTY", new HashMap<>(), new HashMap<>(), null);
+              
+            }
+            
+
 
             if (!(doc instanceof Templateable)) {
 
@@ -197,12 +222,18 @@ public class PublicationManager implements IPublicationManager {
                 windowProperties.put(Constants.WINDOW_PROP_URI, doc.getId().toString());
                 
                 String instance;
-                if( "folder".equals(doc.getType())) {
-                    instance = "BrowserInstance";
-                    windowProperties.put(Constants.WINDOW_PROP_CACHE_PARENT_URI, doc.getId().toString());
+                
+                if( "nx".equals(doc.getId().getRepositoryName()))   {
+                    instance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
+                    
+                }   else    {
+                    if( "folder".equals(doc.getType())) {
+                        instance = "BrowserInstance";
+                        windowProperties.put(Constants.WINDOW_PROP_CACHE_PARENT_URI, doc.getId().toString());
+                    }
+                    else
+                        instance = "ContentInstance";
                 }
-                else
-                    instance = "ContentInstance";
                 
 
                 windowProperties.put("osivia.hideTitle", "1");

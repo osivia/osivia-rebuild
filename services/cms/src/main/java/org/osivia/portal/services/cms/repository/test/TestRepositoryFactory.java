@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
@@ -17,6 +19,8 @@ import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+
+
 
 /**
  * A factory for creating InMemory objects.
@@ -38,6 +42,7 @@ public class TestRepositoryFactory {
         return new UniversalID("sites:ID_SITE_A");
     }
     
+    protected static final Log logger = LogFactory.getLog(TestRepositoryFactory.class);
     
     /**
      * Creates a new InMemory object.
@@ -145,8 +150,16 @@ public class TestRepositoryFactory {
             String userName = request.getRemoteUser();
 
             HttpSession session = request.getSession(true);
+            
+            if( session == null) {
+                logger.error("request = " + request.toString() + "***"+request.isRequestedSessionIdValid()+"***"+ userName);
+            }
+            
+
 
             String repositoryAttributeName = BaseUserRepository.SESSION_ATTRIBUTE_NAME + "." + repositoryName + "." + repositoryKey.isPreview() + "." + repositoryKey.getLocale().toString();
+            
+            
 
             userRepository = (BaseUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null || (!StringUtils.equals(userRepository.getUserName(), userName))) {

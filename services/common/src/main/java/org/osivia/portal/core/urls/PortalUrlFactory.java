@@ -269,7 +269,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
                             String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
 
-        return null;
+        return getBasePortalUrl( portalControllerContext);
     }
     
     /**
