@@ -68,6 +68,11 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
         CMSSession session = null;
         if (sessions != null) {
             session = (CMSSession) sessions.get(getKey(cmsContext));
+            if( session != null)    {
+                // resynchronize request (dirty ThreadLocal)
+                ((CMSSessionRecycle) session).setCMSContext(cmsContext);
+                System.out.println("reuse locale session " + session);
+            }
         }
 
         if (session == null) {
@@ -76,9 +81,11 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
 
                 CMSSessionRecycle sessionrecyle = fifo.remove();
                 sessionrecyle.setCMSContext(cmsContext);
-                session = (CMSSession) session;
+                session = (CMSSession) sessionrecyle;
+                
+                storeSession( sessionrecyle);
 
-                System.out.println("get recycle session " + fifo.size());
+                System.out.println("get recycle session " + session + " size="+ fifo.size());
             }
         }
 

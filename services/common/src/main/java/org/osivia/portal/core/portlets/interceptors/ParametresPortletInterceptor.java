@@ -13,7 +13,9 @@
  */
 package org.osivia.portal.core.portlets.interceptors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,9 +29,11 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
+import org.jboss.portal.portlet.invocation.ResourceInvocation;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.menubar.MenubarItem;
 
 
 /**
@@ -75,6 +79,13 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 attributes.put("osivia.controller", controllerContext);
 
 
+                if (!(invocation instanceof ResourceInvocation)) {
+
+                    List<MenubarItem> menuBar = new ArrayList<MenubarItem>();
+
+                    attributes.put(Constants.PORTLET_ATTR_MENU_BAR, menuBar);
+                }
+                
                 WrappedPortalWindow portalWindow = new WrappedPortalWindow( window);
                 attributes.put("osivia.portal.window", portalWindow);
                 

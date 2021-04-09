@@ -75,13 +75,15 @@ public class CMSServiceImpl implements CMSService {
 
         if (proxy == null) {
             // create new proxy
-            System.out.println("create cms session");
+
             CMSSession cmsSession = new CMSSessionImpl(this);
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             InvocationHandler invocationHandler = new CMSSessionInvocationHandler(cmsSession);
             proxy = (CMSSessionRecycle) Proxy.newProxyInstance(classLoader, new Class[]{CMSSession.class, CMSSessionRecycle.class}, invocationHandler);
             proxy.setCMSContext(cmsContext);
             sessionStorage.storeSession(proxy);
+            
+            System.out.println("create cms session " + proxy);
          }
 
 

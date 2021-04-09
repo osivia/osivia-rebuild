@@ -66,7 +66,7 @@ import org.springframework.stereotype.Service;
  * @see IPortalUrlFactory
  */
 
-@Service
+@Service("osivia:service=UrlFactory")
 public class PortalUrlFactory implements IPortalUrlFactory {
 
    
@@ -309,8 +309,12 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     @Override
-    public String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
+    public String getPermaLink(PortalControllerContext portalCtx, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
             throws PortalException {
+        
+        if (IPortalUrlFactory.PERM_LINK_TYPE_SHARE.equals(permLinkType)) {
+           return getViewContentUrl(portalCtx, new CMSContext(portalCtx), new UniversalID("nx",cmsPath));
+        }        
         
         return null;
     }
