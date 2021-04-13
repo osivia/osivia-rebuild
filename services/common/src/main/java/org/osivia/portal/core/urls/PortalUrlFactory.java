@@ -24,23 +24,17 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.api.PortalURL;
-import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
-
 import org.osivia.portal.api.locale.ILocaleService;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
@@ -359,6 +353,21 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         portalName = "/" + portalName;
 
         return this.getStartPageUrl(ctx, portalName, pageName, templateName, props, params);
+    }
+    
+    
+
+
+
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl) throws PortalException {
+        //TODO
+        return redirectionUrl;
     }
     
     /**

@@ -199,6 +199,9 @@ public interface IPortalUrlFactory {
 
     String getHomePageUrl(PortalControllerContext portalControllerContext, boolean refresh) throws PortalException;
 
+
+    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl) throws PortalException;
+
   
     
 }

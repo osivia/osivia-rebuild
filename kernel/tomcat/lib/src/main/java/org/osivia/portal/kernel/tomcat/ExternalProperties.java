@@ -30,9 +30,12 @@ public class ExternalProperties implements PropertySource   {
             if (externalPropertiesFile == null || externalPropertiesFile.isEmpty()) {
                 throw new IOException("The external property file location is not set in " + CATALINA_PROPERTIES + " (expected value for " + CATALINA_PROPERTIES_FILE_PROPERTY + ")");
             }
-            FileInputStream fileInputStream = new FileInputStream(externalPropertiesFile);
+            String fileNames[] = externalPropertiesFile.split(",");
             externalProperties = new Properties();
-            externalProperties.load(fileInputStream);
+            for(int i=0; i< fileNames.length; i++)  {
+                FileInputStream fileInputStream = new FileInputStream(fileNames[i]);
+                externalProperties.load(fileInputStream);
+            }
         } catch (IOException e) {
             LOGGER.fatal("Unable to read the external property file", e);
             externalProperties = null;

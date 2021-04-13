@@ -44,12 +44,16 @@
                 <include>org.springframework:spring-web</include>
                 <include>org.springframework:spring-aop</include>                
                 <include>org.springframework:spring-webmvc</include>
-                <include>org.springframework:spring-webmvc-portlet</include>                
+                <include>org.springframework:spring-webmvc-portlet</include> 
+                <include>org.springframework:spring-context-support</include>
+                <include>org.springframework:spring-tx</include>                                  
                 <include>org.springframework.security:spring-security-core</include>
                 <include>org.springframework.security:spring-security-web</include>              
                 <include>org.springframework.security:spring-security-config</include>              
                 <include>org.springframework.security:spring-security-taglibs</include>              
-                <include>org.springframework.security.oauth:spring-security-oauth2</include>                     
+                <include>org.springframework.security.oauth:spring-security-oauth2</include> 
+             	<include>org.springframework.ldap:spring-ldap-core</include>     
+                <include>aopalliance:aopalliance</include>             	                              
                  <!-- Rest services --> 
                 <include>org.apache.httpcomponents:httpclient</include>
                 <include>org.apache.httpcomponents:httpcore</include>
@@ -57,7 +61,9 @@
                 <include>com.fasterxml.jackson.core:jackson-databind:jar:${jackson.version}</include>                    
                 <include>com.fasterxml.jackson.core:jackson-annotations:jar:${jackson.version}</include>                  
                 <include>javax.servlet:jstl</include>
-                <include>javax.mail:mail</include>                
+                <include>javax.mail:mail</include>      
+
+    
              </includes>
         </dependencySet>  
         <dependencySet>
