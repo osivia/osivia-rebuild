@@ -83,7 +83,6 @@ public class CMSServiceImpl implements CMSService {
             proxy.setCMSContext(cmsContext);
             sessionStorage.storeSession(proxy);
             
-            System.out.println("create cms session " + proxy);
          }
 
 

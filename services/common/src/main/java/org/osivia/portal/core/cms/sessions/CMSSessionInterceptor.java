@@ -43,7 +43,6 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
                 for (CMSSessionRecycle session : sessions.values()) {
                     
                     fifo.add(session);
-                    System.out.println("store recycle session -> " + fifo.size());
                 }
 
                 // dereference sessions
@@ -71,7 +70,6 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
             if( session != null)    {
                 // resynchronize request (dirty ThreadLocal)
                 ((CMSSessionRecycle) session).setCMSContext(cmsContext);
-                System.out.println("reuse locale session " + session);
             }
         }
 
@@ -84,9 +82,7 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
                 session = (CMSSession) sessionrecyle;
                 
                 storeSession( sessionrecyle);
-
-                System.out.println("get recycle session " + session + " size="+ fifo.size());
-            }
+           }
         }
 
         return session;

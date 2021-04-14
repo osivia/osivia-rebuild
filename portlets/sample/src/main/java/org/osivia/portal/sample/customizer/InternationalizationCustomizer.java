@@ -29,6 +29,7 @@ import org.osivia.portal.api.customization.CustomizationModuleMetadatas;
 import org.osivia.portal.api.customization.ICustomizationModule;
 import org.osivia.portal.api.customization.ICustomizationModulesRepository;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 
 /**
  * Internationalization customizer.
@@ -96,7 +97,7 @@ public class InternationalizationCustomizer extends GenericPortlet implements IC
     @Override
     public void init() throws PortletException {
         super.init();
-        this.repository = (ICustomizationModulesRepository) this.getPortletContext().getAttribute(ATTRIBUTE_CUSTOMIZATION_MODULES_REPOSITORY);
+        this.repository = Locator.getService("osivia:service=CustomizationService", ICustomizationModulesRepository.class);
         this.repository.register(this.metadatas);
     }
 

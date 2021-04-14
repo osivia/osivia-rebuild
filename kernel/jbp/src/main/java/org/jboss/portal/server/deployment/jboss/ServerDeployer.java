@@ -308,7 +308,7 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	@Override
 	public void onEvent(WebAppEvent event) {
 
-		log.info(event);
+		log.debug(event);
 		if (event instanceof WebAppLifeCycleEvent) {
 
 			WebAppLifeCycleEvent cycleEvent = (WebAppLifeCycleEvent) event;
@@ -349,7 +349,7 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	// Portets
 	@Override
 	public void onEvent(ManagedObjectRegistryEvent event) {
-		log.info(event);
+		log.debug(event);
 		
 	}
 

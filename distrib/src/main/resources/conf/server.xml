@@ -88,8 +88,9 @@
     -->
 
     <!-- Define an AJP 1.3 Connector on port 8009 -->
+<!--    
     <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
-
+-->
 
     <!-- An Engine represents the entry point (within Catalina) that processes
          every request.  The Engine implementation for Tomcat stand alone
@@ -127,7 +128,7 @@
 		roleSearch="(uniqueMember={0})" />
 
       <Host name="localhost"  appBase="webapps"
-            unpackWARs="true" autoDeploy="true">
+            unpackWARs="true" autoDeploy="true" hostConfigClass="org.osivia.portal.kernel.tomcat.OrderedHostConfig">
 
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->

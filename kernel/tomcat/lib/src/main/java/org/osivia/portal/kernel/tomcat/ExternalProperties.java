@@ -3,6 +3,7 @@ package org.osivia.portal.kernel.tomcat;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +36,17 @@ public class ExternalProperties implements PropertySource   {
             for(int i=0; i< fileNames.length; i++)  {
                 FileInputStream fileInputStream = new FileInputStream(fileNames[i]);
                 externalProperties.load(fileInputStream);
+                
+                // Also add to System properties
+                FileInputStream systemInputStream = new FileInputStream(fileNames[i]);
+                Properties props = new Properties();
+
+                // load a properties file
+                props.load(systemInputStream);
+
+                for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                    System.setProperty((String) entry.getKey(), (String) entry.getValue());
+                }
             }
         } catch (IOException e) {
             LOGGER.fatal("Unable to read the external property file", e);

@@ -64,37 +64,19 @@ public class RuntimeBeanBuilder {
         configContext.getBean(beanName);
     }
 
+    
+    
+    
+    
+   
+
+
+
+
+
     @PostConstruct
     public void buildNamespaces() {
         // Load system properties
-
-        // Load system properties
-
-
-        String externalPropertiesFile = System.getProperty("org.osivia.portal.kernel.tomcat.ExternalPropertySource.file");
-        if (externalPropertiesFile != null) {
-
-            String fileNames[] = externalPropertiesFile.split(",");
-            for (int i = 0; i < fileNames.length; i++) {
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(fileNames[i]);
-                    InputStream input = fileInputStream;
-
-                    Properties props = new Properties();
-
-                    // load a properties file
-                    props.load(input);
-
-                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                        System.setProperty((String) entry.getKey(), (String) entry.getValue());
-                    }
-
-
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
 
 
         /* Portal namespace beans */

@@ -13,6 +13,8 @@
     <artifactId>osivia-portal-ws</artifactId>
     <packaging>war</packaging>
 
+    <name>OSIVIA Portal - Core web services</name>
+
     <dependencies>
 
         <dependency>
