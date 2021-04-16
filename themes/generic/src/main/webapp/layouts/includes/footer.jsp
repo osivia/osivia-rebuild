@@ -39,4 +39,8 @@
     </div>
 
     <div class="modal-clone d-none"></div>
+    
+    
 </div>
+
+<div id="react-container-factory"></div>
