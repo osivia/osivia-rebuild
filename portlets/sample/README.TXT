@@ -15,7 +15,7 @@ Original source of the react portlet are located in /src/main/react/src
 After modifying the sources, to build React App :
 
 1/ go to /src/main/react
-2/ npm install
+2/ npm install (first time)
 3/ npm run build
-4/ copy 2 the modified static files in /webapp/js/react2/static (main-* and 2-*)
-5/ update the references (jboss-portlet.xml and react.jsp)
+4/ copy the 2 modified static files in /webapp/js/react2/static (main-* and 2-*)
+5/ update the references (jboss-portlet.xml and react.jsp by copying the content of runtime-*)
