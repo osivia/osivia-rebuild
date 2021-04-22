@@ -67,7 +67,8 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         // Add doc properties
         Map<String, Object> docProperties = doc.getProperties();
         for( String key: docProperties.keySet())    {
-            pageProperties.put(key, (String) docProperties.get(key));
+            if( docProperties.get(key) instanceof String)
+                pageProperties.put(key, (String) docProperties.get(key));
         }
         
 

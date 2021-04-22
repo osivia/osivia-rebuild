@@ -84,6 +84,33 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      * @param id the id
      * @param properties the properties
      */
+    private void addTemplateNxSpace(String id, String name, String parentId, String spaceId) {
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        properties.put("dc:title", "NxSpace." + id);
+
+        List<ModuleRef> modules = new ArrayList<ModuleRef>();
+        List<String> children = new ArrayList<String>();
+        
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
+        //page.setInheritedRegions(Arrays.asList("top"));
+        
+        Map<String,String> navProperties = new ConcurrentHashMap<>(); 
+        navProperties.put("osivia.hideTitle", "1");        
+        ModuleRef nav = new ModuleRef("nav" , "nav",  "toutatice-portail-cms-nuxeo-publishMenuPortletInstance", navProperties); 
+        
+        modules.add(nav);     
+
+
+        addDocument(id, page);
+    }
+    
+    
+    /**
+     * Adds the space.
+     *
+     * @param id the id
+     * @param properties the properties
+     */
     private void addTemplatePageWithoutMenu(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
@@ -162,11 +189,12 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         pageA1("ID_TEMPLATE_WORKSPACE", "workspace", "ID_PAGE_A", "portalA", new ArrayList<String>());
         pageB("ID_TEMPLATE_SITE", "site", "portalA", "portalA", new ArrayList<String>());
         pageC("ID_EMPTY", "empty", "portalA", "portalA", new ArrayList<String>());
-
+        addTemplateNxSpace("ID_TEMPLATE_NX_WORKSPACE", "nxworkspace", "portalA", "portalA");
         List<String> portalChildren = new ArrayList<String>();
         portalChildren.add("ID_PAGE_A");
         portalChildren.add("ID_TEMPLATE_SITE");
         portalChildren.add("ID_EMPTY");
+        portalChildren.add("ID_TEMPLATE_NX_WORKSPACE");
         addTemplateSpace("portalA", portalChildren);
         
          
