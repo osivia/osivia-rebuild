@@ -120,6 +120,7 @@
       
       <property name="interceptors">
 	     <list>
+	     	 <ref bean="org.osivia.portal.core.portlets.interceptors.PortletAttributesController"/>
 			 <ref bean="osivia:service=Interceptor,type=Portlet,name=ConsumerCache"/>
 			 <ref bean="osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor"/>
 			 

@@ -94,7 +94,12 @@
    </bean>
    
    
-      
+   <bean class="org.osivia.portal.core.portlets.interceptors.PortletAttributesController"
+          id="org.osivia.portal.core.portlets.interceptors.PortletAttributesController" >
+   </bean>
+   
+
+
    	<bean class="org.osivia.portal.core.content.PublicationManager"
 		id="osivia:service=PublicationManager" >
 	</bean>

@@ -66,6 +66,7 @@ import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.WindowContextFactory;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
@@ -76,12 +77,16 @@ import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateRespon
 import org.jboss.portal.theme.page.PageResult;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.core.cms.cache.RequestCacheManager;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
+import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
@@ -180,6 +185,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }
             } else if (controllerResponse instanceof UpdatePageResponse) {
                 UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
+                
+                // Portal controller context
+                PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
                 
 
                 PortalObjectId pageId = upw.getPageId();
@@ -437,6 +445,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                             regionList.add(window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
                         }
                     }
+                    
+                    
+
+
+
+
 
                     // Layout
                     if (refreshPageStructure) {
@@ -479,56 +493,11 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                                     //
                                     res.addWindowContext(wc);
-
-                                    //
-                                    MarkupInfo markupInfo = (MarkupInfo) invocation.getResponse().getContentInfo();
-
-                                    // The buffer
-                                    StringWriter buffer = new StringWriter();
-
-                                    // Get a dispatcher
-                                    ServletContextDispatcher dispatcher = new ServletContextDispatcher(invocation.getServerContext().getClientRequest(),
-                                            invocation.getServerContext().getClientResponse(), controllerContext.getServletContainer());
-
-                                    // Not really used for now in that context, so we can pass null (need to change that of course)
-                                    ThemeContext themeContext = new ThemeContext(null, null);
-
-                                    // get render context
-                                    RendererContext rendererContext = layout.getRenderContext(themeContext, markupInfo, dispatcher, buffer);
-
-                                    // Push page
-                                    rendererContext.pushObjectRenderContext(res);
-
-                                    // Push region
-                                    Region region = res.getRegion2(wc.getRegionName());
-                                    rendererContext.pushObjectRenderContext(region);
-
-                                    // Render
-                                    rendererContext.render(wc);
-                                    
-                                    List<Element> headElements = wc.getResult().getHeaderContent();
-                                    if (headElements != null) {
-                                        for (Element element : headElements) {
-                                            if (!"title".equals(element.getNodeName().toLowerCase())) {
-                                                   resources.add(ResourceHandler.getResource(element.toString()));
-                                            }
-                                        }
-                                    }                                    
-
-                                    // Pop region
-                                    rendererContext.popObjectRenderContext();
-
-                                    // Pop page
-                                    rendererContext.popObjectRenderContext();
-
-                                    // Add render to the page
-                                    updatePage.addFragment(wc.getId(), buffer.toString());
                                     
                                     
-                                    controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajax.ts."+ wc.getId(), System.currentTimeMillis());
-
+                                    this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wc);
                                     
-                                } else {
+                                  } else {
                                     //TODO:display error
                                     //updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT), "An error occured during rendering");
                                 }
@@ -545,7 +514,44 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
                     
+                     
                     updatePage.setResources(resources);
+                    
+                    // Notifications & menubar refresh
+                    if (!fullRefresh) {
+                        try {
+                            // Check if current page is a modal
+//TODO : test modal                            
+                            PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
+                            if (!modalId.equals(page.getId())) {
+                                // Notifications window context
+/*                                
+                                WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
+                                res.addWindowContext(notificationsWindowContext);
+                                this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, notificationsWindowContext);
+
+                                if (!preventMenubarRefresh) {
+*/                                
+                                    // Menubar window context
+                                    WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
+                                    res.addWindowContext(menubarWindowContext);
+                                    this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, menubarWindowContext);
+                                    
+                                    List<String> regionList = new ArrayList<String>();
+                                    regionList.add(IMenubarService.MENUBAR_WINDOW_ID);                            
+                                    updatePage.getRegions().put(IMenubarService.MENUBAR_REGION_NAME, regionList);
+                                                                       
+/*                                }
+*/ 
+
+                            }
+                        } catch (Exception e) {
+                            log.error("An error occured during the computation of window markup", e);
+
+                            //
+                            fullRefresh = true;
+                        }
+                    }                    
 
                     //
                     if (!fullRefresh) {
@@ -608,5 +614,61 @@ public class AjaxResponseHandler implements ResponseHandler {
         } catch (ControllerException e) {
             throw new ResponseHandlerException(e);
         }
+    }
+
+    private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, Set<PageResource> resources,PageResult res,
+            WindowContext wc)  throws Exception {
+        
+        // Server invocation
+        ServerInvocation invocation = controllerContext.getServerInvocation();
+
+
+        //
+        MarkupInfo markupInfo = (MarkupInfo) invocation.getResponse().getContentInfo();
+
+        // The buffer
+        StringWriter buffer = new StringWriter();
+
+        // Get a dispatcher
+        ServletContextDispatcher dispatcher = new ServletContextDispatcher(invocation.getServerContext().getClientRequest(),
+                invocation.getServerContext().getClientResponse(), controllerContext.getServletContainer());
+
+        // Not really used for now in that context, so we can pass null (need to change that of course)
+        ThemeContext themeContext = new ThemeContext(null, null);
+
+        // get render context
+        RendererContext rendererContext = layout.getRenderContext(themeContext, markupInfo, dispatcher, buffer);
+
+        // Push page
+        rendererContext.pushObjectRenderContext(res);
+
+        // Push region
+        Region region = res.getRegion2(wc.getRegionName());
+        rendererContext.pushObjectRenderContext(region);
+
+        // Render
+        rendererContext.render(wc);
+        
+        List<Element> headElements = wc.getResult().getHeaderContent();
+        if (headElements != null) {
+            for (Element element : headElements) {
+                if (!"title".equals(element.getNodeName().toLowerCase())) {
+                       resources.add(ResourceHandler.getResource(element.toString()));
+                }
+            }
+        }                                    
+
+        // Pop region
+        rendererContext.popObjectRenderContext();
+
+        // Pop page
+        rendererContext.popObjectRenderContext();
+
+        // Add render to the page
+        updatePage.addFragment(wc.getId(), buffer.toString());
+        
+        
+        controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajax.ts."+ wc.getId(), System.currentTimeMillis());
+        
     }
 }

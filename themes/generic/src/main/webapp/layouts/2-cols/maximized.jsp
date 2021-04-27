@@ -34,7 +34,7 @@
    		<p:region regionName='nav' regionID='nav'/>
     </td>   
     <td width="80%" valign="top">
-      <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
+       <%@include file="../includes/content-navbar.jsp" %>
       <p:region regionName='maximized' />
     </td>
   </tr>

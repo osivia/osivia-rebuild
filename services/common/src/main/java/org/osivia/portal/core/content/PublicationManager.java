@@ -237,6 +237,12 @@ public class PublicationManager implements IPublicationManager {
                 
 
                 windowProperties.put("osivia.hideTitle", "1");
+                
+                if( navigation != null)
+                    windowProperties.put("osivia.cms.contextualization", "1");
+                    
+                
+                
                 getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", instance, windowProperties);
 
             }
