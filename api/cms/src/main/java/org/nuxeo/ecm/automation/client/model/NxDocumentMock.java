@@ -90,6 +90,12 @@ public class NxDocumentMock implements EcmDocument, Serializable {
     }
 
 
+    @Override
+    public String getType() {
+        return "document";
+    }
+
+
 
      
    

@@ -15,6 +15,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.DocumentState;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
@@ -25,10 +26,15 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
 import org.osivia.portal.api.cms.model.Templateable;
 import org.springframework.beans.factory.annotation.Autowired;
+
+
+
 
 public class PublicationManager implements IPublicationManager {
 
@@ -223,8 +229,27 @@ public class PublicationManager implements IPublicationManager {
                 
                 String instance;
                 
+                
+
+                
                 if( "nx".equals(doc.getId().getRepositoryName()))   {
-                    instance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
+                    if( "Folder".equals(doc.getType())) {
+
+                        CMSPublicationInfos pubInfos = (CMSPublicationInfos)getCMSService().getCMSSession(cmsContext).getPersonnalization( doc.getId());
+                        windowProperties.put("osivia.nuxeoRequest", "ecm:parentId = '"+pubInfos.getLiveId()+"' AND ecm:mixinType != 'Folderish'");
+                        windowProperties.put("osivia.cms.style", "editorial");
+                        windowProperties.put("osivia.hideDecorators", "1");
+                        windowProperties.put("osivia.document.metadata", String.valueOf(false));
+                        windowProperties.put("osivia.title", "Dossier " + doc.getTitle());
+                        windowProperties.put(Constants.WINDOW_PROP_VERSION, DocumentState.LIVE.toString());
+                        windowProperties.put("osivia.cms.pageSizeMax", "10");
+
+                        instance ="toutatice-portail-cms-nuxeo-viewListPortletInstance";
+                        
+                        
+                        
+                    }   else
+                        instance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
                     
                 }   else    {
                     if( "folder".equals(doc.getType())) {

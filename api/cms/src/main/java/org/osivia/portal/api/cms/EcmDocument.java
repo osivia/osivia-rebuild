@@ -30,5 +30,12 @@ public interface EcmDocument extends Serializable {
      * @return title
      */
     String getTitle();
+    
+    /**
+     * Get document type.
+     * 
+     * @return title
+     */
+    String getType();
 
 }

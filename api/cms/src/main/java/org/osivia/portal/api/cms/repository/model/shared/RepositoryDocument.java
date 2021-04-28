@@ -60,7 +60,7 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
     public List<String> supportedSubTypes = new ArrayList<>();    
     
     public  String getType()    {
-        return "document";
+        return nativeItem.getType();
     }
 
     public List<String> getSupportedSubTypes()  {
