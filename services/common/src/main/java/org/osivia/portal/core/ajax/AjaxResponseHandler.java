@@ -83,10 +83,12 @@ import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.core.cms.cache.RequestCacheManager;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.menubar.MenubarUtils;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
@@ -525,11 +527,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                             PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
                             if (!modalId.equals(page.getId())) {
                                 // Notifications window context
-/*                                
+                              
                                 WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
                                 res.addWindowContext(notificationsWindowContext);
                                 this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, notificationsWindowContext);
+                                
+                                List<String> notificationsRegionList = new ArrayList<String>();
+                                notificationsRegionList.add(NotificationsUtils.WINDOW_ID);                            
+                                updatePage.getRegions().put(NotificationsUtils.REGION_NAME, notificationsRegionList);
 
+/*
                                 if (!preventMenubarRefresh) {
 */                                
                                     // Menubar window context

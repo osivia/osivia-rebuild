@@ -43,4 +43,7 @@
     
 </div>
 
+<%--Notifications--%>
+<p:region regionName="notifications" />
+
 <div id="react-container-factory"></div>

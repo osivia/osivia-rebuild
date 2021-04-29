@@ -15,10 +15,11 @@
 	<meta http-equiv="Expires" content="0" />   
    <!-- to correct the unsightly Flash of Unstyled Content. -->
    <script type="text/javascript"></script>
-   <!-- inject the theme, default to the Renewal theme if nothing is selected for the portal or the page -->
-   <p:theme themeName="renewal"/>
+
    
 	<p:headerContent />
+	
+    <p:theme themeName="renewal"/>
 
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 </head>

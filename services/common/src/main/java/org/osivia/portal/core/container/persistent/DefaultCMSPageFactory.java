@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -61,7 +62,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         String path = parent.getId().getPath().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
         Map<String, String> pageProperties = new HashMap<>();
         pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
-        pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
+//        pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
         pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
         
         // Add doc properties
@@ -78,7 +79,10 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         if( doc instanceof Page)
             inheritedRegions = ((Page) doc).getInheritedRegions();
         
-        new CMSPage(container, containerContext, pageId, pageProperties, inheritedRegions, this);
+        CMSPage cmsPage = new CMSPage(container, containerContext, pageId, pageProperties, inheritedRegions, this);
+        
+        if( StringUtils.isEmpty(cmsPage.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME)))
+            cmsPage.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME, "generic");
 
         for (NavigationItem child : navItem.getChildren()) {
             org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);

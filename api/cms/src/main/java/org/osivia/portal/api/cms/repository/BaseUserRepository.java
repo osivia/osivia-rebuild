@@ -41,6 +41,9 @@ import org.osivia.portal.api.context.PortalControllerContext;
 
 public abstract class BaseUserRepository implements UserRepository, RepositoryListener {
 
+ 
+
+
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
     
     public static String SUPERUSER_NAME = "superuser";
@@ -366,6 +369,9 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     }
 
 
-
+    @Override
+    public void updateDocument(String id) throws CMSException {
+        getSharedRepository().updateDocument(getUserStorage(),id);
+    }
 
 }

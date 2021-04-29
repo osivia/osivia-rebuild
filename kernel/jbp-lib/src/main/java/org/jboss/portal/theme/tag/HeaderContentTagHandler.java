@@ -61,12 +61,21 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       out.write( "<script type='text/javascript' src='/portal-assets/components/jquery-ui/jquery-ui-1.11.3.min.js'></script>");
       out.write("<link rel='stylesheet' href='/portal-assets/components/jquery-ui/jquery-ui-1.11.3.min.css'>");
   
+      
+
+      
       out.write( "<script src='/portal-assets/js/auto-submit.js'></script>");  
       out.write( "<script src='/portal-assets/js/modal.js'></script>");        
       
       // Bootstrap
       out.write( "<script src='/portal-assets/components/bootstrap/js/bootstrap.bundle.min.js'></script>");
 
+      
+      // Select2
+      out.write( "<link rel='stylesheet' href='/portal-assets/components/select2/css/select2.min.css'>");
+      out.write( "<script src='/portal-assets/components/select2/js/select2.full.min.js'></script>");
+
+      
       out.write("<!-- portlet resources -->");
       
       out.flush();

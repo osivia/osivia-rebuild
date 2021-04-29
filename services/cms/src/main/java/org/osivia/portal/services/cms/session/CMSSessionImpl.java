@@ -50,6 +50,11 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
    }
 
     @Override
+    public void updateDocument(UniversalID id) throws CMSException {
+        ((UserRepository) cmsService.getUserRepository(cmsContext, id.getRepositoryName())).updateDocument( id.getInternalID());
+     }
+
+    @Override
     public Result executeRequest(Request request) throws CMSException {
         return ((UserRepository) cmsService.getUserRepository(cmsContext, request.getRepositoryName())).executeRequest(request);
     }

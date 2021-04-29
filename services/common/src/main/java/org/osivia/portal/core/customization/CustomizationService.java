@@ -28,6 +28,7 @@ import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.CustomizationModuleMetadatas;
 import org.osivia.portal.api.customization.ICustomizationModule;
 import org.osivia.portal.api.customization.ICustomizationModulesRepository;
+import org.springframework.stereotype.Service;
 
 
 
@@ -35,6 +36,7 @@ import org.osivia.portal.api.customization.ICustomizationModulesRepository;
 /**
  * The Class CustomizationService.
  */
+@Service("osivia:service=CustomizationService")
 public class CustomizationService implements ICustomizationService, ICustomizationModulesRepository {
 
 

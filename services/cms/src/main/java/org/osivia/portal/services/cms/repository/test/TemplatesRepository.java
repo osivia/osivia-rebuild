@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
+import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -87,7 +88,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
     private void addTemplateNxSpace(String id, String name, String parentId, String spaceId) {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "NxSpace." + id);
-
+        properties.put(ThemeConstants.PORTAL_PROP_THEME, "cloud-ens-charte");
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         List<String> children = new ArrayList<String>();
         

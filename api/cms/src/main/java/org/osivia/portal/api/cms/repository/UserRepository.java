@@ -42,6 +42,15 @@ public interface UserRepository {
      */
     public Document getDocument(String id) throws CMSException;
     
+    
+    /**
+     * Update the document.
+     *
+     * @param id the id
+     * @throws CMSException the CMS exception
+     */
+    public void updateDocument(String id) throws CMSException;
+    
     /**
      * Gets the navigation item.
      *

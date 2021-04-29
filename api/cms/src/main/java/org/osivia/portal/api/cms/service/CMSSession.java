@@ -32,6 +32,16 @@ public interface CMSSession {
  
 
     /**
+     * Update the document.
+     *
+     * @param id the id
+     * @return the document
+     * @throws CMSException the CMS exception
+     */
+    public void updateDocument(UniversalID id) throws CMSException;
+    
+    
+    /**
      * Gets the personnalization.
      *
      * @param id the id

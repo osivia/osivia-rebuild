@@ -98,6 +98,13 @@ public class SharedRepository {
             throw new CMSException(e);
         }
     }
+    
+    
+    public void updateDocument(UserStorage storageRepository,String internalID) throws CMSException {
+
+         cachedDocument.remove(internalID);
+       
+    }
 
    
     public String getRepositoryName() {
