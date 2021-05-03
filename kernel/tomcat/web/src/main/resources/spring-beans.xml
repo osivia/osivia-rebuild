@@ -418,7 +418,9 @@
       <!-- <depends>portal:container=Instance</depends> -->
       <property name="PortalServer" ref="portal:service=Server"/>
       <property name="ServletContainerFactory" ref="ServletContainerFactory"/>
+      <!-- 
       <property name="AppDeployer" ref="PortletApplicationDeployer"/>
+      -->
    </bean>
    
    
@@ -427,28 +429,40 @@
       
    </bean>
    
-   
+   <!-- 
       <bean class="org.jboss.portal.core.deployment.jboss.PortletAppDeploymentFactory"
           id="portal:deploymentFactory=PortletApp" >
       
-      <!-- <depends>portal:service=PortletInvokerRegistration,id=local</depends> -->
       <property name="Deployer" ref="portal:deployer=PortalWebApp"/>
       <property name="CoreInfoBuilderFactory" ref="portal:service=InfoBuilderFactory,type=Core"/>
       <property name="PortletContainerInvoker" ref="ContainerPortletInvoker"/>
       <property name="Config" ref="portal:service=ServerConfig"/>
-      <!-- 
-      <property name="PortletSecurityService" ref="portal:service=PortletSecurityService"/>
-      -->
+
       <property name="InstanceContainer" ref="portal:container=Instance"/>
       <property name="JBossPortletEntityResolver" ref="portal:service=EntityResolver"/>
       <property name="PortalObjectEntityResolver" ref="portal:service=EntityResolver"/>
       <property name="PortletInstancesEntityResolver" ref="portal:service=EntityResolver"/>
       <property name="StandardJBossApplicationMetaDataLocation" value="conf/standardjboss-portlet.xml" />
-      <!-- Set to false in clustered mode, otherwise set to true -->
+
       <property name="CreateInstances" value="true" />
    </bean>
-   
-   
+   -->
+    <bean class="org.osivia.portal.core.deploiement.PortletApplicationDeploymentFactory"
+          id="portal:deploymentFactory=PortletApp" >
+      
+      <property name="Deployer" ref="portal:deployer=PortalWebApp"/>
+      <property name="CoreInfoBuilderFactory" ref="portal:service=InfoBuilderFactory,type=Core"/>
+      <property name="PortletContainerInvoker" ref="ContainerPortletInvoker"/>
+      <property name="Config" ref="portal:service=ServerConfig"/>
+
+      <property name="InstanceContainer" ref="portal:container=Instance"/>
+      <property name="JBossPortletEntityResolver" ref="portal:service=EntityResolver"/>
+      <property name="PortalObjectEntityResolver" ref="portal:service=EntityResolver"/>
+      <property name="PortletInstancesEntityResolver" ref="portal:service=EntityResolver"/>
+      <property name="StandardJBossApplicationMetaDataLocation" value="conf/standardjboss-portlet.xml" />
+
+      <property name="CreateInstances" value="true" />
+   </bean>
    
    <bean class="org.jboss.portal.theme.deployment.jboss.LayoutDeploymentFactory" id="portal:deploymentFactory=Layout">
       <property name="Deployer" ref="portal:deployer=PortalWebApp"/>

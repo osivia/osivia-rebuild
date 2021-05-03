@@ -1,5 +1,7 @@
 package org.osivia.portal.kernel.common.configuration;
 
+import javax.annotation.PreDestroy;
+
 import org.jboss.portal.core.aspects.portlet.AjaxInterceptor;
 import org.jboss.portal.core.aspects.portlet.HeaderInterceptor;
 import org.jboss.portal.portlet.PortletInvoker;
@@ -51,6 +53,8 @@ public class PortalConfiguration implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
 
+
+    
     /**
      * Constructor.
      */
@@ -73,13 +77,14 @@ public class PortalConfiguration implements ApplicationContextAware {
      *
      * @return portlet application deployer
      */
+/*    
     @Bean(name = {"PortletApplicationDeployer", "PortletApplicationRegistry"})
     public PortletApplicationDeployer getPortletApplicationDeployer() {
         PortletApplicationDeployer portletApplicationDeployer = new PortletApplicationDeployer();
         portletApplicationDeployer.setServletContainerFactory(this.applicationContext.getBean("ServletContainerFactory", ServletContainerFactory.class));
         portletApplicationDeployer.setContainerPortletInvoker(this.applicationContext.getBean("ContainerPortletInvoker", ContainerPortletInvoker.class));
         
-        portletApplicationDeployer.start();
+//        portletApplicationDeployer.start();
 
         // Valve interceptor circular dependency
         ValveInterceptor valveInterceptor = this.applicationContext.getBean("ValveInterceptor", ValveInterceptor.class);
@@ -87,7 +92,7 @@ public class PortalConfiguration implements ApplicationContextAware {
 
         return portletApplicationDeployer;
     }
-
+*/
 
     /**
      * Servlet container factory.

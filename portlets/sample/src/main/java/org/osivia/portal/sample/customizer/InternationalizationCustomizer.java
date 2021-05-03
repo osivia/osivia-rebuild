@@ -41,7 +41,7 @@ import org.osivia.portal.api.locator.Locator;
 public class InternationalizationCustomizer extends GenericPortlet implements ICustomizationModule {
 
     /** Customizer name. */
-    private static final String CUSTOMIZER_NAME = "cloud-ens.customizer.internationalization";
+    private static final String CUSTOMIZER_NAME = "cloud-ens.sample.customizer.internationalization";
     /** Customization modules repository attribute name. */
     private static final String ATTRIBUTE_CUSTOMIZATION_MODULES_REPOSITORY = "CustomizationModulesRepository";
     /** Custom resource bundle name. */

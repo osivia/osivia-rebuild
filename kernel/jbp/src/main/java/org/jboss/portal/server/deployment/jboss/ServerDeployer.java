@@ -249,14 +249,14 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	@PostConstruct
 	public void register()	{
 		servletContainerFactory.getServletContainer().addWebAppListener(this);
-		appDeployer.addListener(this);
+		//appDeployer.addListener(this);
 	}
 	
 	// All web application
 	@PreDestroy
 	public void unregister()	{
 		servletContainerFactory.getServletContainer().removeWebAppListener(this);
-		appDeployer.removeListener(this);
+		//appDeployer.removeListener(this);
 	}
 	  
 	
