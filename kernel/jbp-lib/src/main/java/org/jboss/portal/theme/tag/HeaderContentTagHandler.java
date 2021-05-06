@@ -75,6 +75,11 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       out.write( "<link rel='stylesheet' href='/portal-assets/components/select2/css/select2.min.css'>");
       out.write( "<script src='/portal-assets/components/select2/js/select2.full.min.js'></script>");
 
+      // Inline-edition
+      out.write( "<script src='/portal-assets/js/inline-edition.js'></script>");  
+   
+      
+      
       
       out.write("<!-- portlet resources -->");
       
