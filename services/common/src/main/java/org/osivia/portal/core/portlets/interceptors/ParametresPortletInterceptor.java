@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -30,6 +31,7 @@ import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.ResourceInvocation;
+import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.osivia.portal.api.Constants;
@@ -102,6 +104,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
         PortletInvocationResponse response = super.invoke(invocation);
 
+        if (response instanceof UpdateNavigationalStateResponse) {
+            Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
+            if (BooleanUtils.toBoolean(String.valueOf(attributes.get("osivia.ajax.preventRefresh")))) {
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.preventRefreshWindowId", invocation.getWindowContext().getId());
+            }            
+        }
 
 
         return response;

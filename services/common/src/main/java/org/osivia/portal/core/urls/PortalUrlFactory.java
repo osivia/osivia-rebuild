@@ -207,25 +207,21 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
 
 
-        boolean auth = false;
         if (suffix.startsWith("/auth/")) {
             suffix = StringUtils.removeStart(suffix, "/auth/");
-            auth = true;
+
         } else {
             suffix = StringUtils.removeStart(suffix, "/");
         }
 
         // Popup command
-        String popupCommand = PortalCommandFactory.NO_AUTHREDIRECT+PortalCommandFactory.SESSION+"/";
-
+        String popupCommand = PortalCommandFactory.MODAL+PortalCommandFactory.SESSION+"/";
 
         // URL
         final StringBuilder url = new StringBuilder();
         url.append(prefix);
         url.append(portalContextPath);
-        if (auth) {
-            url.append("/auth");
-        }
+
         if (popupCommand != null) {
             url.append(popupCommand);
         }

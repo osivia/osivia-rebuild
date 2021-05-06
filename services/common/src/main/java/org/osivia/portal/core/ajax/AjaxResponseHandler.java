@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.MarkupInfo;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -254,6 +255,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 // Whether we need a full refresh or not
                 boolean fullRefresh = false;
+                // Prevent menubar refresh indicator
+                boolean preventMenubarRefresh = false;                
 
                 // in case we have we have a page navigational state...
                 Map<String, String[]> parameters = null;
@@ -297,7 +300,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                             dirtyWindowIds.add(key.getId());
                         } else if (type == PageNavigationalState.class) {
                             // force full refresh for now... for JBPORTAL-2326
-                            fullRefresh = true;
+                            
+                            // Mise en commentaire portage tomcat8
+                            // Use case : éciter le rechargement page sur modification méta-données document
+ 
+                            /*fullRefresh = true;
 
                             // TODO: implement proper propagation of PRPs and events
                             PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
@@ -314,14 +321,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     }
                                 }
 
-                                /*
-                                 * CoordinationManager coordinationManager = controllerContext.getController().getCoordinationManager();
-                                 * for (QName qName : pns.getParameters().keySet())
-                                 * {
-                                 * //
-                                 * }
-                                 */
+
+
                             }
+                            */                            
                         }
                     }
                 }   else    {
@@ -337,6 +340,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
                   
+                }
+                
+
+                if (!fullRefresh) {
+                    // Prevent Ajax refresh
+                    String preventAjaxRefreshWindowId = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.ajax.preventRefreshWindowId");
+                    if (StringUtils.isNotEmpty(preventAjaxRefreshWindowId)) {
+                        PortalObjectId objectId = PortalObjectId.parse(preventAjaxRefreshWindowId, PortalObjectPath.CANONICAL_FORMAT);
+                        preventMenubarRefresh = dirtyWindowIds.remove(objectId);
+                    }                    
                 }
                 
                 

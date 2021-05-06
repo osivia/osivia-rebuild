@@ -16,8 +16,7 @@ $JQry(function() {
 				
 				
                 var url = $target.data("load-url");
-                //url = adaptAjaxRedirection(url);
-				var callbackFunction = $target.data("load-callback-function");
+ 				var callbackFunction = $target.data("load-callback-function");
 				var callbackFunctionArgs = $target.data("load-callback-function-args");
 				var title = $target.data("title");
 				var footer = $target.data("footer");

@@ -23,6 +23,13 @@
 
 var currentSubmit;
 
+
+
+
+
+
+
+
 function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId)
 {
    var options = {

@@ -67,6 +67,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
     protected static final Log logger = LogFactory.getLog(PortalCommandFactory.class);
 
+    public static String MODAL = "/modal";
     public static String NO_AUTHREDIRECT = "/nr";
     private static String NO_AUTHREDIRECT_SLASH = NO_AUTHREDIRECT+"/";
     public static String SESSION = "/session";
@@ -94,12 +95,17 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     @Override
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
 
-  
+        boolean modal = false;
         boolean noredirect = false;
         String browserSession = null;
         
         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
         
+        // Just to prevent from redirection
+        if (requestPath.startsWith(MODAL)) {
+            requestPath = requestPath.substring(MODAL.length() );
+            modal = true;
+        }
         
         // Just to prevent from redirection
         if (requestPath.startsWith(NO_AUTHREDIRECT_SLASH)) {
@@ -108,7 +114,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
         
         
-        // Just to prevent from redirection
+        // To check the session
         if (requestPath.startsWith(SESSION_SLASH)) {
             int sessionIndex = requestPath.substring(SESSION_SLASH.length()).indexOf("/");
             if( sessionIndex != -1)    {
@@ -119,8 +125,6 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         if( browserSession == null)
             browserSession = request.getHeader("session_check");
         
-        
-
         
 
         // compute  server session check
@@ -146,8 +150,6 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         
-          
-        
         String viewState = request.getHeader("view_state");
         
         if (viewState != null) {
@@ -156,12 +158,22 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
         
 
+        ControllerCommand cmd = null;
         
         
+              
+        boolean handleMapping = true;
         
-        ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
+               
+        // we can't handle an ajax Request without incorrect authentification
+        // So we ask the browser to reload currentpage
+        if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
+            handleMapping = false;
+        }
         
-
+        if( handleMapping) {
+             cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
+        }
                
         
         
@@ -229,7 +241,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         
         boolean returnToDefaultPage = false;
-        boolean popupRedirection = false;
+        boolean handleAjaxReload = false;
         
         
         // No more static pages :)
@@ -255,8 +267,13 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
 
         // no redirect url (example : reopen a modal after a session losed)
-        if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
+        if( modal && !StringUtils.equals(currentServerCheck, browserSession))    {
             returnToDefaultPage = true;
+        }
+        
+        // Ajax no redirect url (example : load select2)
+        if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
+            handleAjaxReload = true;
         }
 
         
@@ -272,8 +289,19 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
         
         
-        
-        
+        if( handleAjaxReload) {
+            // Create an anused command
+            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+            UniversalID defaultPortalId;
+            try {
+                 defaultPortalId = getCMSService().getDefaultPortal(new CMSContext(portalCtx));
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
+            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+            request.setAttribute("osivia.full_refresh_url", "/portal-assets/redirection/ajax-reload.jsp");
+          
+        }   else
         
         if( returnToDefaultPage) {
             // only use case : home page
@@ -284,18 +312,13 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             } catch (CMSException e) {
                 throw new RuntimeException(e);
             }
-           cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
-           
-           String url = controllerContext.renderURL(cmd, null, null);         
-           request.setAttribute("osivia.full_refresh_url", url);
-           System.out.println("portalcommandfactory full refresh");
+            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+            String url = controllerContext.renderURL(cmd, null, null);    
+            request.setAttribute("osivia.full_refresh_url", url);
+            System.out.println("portalcommandfactory full refresh");
         }
 
-        
- 
-        
-        
-        
+          
         
         
         
