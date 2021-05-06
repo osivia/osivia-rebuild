@@ -202,6 +202,9 @@ public interface IPortalUrlFactory {
 
     String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl) throws PortalException;
 
+
+    String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException;
+
   
     
 }

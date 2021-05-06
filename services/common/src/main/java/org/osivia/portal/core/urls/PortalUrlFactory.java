@@ -32,12 +32,14 @@ import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -236,20 +238,23 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
 
         Locale locale = cmsContext.getlocale();
-
         Boolean preview = cmsContext.isPreview();
         
         final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview);
-        
- 
-
         final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
 
         String url = portalURL.toString();
 
-
         return url;
+    }
+    
+    
+    @Override
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException {
+        CMSController ctrl = new CMSController(portalControllerContext);
+        CMSContext cmsContext = ctrl.getCMSContext();
 
+        return getViewContentUrl(portalControllerContext,cmsContext, id);
     }
 
     /**
