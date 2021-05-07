@@ -87,6 +87,7 @@ import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.core.cms.cache.RequestCacheManager;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -197,11 +198,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 
                 PortalObjectUtilsInternal.setPageId(controllerContext, pageId);
-                
-                
-                //TODO : conversation scope
-                PortalObjectId oldPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajaxPageId");
-                controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajaxPageId", pageId);
+ 
+                PortalObjectId oldPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,"osivia.initialPageId");
                 
                 Boolean pageChange = false;
                 
@@ -536,9 +534,15 @@ public class AjaxResponseHandler implements ResponseHandler {
                     if (!fullRefresh) {
                         try {
                             // Check if current page is a modal
-//TODO : test modal                            
-                            PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
-                            if (!modalId.equals(page.getId())) {
+                            boolean modal = false;
+
+                            if( page instanceof DynamicTemplatePage)     {
+                                PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
+                                if(templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
+                                    modal = true;
+                            }
+                            
+                            if (!modal) {
                                 // Notifications window context
                               
                                 WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
@@ -549,9 +553,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 notificationsRegionList.add(NotificationsUtils.WINDOW_ID);                            
                                 updatePage.getRegions().put(NotificationsUtils.REGION_NAME, notificationsRegionList);
 
-/*
+
                                 if (!preventMenubarRefresh) {
-*/                                
+                               
                                     // Menubar window context
                                     WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
                                     res.addWindowContext(menubarWindowContext);
@@ -561,8 +565,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     regionList.add(IMenubarService.MENUBAR_WINDOW_ID);                            
                                     updatePage.getRegions().put(IMenubarService.MENUBAR_REGION_NAME, regionList);
                                                                        
-/*                                }
-*/ 
+                               }
+
 
                             }
                         } catch (Exception e) {

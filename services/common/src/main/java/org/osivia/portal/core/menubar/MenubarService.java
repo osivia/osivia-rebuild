@@ -11,6 +11,7 @@ import org.jboss.portal.core.model.portal.Page;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
@@ -174,13 +175,20 @@ public class MenubarService implements IMenubarService {
 
         // Current page
         Page page = PortalObjectUtilsInternal.getPage(controllerContext);
-        // Base path
-        String basePath = page.getProperty("osivia.cms.basePath");
+      
 
         // Document context
         DocumentContext documentContext;
+        
         try {
-            documentContext = cmsService.getDocumentContext(cmsContext, basePath);
+            // Base path
+            String basePath = null;
+            String navigationId = page.getProperty("osivia.navigationId");
+            if(StringUtils.isNotEmpty(navigationId))    {
+                basePath =  cmsService.getPathFromUniversalID(cmsContext, new UniversalID(navigationId));
+                documentContext = cmsService.getDocumentContext(cmsContext, basePath);
+            }   else
+                    documentContext = null;
         } catch (CMSException e) {
             documentContext = null;
         }

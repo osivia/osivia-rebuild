@@ -37,6 +37,8 @@ $JQry(function() {
 				$window.children().clone().appendTo($clone);
 				url = url.replace("/session/","/session/"+session_check+"/");
 
+				// Save state
+				$element.data("saved_state", view_state);
 				
 				$window.load(url, function(response, status, xhr) {
 					
@@ -129,6 +131,9 @@ $JQry(function() {
 
 				// Size
                 $dialog.removeClass("modal-xl modal-lg modal-sm");
+                
+                // Restore state
+                view_state = $element.data("saved_state");
 			});
 			
 			$element.data("loaded", true);

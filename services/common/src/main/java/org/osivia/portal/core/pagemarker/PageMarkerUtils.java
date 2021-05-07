@@ -270,6 +270,8 @@ public class PageMarkerUtils {
 
         if (markerInfo.getPageId() != null) {
             PortalObjectUtilsInternal.setPageId(controllerContext, markerInfo.getPageId());
+            
+            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.initialPageId", markerInfo.getPageId());
         }
 
         return page;

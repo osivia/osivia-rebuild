@@ -16,6 +16,7 @@ package org.osivia.portal.core.cms;
 
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.EcmDocument;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.editor.EditorModule;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.panels.PanelPlayer;
@@ -726,5 +727,27 @@ public interface ICMSService {
      * @return window properties
      */
     Map<String, String> getEditorWindowBaseProperties(CMSServiceCtx cmsContext) throws CMSException;
+    
+    
+    /**
+     * Gets the universal ID from path.
+     *
+     * @param path the path
+     * @return the universal ID from path
+     */
+
+    UniversalID getUniversalIDFromPath(CMSServiceCtx cmsContext, String path) throws CMSException;
+
+    /**
+     * Gets the path from universal ID.
+     *
+     * @param cmsContext the cms context
+     * @param id the id
+     * @return the path from universal ID
+     * @throws CMSException the CMS exception
+     */
+    String getPathFromUniversalID(CMSServiceCtx cmsContext, UniversalID id) throws CMSException;
+    
+
 
 }

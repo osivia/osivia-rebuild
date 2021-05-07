@@ -198,7 +198,8 @@ function bilto(event)
 
 function ajaxCall(options, url, eventToStop, popViewState){
     // Setup headers
-    var headers = ["ajax","true"];
+    var headers = ["ajax","true"],
+    	$ajaxWaiter = $JQry(".ajax-waiter");
 
 	var headerState = null;
 	if (popViewState != null) {
@@ -234,8 +235,16 @@ function ajaxCall(options, url, eventToStop, popViewState){
 
     // Complete the ajax request options
     options.requestHeaders = headers;
+    
+    
+    // Waiter
+    $ajaxWaiter.delay(200).addClass("in");
+    
     options.onSuccess = function(t)
     {
+        $ajaxWaiter.clearQueue();
+        $ajaxWaiter.removeClass("in");	
+    	
        var resp = "";
        
        try	{

@@ -43,6 +43,9 @@ public final class DynamicTemplatePage extends TemplatePage {
     private final DynamicPageBean pageBean;
     /** Local display name. */
     private final Map<Locale, String> localDisplayName;
+    
+    private final PortalObjectId templateID;
+
 
 
     /**
@@ -109,7 +112,8 @@ public final class DynamicTemplatePage extends TemplatePage {
 
 
         this.localDisplayName = displayNames;
-
+        
+        this.templateID  = template.getId();
         // TODO : analyser si on peut faire du lazy fetching sur les propriétés
         
         setUpdateTs(template.getUpdateTs());
@@ -162,5 +166,15 @@ public final class DynamicTemplatePage extends TemplatePage {
         return this.pageBean;
     }
 
+
+    
+    /**
+     * Gets the template ID.
+     *
+     * @return the template ID
+     */
+    public PortalObjectId getTemplateId() {
+        return templateID;
+    }
 
 }
