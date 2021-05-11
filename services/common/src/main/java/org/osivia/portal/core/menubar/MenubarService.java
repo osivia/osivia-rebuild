@@ -169,38 +169,41 @@ public class MenubarService implements IMenubarService {
 
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setPortalControllerContext(portalControllerContext);
-
-        // Current page
-        Page page = PortalObjectUtilsInternal.getPage(controllerContext);
-      
-
-        // Document context
-        DocumentContext documentContext;
         
-        try {
-            // Base path
-            String basePath = null;
-            String navigationId = page.getProperty("osivia.navigationId");
-            if(StringUtils.isNotEmpty(navigationId))    {
-                basePath =  cmsService.getPathFromUniversalID(cmsContext, new UniversalID(navigationId));
-                documentContext = cmsService.getDocumentContext(cmsContext, basePath);
-            }   else
-                    documentContext = null;
-        } catch (CMSException e) {
-            documentContext = null;
-        }
+        if(cmsService != null)  {
+            // CMS context
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setPortalControllerContext(portalControllerContext);
+
+            // Current page
+            Page page = PortalObjectUtilsInternal.getPage(controllerContext);
 
 
-        // Menubar modules
-        List<MenubarModule> modules = cmsService.getMenubarModules(cmsContext);
-        for (MenubarModule module : modules) {
+            // Document context
+            DocumentContext documentContext;
+
             try {
-                module.customizeSpace(portalControllerContext, menubar, documentContext);
-            } catch (PortalException e) {
-                throw new RuntimeException(e);
+                // Base path
+                String basePath = null;
+                String navigationId = page.getProperty("osivia.navigationId");
+                if (StringUtils.isNotEmpty(navigationId)) {
+                    basePath = cmsService.getPathFromUniversalID(cmsContext, new UniversalID(navigationId));
+                    documentContext = cmsService.getDocumentContext(cmsContext, basePath);
+                } else
+                    documentContext = null;
+            } catch (CMSException e) {
+                documentContext = null;
+            }
+
+
+            // Menubar modules
+            List<MenubarModule> modules = cmsService.getMenubarModules(cmsContext);
+            for (MenubarModule module : modules) {
+                try {
+                    module.customizeSpace(portalControllerContext, menubar, documentContext);
+                } catch (PortalException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
