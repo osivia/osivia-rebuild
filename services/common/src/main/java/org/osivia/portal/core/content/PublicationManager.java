@@ -155,6 +155,7 @@ public class PublicationManager implements IPublicationManager {
             
 
             Document doc = getCMSService().getCMSSession(cmsContext).getDocument( docId);
+            boolean pageDisplay = false;
             
             
             NavigationItem navigation;
@@ -171,8 +172,18 @@ public class PublicationManager implements IPublicationManager {
             
                 Document space = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getSpaceId());
                 
-                 
-                String templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
+                String templatePath = null;
+                
+                if( "nx".equals(doc.getId().getRepositoryName()))   {
+                    if( "Folder".equals(doc.getType())) {
+                        
+                         templatePath = "idx:/DEFAULT/" + DefaultCMSPageFactory.getRootPageName() + "/DEFAULT_TEMPLATES_FOLDER";
+                         pageDisplay = true;
+                    }
+                }
+                
+                if  (templatePath == null)
+                     templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
     
                 Map<String, String> properties = new HashMap<String, String>();
     
@@ -221,7 +232,7 @@ public class PublicationManager implements IPublicationManager {
             
 
 
-            if (!(doc instanceof Templateable)) {
+            if ((!(doc instanceof Templateable)) && pageDisplay == false) {
 
                 Map<String, String> windowProperties = new HashMap<String, String>();
 

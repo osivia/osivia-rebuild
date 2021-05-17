@@ -153,16 +153,26 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         sharedRepositories.get(repositoryKey).addListener(this);
         
         if(initRepository)  {
-            batchMode = true;
-            try {
-            initDocuments();
-            } finally    {
-                batchMode = false;
-            }
-            getSharedRepository().endBatch(userStorage);    
+            startInitBatch();    
         }
         
         
+    }
+
+
+    public void startInitBatch() {
+        
+        clearCaches();
+        
+        batchMode = true;
+        getSharedRepository().beginBatch(userStorage);
+        
+        try {
+            initDocuments();
+        } finally    {
+            batchMode = false;
+        }
+        getSharedRepository().endBatch(userStorage);
     }
 
 
@@ -372,6 +382,17 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     @Override
     public void updateDocument(String id) throws CMSException {
         getSharedRepository().updateDocument(getUserStorage(),id);
+    }
+    
+    
+    /**
+     * Clear local and shared caches.
+     */
+    public void clearCaches()    {
+        personnalizationMap = new Hashtable<String, Personnalization>();
+        getSharedRepository().clear();
+        if( publishRepository != null)
+            publishRepository.clearCaches();
     }
 
 }

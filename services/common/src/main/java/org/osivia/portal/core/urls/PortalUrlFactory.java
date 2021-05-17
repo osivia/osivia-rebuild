@@ -391,6 +391,18 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 .getClientRequest();
         return URLUtils.createUrl(request);
     }
+
+    @Override
+    public String getBackURL(PortalControllerContext portalControllerContext, boolean mobile, boolean refresh) {
+        // TODO Auto-generated method stub
+        return "";
+    }
+
+    @Override
+    public String getRefreshPageUrl(PortalControllerContext portalControllerContext) {
+        // TODO Auto-generated method stub
+        return "";
+    }
   
    
 }

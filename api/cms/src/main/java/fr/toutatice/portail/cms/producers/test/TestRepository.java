@@ -37,4 +37,6 @@ public interface TestRepository extends NativeRepository {
     public List<Locale> getLocales() ;
 
     void renameDocument(String id, String title) throws CMSException;
+    
+    void reloadDatas();
 }

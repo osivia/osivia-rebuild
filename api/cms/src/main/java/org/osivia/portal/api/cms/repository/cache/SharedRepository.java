@@ -57,6 +57,10 @@ public class SharedRepository {
         storageRepository.endBatch();
     }
     
+    public void beginBatch(UserStorage storageRepository)  {
+        storageRepository.beginBatch();
+    }
+    
     public void addDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode)  {
         
         cachedDocument.put(internalID, document);
@@ -117,6 +121,10 @@ public class SharedRepository {
         for (RepositoryListener listener : listeners) {
             listener.contentModified(e);
         }
+    }
+    
+    public void clear() {
+        cachedDocument.clear();
     }
     
     

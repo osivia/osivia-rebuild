@@ -22,6 +22,8 @@ public interface UserStorage {
     
     RepositoryDocument reloadDocument(String internalID) throws CMSException;
 
+    void beginBatch();
+    
     void endBatch();
 
 }

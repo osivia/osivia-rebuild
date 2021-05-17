@@ -22,6 +22,7 @@
 <portlet:actionURL name="addFolder" var="addFolderURL" />
 <portlet:actionURL name="addDocument" var="addDocumentURL" />
 <portlet:actionURL name="setACL" var="setACLURL" />
+<portlet:actionURL name="reload" var="setReloadURL" />
 
 <portlet:actionURL name="submit" var="submitUrl" />
 
@@ -117,6 +118,10 @@
 			</c:if>
 			
 			${status.toolbar}
+			
+			<a class ="text-white" href="${setReloadURL}">
+					<i class="glyphicons glyphicons-basic-reload"></i>
+			</a>
 			
 		</div>
 		<div class="col-1  d-flex align-items-center">

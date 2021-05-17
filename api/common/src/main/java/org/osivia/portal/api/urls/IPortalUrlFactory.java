@@ -205,6 +205,22 @@ public interface IPortalUrlFactory {
 
     String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException;
 
-  
+    /**
+     * Get back URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param mobile                  mobile indicator
+     * @param refresh                 refresh indicator
+     * @return back URL
+     */
+    String getBackURL(PortalControllerContext portalControllerContext, boolean mobile, boolean refresh);
     
+    
+    /**
+     * Get refresh page URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @return refresh page URL
+     */
+    String getRefreshPageUrl(PortalControllerContext portalControllerContext);
 }

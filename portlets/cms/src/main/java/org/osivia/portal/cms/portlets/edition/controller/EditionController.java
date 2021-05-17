@@ -17,6 +17,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -214,7 +215,34 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
     }
 
+    
+    
+    /**
+     * Reload sample file repository
+     */
+    @ActionMapping(name = "reload")
+    public void reloadIdx(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
+        try {
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+            CMSController ctrl = new CMSController(portalControllerContext);
+            CMSContext cmsContext = ctrl.getCMSContext();
+
+
+            TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, "idx");
+
+            ((TestRepository) repository).reloadDatas();
+
+
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+    }
+
+    
     /**
      * Add page sample
      */
@@ -546,8 +574,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
             String popupUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "SampleInstance", new HashMap<String, String>(),
                     PortalUrlType.MODAL);
             this.addToolbarItem(toolbar, popupUrl, "#osivia-modal", "popup", "glyphicons glyphicons-basic-square-edit");
-
-
+            
+            
+   
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
             HTMLWriter htmlWriter;

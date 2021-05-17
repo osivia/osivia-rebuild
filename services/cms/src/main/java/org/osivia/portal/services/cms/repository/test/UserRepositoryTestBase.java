@@ -40,6 +40,15 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
     
 
     
+    @Override
+    public void reloadDatas() {
+        ((TestUserStorage) getUserStorage()).clearDocuments();
+        startInitBatch();
+      }
+
+
+
+
     protected void addDocument(String internalID, RepositoryDocument document) {
         getUserStorage().addDocument(internalID, document, batchMode);
     }
