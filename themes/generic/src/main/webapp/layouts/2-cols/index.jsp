@@ -29,27 +29,28 @@
 <body id="body">
 
 
-
-<table class="layout" width="100%">
-   <tr>
-	<td width="100%" colspan="2" valign="top">    
-  		<p:region regionName='top' regionID='top'/>
-    </td>
-  </tr>  		
-  <tr>
-   <td width="20%" valign="top">
-   		<p:region regionName='logo' regionID='logo'/>
-   		<p:region regionName='nav' regionID='nav'/>
-    </td>   
-    <td width="80%" valign="top">
-      <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
-      <%@include file="../includes/content-navbar.jsp" %>
-      
-      <p:region regionName='col-1' regionID='col-1'/>
-      <p:region regionName='col-2' regionID='col-2'/>
-    </td>
-  </tr>
-</table>
+<div class="layout">
+	<table  width="100%">
+	   <tr>
+		<td width="100%" colspan="2" valign="top">    
+	  		<p:region regionName='top' regionID='top'/>
+	    </td>
+	  </tr>  		
+	  <tr>
+	   <td width="20%" valign="top">
+	   		<p:region regionName='logo' regionID='logo'/>
+	   		<p:region regionName='nav' regionID='nav'/>
+	    </td>   
+	    <td width="80%" valign="top">
+	      <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
+	      <%@include file="../includes/content-navbar.jsp" %>
+	      
+	      <p:region regionName='col-1' regionID='col-1'/>
+	      <p:region regionName='col-2' regionID='col-2'/>
+	    </td>
+	  </tr>
+	</table>
+</div>
            
 <%@include file="../includes/footer.jsp" %>
 

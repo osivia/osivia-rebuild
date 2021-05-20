@@ -61,7 +61,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         // Create default page
         String path = parent.getId().getPath().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
         Map<String, String> pageProperties = new HashMap<>();
-        pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
+//        pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
 //        pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
         pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
         
@@ -80,9 +80,19 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
             inheritedRegions = ((Page) doc).getInheritedRegions();
         
         CMSPage cmsPage = new CMSPage(container, containerContext, pageId, pageProperties, inheritedRegions, this);
+ 
         
-        if( StringUtils.isEmpty(cmsPage.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME)))
-            cmsPage.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME, "generic");
+        
+        
+        if (StringUtils.isEmpty(cmsPage.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME))) {
+
+            // If no parent theme, reinit the current theme
+            String parentTheme = parent.getProperty(ThemeConstants.PORTAL_PROP_THEME);
+            if (parentTheme == null)
+                cmsPage.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME, "generic");
+            
+        }
+            
 
         for (NavigationItem child : navItem.getChildren()) {
             org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);

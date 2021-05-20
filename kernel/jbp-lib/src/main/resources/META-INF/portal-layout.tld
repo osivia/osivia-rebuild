@@ -29,7 +29,7 @@
    <tlib-version>1.0</tlib-version>
    <jsp-version>2.0</jsp-version>
    <short-name></short-name>
-   <uri>http://www.jboss.org/portal</uri>
+   <uri>portal-layout</uri>
    <tag>
       <name>region</name>
       <tag-class>org.jboss.portal.theme.tag.RegionTagHandler</tag-class>

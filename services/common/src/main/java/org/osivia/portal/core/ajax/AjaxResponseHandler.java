@@ -600,6 +600,15 @@ public class AjaxResponseHandler implements ResponseHandler {
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
                 return new AjaxResponse(dresp);
             }else if (controllerResponse instanceof RedirectionResponse) { 
+                
+                String location = ((RedirectionResponse) controllerResponse).getLocation();
+                
+                if( location.equals("/back") || (location.equals("/back-refresh")) )   {
+                    // Default (http redirection)
+                    UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());
+                    return new AjaxResponse(dresp);                   
+                }
+                
 
                 boolean ajaxRedirect = false;
                 String contextPath  = controllerContext.getServerInvocation().getServerContext().getClientRequest().getContextPath();
@@ -619,6 +628,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                     // Ajax redirection
                     return HTTPResponse.sendRedirect(((RedirectionResponse) controllerResponse).getLocation());
                 } 
+                
+                
                 
                 // Default (http redirection)
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());

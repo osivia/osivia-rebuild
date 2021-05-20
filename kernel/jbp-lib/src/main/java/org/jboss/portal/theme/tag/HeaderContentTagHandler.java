@@ -78,8 +78,11 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       // Inline-edition
       out.write( "<script src='/portal-assets/js/inline-edition.js'></script>");  
    
+      // Table
+      out.write( "<script src='/portal-assets/js/table.js'></script>");  
       
-      
+      // Filler
+      out.write( "<script src='/portal-assets/js/portlet-filler.js'></script>");       
       
       out.write("<!-- portlet resources -->");
       

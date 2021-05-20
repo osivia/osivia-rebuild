@@ -36,6 +36,7 @@ import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.core.page.PageProperties;
 
 
 /**
@@ -96,6 +97,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 HttpServletRequest httpRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
                 attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
 
+                boolean refresh = PageProperties.getProperties().isRefreshingPage();
+                if( refresh)
+                    attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, true);
 
                 // Set attributes
                 invocation.setRequestAttributes(attributes);

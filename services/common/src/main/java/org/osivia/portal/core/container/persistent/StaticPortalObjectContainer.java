@@ -259,6 +259,9 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         portal.setModes(modes);
         // rendering
         portal.setDeclaredProperty(ThemeConstants.PORTAL_PROP_RENDERSET, "OsiviaDefaultRenderer");
+        
+        portal.setDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
+        portal.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME, "generic");        
 
         portalNode.setObject(portal);
         contextNodes.put(portal.getId(), portal);

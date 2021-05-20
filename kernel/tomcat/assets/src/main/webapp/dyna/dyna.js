@@ -196,7 +196,7 @@ function bilto(event)
 
 
 
-function ajaxCall(options, url, eventToStop, popViewState){
+function ajaxCall(options, url, eventToStop, popViewState, refresh){
     // Setup headers
     var headers = ["ajax","true"],
     	$ajaxWaiter = $JQry(".ajax-waiter");
@@ -216,6 +216,8 @@ function ajaxCall(options, url, eventToStop, popViewState){
 		headers.push('view_state', headerState);
 	}
 
+	if( refresh != null)
+		headers.push('refresh', refresh);
 
     var popState;
     if ((eventToStop != null) && (eventToStop.type === "popstate")) {
@@ -441,12 +443,22 @@ function ajaxCall(options, url, eventToStop, popViewState){
        }
        else if (resp.type == "update_page")
        {
-          document.location = resp.location;
+    	  if( resp.location == "/back")	{
+    		  reload(history.state, null, false)
+    		  return;
+    	  }	
+    	  
+    	  if( resp.location == "/back-refresh")	{
+    		  reload(history.state, null, true)
+    		  return;
+    	  }	   	  
+    	  
+     	  document.location = resp.location;
        }
     };
      
 
-    if ((eventToStop !== undefined) && !(eventToStop.type === "popstate")) {
+    if ((eventToStop !== undefined) &&  (eventToStop !== null) && !(eventToStop.type === "popstate")) {
         Event.stop(eventToStop);
     }
 
@@ -458,12 +470,17 @@ function ajaxCall(options, url, eventToStop, popViewState){
 }
 
 
+function reload(state, event, refresh)	{
+	var options = new Object();
+	options.method = "get";
+	options.asynchronous = true;
+	ajaxCall( options, state.url, event, state.viewState, refresh);
+}
+
+
 window.onpopstate = function (event) {
     if (event.state) {
-        var options = new Object();
-        options.method = "get";
-        options.asynchronous = true;
-        ajaxCall( options, event.state.url, event, event.state.viewState);
+    	reload(event.state, event)
     }
 
 }

@@ -98,30 +98,7 @@ public class LayoutDeployment extends Deployment
          IOTools.safeClose(in);
       }
 
-      // Make sure that the portal-layout.tld is available in the local context
-      File targetContextRoot = new File(pwa.getServletContext().getRealPath("/WEB-INF"));
-      if (targetContextRoot.exists() && targetContextRoot.isDirectory())
-      {
-         InputStream source = null;
-         try
-         {
-            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/portal-layout.tld"));
-            pwa.importFile("/WEB-INF/theme", "portal-layout.tld", source, false);
-         }
-         catch (IOException e)
-         {
-            throw new DeploymentException("Cannot import portal-layout.tld", e);
-         }
-         finally
-         {
-            IOTools.safeClose(source);
-         }
-      }
-      else
-      {
-         log.warn("Cannot access the WEB-INF folder for the deployed application: " + pwa.getId());
-      }
-   }
+    }
 
    /**
     * Destroy (and remove) all the resources from this portal web application that are registered with the portal.

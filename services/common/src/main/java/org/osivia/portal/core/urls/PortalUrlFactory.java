@@ -394,8 +394,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     @Override
     public String getBackURL(PortalControllerContext portalControllerContext, boolean mobile, boolean refresh) {
-        // TODO Auto-generated method stub
-        return "";
+        if(refresh)
+            return "/back-refresh";
+        else
+            return "/back";
     }
 
     @Override

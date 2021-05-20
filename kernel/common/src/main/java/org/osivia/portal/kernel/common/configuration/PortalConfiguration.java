@@ -29,6 +29,8 @@ import org.jboss.portal.web.ServletContainer;
 import org.jboss.portal.web.ServletContainerFactory;
 import org.jboss.portal.web.impl.DefaultServletContainerFactory;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.mt.ContextDispatcherWrapperInterceptor;
+import org.osivia.portal.core.tracker.ITracker;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -251,8 +253,9 @@ public class PortalConfiguration implements ApplicationContextAware {
      */
     @Bean(name = "ContextDispatcherInterceptor")
     public PortletInvoker getContextDispatcherInterceptor() {
-        ContextDispatcherInterceptor contextDispatcherInterceptor = new ContextDispatcherInterceptor();
+        ContextDispatcherWrapperInterceptor contextDispatcherInterceptor = new ContextDispatcherWrapperInterceptor();
         contextDispatcherInterceptor.setServletContainerFactory(this.applicationContext.getBean("ServletContainerFactory", ServletContainerFactory.class));
+        contextDispatcherInterceptor.setTracker(this.applicationContext.getBean("osivia:service=Tracker", ITracker.class));
         contextDispatcherInterceptor.setNext(this.applicationContext.getBean("AjaxInterceptor", PortletInvoker.class));
         return contextDispatcherInterceptor;
     }

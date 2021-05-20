@@ -312,30 +312,7 @@ public class TemplatePage extends DynamicPage  {
                     }
                 }
 
-
-                // Le template est surchargé par les propriétés de la page parent
-
-                Map<?, ?> inheritedProperties = this.getParent().getProperties();
-                if (inheritedProperties != null) {
-                    for (Object key : inheritedProperties.keySet()) {
-                        if (!ThemeConstants.PORTAL_PROP_LAYOUT.equals(key) && !ThemeConstants.PORTAL_PROP_THEME.equals(key)) {
-                            this.properties.put((String) key, (String) inheritedProperties.get(key));
-                        } else {
-                            if (ThemeConstants.PORTAL_PROP_THEME.equals(key)) {
-                                 if (this.theme != null) {
-                                    this.properties.put((String) key, this.theme);
-                                }else   {
-                                    // Le theme est surchargé par héritage s'il n'ont pas été défini explicitement dans le template
-
-                                    if (this.template.getDeclaredProperty((String) key) == null) {
-                                        this.properties.put((String) key, (String) inheritedProperties.get(key));
-                                    }
-                                }
-                            }
-                           
-                        }
-                    }
-                }
+         
 
                 // Propriétés locales
                 for (Object key : this.localProperties.keySet()) {

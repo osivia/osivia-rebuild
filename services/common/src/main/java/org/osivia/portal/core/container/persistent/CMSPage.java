@@ -23,6 +23,7 @@ import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.C
 public  class  CMSPage extends PageImplBase {
 
 	/** Local properties. */
+	protected Map<String, String> declaredProperties = new ConcurrentHashMap<String, String>();
 	protected Map<String, String> properties = null;
 	private PortalObjectPath pagePath;
     private String pageName;
@@ -213,7 +214,7 @@ public  class  CMSPage extends PageImplBase {
 
 	@Override
 	public Map<String, String> getDeclaredProperties() {
-		return properties;
+		return declaredProperties;
 	}
 
 
@@ -244,17 +245,25 @@ public  class  CMSPage extends PageImplBase {
 	public Map<String, String> getProperties() {
 		if (this.properties == null) {
 			this.properties = new ConcurrentHashMap<>();
-			// Initialize from template
-			try {
+
+			
+			// Add parent
+			properties.putAll(parentNode.getObject().getProperties());
+
+            // Add from template
+            try {
                 for (PortalObjectId templateID : getTemplatesId()) {
-                	PortalObject template = container.getObject(templateID);
-                	properties.putAll(template.getProperties());
+                    PortalObject template = container.getObject(templateID);
+                    properties.putAll(template.getDeclaredProperties());
                 }
             } catch (CMSException | IllegalArgumentException e) {
                 throw new RuntimeException( e);
-            }
+            }  
+			
+	         // Add current level
+            properties.putAll(this.getDeclaredProperties());
+            
 
-			// TODO : initialize from current CMS properties
 
 		}
 		return this.properties;
@@ -266,7 +275,7 @@ public  class  CMSPage extends PageImplBase {
 	@Override
 	public String getDeclaredProperty(String name) {
 		String value = null;
-		value = this.getProperties().get(name);
+		value = this.getDeclaredProperties().get(name);
 		return value;
 
 	}
@@ -276,7 +285,7 @@ public  class  CMSPage extends PageImplBase {
      */
     @Override
     public void setDeclaredProperty(String name, String value) {
-        this.getProperties().put(name, value);
+        this.getDeclaredProperties().put(name, value);
 
     }
 

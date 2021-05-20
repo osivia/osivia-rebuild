@@ -21,7 +21,8 @@
 <body id="body">
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 
-<table class="layout" width="100%">
+<div class="layout">
+<table  width="100%">
    <tr>
 	<td width="100%" colspan="2" valign="top">    
   		<p:region regionName='top' regionID='top'/>
@@ -38,6 +39,7 @@
     </td>
   </tr>
 </table>
+</div>
            
 <%@include file="../includes/footer.jsp" %>
 

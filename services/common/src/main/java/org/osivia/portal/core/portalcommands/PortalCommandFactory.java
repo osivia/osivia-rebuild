@@ -51,6 +51,7 @@ import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
@@ -100,6 +101,10 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         String browserSession = null;
         
         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        
+        
+        if( "true".equals(request.getHeader("refresh")))
+            PageProperties.getProperties().setRefreshingPage(true);
         
         // Just to prevent from redirection
         if (requestPath.startsWith(MODAL)) {

@@ -48,7 +48,13 @@
             <artifactId>osivia-portal-kernel-jbp-lib</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>	        
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.portal.services</groupId>
+            <artifactId>osivia-portal-services-common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>    	        
      
     </dependencies>
 
