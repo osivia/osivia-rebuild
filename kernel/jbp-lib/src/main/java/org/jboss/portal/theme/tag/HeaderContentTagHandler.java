@@ -47,8 +47,8 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       JspWriter out = this.getJspContext().getOut();
       if (page == null)
       {
-         out.write("<p bgcolor='red'>No page to render!</p>");
-         out.write("<p bgcolor='red'>The page to render (PageResult) must be set in the request attribute '" + LayoutConstants.ATTR_PAGE + "'</p>");
+//         out.write("<p bgcolor='red'>No page to render!</p>");
+//         out.write("<p bgcolor='red'>The page to render (PageResult) must be set in the request attribute '" + LayoutConstants.ATTR_PAGE + "'</p>");
          out.flush();
          return;
       }

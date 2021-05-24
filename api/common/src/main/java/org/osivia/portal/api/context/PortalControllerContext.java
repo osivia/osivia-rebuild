@@ -59,16 +59,26 @@ public class PortalControllerContext {
 	}
 
 
+
     /**
      * Instantiates a new portal controller context.
      *
-     * @param portletCtx the portlet ctx
-     * @param request the request
-     * @param response the response
+     * @param mainRequest the main request
      */
     public PortalControllerContext(HttpServletRequest mainRequest) {
         super();
         this.mainRequest = mainRequest;
+    }
+    
+    
+    /**
+     * Instantiates a new portal controller context.
+     *
+     * @param portletCtx the portlet ctx
+     */
+    public PortalControllerContext(PortletContext portletCtx) {
+        super();
+        this.portletCtx = portletCtx;
     }
 
 

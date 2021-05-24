@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.core.cms.sessions;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.locator.Locator;
@@ -35,6 +37,8 @@ public class SessionListener implements HttpSessionListener {
     public static long activeSessions = 0;
 
     public static String activeSessionSync = "activeSessionSync";
+    
+    public static Log log = LogFactory.getLog(SessionListener.class);
 
 
     /**
@@ -48,7 +52,7 @@ public class SessionListener implements HttpSessionListener {
     /**
      * Update user preferences service.
      */
-    //private final UpdateUserPreferencesService updateUserPreferencesService;
+    private  UpdateUserPreferencesService updateUserPreferencesService = null;
 
 
     /**
@@ -63,11 +67,17 @@ public class SessionListener implements HttpSessionListener {
         /*
         // Statistics service
         this.statisticsService = Locator.findMBean(IStatisticsService.class, IStatisticsService.MBEAN_NAME);
-        // User preferences service
-        this.updateUserPreferencesService = DirServiceFactory.getService(UpdateUserPreferencesService.class);
         */
+        
     }
 
+    private  UpdateUserPreferencesService getUpdateUserPreferencesService()  {
+        if( this.updateUserPreferencesService == null)
+            this.updateUserPreferencesService = DirServiceFactory.getService(UpdateUserPreferencesService.class);
+        return this.updateUserPreferencesService;
+           
+    }
+    
 
     @Override
     public void sessionCreated(HttpSessionEvent sessionEvent) {
@@ -85,17 +95,17 @@ public class SessionListener implements HttpSessionListener {
 
         this.integrationService.sessionDestroyed(sessionEvent);
 
-        /*
+        
         // HTTP session
         HttpSession httpSession = sessionEvent.getSession();
 
         try {
-            this.statisticsService.aggregateUserStatistics(httpSession);
-            this.updateUserPreferencesService.update(httpSession);
-        } catch (PortalException e) {
-            // Do nothing
+            //this.statisticsService.aggregateUserStatistics(httpSession);
+            getUpdateUserPreferencesService().update(httpSession);
+        } catch (Exception e) {
+            log.error("Update preferences ", e);
         }
-        */
+        
     }
 
 }

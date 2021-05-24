@@ -26,7 +26,7 @@
 
 <!--<op:translate key="CUSTOMIZER_MSG_1" />-->
 
-<body id="body">
+<body>
 
 
 <div class="layout">

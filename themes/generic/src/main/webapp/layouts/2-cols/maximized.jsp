@@ -18,7 +18,7 @@
    <p:theme themeName="renewal"/>   
 </head>
 
-<body id="body">
+<body>
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 
 <div class="layout">

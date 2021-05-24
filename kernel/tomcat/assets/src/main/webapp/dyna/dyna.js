@@ -265,19 +265,9 @@ function ajaxCall(options, url, eventToStop, popViewState, refresh){
            var newPage = false;
            if( layout != null){
         	     // New layout
-        	   
-                 var dstContainer = document.getElementById("body");
-                 // Get markup fragment
-                 var markup =  resp.layout;
 
-                 // Create a temporary element and paste the innerHTML in it
-                 var srcContainer = document.createElement("div");
-
-                 // Insert the markup in the div
-                 new Insertion.Bottom(srcContainer, markup);
-
-                 // Copy the region content
-                 copyInnerHTML(srcContainer, dstContainer, "layout")
+                 
+                 copyLayout( resp.layout);
                  newPage = true;
 	            }
         	
@@ -535,6 +525,30 @@ function updateResources(newHeaderResources)	{
  * The zone are found using the css class names. The operation
  * will succeed only if there is exactly one zone in each container.
  */
+function copyLayout( layout)
+{
+	// TODO : a supprimer
+	if( layout.includes("modal_do_not_delete"))
+		return;
+
+    // Create a temporary element and paste the innerHTML in it
+    var srcContainer = document.createElement("html");
+    
+     
+    srcContainer.innerHTML = layout;
+	
+    var srcs = srcContainer.select("body");
+    if (srcs.length == 1)
+    {
+       var src = srcs[0];
+
+       document.body = src;
+    }
+
+
+
+}
+
 function copyInnerHTML(srcContainer, dstContainer, className)
 {
    var classSelector = "." + className;
@@ -589,6 +603,7 @@ function copyInnerHTML(srcContainer, dstContainer, className)
       // Should log that somewhere
    }
 }
+
 
 function observePortlets()
 {

@@ -15,7 +15,7 @@ public class WSPortalControllerContext extends PortalControllerContext {
     Principal principal;
     
     public WSPortalControllerContext(HttpServletRequest request, HttpServletResponse response) {
-        super(null);
+        super( (HttpServletRequest) null);
         this.request = request;
         this.response = response;
     }

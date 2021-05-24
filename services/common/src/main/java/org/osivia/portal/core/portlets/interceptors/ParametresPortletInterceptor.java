@@ -36,6 +36,7 @@ import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.core.container.dynamic.DynamicWindow;
 import org.osivia.portal.core.page.PageProperties;
 
 
@@ -77,6 +78,17 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
 
                 attributes.put("osivia.window", window);
+                
+                //unique window identifier
+                if (window instanceof DynamicWindow) {
+                    String uniqueID = ((DynamicWindow) window).getDynamicUniqueID();
+                    if ((uniqueID != null) && (uniqueID.length() > 1)) {
+                       invocation.setAttribute("osivia.window.path", windowId);
+                       invocation.setAttribute("osivia.window.uniqueID", uniqueID);
+                    }
+                }
+
+                
 
                 // Ajout du controleur
                 attributes.put("osivia.controller", controllerContext);
