@@ -194,24 +194,31 @@ function bilto(event)
 
 }
 
+//Get unique key per session/location
+function getScrollKey() {
+	var session = readCookie("JSESSIONID");
+	if( session == null)
+		session = "";
+	key = session + "/scroll/" +  window.location.href;
+	return key;
+}
 
-
-function ajaxCall(options, url, eventToStop, popViewState, refresh){
+function ajaxCall(options, url, eventToStop, popState, refresh){
     // Setup headers
     var headers = ["ajax","true"],
     	$ajaxWaiter = $JQry(".ajax-waiter");
 
 	var headerState = null;
-	if (popViewState != null) {
-		headerState = popViewState;
+	if (popState !== undefined) {
+		headerState = popState.viewState;
 
 	} else {
-
 		// Add the view state value
 		if (view_state != null) {
 			headerState = view_state;
 		}
 	}
+	
 	if (headerState != null) {
 		headers.push('view_state', headerState);
 	}
@@ -219,14 +226,22 @@ function ajaxCall(options, url, eventToStop, popViewState, refresh){
 	if( refresh != null)
 		headers.push('refresh', refresh);
 
-    var popState;
+    var popping;
     if ((eventToStop != null) && (eventToStop.type === "popstate")) {
-        popState = true;
+    	popping = true;
     }
     
 	if( session_check != null)	{
 		headers.push('session_check', session_check);
 	}
+	
+	// Compute current scroll position
+	currentScroll = 0;
+	filler = $JQry(".portlet-filler").first();
+    if( filler != undefined)	{
+		currentScroll = filler.scrollTop();
+	}	
+	
 	
     var preventHistory = false;
 
@@ -413,20 +428,43 @@ function ajaxCall(options, url, eventToStop, popViewState, refresh){
 
           
           
-          if (popState === undefined  && resp.restore_url != "" && preventHistory == false) {
+          if (popping === undefined  && resp.restore_url != "" && preventHistory == false) {
 
+              // update the current page
+        	  if( history.state != null)	{
+	              var stateObject = history.state;
+	              stateObject.currentScroll = currentScroll;
+	              history.replaceState(stateObject,"", stateObject.fullUrl);
+        	  }
+        	  
+        	  
               // Add the current page
               var stateObject = {
                   url: resp.pop_url,
-                  viewState:view_state
+                  viewState:view_state,
+                  currentScroll:0,
+                  fullUrl: resp.full_state_url
               };
               
               history.pushState(stateObject, "", resp.full_state_url);
           }
           
+
+          
           // Call jQuery.ready() events
           $JQry(document).ready();         
           
+          
+          // Restore cursor
+          
+          if( popState !== undefined)    {
+              if( popState.currentScroll != 0)	{
+            	filler = $JQry(".portlet-filler").first();
+            	if( filler != undefined)	{
+            		filler.scrollTop(popState.currentScroll);
+            	}
+              }
+          }
 
           
           
@@ -464,7 +502,7 @@ function reload(state, event, refresh)	{
 	var options = new Object();
 	options.method = "get";
 	options.asynchronous = true;
-	ajaxCall( options, state.url, event, state.viewState, refresh);
+	ajaxCall( options, state.url, event, state, refresh);
 }
 
 
