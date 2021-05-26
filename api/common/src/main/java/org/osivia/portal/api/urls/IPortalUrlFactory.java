@@ -118,7 +118,7 @@ public interface IPortalUrlFactory {
      * @return the view content url
      * @throws PortalException the portal exception
      */
-    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id) throws PortalException;
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id) ;
 
     
     /**
@@ -203,7 +203,7 @@ public interface IPortalUrlFactory {
     String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl) throws PortalException;
 
 
-    String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException;
+    String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) ;
 
     /**
      * Get back URL.

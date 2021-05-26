@@ -14,8 +14,11 @@
  */
 package org.osivia.portal.core.page;
 
+import java.security.Principal;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
@@ -46,7 +49,28 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
 
+    /**
+     * Check if current user is an administrator.
+     *
+     * @param controllerContext controller context
+     * @return true if current user is an administrator
+     */
+    public static boolean isAdministrator(ControllerContext controllerContext) {
+        Boolean isAdministrator = (Boolean) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
+        if (isAdministrator == null) {
 
+            Principal principal = controllerContext.getServerInvocation().getServerContext().getClientRequest().getUserPrincipal();
+
+            if( principal != null && principal.toString().contains("Administrators")) {
+                isAdministrator =  true;
+            }   else
+                isAdministrator =  false;
+ 
+
+            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin", isAdministrator);
+        }
+        return isAdministrator;
+    }
 
     /**
      * {@inheritDoc}

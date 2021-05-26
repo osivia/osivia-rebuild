@@ -234,7 +234,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     
 
     @Override
-    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id) throws PortalException {
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id) {
 
 
         Locale locale = cmsContext.getlocale();
@@ -250,7 +250,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     
     
     @Override
-    public String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) throws PortalException {
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) {
         CMSController ctrl = new CMSController(portalControllerContext);
         CMSContext cmsContext = ctrl.getCMSContext();
 
@@ -402,8 +402,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     @Override
     public String getRefreshPageUrl(PortalControllerContext portalControllerContext) {
-        // TODO Auto-generated method stub
-        return "";
+        return "/refresh";
     }
   
    

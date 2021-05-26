@@ -60,6 +60,11 @@
 	</bean>  
    
    
+     <bean class="org.osivia.portal.core.pagemarker.PortalDelegatingURLFactoryService"
+		id="portal:urlFactory=Delegating">
+	</bean>  
+   
+
    <bean class="org.osivia.portal.core.portalcommands.PortalCommandFactory"
 		id="portal:commandFactory=DefaultPortal">
 		
@@ -157,5 +162,14 @@
      
 	</bean>
 
-       
+    <!-- Documents browser service -->
+    
+   	<bean class="org.osivia.portal.core.path.BrowserService" id="osivia:service=BrowserService" >
+        <property name="PortalURLFactory" ref="osivia:service=UrlFactory"/>   
+        <property name="CmsServiceLocator" ref="osivia:service=CmsServiceLocator"/>     
+	</bean>
+	
+	    
+
+     
 </beans>

@@ -70,6 +70,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       // Bootstrap
       out.write( "<script src='/portal-assets/components/bootstrap/js/bootstrap.bundle.min.js'></script>");
 
+      // Fancytree
+      out.write( "<script src='/portal-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");
+
       
       // Select2
       out.write( "<link rel='stylesheet' href='/portal-assets/components/select2/css/select2.min.css'>");
@@ -83,6 +86,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       
       // Filler
       out.write( "<script src='/portal-assets/js/portlet-filler.js'></script>");       
+      
+      // Filler
+      out.write( "<script src='/portal-assets/js/fancytree-integration.js'></script>");       
       
       out.write("<!-- portlet resources -->");
       

@@ -481,6 +481,12 @@ function ajaxCall(options, url, eventToStop, popState, refresh){
     		  return;
     	  }	   	  
     	  
+    	  if( resp.location == "/refresh")	{
+    		  reload(history.state, null, true)
+    		  return;
+    	  }	
+    	  
+    	  
      	  document.location = resp.location;
        }
     };

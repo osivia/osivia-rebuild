@@ -214,6 +214,10 @@ public class PageMarkerUtils {
     public static void setViewState(ControllerContext controllerContext, Integer viewState) {
         controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,"view_id", viewState);
     }
+    
+    public static Integer getViewState(ControllerContext controllerContext) {
+        return (Integer) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,"view_id");
+    }
 
 
     private static Page restorePageState(ControllerContext controllerContext, PageMarkerInfo markerInfo) {

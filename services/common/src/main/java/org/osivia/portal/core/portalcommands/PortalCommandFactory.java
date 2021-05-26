@@ -34,6 +34,7 @@ import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
@@ -73,6 +74,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     private static String NO_AUTHREDIRECT_SLASH = NO_AUTHREDIRECT+"/";
     public static String SESSION = "/session";
     public static String SESSION_SLASH = SESSION + "/";
+    public static String VIEW_STATE = "/vs";
+    public static String VIEW_STATE_SLASH = VIEW_STATE + "/";
     
     private CMSService cmsService;
 
@@ -106,6 +109,9 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         if( "true".equals(request.getHeader("refresh")))
             PageProperties.getProperties().setRefreshingPage(true);
         
+        
+
+        
         // Just to prevent from redirection
         if (requestPath.startsWith(MODAL)) {
             requestPath = requestPath.substring(MODAL.length() );
@@ -131,6 +137,16 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             browserSession = request.getHeader("session_check");
         
         
+        // To check the view state
+        String viewState = request.getHeader("view_state");
+        if (requestPath.startsWith(VIEW_STATE)) {
+            int viewStateIndex = requestPath.substring(VIEW_STATE_SLASH.length()).indexOf("/");
+            if( viewStateIndex != -1)    {
+                viewState = requestPath.substring(VIEW_STATE_SLASH.length() , viewStateIndex+VIEW_STATE.length() +1);
+                requestPath = requestPath.substring(VIEW_STATE_SLASH.length()+viewStateIndex );
+            }
+        }       
+        
 
         // compute  server session check
         // session check controls wether session is shared between browser and server
@@ -155,7 +171,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         
-        String viewState = request.getHeader("view_state");
+
         
         if (viewState != null) {
             PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
@@ -284,7 +300,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         // navigation inside the modal after session losed
         if( requestPath.startsWith("/templates/OSIVIA_PORTAL_UTILS") && !StringUtils.equals(currentServerCheck, browserSession)) {
-            returnToDefaultPage = true;
+            if( ! (cmd instanceof InvokePortletWindowResourceCommand))
+                returnToDefaultPage = true;
         }
         
         

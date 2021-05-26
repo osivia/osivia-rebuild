@@ -306,10 +306,7 @@
 
    
       <!-- URL factories -->
-   <bean class="org.jboss.portal.core.controller.command.mapper.DelegatingURLFactoryService"
-          id="portal:urlFactory=Delegating" >
-      
-   </bean>
+
    <bean class="org.jboss.portal.core.model.portal.PortalObjectURLFactory"
           id="portal:urlFactory=PortalObject,type=Default" >
       

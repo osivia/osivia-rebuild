@@ -603,7 +603,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 
                 String location = ((RedirectionResponse) controllerResponse).getLocation();
                 
-                if( location.equals("/back") || (location.equals("/back-refresh")) )   {
+                if( location.equals("/back") || (location.equals("/back-refresh")) || (location.equals("/refresh")) )   {
                     // Default (http redirection)
                     UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());
                     return new AjaxResponse(dresp);                   
