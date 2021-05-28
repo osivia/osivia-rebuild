@@ -45,6 +45,7 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.theming.IInternalAttributesBundle;
 import org.osivia.portal.api.theming.IRegionsThemingService;
 import org.osivia.portal.api.theming.PortletsRegionBean;
 import org.osivia.portal.api.theming.RenderedRegionBean;
@@ -242,7 +243,7 @@ public class RegionsThemingService implements IRegionsThemingService {
      * @return attribute value
      */
     private Object computeAttributeValue(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes, String name) {
-        IAttributesBundle bundle = this.getAttributeBundle(name);
+        IInternalAttributesBundle bundle = this.getAttributeBundle(name);
         if (bundle != null) {
             try {
                 bundle.fill(renderPageCommand, pageRendition, attributes);
@@ -263,9 +264,9 @@ public class RegionsThemingService implements IRegionsThemingService {
      * @param name attribute name
      * @return attributes bundle
      */
-    private IAttributesBundle getAttributeBundle(String name) {
+    private IInternalAttributesBundle getAttributeBundle(String name) {
         for (DefaultAttributesBundles value : DefaultAttributesBundles.values()) {
-            IAttributesBundle bundle = value.getBundle();
+            IInternalAttributesBundle bundle = value.getBundle();
             if (bundle.getAttributeNames().contains(name)) {
                 return bundle;
             }
@@ -276,7 +277,7 @@ public class RegionsThemingService implements IRegionsThemingService {
         customizerAttributes.put(IAttributesBundle.CUSTOMIZER_ATTRIBUTE_NAME, name);
         CustomizationContext context = new CustomizationContext(customizerAttributes);
         this.customizationService.customize(IAttributesBundle.CUSTOMIZER_ID, context);
-        return (IAttributesBundle) customizerAttributes.get(IAttributesBundle.CUSTOMIZER_ATTRIBUTE_RESULT);
+        return (IInternalAttributesBundle) customizerAttributes.get(IAttributesBundle.CUSTOMIZER_ATTRIBUTE_RESULT);
     }
 
 

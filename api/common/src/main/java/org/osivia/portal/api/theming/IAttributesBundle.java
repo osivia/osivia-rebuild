@@ -17,9 +17,10 @@ package org.osivia.portal.api.theming;
 import java.util.Map;
 import java.util.Set;
 
-import org.jboss.portal.core.controller.ControllerException;
-import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
-import org.jboss.portal.core.theme.PageRendition;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.context.PortalControllerContext;
+
+
 
 /**
  * Attributes bundle interface.
@@ -44,7 +45,7 @@ public interface IAttributesBundle {
      * @param attributes attributes map
      * @throws ControllerException
      */
-    void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException;
+    void fill(PortalControllerContext portalCtx, Map<String, Object> attributes) throws PortalException;
 
 
     /**

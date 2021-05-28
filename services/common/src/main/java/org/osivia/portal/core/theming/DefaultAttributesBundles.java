@@ -14,7 +14,7 @@
  */
 package org.osivia.portal.core.theming;
 
-import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.theming.IInternalAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.PageSettingsAttributesBundle;
 
 
@@ -46,7 +46,7 @@ public enum DefaultAttributesBundles {
 
 
     /** Attributes bundle. */
-    private final IAttributesBundle bundle;
+    private final IInternalAttributesBundle bundle;
 
 
     /**
@@ -54,7 +54,7 @@ public enum DefaultAttributesBundles {
      *
      * @param bundle attributes bundle
      */
-    private DefaultAttributesBundles(IAttributesBundle bundle) {
+    private DefaultAttributesBundles(IInternalAttributesBundle bundle) {
         this.bundle = bundle;
     }
 
@@ -64,7 +64,7 @@ public enum DefaultAttributesBundles {
      *
      * @return the bundle
      */
-    public IAttributesBundle getBundle() {
+    public IInternalAttributesBundle getBundle() {
         return this.bundle;
     }
 

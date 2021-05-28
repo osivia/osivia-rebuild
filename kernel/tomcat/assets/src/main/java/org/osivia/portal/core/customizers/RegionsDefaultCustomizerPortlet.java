@@ -149,9 +149,11 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
         Map<String, Object> attributes = context.getAttributes();
         IRenderedRegions renderedRegions = (IRenderedRegions) attributes.get(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS);
 
-        /*
+
         // Header metadata default region
         renderedRegions.defineDefaultRenderedRegion("header-metadata", this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
+
+        /*
         // Breadcrumb default region
         renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
 

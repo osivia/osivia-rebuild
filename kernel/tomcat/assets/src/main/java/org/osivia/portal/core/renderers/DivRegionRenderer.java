@@ -23,7 +23,9 @@
 package org.osivia.portal.core.renderers;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
@@ -33,17 +35,24 @@ import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
 
 
 public class DivRegionRenderer extends AbstractObjectRenderer implements RegionRenderer {
 
 
+    /** list of regions in head. */
+    private final List<String> headerRegions;
+
+    
     /**
      * Constructor.
      */
     public DivRegionRenderer() {
         super();
-
+        
+        this.headerRegions = new ArrayList<String>();
+        this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
 
     }
 
@@ -54,19 +63,21 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     public void renderHeader(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
 
 
-        // Wizard mode indicator
-
-
         PrintWriter markup = rendererContext.getWriter();
-        markup.print("<div");
+        
+        // Main DIV region (not shown in <head> tag)
+        if (!this.headerRegions.contains(rrc.getCSSId())) {
+            markup.print("<div");
+
+            if (rrc.getCSSId() != null) {
+                markup.print(" id='");
+                markup.print(rrc.getCSSId());
+                markup.print("'");
+            }
 
 
-        markup.print(" id='");
-        markup.print(rrc.getCSSId());
-        markup.print("'");
-
-        markup.print(">");
-
+            markup.print(">");
+        }
 
     }
 
@@ -76,24 +87,33 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      */
     public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
 
-        String regionLayoutWindowClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
-
-        PrintWriter markup = rendererContext.getWriter();
-
-
-        markup.print("<div class='");
-        markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
-        markup.println("'>");
+     
 
 
         for (Iterator i = rrc.getWindows().iterator(); i.hasNext();)
         {
-           WindowRendererContext wrc = (WindowRendererContext)i.next();
+            WindowRendererContext wrc = (WindowRendererContext)i.next();
+            
+            String regionLayoutWindowClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
+
+           
+           PrintWriter markup = rendererContext.getWriter();
+
+           if (!this.headerRegions.contains(rrc.getCSSId())) {
+
+               markup.print("<div class='");
+               markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
+               markup.println("'>");
+           }
+           
            rendererContext.render(wrc);
+           
+           if (!this.headerRegions.contains(rrc.getCSSId())) {
+               markup.println("</div>");
+           }
         }
 
 
-        markup.println("</div>");
 
 
     }
@@ -108,7 +128,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Add footer decorator
 
-        markup.print("</div>");
+        // End of Main DIV region (not shown in <head> tag)
+        if (!this.headerRegions.contains(rrc.getCSSId())) {
+            markup.print("</div>");
+        }
 
     }
 

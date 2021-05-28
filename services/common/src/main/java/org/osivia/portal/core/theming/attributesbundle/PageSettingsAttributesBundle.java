@@ -36,7 +36,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.theming.IInternalAttributesBundle;
 
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -48,9 +48,9 @@ import org.osivia.portal.core.page.PageCustomizerInterceptor;
  * Page settings attributes bundle.
  *
  * @author Cédric Krommenhoek
- * @see IAttributesBundle
+ * @see IInternalAttributesBundle
  */
-public final class PageSettingsAttributesBundle implements IAttributesBundle {
+public final class PageSettingsAttributesBundle implements IInternalAttributesBundle {
 
        /** Singleton instance. */
     private static PageSettingsAttributesBundle instance;
