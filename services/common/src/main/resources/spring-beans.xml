@@ -103,7 +103,11 @@
           id="org.osivia.portal.core.portlets.interceptors.PortletAttributesController" >
    </bean>
    
-
+   <bean class="org.osivia.portal.core.portlets.interceptors.ProfilerPortletInterceptor"
+          id="osivia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor" >
+        <property name="Profiler" ref="osivia:service=ProfilerService"/> 
+   </bean>
+   
 
    	<bean class="org.osivia.portal.core.content.PublicationManager"
 		id="osivia:service=PublicationManager" >
@@ -169,7 +173,18 @@
         <property name="CmsServiceLocator" ref="osivia:service=CmsServiceLocator"/>     
 	</bean>
 	
+	 <!-- Theming services -->
+	
+	<bean class="org.osivia.portal.core.theming.RegionsThemingService" id="osivia:service=RegionsThemingService" >
+        <property name="DefaultContextPath" value="/portal-assets" /> 
+        <property name="CustomizationService" ref="osivia:service=CustomizationService"/>     
+	</bean>
 	    
+   	<bean class="org.osivia.portal.core.theming.RegionsCustomizerInterceptor" id="osivia:service=Interceptor,type=Command,name=RegionsCustomizer" >
+        <property name="RegionsThemingService" ref="osivia:service=RegionsThemingService"/>   
+        <property name="CustomizationService" ref="osivia:service=CustomizationService"/>     
+	</bean>
+		    
 
      
 </beans>

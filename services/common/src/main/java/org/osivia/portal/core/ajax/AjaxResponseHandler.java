@@ -435,6 +435,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                     
 
 
+                    
+                    
                     // Regions
                     Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
                     for (PortalObject window : windows) {
@@ -553,7 +555,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 notificationsRegionList.add(NotificationsUtils.WINDOW_ID);                            
                                 updatePage.getRegions().put(NotificationsUtils.REGION_NAME, notificationsRegionList);
 
-
+                                // Menubar region needs data in request
+                                // If portlet is not displayed, menu can't be refreshed
                                 if (!preventMenubarRefresh) {
                                
                                     // Menubar window context
