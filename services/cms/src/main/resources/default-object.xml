@@ -2142,6 +2142,25 @@ return nuxeoRequest.toString();</value>
 
                     <security-constraint/>
 
+<!-- TOREMOVE -->
+                    <window>
+                        <window-name>toutatice-portail-cms-nuxeo-publishMenuPortletInstance_1556902638730</window-name>
+                        <instance-ref>toutatice-portail-cms-nuxeo-publishMenuPortletInstance</instance-ref>
+                        <region>nav</region>
+                        <properties>
+                            <property>
+                                <name>osivia.hideTitle</name>
+                                <value>1</value>
+                            </property>
+                            <property>
+                                <name>theme.order</name>
+                                <value>0</value>
+                            </property>
+                        </properties>
+                        <height>0</height>
+                    </window>
+
+
                     <window>
                         <window-name>index-cloud-ens-taskbar-instance_1556902638730</window-name>
                         <instance-ref>index-cloud-ens-taskbar-instance</instance-ref>

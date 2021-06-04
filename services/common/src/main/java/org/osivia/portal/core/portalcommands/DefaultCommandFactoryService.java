@@ -16,7 +16,10 @@ package org.osivia.portal.core.portalcommands;
 
 import java.net.URLDecoder;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -27,6 +30,7 @@ import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
+import org.osivia.portal.core.ui.SaveResizableWidthCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -148,6 +152,31 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         
                          return command;
 
+                }      
+                
+                // Save jQuery UI resizable component value
+                if (SaveResizableWidthCommand.ACTION.equals(action)) {
+                    // Parameters
+                    String[] linkedToTasksParameter = parameterMap.get(SaveResizableWidthCommand.LINKED_TO_TASKS_PARAMETER);
+                    String[] widthParameter = parameterMap.get(SaveResizableWidthCommand.WIDTH_PARAMETER);
+
+                    // Linked to tasks indicator
+                    boolean linkedToTasks;
+                    if (ArrayUtils.isEmpty(linkedToTasksParameter)) {
+                        linkedToTasks = false;
+                    } else {
+                        linkedToTasks = BooleanUtils.toBoolean(URLDecoder.decode(linkedToTasksParameter[0], CharEncoding.UTF_8));
+                    }
+                    
+                    // Resizable width
+                    Integer width;
+                    if (ArrayUtils.isEmpty(widthParameter)) {
+                        width = null;
+                    } else {
+                        width = NumberUtils.toInt(URLDecoder.decode(widthParameter[0], CharEncoding.UTF_8));
+                    }
+
+                    return new SaveResizableWidthCommand(linkedToTasks, width);
                 }                
 
             }

@@ -51,7 +51,7 @@ $JQry(function() {
 				    options.method = "get"
 				    // We don't block
 				    options.asynchronous = false;
-					ajaxCall(options, url);
+					directAjaxCall(null,options, url, null);
 
 					
 					

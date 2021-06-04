@@ -186,7 +186,7 @@ function bilto(event)
       if (url != null)
       {
          
-         ajaxCall( options, url, event);
+         directAjaxCall( container, options, url, event, null);
 
       }
 
@@ -203,7 +203,7 @@ function getScrollKey() {
 	return key;
 }
 
-function ajaxCall(options, url, eventToStop, popState, refresh){
+function directAjaxCall(container, options, url, eventToStop, callerId, popState, refresh){
     // Setup headers
     var headers = ["ajax","true"],
     	$ajaxWaiter = $JQry(".ajax-waiter");
@@ -264,14 +264,19 @@ function ajaxCall(options, url, eventToStop, popState, refresh){
     	
        var resp = "";
        
-       try	{
-    	   eval("resp =" + t.responseText + ";");
-       } catch ( e){
-    	   
-    		   window.location = url;
-    		   return;
-    	   
+       if( t.responseText.length > 0)	{
+       
+	       try	{
+	    	   eval("resp =" + t.responseText + ";");
+	       } catch ( e){
+	    	   
+	    		   window.location = url;
+	    		   return;
+	    	   
+	       }
        }
+       
+       
        if (resp.type == "update_markup")
        {
        	
@@ -508,7 +513,7 @@ function reload(state, event, refresh)	{
 	var options = new Object();
 	options.method = "get";
 	options.asynchronous = true;
-	ajaxCall( options, state.url, event, state, refresh);
+	directAjaxCall( null,options, state.url, event,null, state, refresh);
 }
 
 
@@ -685,7 +690,7 @@ function footer()
         // We don't block
         options.asynchronous = false;
 
-    	ajaxCall(options, window.location.href);
+    	directAjaxCall(null,options, window.location.href,null);
 
 
 }

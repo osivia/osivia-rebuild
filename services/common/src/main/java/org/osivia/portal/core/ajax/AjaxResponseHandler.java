@@ -640,12 +640,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                 
             }
             
-            else if (controllerResponse instanceof ErrorResponse) { 
-                ErrorResponse errorResp = (ErrorResponse) controllerResponse;
-                log.error("An error occured during the execution of the command", errorResp.getCause());
-                return null;
-            }
-            
             else {
                 return null;
             }

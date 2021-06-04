@@ -85,7 +85,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       out.write( "<script src='/portal-assets/js/table.js'></script>");  
       
       // Filler
-      out.write( "<script src='/portal-assets/js/portlet-filler.js'></script>");       
+      out.write( "<script src='/portal-assets/js/portlet-filler.js'></script>");      
+      
+      // Resizable
+      out.write( "<script src='/portal-assets/js/resizable.js'></script>");      
       
       // Filler
       out.write( "<script src='/portal-assets/js/fancytree-integration.js'></script>");       

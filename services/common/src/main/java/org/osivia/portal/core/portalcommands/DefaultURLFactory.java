@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-
+import org.apache.commons.lang3.CharEncoding;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
@@ -31,6 +31,7 @@ import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
+import org.osivia.portal.core.ui.SaveResizableWidthCommand;
 
 
 /**
@@ -94,6 +95,30 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             return asu;
         }
        
+        // Save jQuery UI resizable component value
+        if (cmd instanceof SaveResizableWidthCommand) {
+            SaveResizableWidthCommand command = (SaveResizableWidthCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, SaveResizableWidthCommand.ACTION);
+
+            // Parameters
+            try {
+                // Linked to tasks indicator
+                asu.setParameterValue(SaveResizableWidthCommand.LINKED_TO_TASKS_PARAMETER,
+                        URLEncoder.encode(String.valueOf(command.isLinkedToTasks()), CharEncoding.UTF_8));
+
+                // Resizable width
+                if (command.getWidth() != null) {
+                    asu.setParameterValue(SaveResizableWidthCommand.WIDTH_PARAMETER, URLEncoder.encode(String.valueOf(command.getWidth()), CharEncoding.UTF_8));
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
 
 
         return null;

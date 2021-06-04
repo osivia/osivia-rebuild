@@ -28,6 +28,14 @@ public interface NavigationItem {
     
     
     /**
+     * Get document identifier.
+     *
+     * @return identifier
+     */
+    UniversalID getCustomizedTemplateId();
+    
+    
+    /**
      * Gets the title.
      *
      * @return the title

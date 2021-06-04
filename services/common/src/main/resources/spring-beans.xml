@@ -185,6 +185,11 @@
         <property name="CustomizationService" ref="osivia:service=CustomizationService"/>     
 	</bean>
 		    
+   	<bean class="org.osivia.portal.core.ui.ResizableService" id="osivia:service=ResizableService" >
+ <!-- 
+        <property name="TaskbarService" ref="osivia:service=TaskbarService"/>   
+  -->
+	</bean>
 
      
 </beans>
