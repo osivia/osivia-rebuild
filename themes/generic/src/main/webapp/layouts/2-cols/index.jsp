@@ -1,6 +1,6 @@
 <%@ page import="org.jboss.portal.server.PortalConstants" %>
 <%@page import="java.util.ResourceBundle"%>
-<%@ taglib uri="/WEB-INF/theme/portal-layout.tld" prefix="p" %>
+<%@ taglib uri="portal-layout" prefix="p" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <% ResourceBundle rb = ResourceBundle.getBundle("Resource", request.getLocale()); %>

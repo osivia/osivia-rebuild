@@ -2153,6 +2153,10 @@ return nuxeoRequest.toString();</value>
                                 <value>1</value>
                             </property>
                             <property>
+                                <name>osivia.cms.template</name>
+                                <value>fancytree-lazy</value>
+                            </property>                            
+                            <property>
                                 <name>theme.order</name>
                                 <value>0</value>
                             </property>

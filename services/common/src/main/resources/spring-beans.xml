@@ -165,6 +165,11 @@
    	<bean class="org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor" id="osivia:service=Interceptor,type=Portlet,name=ConsumerCache" >
      
 	</bean>
+	
+	<!-- Page header resource service -->
+	<bean class="org.osivia.portal.core.theming.PageHeaderResourceService" id="osivia:service=PageHeaderResourceService" >
+  	</bean>
+	
 
     <!-- Documents browser service -->
     

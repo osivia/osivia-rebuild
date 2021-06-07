@@ -5,7 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.PortalException;
@@ -49,8 +51,8 @@ public class ResizableService implements IResizableService {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-        // Current page object identifier
-        PortalObjectId pageId = PortalObjectUtilsInternal.getPageId(controllerContext);
+        PortalObjectId pageId = getPageId(controllerContext);
+        
         // Current task identifier
         String taskId;
         if (linkedToTasks) {
@@ -86,6 +88,33 @@ public class ResizableService implements IResizableService {
 
 
     /**
+     * Gets the page id.
+     *
+     * @param controllerContext the controller context
+     * @return the page id
+     */
+    private PortalObjectId getPageId(ControllerContext controllerContext) {
+        // Current page object identifier
+        PortalObjectId pageId = PortalObjectUtilsInternal.getPageId(controllerContext);
+        
+        
+        // Current page object identifier
+        Page page = PortalObjectUtilsInternal.getPage(controllerContext);
+
+        // In CMS Navigation, maximized view is in a different page from parent
+        if( page != null)   {
+            String navigationId = page.getProperties().get("osivia.navigationId");
+            String spaceId = page.getProperties().get("osivia.spaceId");
+            if( navigationId != null && spaceId != null)   {
+                String names[] = {spaceId, navigationId};
+                pageId = new PortalObjectId("", new PortalObjectPath(names));
+            }
+        }
+        return pageId;
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -94,7 +123,7 @@ public class ResizableService implements IResizableService {
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Current page object identifier
-        PortalObjectId pageId = PortalObjectUtilsInternal.getPageId(controllerContext);
+        PortalObjectId pageId = getPageId(controllerContext);
 
         if ((pageId != null) && (width != null)) {
             // Current task identifier

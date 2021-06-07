@@ -23,7 +23,8 @@ import org.jboss.portal.web.ServletContainerFactory;
 import org.jboss.portal.web.WebAppEvent;
 import org.jboss.portal.web.WebAppLifeCycleEvent;
 import org.jboss.portal.web.WebAppListener;
-
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.theming.IPageHeaderResourceService;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,6 +55,15 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	   private ServletContainerFactory servletContainerFactory;
 	   
 	   PortletApplicationDeployer appDeployer;
+	   
+	   IPageHeaderResourceService pageHeaderResourceService;
+	   
+	   
+	   IPageHeaderResourceService getPageHeaderResourceService()   {
+	       if( pageHeaderResourceService == null)
+	           pageHeaderResourceService = Locator.getService(IPageHeaderResourceService.class);
+	       return pageHeaderResourceService;
+	   }
 	   
 	   
 	public PortletApplicationDeployer getAppDeployer() {
@@ -209,6 +219,10 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 
 //	      // And let JBoss deploy it
 //	      mainDeployer.deploy(pdi);
+	      
+	      // Notify portal
+	      getPageHeaderResourceService().deploy(pwa);
+	      
 	   }
 	   public void undeploy(PortalWebApp pwa) throws DeploymentException
 	   {
@@ -219,6 +233,8 @@ public class ServerDeployer extends SubDeployerSupport implements ServerDeployer
 	      {
 	         // Undeploy
 	        // mainDeployer.undeploy(url);
+	          getPageHeaderResourceService().undeploy(pwa);
+	          
 	      }
 	      catch (Exception e)
 	      {

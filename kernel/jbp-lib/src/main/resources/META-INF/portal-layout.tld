@@ -53,13 +53,16 @@
       </attribute>
    </tag>
    <tag>
-      <name>theme</name>
-      <tag-class>org.jboss.portal.theme.tag.ThemeTagHandler</tag-class>
-      <body-content>empty</body-content>
-      <attribute>
-         <name>themeName</name>
-      </attribute>
-   </tag>
+        <name>theme</name>
+        <tag-class>org.osivia.portal.core.tag.ThemeTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>themeName</name>
+        </attribute>
+        <attribute>
+            <name>resourceType</name>
+        </attribute>        
+    </tag>
    <tag>
       <name>headerContent</name>
       <tag-class>org.jboss.portal.theme.tag.HeaderContentTagHandler</tag-class>

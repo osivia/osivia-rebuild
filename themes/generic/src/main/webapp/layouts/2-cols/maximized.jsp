@@ -1,6 +1,6 @@
 <%@ page import="org.jboss.portal.server.PortalConstants" %>
 <%@page import="java.util.ResourceBundle"%>
-<%@ taglib uri="/WEB-INF/theme/portal-layout.tld" prefix="p" %>
+<%@ taglib uri="portal-layout" prefix="p" %>
 <% ResourceBundle rb = ResourceBundle.getBundle("Resource", request.getLocale()); %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

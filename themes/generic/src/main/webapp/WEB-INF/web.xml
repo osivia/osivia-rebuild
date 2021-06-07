@@ -7,11 +7,6 @@
     
     <display-name>Charte</display-name>
     
-    <jsp-config>
-        <taglib>
-            <taglib-uri>portal-layout</taglib-uri>
-            <taglib-location>theme/portal-layout.tld</taglib-location>
-        </taglib>
-    </jsp-config>
+
     
 </web-app>
