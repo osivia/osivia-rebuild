@@ -109,9 +109,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 HttpServletRequest httpRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
                 attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
 
-                boolean refresh = PageProperties.getProperties().isRefreshingPage();
+                Boolean refresh =  PageProperties.getProperties().isCheckingSpaceContents() || PageProperties.getProperties().isRefreshingPage(); 
                 if( refresh)
-                    attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, true);
+                    attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, refresh);
 
                 // Set attributes
                 invocation.setRequestAttributes(attributes);
@@ -124,7 +124,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
             if (BooleanUtils.toBoolean(String.valueOf(attributes.get("osivia.ajax.preventRefresh")))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.preventRefreshWindowId", invocation.getWindowContext().getId());
-            }            
+            }     
+            
+            if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_REFRESH_PAGE))) {
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshpage", "true");
+            }
         }
 
 

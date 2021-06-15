@@ -188,8 +188,8 @@ public final class Constants {
     public static final String PORTLET_ATTR_DISPLAY_PAGE = "osivia.displayPage";
     /** To return to normal mode. */
     public static final String PORTLET_ATTR_UNSET_MAX_MODE = "osivia.unsetMaxMode";
-    /** To refresh all Contents (portlets + CMS). */
-    public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";
+    /** To refresh all portlets. */
+    public static final String PORTLET_ATTR_REFRESH_PAGE = "osivia.refreshPage";
     /** To notify data change */
     public static final String PORTLET_ATTR_UPDATE_SPACE_DATA = "osivia.updateSpaceData";    
     /** To close popup. */

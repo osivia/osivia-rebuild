@@ -70,6 +70,10 @@ public class JSONMarshaller {
                 if (umr.getFullStateUrl() != null) {
                     writer.key("full_state_url").value(umr.getFullStateUrl());
                 }
+                
+                if (umr.getPageChanged() != null) {
+                    writer.key("page_changed").value(umr.getPageChanged().toString());
+                }
 
                 
                 //

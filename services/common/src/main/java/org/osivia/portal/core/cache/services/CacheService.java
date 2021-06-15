@@ -189,16 +189,22 @@ public class CacheService extends ServiceMBeanSupport implements ICacheService, 
 
 			boolean expired = false;
 			
-			// Cache existant et expiré (20s)
+			
+			
+			// Cache existant et expiré (par délai)
 			if (System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getExpirationDelay())
 				expired = true;
+			
+	         // Cache existant et expiré (par timestamp)
+            if ( infos.getExpirationTs() != null && cacheFlux.getTsEnregistrement() < infos.getExpirationTs())
+                expired = true;
 			
 			// Réinitialisation par l'adminstrateur
 	        if( !checkIfPortalParametersReloaded( cacheFlux.getTsEnregistrement()))
                 expired = true;
 			
-			// Réinitialisation par l'utilisateur : tous sauf parametres
-			
+			// Réinitialisation applicative : tous sauf parametres
+
 			if(  PageProperties.getProperties().isRefreshingPage())  {
 			    String reloadedKey = infos.getScope() + "/" + infos.getItemKey();
 			    // On controle que la page n'a pas déja été rechargée dans la requete courante
@@ -206,7 +212,7 @@ public class CacheService extends ServiceMBeanSupport implements ICacheService, 
 			        expired = true;
 			    PageProperties.getProperties().getPagePropertiesMap().put( "reloaded_"+ reloadedKey, "1");
 			}
-			
+
 			
 			if(  (cacheFlux.getContent() instanceof IGlobalParameters))
 				expired = true;
@@ -271,7 +277,10 @@ public class CacheService extends ServiceMBeanSupport implements ICacheService, 
 
 			// reinitialisation des caches
             if (   cacheFlux != null)
-            if (   (!checkIfPortalParametersReloaded(cacheFlux.getTsEnregistrement()) || (PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContent() instanceof IGlobalParameters))))
+            if (   (!checkIfPortalParametersReloaded(cacheFlux.getTsEnregistrement()) 
+                    || (PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContent() instanceof IGlobalParameters))
+                    || ( infos.getExpirationTs() != null && cacheFlux.getTsEnregistrement() < infos.getExpirationTs())
+                    ) )
                 cacheFlux = null;
 			
 

@@ -36,10 +36,13 @@ import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
@@ -48,16 +51,20 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.cache.CMSPortalCacheCacheListener;
 import org.osivia.portal.core.cms.cache.CMSPortalCacheEvent;
 import org.osivia.portal.core.cms.cache.RequestCacheManager;
+import org.osivia.portal.core.page.PageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.jboss.portal.portlet.cache.CacheControl;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.portlet.WindowContextImpl;
 import org.jboss.portal.WindowState;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.Mode;
 
@@ -102,9 +109,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          Mode mode = renderInvocation.getMode();
          
 
-         
-       
-
+  
          //
          CacheEntry cachedEntry = (CacheEntry) userContext.getAttribute(scopeKey);
          
@@ -128,7 +133,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
         }
 
 
-        // CMS cache has been modified
+        // CMS cache has been modified (portle level)
         if (cachedEntry != null && window != null) {
 
             Long updateTs = requestCacheMgr.getCMSRequestUpdateTs(ctx, window);
@@ -139,10 +144,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                 }
             }
         }         
-      
-         
-         
-
+        
+ 
          //
          if (cachedEntry != null)
          {
@@ -216,10 +219,14 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             }
          }
 
+         boolean refresh = BooleanUtils.isTrue((Boolean)ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.refreshCaches"));
+         
+         
+         
          ContentResponse fragment = cachedEntry != null ? cachedEntry.contentRef.getContent() : null;
 
          // If no valid fragment we must invoke
-         if (fragment == null || cachedEntry.expirationTimeMillis < System.currentTimeMillis())
+         if (fragment == null || cachedEntry.expirationTimeMillis < System.currentTimeMillis() || refresh)
          {
             // Set validation token for revalidation only we have have a fragment
             if (fragment != null)

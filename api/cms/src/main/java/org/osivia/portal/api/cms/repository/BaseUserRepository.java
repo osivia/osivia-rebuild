@@ -19,11 +19,15 @@ import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.repository.cache.SharedRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.RepositoryEvent;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.user.NavigationItemImpl;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.api.cms.service.Request;
+
+import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 
@@ -43,23 +47,18 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
  
 
-
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
     
     public static String SUPERUSER_NAME = "superuser";
 
     protected SharedRepositoryKey repositoryKey;
 
- 
-
     protected List<RepositoryListener> listeners;
     
     protected BaseUserRepository publishRepository;
     
     private static Map<SharedRepositoryKey, SharedRepository>  sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
-    
-    private Map<String, Personnalization>  personnalizationMap = new Hashtable<String, Personnalization>();
-    
+
     private boolean previewRepository = false;
     
     private String userName = null;
@@ -69,6 +68,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     UserStorage userStorage;
     
     public ThreadLocal<PortalControllerContext> portalCtx = new ThreadLocal<PortalControllerContext>();
+    
+   
 
     public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, UserStorage userStorage) {
         super();
@@ -195,9 +196,13 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     }
 
     
+
+    
     public Document getDocument(String internalId) throws CMSException {
         
+       
         RepositoryDocument sharedDocument = getSharedRepository().getDocument(getUserStorage(),internalId);
+        
         if( checkSecurity(sharedDocument)) {
             // default
             return sharedDocument;
@@ -208,13 +213,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
    public Personnalization getPersonnalization(String internalId) throws CMSException {
 
-        Personnalization personnalization = personnalizationMap.get(internalId);
+        return userStorage.getUserData(internalId);
 
-        if (personnalization == null) {
-            personnalizationMap.put(internalId, userStorage.getUserData(internalId));
-        }
-
-        return personnalizationMap.get(internalId);
     }
  
 
@@ -269,6 +269,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     @Override
     public void contentModified( CMSEvent e) {
+            
         for (RepositoryListener listener : listeners) {
             listener.contentModified( e);
         }
@@ -380,8 +381,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
 
     @Override
-    public void updateDocument(String id) throws CMSException {
-        getSharedRepository().updateDocument(getUserStorage(),id);
+    public void notifyUpdate(UpdateInformations infos) throws CMSException {
+        getSharedRepository().notifyUpdate(getUserStorage(), infos);
     }
     
     
@@ -389,10 +390,16 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
      * Clear local and shared caches.
      */
     public void clearCaches()    {
-        personnalizationMap = new Hashtable<String, Personnalization>();
         getSharedRepository().clear();
         if( publishRepository != null)
             publishRepository.clearCaches();
     }
 
+    
+
+    @Override
+    public Long getSpaceAwareTimestamp(String id) throws CMSException {
+        return getSharedRepository().getSpaceTs(id);
+    }
+    
 }

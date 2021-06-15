@@ -80,6 +80,9 @@ public class PageProperties {
 
 	// v2.0.6 : ajout rafraichissement utilisateur sur la requete
 	private boolean refreshingPage = false;
+	private Long checkingSpaceTS = null;
+	private Long checkingSpaceBeginning = null;
+
 
 
 	public boolean isRefreshingPage() {
@@ -91,6 +94,10 @@ public class PageProperties {
 
 		return this.refreshingPage;
 	}
+	
+	   public boolean isCheckingSpaceContents() {
+	       return getCheckingSpaceTs() != null;
+	    }
 
 
 	public void setRefreshingPage(boolean pageRefresh) {
@@ -101,8 +108,30 @@ public class PageProperties {
 	}
 
 
+    public void setCheckingSpaceTS(Long spaceTs) {
+        if( this.parent != null)    {
+            this.parent.checkingSpaceTS = spaceTs;
+            this.parent.checkingSpaceBeginning = System.currentTimeMillis();
+        }
+        else    {
+            this.checkingSpaceTS = spaceTs;
+            this.checkingSpaceBeginning = System.currentTimeMillis();
+        }
+    }
 
+    public Long getCheckingSpaceTs( )    {
+        if( this.parent != null)
+            return this.parent.getCheckingSpaceTs();
 
+        return this.checkingSpaceTS;
+    }
+
+    public Long getCheckingSpaceBeginning( )    {
+        if( this.parent != null)
+            return this.parent.checkingSpaceBeginning;
+
+        return this.checkingSpaceBeginning;
+    }
 
 
     public  Map<String, String> getPagePropertiesMap()	{

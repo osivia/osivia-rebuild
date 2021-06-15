@@ -7,17 +7,20 @@ import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -25,6 +28,7 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
+import org.osivia.portal.core.page.PageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -148,9 +152,34 @@ public class PublicationManager implements IPublicationManager {
             cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
             
 
+             
             Document doc = getCMSService().getCMSSession(cmsContext).getDocument( docId);
+            
+            
+            
+            // Force load of dirty datas associated to current space
+            UniversalID spaceId = doc.getSpaceId();
+            if (spaceId != null) {
+                CMSController ctrl = new CMSController(portalCtx);
+
+                CMSSession session;
+                try {
+                    session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
+                    Long modifiedTs = session.getSpaceAwareTimestamp(spaceId);
+                    if( modifiedTs != null)
+                        PageProperties.getProperties().setCheckingSpaceTS(modifiedTs);
+                } catch (CMSException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+           
+            
+            
+            
             boolean pageDisplay = false;
             
+            
+            System.out.println("*** PUBMANAGER " + docId );
             
             NavigationItem navigation;
             String pagePath = null;
@@ -158,6 +187,9 @@ public class PublicationManager implements IPublicationManager {
 
             try {
                  navigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(docId);
+                 
+                 if( docId.getInternalID().contains("kFG8vy"))
+                     System.out.println("*** PUBMANAGER NAV-> " + navigation.getDocumentId() );
             } catch( CMSException e) {
                 navigation = null;
             }

@@ -82,7 +82,12 @@ import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
+import org.osivia.portal.api.cms.CMSController;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.core.cms.cache.RequestCacheManager;
@@ -91,6 +96,7 @@ import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
@@ -238,6 +244,39 @@ public class AjaxResponseHandler implements ResponseHandler {
                          pageStructureModified = true;
                  }
                  controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.updateTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT), System.currentTimeMillis());
+                 
+                 
+                 // Check if Space content has been modified
+                 
+                
+                 String spaceId = page.getProperty("osivia.spaceId");
+                 if (StringUtils.isNotEmpty(spaceId)) {
+                     Long lastDisplayTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,"osivia.lastDisplayTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT));
+
+
+                     // Get Id
+                     PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+                     CMSController ctrl = new CMSController(portalCtx);
+
+                     CMSSession session;
+                     try {
+                         session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
+
+
+                         Long modifiedTs = session.getSpaceAwareTimestamp(new UniversalID(spaceId));
+                         if (modifiedTs != null) {
+                             if (lastDisplayTs == null || lastDisplayTs < modifiedTs) {
+                                 PageProperties.getProperties().setCheckingSpaceTS(modifiedTs);
+                              }
+                         }
+                     } catch (CMSException e) {
+                         throw new RuntimeException(e);
+                     }
+
+                     
+                     controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.lastDisplayTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT), System.currentTimeMillis());
+                 }
+
                 
                 log.info("updateTs = "+page.getUpdateTs());
                 
@@ -260,7 +299,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                 Map<String, String[]> parameters = null;
 
 
-                if (BooleanUtils.isNotTrue(pageChange) && BooleanUtils.isNotTrue(pageStructureModified) && ctx.getChanges() != null ) {
+                boolean refreshCache = false;
+                
+                if (BooleanUtils.isNotTrue(pageChange) && BooleanUtils.isNotTrue(pageStructureModified) && ctx.getChanges() != null )  {
                     for (Iterator i = ctx.getChanges(); i.hasNext();) {
                         NavigationalStateChange change = (NavigationalStateChange) i.next();
 
@@ -329,7 +370,13 @@ public class AjaxResponseHandler implements ResponseHandler {
                     // New Ajax Page
                     
                     refreshPageStructure = true;
+                    refreshCache = true;
+                 }
+                
+                
+                if (PageProperties.getProperties().isRefreshingPage() || PageProperties.getProperties().isCheckingSpaceContents()) {
 
+                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.refreshCaches", Boolean.TRUE);
                     dirtyWindowIds.clear();
                     Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
                     for (PortalObject window : windows) {
@@ -337,8 +384,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                             dirtyWindowIds.add(window.getId());
                         }
                     }
-                  
                 }
+                
                 
 
                 if (!fullRefresh) {
@@ -473,6 +520,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                         updatePage.setLayout(layoutCode);
                     }
+                    
+                    updatePage.setPageChanged(pageChange);
 
 
                     // Call to the theme framework
@@ -572,6 +621,9 @@ public class AjaxResponseHandler implements ResponseHandler {
 
 
                             }
+                            
+            
+                            
                         } catch (Exception e) {
                             log.error("An error occured during the computation of window markup", e);
 

@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * Refreshable.
+ * Enables the refresh of a session Bean
  * 
  * @author Cédric Krommenhoek
  */

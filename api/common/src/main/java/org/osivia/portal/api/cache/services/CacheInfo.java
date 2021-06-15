@@ -64,8 +64,13 @@ public class CacheInfo {
 	 * en cache de façon asynchrone.
 	 */
 	private boolean isAsyncCacheRefreshing = false;
+	
+	
+	private Long expirationTs = null;
 		
-	/**
+	
+
+    /**
 	 * Checks if is force not reload.
 	 *
 	 * @return true, if is force not reload
@@ -257,6 +262,24 @@ public class CacheInfo {
 	}
 	
 	
+    /**
+     * Gets the expiration ts.
+     *
+     * @return the expiration ts
+     */
+    public Long getExpirationTs() {
+        return expirationTs;
+    }
+
+    
+    /**
+     * Sets the expiration ts.
+     *
+     * @param expirationTs the new expiration ts
+     */
+    public void setExpirationTs(Long expirationTs) {
+        this.expirationTs = expirationTs;
+    }
 
 
 }

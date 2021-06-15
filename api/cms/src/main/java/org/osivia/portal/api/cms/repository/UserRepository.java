@@ -3,7 +3,7 @@ package org.osivia.portal.api.cms.repository;
 import java.util.List;
 import java.util.Locale;
 
-
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -11,6 +11,7 @@ import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 
@@ -33,6 +34,8 @@ public interface UserRepository {
      */
     public Result executeRequest(Request request) throws CMSException;    
     
+    
+ 
     /**
      * Gets the document.
      *
@@ -43,13 +46,16 @@ public interface UserRepository {
     public Document getDocument(String id) throws CMSException;
     
     
+   
+
     /**
-     * Update the document.
+     * Notify update of e document.
      *
      * @param id the id
+     * @param infos the infos
      * @throws CMSException the CMS exception
      */
-    public void updateDocument(String id) throws CMSException;
+    public void notifyUpdate( UpdateInformations infos) throws CMSException ;
     
     /**
      * Gets the navigation item.
@@ -91,7 +97,13 @@ public interface UserRepository {
      */
     public Personnalization getPersonnalization(String internalId) throws CMSException ;
     
-
+    /**
+     * Gets the timestamp of space relative requests.
+     *
+     * @param id the id
+     * @throws CMSException the CMS exception
+     */
+    Long getSpaceAwareTimestamp(String id) throws CMSException;
  
     
     /**

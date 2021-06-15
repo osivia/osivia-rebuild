@@ -53,7 +53,15 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
     
     private Locale locale;
     
+    /** The id. */
+    private final Long timestamp;
+    
   
+
+
+
+
+
     protected transient boolean preview = false;
     
     
@@ -84,11 +92,14 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
         this.properties = properties;
         this.preview = userRepository.isPreviewRepository();
         this.locale = userRepository.getRepositoryKey().getLocale();
-
+        this.timestamp = System.currentTimeMillis();
     }
     
     
     
+    public Long getTimestamp() {
+        return timestamp;
+    }
 
     public Locale getLocale() {
         return locale;

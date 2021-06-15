@@ -203,6 +203,36 @@ function getScrollKey() {
 	return key;
 }
 
+
+//Explicits Ajax calls from portlet
+function updatePortletContent(item, url) {
+    var ajaxCall = true;
+
+    var container = Element.up(item, "div.dyna-window");
+    if (container == null) {
+        ajaxCall = false;
+    }
+
+    if (!item.hasClassName("ajax-link") && (item.hasClassName("no-ajax-link") || (Element.up(item, ".no-ajax-link") != null))) {
+        ajaxCall = false;
+    }
+
+    if (ajaxCall) {
+        // Set URL
+        var options = new Object();
+
+        // We have a get
+        options.method = "get"
+
+        // We don't block
+        options.asynchronous = true;
+
+        directAjaxCall(container, options, url, null, null);
+    } else {
+        document.location = url;
+    }
+}
+
 function directAjaxCall(container, options, url, eventToStop, callerId, popState, refresh){
     // Setup headers
     var headers = ["ajax","true"],
@@ -469,6 +499,13 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
             		filler.scrollTop(popState.currentScroll);
             	}
               }
+          }	else	{
+        	  if( resp.page_changed == "false"){
+        		  filler = $JQry(".portlet-filler").first();
+              		if( filler != undefined && currentScroll != 0)	{
+              			filler.scrollTop(currentScroll);
+              	}
+        	  }
           }
 
           
@@ -491,6 +528,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
     		  return;
     	  }	
     	  
+   	  
     	  
      	  document.location = resp.location;
        }

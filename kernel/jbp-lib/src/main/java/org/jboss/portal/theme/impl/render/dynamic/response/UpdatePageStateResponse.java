@@ -50,9 +50,20 @@ public class UpdatePageStateResponse extends DynaResponse {
     private String fullStateUrl;
     private String sessionCheck;
     private Set<PageResource> resources;
+    private Boolean pageChanged = false;
     
     
     
+    public Boolean getPageChanged() {
+        return pageChanged;
+    }
+    
+    public void setPageChanged(Boolean pageChanged) {
+        this.pageChanged = pageChanged;
+    }
+
+
+
     public String getSessionCheck() {
         return sessionCheck;
     }

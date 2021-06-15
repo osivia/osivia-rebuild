@@ -10,6 +10,7 @@ import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.core.sessions.CMSSessionRecycle;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
@@ -50,8 +51,8 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
    }
 
     @Override
-    public void updateDocument(UniversalID id) throws CMSException {
-        ((UserRepository) cmsService.getUserRepository(cmsContext, id.getRepositoryName())).updateDocument( id.getInternalID());
+    public void notifyUpdate(UpdateInformations infos) throws CMSException {
+        ((UserRepository) cmsService.getUserRepository(cmsContext, infos.getDocumentID().getRepositoryName())).notifyUpdate(infos);
      }
 
     @Override
@@ -62,6 +63,11 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
     @Override
     public NavigationItem getNavigationItem(UniversalID id) throws CMSException {
         return ((UserRepository) cmsService.getUserRepository(cmsContext, id.getRepositoryName())).getNavigationItem(id.getInternalID());
+    }
+
+    @Override
+    public Long getSpaceAwareTimestamp(UniversalID spaceId) throws CMSException {
+        return ((UserRepository) cmsService.getUserRepository(cmsContext, spaceId.getRepositoryName())).getSpaceAwareTimestamp(spaceId.getInternalID());
     }
 
 

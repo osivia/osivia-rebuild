@@ -32,13 +32,12 @@ public interface CMSSession {
  
 
     /**
-     * Update the document.
+     * Notify update.
      *
-     * @param id the id
-     * @return the document
+     * @param infos the infos
      * @throws CMSException the CMS exception
      */
-    public void updateDocument(UniversalID id) throws CMSException;
+    void notifyUpdate(UpdateInformations infos) throws CMSException;
     
     
     /**
@@ -72,7 +71,20 @@ public interface CMSSession {
      */
     NavigationItem getNavigationItem( UniversalID id) throws CMSException;
     
-     
+    
+    /**
+     * Gets the last change timestamp impacting ISpaceAwareRequest.
+     *
+     * @param spaceId the space id
+     * @return the document
+     * @throws CMSException the CMS exception
+     */
+    
+    Long getSpaceAwareTimestamp(UniversalID spaceId) throws CMSException;
+
+
+
+
  
    
 }
