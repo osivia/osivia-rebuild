@@ -73,7 +73,7 @@ public interface CMSSession {
     
     
     /**
-     * Gets the last change timestamp impacting ISpaceAwareRequest.
+     * Gets the last change timestamp inside the space.
      *
      * @param spaceId the space id
      * @return the document
@@ -81,6 +81,15 @@ public interface CMSSession {
      */
     
     Long getSpaceAwareTimestamp(UniversalID spaceId) throws CMSException;
+
+
+    /**
+     * Reloads the document
+     *
+     * @param id the id
+     * @throws CMSException the CMS exception
+     */
+    void reload(UniversalID id) throws CMSException;
 
 
 

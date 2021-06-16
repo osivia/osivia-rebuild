@@ -211,6 +211,12 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
             throw new DocumentForbiddenException();
     }
     
+    
+    public void reload(String internalId) throws CMSException {
+        getSharedRepository().reload(getUserStorage(),internalId);
+    }
+
+    
    public Personnalization getPersonnalization(String internalId) throws CMSException {
 
         return userStorage.getUserData(internalId);

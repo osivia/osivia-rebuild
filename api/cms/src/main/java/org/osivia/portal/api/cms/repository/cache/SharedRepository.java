@@ -108,17 +108,23 @@ public class SharedRepository {
             reload = true;
         
         if( reload) {
-            doc = storageRepository.reloadDocument(internalID);
-            if( doc != null)
-                cachedDocument.put(internalID, doc);
+             reload( storageRepository, internalID);
+             doc = cachedDocument.get(internalID);
         }
         
         if( doc == null)
             throw new CMSException();
+        
         return doc.duplicate();
         } catch(Exception e)    {
             throw new CMSException(e);
         }
+    }
+    
+    public void reload(UserStorage storageRepository,String internalID) throws CMSException  {
+        RepositoryDocument doc = storageRepository.reloadDocument(internalID);
+        if( doc != null)
+            cachedDocument.put(internalID, doc);
     }
     
     

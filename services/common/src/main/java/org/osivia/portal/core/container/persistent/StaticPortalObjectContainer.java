@@ -112,6 +112,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                     Set<PortalObjectId> nodes = new HashSet<>(getContextNodes().keySet());
                     for( PortalObjectId poid: nodes)
                         getContextNodes().remove(poid);
+                    createDefaultContext(getContextNodes());
                     res = null;
                 }
             }
@@ -159,14 +160,20 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
             currentContextNodes = new ConcurrentHashMap();
             nodes.put(sessionId, currentContextNodes);
             
-            UniversalID defaultId = getDefaultPortal();
-            
-            ContextImplBase context = createContext( defaultId.getRepositoryName(), defaultId.getInternalID());
-            
-            PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + defaultId.getInternalID(), PortalObjectPath.CANONICAL_FORMAT);
-            createPortal(currentContextNodes, new PortalObjectId(defaultId.getRepositoryName(), defaultPortalPath));
+            createDefaultContext(currentContextNodes);
         }
         return currentContextNodes;
+    }
+    
+    
+
+    private void createDefaultContext(Map currentContextNodes) {
+        UniversalID defaultId = getDefaultPortal();
+        
+        ContextImplBase context = createContext( defaultId.getRepositoryName(), defaultId.getInternalID());
+        
+        PortalObjectPath defaultPortalPath = new PortalObjectPath("/" + defaultId.getInternalID(), PortalObjectPath.CANONICAL_FORMAT);
+        createPortal(currentContextNodes, new PortalObjectId(defaultId.getRepositoryName(), defaultPortalPath));
     }
 
     protected UniversalID getDefaultPortal() {

@@ -34,7 +34,6 @@ public interface UserRepository {
      */
     public Result executeRequest(Request request) throws CMSException;    
     
-    
  
     /**
      * Gets the document.
@@ -45,9 +44,7 @@ public interface UserRepository {
      */
     public Document getDocument(String id) throws CMSException;
     
-    
-   
-
+ 
     /**
      * Notify update of e document.
      *
@@ -113,5 +110,13 @@ public interface UserRepository {
      */
     void setPortalContext(PortalControllerContext portalContext) ;
     
+    
+    /**
+     * Reloads the document
+     *
+     * @param internalId the internal id
+     * @throws CMSException the CMS exception
+     */
+    public void reload(String internalId) throws CMSException;
 
 }

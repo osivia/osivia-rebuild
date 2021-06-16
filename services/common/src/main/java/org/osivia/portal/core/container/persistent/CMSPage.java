@@ -99,8 +99,10 @@ public  class  CMSPage extends PageImplBase {
 			setDeclaredProperty(key, pageProperties.get(key));
 		}
 		
-		
+
 		setDeclaredProperty("osivia.creationTs", ""+ System.currentTimeMillis());
+		
+
 	}
 
 

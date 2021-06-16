@@ -54,6 +54,11 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
     public void notifyUpdate(UpdateInformations infos) throws CMSException {
         ((UserRepository) cmsService.getUserRepository(cmsContext, infos.getDocumentID().getRepositoryName())).notifyUpdate(infos);
      }
+    
+    @Override
+    public void reload(UniversalID id) throws CMSException {
+         ((UserRepository) cmsService.getUserRepository(cmsContext, id.getRepositoryName())).reload(id.getInternalID());
+    }
 
     @Override
     public Result executeRequest(Request request) throws CMSException {
