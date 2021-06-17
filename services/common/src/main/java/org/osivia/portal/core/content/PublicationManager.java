@@ -246,8 +246,10 @@ public class PublicationManager implements IPublicationManager {
                  pagePath = getDynamicService().startDynamicPage(portalCtx, parentID.getRepositoryName()+":/"+parentID.getInternalID(), pageDynamicID,
                         displayNames, templatePath, properties, parameters, null);
                  
-                 if( navigation.getDocumentId().equals(doc.getId()))
-                      pageDisplay = true;
+                 if(  "nx".equals(doc.getId().getRepositoryName())) {
+                     if( navigation.getDocumentId().equals(doc.getId()))
+                         pageDisplay = true;
+                 }
                 
             }   else    {
                 // Empty page

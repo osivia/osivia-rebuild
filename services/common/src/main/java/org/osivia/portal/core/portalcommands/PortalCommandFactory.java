@@ -185,12 +185,15 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
               
         boolean handleMapping = true;
         
+        
                
         // we can't handle an ajax Request without incorrect authentification
         // So we ask the browser to reload currentpage
-        if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
+        if( (modal || noredirect) && !StringUtils.equals(currentServerCheck, browserSession))    {
             handleMapping = false;
         }
+        
+        
         
         if( handleMapping) {
              cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
@@ -263,6 +266,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         boolean returnToDefaultPage = false;
         boolean handleAjaxReload = false;
+        boolean browserReload = false;        
         
         
         // No more static pages :)
@@ -284,19 +288,17 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
         
         
-        
-        
-
-        // no redirect url (example : reopen a modal after a session losed)
+ 
+        // open a modal after session is lost
         if( modal && !StringUtils.equals(currentServerCheck, browserSession))    {
-            returnToDefaultPage = true;
+            browserReload = true;
         }
+
         
         // Ajax no redirect url (example : load select2)
         if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
             handleAjaxReload = true;
         }
-
         
         // navigation inside the modal after session losed
         if( requestPath.startsWith("/templates/OSIVIA_PORTAL_UTILS") && !StringUtils.equals(currentServerCheck, browserSession)) {
@@ -310,6 +312,21 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             returnToDefaultPage = true;
         }
         
+        
+        
+        if( browserReload) {
+            // Create an anused command
+            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+            UniversalID defaultPortalId;
+            try {
+                 defaultPortalId = getCMSService().getDefaultPortal(new CMSContext(portalCtx));
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
+            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+            request.setAttribute("osivia.full_refresh_url", "/refresh");
+          
+        } else
         
         if( handleAjaxReload) {
             // Create an anused command
@@ -336,7 +353,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             }
             cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
             String url = controllerContext.renderURL(cmd, null, null);    
-            request.setAttribute("osivia.full_refresh_url", url);
+            request.setAttribute("osivia.full_refresh_url", "/refresh");
+            //request.setAttribute("osivia.full_refresh_url", url);
             System.out.println("portalcommandfactory full refresh");
         }
 

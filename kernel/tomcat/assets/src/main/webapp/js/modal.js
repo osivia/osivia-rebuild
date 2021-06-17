@@ -42,6 +42,7 @@ $JQry(function() {
 				
 				$window.load(url, function(response, status, xhr) {
 					
+					// Handle redirections due to login
 					if( !response.includes("modal_do_not_delete"))
 						window.top.location.reload(true);
 					
