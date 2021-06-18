@@ -27,16 +27,7 @@ public class RepositoryEvent implements CMSEvent {
         this.dirtyRequests = dirtyRequests;
     }
     
-    /**
-     * Instantiates a new CMS event impl.
-     *
-     * @param src the src
-     */
-    public RepositoryEvent() {
-        super();
-        this.src = null;
-        this.dirtyRequests = new ArrayList<>();
-    }
+
 
     @Override
     public Document getSourceDocument() {

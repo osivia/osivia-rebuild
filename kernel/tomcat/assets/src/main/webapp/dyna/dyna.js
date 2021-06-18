@@ -97,10 +97,6 @@ function bilto(event)
    var source = Event.element(event);
    var container = Element.up(source, "div.dyna-window");
 
-   //attach onclick observer to all submit buttons
-   $$('input[type=submit]').invoke('observe', 'click', function(e) {
-      currentSubmit = e.findElement();
-   });
 
    // We found the window
    if (container != null)
@@ -142,7 +138,7 @@ function bilto(event)
             options.asynchronous = false;
          }
       }
-      else if ((source.nodeName == "INPUT" || source.nodeName == "BUTTON") && source.type == "submit")
+      else if ((source.nodeName == "INPUT" || source.nodeName == "BUTTON") && (source.type == "submit" || source.type == "image"))
       {
          // Find enclosing form
          var current = source.parentNode;
@@ -168,16 +164,45 @@ function bilto(event)
                   // Check we can handle this URL
                   if (isURLAccepted(current.action))
                   {
-                     // Set URL
-                     url = current.action;
+                	  // Set URL
+                      url = current.action;
 
-                     // Set the specified enctype
-                     options.enctype = enctype;
-                     options.asynchronous = false;
-                     options.method = "post"
-                     options.postBody = Form.serialize(current,'',currentSubmit);
+                      // Set the specified enctype
+                      options.enctype = enctype;
+                      options.asynchronous = true;
+                      options.method = "post"
+                      options.postBody = Form.serialize(current, {
+                          'hash': false,
+                          'submit': source.name
+                      });
                   }
                }
+            } else {
+                event.preventDefault();
+
+                var $form = $JQry(current);
+                var formdata = (window.FormData) ? new FormData($form[0]) : null;
+                var data;
+                if (formdata != null) {
+                    formdata.append("hash", false);
+                    formdata.append(source.name, source.value);
+                    data = formdata;
+                } else {
+                    data = $form.serialize();
+                }
+
+                $JQry.ajax({
+                    url: current.action,
+                    method: "post",
+                    headers: {"ajax": true, "session_check": session_check, "view_state": view_state},
+                    contentType: false, // obligatoire pour de l'upload
+                    processData: false, // obligatoire pour de l'upload
+                    dataType: "json",
+                    data: formdata,
+                    success: function (data, status, xhr) {
+                        onAjaxSuccess(data, null, true, null, null);
+                    }
+                });
             }
          }
       }
@@ -233,6 +258,267 @@ function updatePortletContent(item, url) {
     }
 }
 
+
+
+function onAjaxSuccess(t, callerId, multipart, popState, eventToStop) {
+
+	var resp = "";
+	
+	if (multipart) {
+        resp = t;
+    } else	{
+		if( t.responseText.length > 0)	{
+		
+		   try	{
+			   eval("resp =" + t.responseText + ";");
+		   } catch ( e){
+			   
+				   window.location = url;
+				   return;
+			   
+		   }
+		}
+    }
+	
+	
+	if (resp.type == "update_markup")
+	{
+		
+	  // New layout
+	   var layout = resp.layout;
+	   
+	   var popping;
+	   if ((eventToStop != null) && (eventToStop.type === "popstate")) {
+	    	popping = true;
+	   }
+	   
+	   var newPage = false;
+		
+	   var preventHistory = false;
+	    
+	   if( layout != null){
+		     // New layout
+	
+	         
+	         copyLayout( resp.layout);
+	         newPage = true;
+	        }
+		
+	   
+	   /* Update resources */
+	
+	   updateResources(resp.resources)
+	  
+	   
+	  // Iterate all changes
+	  for (var id in resp.fragments)
+	  {
+		 originalId = id;
+		 id = id.replace(':','_');
+		 
+	     var matchingElt = document.getElementById(id);
+	
+	     // Different than 1 is not good
+	     if (matchingElt != null)
+	     {
+	        var dstContainer = matchingElt;
+	        if (dstContainer != null)
+	        {
+	           // Get markup fragment
+	           var markup = resp.fragments[originalId];
+	
+	           // Create a temporary element and paste the innerHTML in it
+	           var srcContainer = document.createElement("div");
+	
+	           new Insertion.Bottom(srcContainer, markup);
+	
+	           // Copy the region content
+	           copyInnerHTML(srcContainer, dstContainer, "dyna-portlet")
+	           copyInnerHTML(srcContainer, dstContainer, "dyna-decoration")
+	        }
+	       
+	     }
+	     else
+	     {
+	   	  // It may be a new windows
+	   	  // Check the regions ...
+	   	  
+	         for (var regionName in resp.regions)	{
+	     		  for( var i=0; i< resp.regions[regionName].length; i++)	{
+	     		      var windowId = resp.regions[regionName][i].replace(':','_');
+	     		      
+	     		      if( windowId == id){
+	     			      var matchingWindow  = document.getElementById(windowId);
+	     			  
+	         			  if( matchingWindow == null)	{
+	         				  // New window
+	         				  // <div class="dyna-window"><div id="cG9ydGFsQQ_e_e_dcGFnZUEtYWpheA_e_e_dd2luQXBhZ2VBLWFqYXg_e" class="partial-refresh-window">
+	
+	         				  var divRegion =  document.getElementById(regionName);
+	         				  
+	         				  if( divRegion != null)	{
+	         					  
+	         					  	  if( regionName == "modal-region")	{
+	         					  		// Modal region already contains a default window that must be replaced
+	         					  		var $target = $JQry(divRegion);
+	         					  		$target.empty();
+	         					  		
+	         					  		// Modal window must not be reloadable
+	         					  		preventHistory = true;
+	         					  	  }
+	         					  
+	         					  	  // Prepare new window
+		             				  var newWindowDiv = document.createElement("div");
+		             				  newWindowDiv.className = "dyna-window";
+		             				  var partialWindowDiv = document.createElement("div");
+		             				  partialWindowDiv.id = windowId;
+		             				  partialWindowDiv.className = "partial-refresh-window";
+		             				  newWindowDiv.appendChild(partialWindowDiv);
+		             				  
+		             				  
+		             				  // Search for first inserted windows to insert before it
+		             				  var children = divRegion.children;
+		             				  console.log("child" + children.length);
+	
+		             				  var insertBefore = null;
+		             				  
+	
+		             				  for( var iDomWindow=0; iDomWindow< children.length && insertBefore == null; iDomWindow++)	{
+		             					 var domWindow = children[iDomWindow];
+		             					 var className = domWindow.className;
+		             					 if( className == "dyna-window")	{
+			             					 var insertedId = domWindow.firstChild.id;
+			             					 
+			             					 // Browse by order to find if this window is after the window to insert
+			             					 for( var j=i+1; j< resp.regions[regionName].length && insertBefore == null; j++)	{
+			             						 if( resp.regions[regionName][j] == insertedId)	{
+			             							 insertBefore = domWindow;
+			             							 //console.log("found "+ insertedId)
+			             						 }
+			             					 }
+		             					  }
+		             				  }
+	
+		             				  
+		             				if( insertBefore == null)
+		             					divRegion.appendChild(newWindowDiv);
+		             				else	
+		             					divRegion.insertBefore(newWindowDiv, insertBefore);
+		             				
+		
+		                            // Get markup fragment
+		                            var markup = resp.fragments[originalId];
+		
+		                            // Create a temporary element and paste the innerHTML in it
+		                            var srcContainer = document.createElement("div");
+		
+		                            // Insert the markup in the div
+		                            new Insertion.Bottom(srcContainer, markup);
+		
+		                            // Copy the region content
+		                            copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window");
+		                            
+		                            // Fix bug : bilto called twice on modal update document 
+		                            if(newPage == false)
+		                            	observePortlet(partialWindowDiv);
+	         				  }
+	
+	          			  }
+	     		  	  }	
+	     		 }
+	         }
+	     }
+	  }
+	   
+	   
+	  
+	  if( newPage){
+		  
+		  $JQry('#osivia-modal').modal('hide')
+		  
+		   	  observePortlets();
+	  }
+	
+	
+	  // update view state
+	  if (resp.view_state != null)
+	  {
+	     view_state = resp.view_state;
+	  }
+	
+	  
+	  
+	  if (popping === undefined  && resp.restore_url != "" && preventHistory == false) {
+	
+	      // update the current page
+		  if( history.state != null)	{
+	          var stateObject = history.state;
+	          stateObject.currentScroll = currentScroll;
+	          history.replaceState(stateObject,"", stateObject.fullUrl);
+		  }
+		  
+		  
+	      // Add the current page
+	      var stateObject = {
+	          url: resp.pop_url,
+	          viewState:view_state,
+	          currentScroll:0,
+	          fullUrl: resp.full_state_url
+	      };
+	      
+	      history.pushState(stateObject, "", resp.full_state_url);
+	  }
+	  
+	
+	  
+	  // Call jQuery.ready() events
+	  $JQry(document).ready();         
+	  
+	  
+	  // Restore cursor
+	  
+	  if( popState !== undefined && popState!=null)    {
+	      if( popState.currentScroll != 0)	{
+	    	filler = $JQry(".portlet-filler").first();
+	    	if( filler != undefined)	{
+	    		filler.scrollTop(popState.currentScroll);
+	    	}
+	      }
+	  }	else	{
+		  if( resp.page_changed == "false"){
+			  filler = $JQry(".portlet-filler").first();
+	      		if( filler != undefined && currentScroll != 0)	{
+	      			filler.scrollTop(currentScroll);
+	      	}
+		  }
+	  }
+	
+	  
+	  
+	}
+	else if (resp.type == "update_page")
+	{
+	  if( resp.location == "/back")	{
+		  reload(history.state, null, false)
+		  return;
+	  }	
+	  
+	  if( resp.location == "/back-refresh")	{
+		  reload(history.state, null, true)
+		  return;
+	  }	   	  
+	  
+	  if( resp.location == "/refresh")	{
+		  reload(history.state, null, true)
+		  return;
+	  }	
+	  
+	 
+	  
+		  document.location = resp.location;
+	}
+}
+
 function directAjaxCall(container, options, url, eventToStop, callerId, popState, refresh){
     // Setup headers
     var headers = ["ajax","true"],
@@ -256,10 +542,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
 	if( refresh != null)
 		headers.push('refresh', refresh);
 
-    var popping;
-    if ((eventToStop != null) && (eventToStop.type === "popstate")) {
-    	popping = true;
-    }
+
     
 	if( session_check != null)	{
 		headers.push('session_check', session_check);
@@ -272,8 +555,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
 		currentScroll = filler.scrollTop();
 	}	
 	
-	
-    var preventHistory = false;
+
 
     
     // note : we don't convert query string to prototype parameters as in the case
@@ -289,249 +571,11 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
     
     options.onSuccess = function(t)
     {
-        $ajaxWaiter.clearQueue();
-        $ajaxWaiter.removeClass("in");	
+
+    	$ajaxWaiter.clearQueue();
+    	$ajaxWaiter.removeClass("in");	
     	
-       var resp = "";
-       
-       if( t.responseText.length > 0)	{
-       
-	       try	{
-	    	   eval("resp =" + t.responseText + ";");
-	       } catch ( e){
-	    	   
-	    		   window.location = url;
-	    		   return;
-	    	   
-	       }
-       }
-       
-       
-       if (resp.type == "update_markup")
-       {
-       	
-          // New layout
-           var layout = resp.layout;
-           var newPage = false;
-           if( layout != null){
-        	     // New layout
-
-                 
-                 copyLayout( resp.layout);
-                 newPage = true;
-	            }
-        	
-           
-           /* Update resources */
-
-           updateResources(resp.resources)
-   	   
-           
-          // Iterate all changes
-          for (var id in resp.fragments)
-          {
-        	 originalId = id;
-        	 id = id.replace(':','_');
-        	 
-             var matchingElt = document.getElementById(id);
-
-             // Different than 1 is not good
-             if (matchingElt != null)
-             {
-                var dstContainer = matchingElt;
-                if (dstContainer != null)
-                {
-                   // Get markup fragment
-                   var markup = resp.fragments[originalId];
-
-                   // Create a temporary element and paste the innerHTML in it
-                   var srcContainer = document.createElement("div");
-
-                   new Insertion.Bottom(srcContainer, markup);
-
-                   // Copy the region content
-                   copyInnerHTML(srcContainer, dstContainer, "dyna-portlet")
-                   copyInnerHTML(srcContainer, dstContainer, "dyna-decoration")
-                }
-               
-             }
-             else
-             {
-           	  // It may be a new windows
-           	  // Check the regions ...
-           	  
-                 for (var regionName in resp.regions)	{
-             		  for( var i=0; i< resp.regions[regionName].length; i++)	{
-             		      var windowId = resp.regions[regionName][i].replace(':','_');
-             		      
-             		      if( windowId == id){
-             			      var matchingWindow  = document.getElementById(windowId);
-             			  
-	             			  if( matchingWindow == null)	{
-	             				  // New window
-	             				  // <div class="dyna-window"><div id="cG9ydGFsQQ_e_e_dcGFnZUEtYWpheA_e_e_dd2luQXBhZ2VBLWFqYXg_e" class="partial-refresh-window">
-	
-	             				  var divRegion =  document.getElementById(regionName);
-	             				  
-	             				  if( divRegion != null)	{
-	             					  
-	             					  	  if( regionName == "modal-region")	{
-	             					  		// Modal region already contains a default window that must be replaced
-	             					  		var $target = $JQry(divRegion);
-	             					  		$target.empty();
-	             					  		
-	             					  		// Modal window must not be reloadable
-	             					  		preventHistory = true;
-	             					  	  }
-	             					  
-	             					  	  // Prepare new window
-			             				  var newWindowDiv = document.createElement("div");
-			             				  newWindowDiv.className = "dyna-window";
-			             				  var partialWindowDiv = document.createElement("div");
-			             				  partialWindowDiv.id = windowId;
-			             				  partialWindowDiv.className = "partial-refresh-window";
-			             				  newWindowDiv.appendChild(partialWindowDiv);
-			             				  
-			             				  
-			             				  // Search for first inserted windows to insert before it
-			             				  var children = divRegion.children;
-			             				  console.log("child" + children.length);
-
-			             				  var insertBefore = null;
-			             				  
-
-			             				  for( var iDomWindow=0; iDomWindow< children.length && insertBefore == null; iDomWindow++)	{
-			             					 var domWindow = children[iDomWindow];
-			             					 var className = domWindow.className;
-			             					 if( className == "dyna-window")	{
-				             					 var insertedId = domWindow.firstChild.id;
-				             					 
-				             					 // Browse by order to find if this window is after the window to insert
-				             					 for( var j=i+1; j< resp.regions[regionName].length && insertBefore == null; j++)	{
-				             						 if( resp.regions[regionName][j] == insertedId)	{
-				             							 insertBefore = domWindow;
-				             							 //console.log("found "+ insertedId)
-				             						 }
-				             					 }
-			             					  }
-			             				  }
-
-			             				  
-			             				if( insertBefore == null)
-			             					divRegion.appendChild(newWindowDiv);
-			             				else	
-			             					divRegion.insertBefore(newWindowDiv, insertBefore);
-			             				
-			
-			                            // Get markup fragment
-			                            var markup = resp.fragments[originalId];
-			
-			                            // Create a temporary element and paste the innerHTML in it
-			                            var srcContainer = document.createElement("div");
-			
-			                            // Insert the markup in the div
-			                            new Insertion.Bottom(srcContainer, markup);
-			
-			                            // Copy the region content
-			                            copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window");
-			                            
-			                            observePortlet(partialWindowDiv);
-	             				  }
-	
-	              			  }
-             		  	  }	
-             		 }
-                 }
-             }
-          }
-           
-           
-          
-          if( newPage){
-        	  
-        	  $JQry('#osivia-modal').modal('hide')
-        	  
-       	   	  observePortlets();
-          }
-
-
-          // update view state
-          if (resp.view_state != null)
-          {
-             view_state = resp.view_state;
-          }
-
-          
-          
-          if (popping === undefined  && resp.restore_url != "" && preventHistory == false) {
-
-              // update the current page
-        	  if( history.state != null)	{
-	              var stateObject = history.state;
-	              stateObject.currentScroll = currentScroll;
-	              history.replaceState(stateObject,"", stateObject.fullUrl);
-        	  }
-        	  
-        	  
-              // Add the current page
-              var stateObject = {
-                  url: resp.pop_url,
-                  viewState:view_state,
-                  currentScroll:0,
-                  fullUrl: resp.full_state_url
-              };
-              
-              history.pushState(stateObject, "", resp.full_state_url);
-          }
-          
-
-          
-          // Call jQuery.ready() events
-          $JQry(document).ready();         
-          
-          
-          // Restore cursor
-          
-          if( popState !== undefined)    {
-              if( popState.currentScroll != 0)	{
-            	filler = $JQry(".portlet-filler").first();
-            	if( filler != undefined)	{
-            		filler.scrollTop(popState.currentScroll);
-            	}
-              }
-          }	else	{
-        	  if( resp.page_changed == "false"){
-        		  filler = $JQry(".portlet-filler").first();
-              		if( filler != undefined && currentScroll != 0)	{
-              			filler.scrollTop(currentScroll);
-              	}
-        	  }
-          }
-
-          
-          
-       }
-       else if (resp.type == "update_page")
-       {
-    	  if( resp.location == "/back")	{
-    		  reload(history.state, null, false)
-    		  return;
-    	  }	
-    	  
-    	  if( resp.location == "/back-refresh")	{
-    		  reload(history.state, null, true)
-    		  return;
-    	  }	   	  
-    	  
-    	  if( resp.location == "/refresh")	{
-    		  reload(history.state, null, true)
-    		  return;
-    	  }	
-    	  
-   	  
-    	  
-     	  document.location = resp.location;
-       }
+    	onAjaxSuccess(t, callerId, null, popState, eventToStop);
     };
      
 

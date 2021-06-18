@@ -10,7 +10,11 @@ public class UpdateInformations {
     /** The document. */
     private final UniversalID documentID;
     
+    /** The document. */
+    private final UniversalID spaceID;
+ 
 
+    
 
     /** Is the update action asynchronous */
     private boolean async = false;
@@ -19,10 +23,11 @@ public class UpdateInformations {
     /**
      * Instantiates a new update informations.
      */
-    public UpdateInformations( UniversalID documentID) {
+    public UpdateInformations( UniversalID documentID, UniversalID spaceID) {
 
         super();
         this.documentID = documentID;       
+        this.spaceID = spaceID;
     }
     
     /**
@@ -31,9 +36,10 @@ public class UpdateInformations {
      * @param documentID the document ID
      * @param async the async
      */
-    public UpdateInformations(UniversalID documentID, boolean async) {
+    public UpdateInformations(UniversalID documentID, UniversalID spaceID, boolean async) {
         super();
         this.documentID = documentID;
+        this.spaceID = spaceID;
         this.async = async;
     }
 
@@ -55,6 +61,17 @@ public class UpdateInformations {
     public UniversalID getDocumentID() {
         return documentID;
     }
+    
+    
+    /**
+     * Gets the space ID.
+     *
+     * @return the space ID
+     */
+    public UniversalID getSpaceID() {
+        return spaceID;
+    }
+
     
     /**
      * Sets the async.

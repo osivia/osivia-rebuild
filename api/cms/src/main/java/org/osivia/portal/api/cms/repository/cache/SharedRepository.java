@@ -35,7 +35,7 @@ public class SharedRepository {
     
     private Map<String, Long>  spaceTsMap ; 
     
-
+    private final UserStorage defaultStorage;
 
 
     public SharedRepository(String repositoryName, UserStorage storageRepository) {
@@ -44,6 +44,7 @@ public class SharedRepository {
         this.listeners = new ArrayList<>();
         this.cachedDocument= new Hashtable<String, RepositoryDocument>();
         this.spaceTsMap  = new Hashtable<String, Long>();
+        defaultStorage = storageRepository;
    }
 
 
@@ -65,28 +66,36 @@ public class SharedRepository {
         storageRepository.beginBatch();
     }
     
+    
+    private CMSEvent createCMSEvent(String spaceInternalId, List<Request> dirtyRequests)  throws CMSException  {
+         
+        Document space = getDocument(defaultStorage, spaceInternalId);
+        
+        return new RepositoryEvent( space, dirtyRequests);
+    }
+    
     public void addDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode)  {
         
         cachedDocument.put(internalID, document);
        
         if(!batchMode)  {
             
+            List<Request> dirtyRequests = new ArrayList<>();
             if(CollectionUtils.isEmpty(document.getSupportedSubTypes()))    {
-                List<Request> dirtyRequests = new ArrayList<>();
+
                 dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
-                notifyChanges( new RepositoryEvent( document, dirtyRequests));    
-            }   else
-                notifyChanges( new RepositoryEvent());
+            }
             
-        }
+            notifyChanges( new RepositoryEvent( document, dirtyRequests));    
+         }
     }
     
-    public void updateDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode)  {
+    public void updateDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException {
         
         cachedDocument.put(internalID, document);
         
         if(!batchMode)  {
-            notifyChanges( new RepositoryEvent());    
+            notifyChanges( createCMSEvent( document.getSpaceId().getInternalID(), new ArrayList<>()));    
         }
     } 
     
@@ -130,24 +139,26 @@ public class SharedRepository {
     
     public void notifyUpdate(UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
         
-         Document document;
+         Document space;
          
          try    {
-             document = getDocument(storageRepository,updateInformation.getDocumentID().getInternalID());
+             space = getDocument(storageRepository,updateInformation.getSpaceID().getInternalID());
          } catch(CMSException e)   {
              // Document may have been deleted
-             document = null;
+             space = null;
          }
         
-         cachedDocument.remove(storageRepository,updateInformation.getDocumentID().getInternalID());
+         if( updateInformation.getDocumentID() != null)
+             cachedDocument.remove(storageRepository,updateInformation.getDocumentID().getInternalID());
          
-         if( document != null)  {
+         if( space != null)  {
              Long updateTs =  System.currentTimeMillis();
              if( updateInformation.isAsync())
                  updateTs += 10000L;
              
-             spaceTsMap.put(document.getSpaceId().getInternalID(), updateTs);
-             notifyChanges( new RepositoryEvent( ));    
+             spaceTsMap.put(space.getId().getInternalID(), updateTs);
+             
+             notifyChanges(  createCMSEvent(space.getId().getInternalID(), new ArrayList<>()));    
          }
     }
 

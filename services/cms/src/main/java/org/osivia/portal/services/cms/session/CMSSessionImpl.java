@@ -52,7 +52,7 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
 
     @Override
     public void notifyUpdate(UpdateInformations infos) throws CMSException {
-        ((UserRepository) cmsService.getUserRepository(cmsContext, infos.getDocumentID().getRepositoryName())).notifyUpdate(infos);
+        ((UserRepository) cmsService.getUserRepository(cmsContext, infos.getSpaceID().getRepositoryName())).notifyUpdate(infos);
      }
     
     @Override

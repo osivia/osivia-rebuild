@@ -353,8 +353,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             }
             cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
             String url = controllerContext.renderURL(cmd, null, null);    
-            request.setAttribute("osivia.full_refresh_url", "/refresh");
-            //request.setAttribute("osivia.full_refresh_url", url);
+            //request.setAttribute("osivia.full_refresh_url", "/refresh");
+            request.setAttribute("osivia.full_refresh_url", url);
             System.out.println("portalcommandfactory full refresh");
         }
 

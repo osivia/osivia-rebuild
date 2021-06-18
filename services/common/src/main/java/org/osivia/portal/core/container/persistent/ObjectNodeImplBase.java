@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.osivia.portal.core.container.persistent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.jboss.portal.core.impl.model.portal.ObjectNodeSecurityConstraint;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
@@ -273,8 +274,11 @@ public class ObjectNodeImplBase implements ContextObject, RepositoryListener
     public void contentModified(CMSEvent e) {
         Document sourceDocument =  e.getSourceDocument();
         if( sourceDocument == null || (! "document".equals(sourceDocument.getType()))) {
-            dirty = true;
-            DynamicPortalObjectContainer.clearCache();
+            String templated =  (String) sourceDocument.getProperties().get("osivia.connect.templated");
+            if( !"false".equals(templated)) {
+                dirty = true;
+                DynamicPortalObjectContainer.clearCache();
+            }
         }
         
     }
