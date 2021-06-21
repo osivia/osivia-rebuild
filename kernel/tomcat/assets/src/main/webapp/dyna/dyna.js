@@ -643,7 +643,9 @@ function updateResources(newHeaderResources)	{
 			   if( insert && newHeader.tag == "SCRIPT")	{
 	 		    var script  = document.createElement('SCRIPT');
 	 		    script.type  =  newHeader.type;
-	 		    script.src  =  newHeader.src;	        		    
+	 		    script.src  =  newHeader.src;	
+	 		    // Important to preserve order
+	 		    script.async = false;
 	 		    head.appendChild(script);
 			   }
 		   }
