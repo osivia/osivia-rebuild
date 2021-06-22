@@ -301,8 +301,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                 Map<String, String[]> parameters = null;
 
 
-                
-                if (BooleanUtils.isNotTrue(pageChange) && BooleanUtils.isNotTrue(pageStructureModified) && ctx.getChanges() != null )  {
+
+                if (BooleanUtils.isNotTrue(pageChange)  && ctx.getChanges() != null )  {
                     for (Iterator i = ctx.getChanges(); i.hasNext();) {
                         NavigationalStateChange change = (NavigationalStateChange) i.next();
 
@@ -390,6 +390,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                     pushHistory = true;
 
                  }
+                
+                if( BooleanUtils.isTrue(pageStructureModified))  {
+                    // Modification of stucture
+                    refreshPageStructure = true;
+                }
                 
                 
                 if (PageProperties.getProperties().isRefreshingPage() || PageProperties.getProperties().isCheckingSpaceContents()) {
