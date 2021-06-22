@@ -189,6 +189,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 Mode mode = pwr.getMode();
                 ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(pwr.getWindowId(), mode, windowState, contentState);
                 if (renderCmd != null) {
+                    controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.actionForward", Boolean.TRUE);
                     return new CommandForward(renderCmd, null);
                 } else {
                     return null;
@@ -227,6 +228,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 
                 
                 boolean pageStructureModified = false;  
+                boolean pushHistory = false;  
 
 //                String pagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath");
 //                if (pagePath != null) {
@@ -299,7 +301,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                 Map<String, String[]> parameters = null;
 
 
-                boolean refreshCache = false;
                 
                 if (BooleanUtils.isNotTrue(pageChange) && BooleanUtils.isNotTrue(pageStructureModified) && ctx.getChanges() != null )  {
                     for (Iterator i = ctx.getChanges(); i.hasNext();) {
@@ -330,14 +331,30 @@ public class AjaxResponseHandler implements ResponseHandler {
                             if (WindowState.MAXIMIZED.equals(oldWindowState)) {
                                 if (!WindowState.MAXIMIZED.equals(newWindowState)) {
                                     refreshPageStructure = true;
+                                    pushHistory = true;
                                 }
                             } else if (WindowState.MAXIMIZED.equals(newWindowState)) {
                                 refreshPageStructure = true;
+                                pushHistory = true;
                             }
 
+                            
+                            // Render parameters modified
+                            if( BooleanUtils.isNotTrue((Boolean)controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.actionForward")))  {
+                                if (( newNS != null && oldNS == null) 
+                                        || (newNS == null && oldNS != null)
+                                        || (newNS != null && oldNS != null && newNS.getContentState() != null && !newNS.getContentState().equals(oldNS.getContentState())))  {
+                                    pushHistory = true;
+                                }
+                            }
+                                    
+                            
                             // Collect the dirty window id
                             dirtyWindowIds.add(key.getId());
                         } else if (type == PageNavigationalState.class) {
+                            
+                            PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
+                            
                             // force full refresh for now... for JBPORTAL-2326
                             
                             // Mise en commentaire portage tomcat8
@@ -370,7 +387,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                     // New Ajax Page
                     
                     refreshPageStructure = true;
-                    refreshCache = true;
+                    pushHistory = true;
+
                  }
                 
                 
@@ -522,6 +540,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                     }
                     
                     updatePage.setPageChanged(pageChange);
+                    
+                    // History indicator
+                    updatePage.setPushHistory(pushHistory);
 
 
                     // Call to the theme framework

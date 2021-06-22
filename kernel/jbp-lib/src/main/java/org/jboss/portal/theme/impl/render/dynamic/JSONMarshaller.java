@@ -74,6 +74,10 @@ public class JSONMarshaller {
                 if (umr.getPageChanged() != null) {
                     writer.key("page_changed").value(umr.getPageChanged().toString());
                 }
+                
+                if (umr.getPushHistory() != null) {
+                    writer.key("push_history").value(umr.getPushHistory().toString());
+                }
 
                 
                 //

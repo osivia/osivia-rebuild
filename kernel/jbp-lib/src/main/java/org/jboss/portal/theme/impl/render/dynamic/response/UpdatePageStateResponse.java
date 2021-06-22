@@ -51,9 +51,19 @@ public class UpdatePageStateResponse extends DynaResponse {
     private String sessionCheck;
     private Set<PageResource> resources;
     private Boolean pageChanged = false;
+    private Boolean pushHistory = false;    
     
     
     
+    public Boolean getPushHistory() {
+        return pushHistory;
+    }
+
+    
+    public void setPushHistory(Boolean pushHistory) {
+        this.pushHistory = pushHistory;
+    }
+
     public Boolean getPageChanged() {
         return pageChanged;
     }

@@ -200,7 +200,7 @@ function bilto(event)
                     dataType: "json",
                     data: formdata,
                     success: function (data, status, xhr) {
-                        onAjaxSuccess(data, null, true, null, null);
+                        onAjaxSuccess(data, null, true, null, null, url);
                     }
                 });
             }
@@ -260,7 +260,7 @@ function updatePortletContent(item, url) {
 
 
 
-function onAjaxSuccess(t, callerId, multipart, popState, eventToStop) {
+function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 
 	var resp = "";
 	
@@ -448,7 +448,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop) {
 	
 	  
 	  
-	  if (popping === undefined  && resp.restore_url != "" && preventHistory == false) {
+	  if (popping === undefined  && resp.push_history == "true" && resp.restore_url != "" && preventHistory == false) {
 	
 	      // update the current page
 		  if( history.state != null)	{
@@ -575,7 +575,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
     	$ajaxWaiter.clearQueue();
     	$ajaxWaiter.removeClass("in");	
     	
-    	onAjaxSuccess(t, callerId, null, popState, eventToStop);
+    	onAjaxSuccess(t, callerId, null, popState, eventToStop, url);
     };
      
 
