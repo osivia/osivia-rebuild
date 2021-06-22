@@ -74,7 +74,7 @@ public class SharedRepository {
         return new RepositoryEvent( space, dirtyRequests);
     }
     
-    public void addDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode)  {
+    public void addDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException  {
         
         cachedDocument.put(internalID, document);
        
@@ -86,7 +86,7 @@ public class SharedRepository {
                 dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
             }
             
-            notifyChanges( new RepositoryEvent( document, dirtyRequests));    
+            notifyChanges( createCMSEvent( document.getSpaceId().getInternalID(), dirtyRequests));    
          }
     }
     

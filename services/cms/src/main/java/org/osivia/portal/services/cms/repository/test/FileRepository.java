@@ -21,6 +21,7 @@ import org.jboss.portal.core.model.portal.metadata.PageMetaData;
 import org.jboss.portal.core.model.portal.metadata.PortalMetaData;
 import org.jboss.portal.core.model.portal.metadata.PortalObjectMetaData;
 import org.jboss.portal.core.model.portal.metadata.WindowMetaData;
+import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
@@ -49,7 +50,7 @@ public class FileRepository extends UserRepositoryTestBase {
     }
 
 
-    protected void createSpace() {
+    protected void createSpace() throws CMSException {
 
         // osivia-utils
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
@@ -79,7 +80,7 @@ public class FileRepository extends UserRepositoryTestBase {
     
     
     
-    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList) {
+    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList) throws CMSException {
         
         log.info("create page " + getPageName(pageMetaData, parentHierarchy));
         
@@ -130,7 +131,7 @@ public class FileRepository extends UserRepositoryTestBase {
     } 
     
     
-    protected void createSpace(PortalMetaData portalMetaData) {
+    protected void createSpace(PortalMetaData portalMetaData) throws CMSException {
         
         log.info("create space " + getPortalName(portalMetaData));        
         
@@ -193,7 +194,11 @@ public class FileRepository extends UserRepositoryTestBase {
 
     protected void initDocuments() {
 
-        createSpace();
+        try {
+            createSpace();
+        } catch (CMSException e1) {
+            throw new RuntimeException(e1);
+        }
         
         try {
             DocumentBuilder builder = XMLTools.getDocumentBuilderFactory().newDocumentBuilder();

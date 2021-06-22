@@ -25,7 +25,7 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
 
     
     
-    private void addFolder(String id, String name, String parentId, String spaceId, List<String> children) {
+    private void addFolder(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Folder." + id);
 
@@ -34,7 +34,7 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
     }
 
     
-    private void addDocument(String id, String name, String parentId, String spaceId ) {
+    private void addDocument(String id, String name, String parentId, String spaceId ) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Document." + id);
 
@@ -49,8 +49,9 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
      *
      * @param id the id
      * @param properties the properties
+     * @throws CMSException 
      */
-    private void addWorkspace(String id,  List<String> children) {
+    private void addWorkspace(String id,  List<String> children) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
 
@@ -65,10 +66,14 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
 
     protected void createWorskpace() {
 
+        try {
         addFolder("ID_FOLD_1", "folder1", "space1", "space1", new ArrayList<String>(Arrays.asList("ID_FOLD_11")));
         addFolder("ID_FOLD_11", "folder11", "ID_FOLD_1", "space1", new ArrayList<String>());
         addDocument("ID_DOC_1", "doc1", "ID_FOLD_11", "space1");
         addWorkspace("space1",  new ArrayList<String>(Arrays.asList("ID_FOLD_1")));
+        } catch(Exception e)    {
+            throw new RuntimeException(e);
+        }
     }
 
 

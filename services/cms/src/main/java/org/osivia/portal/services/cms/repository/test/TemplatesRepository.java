@@ -43,8 +43,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      *
      * @param id the id
      * @param properties the properties
+     * @throws CMSException 
      */
-    private void addTemplateSpace(String id, List<String> children) {
+    private void addTemplateSpace(String id, List<String> children) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
@@ -66,8 +67,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      *
      * @param id the id
      * @param properties the properties
+     * @throws CMSException 
      */
-    private void addTemplatePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
+    private void addTemplatePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
 
@@ -84,8 +86,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      *
      * @param id the id
      * @param properties the properties
+     * @throws CMSException 
      */
-    private void addTemplateNxSpace(String id, String name, String parentId, String spaceId) {
+    private void addTemplateNxSpace(String id, String name, String parentId, String spaceId) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "NxSpace." + id);
         properties.put(ThemeConstants.PORTAL_PROP_THEME, "cloud-ens-charte");
@@ -111,8 +114,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      *
      * @param id the id
      * @param properties the properties
+     * @throws CMSException 
      */
-    private void addTemplatePageWithoutMenu(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
+    private void addTemplatePageWithoutMenu(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
 
@@ -123,7 +127,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         addDocument(id, page);
     }
 
-    protected void pageA(String id, String name, String parentId, String spaceId, List<String> children) {
+    protected void pageA(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> aProperties = new ConcurrentHashMap<>();       
@@ -152,7 +156,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
     }
     
     
-    protected void pageA1(String id, String name, String parentId, String spaceId, List<String> children) {
+    protected void pageA1(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> cProperties = new ConcurrentHashMap<>();    
@@ -164,7 +168,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
     }
 
 
-    protected void pageB(String id, String name, String parentId, String spaceId, List<String> children) {
+    protected void pageB(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> bProperties = new ConcurrentHashMap<>();    
@@ -176,7 +180,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         addTemplatePage(id, name, parentId, spaceId, children, modules);
     }
 
-    protected void pageC(String id, String name, String parentId, String spaceId, List<String> children) {
+    protected void pageC(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
 
@@ -184,7 +188,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
     }
     
 
-    protected void createTemplateSpace() {
+    protected void createTemplateSpace() throws CMSException {
         // PortalA
         pageA("ID_PAGE_A", "pageA", "portalA", "portalA", new ArrayList<String>(Arrays.asList("ID_TEMPLATE_WORKSPACE")));
         pageA1("ID_TEMPLATE_WORKSPACE", "workspace", "ID_PAGE_A", "portalA", new ArrayList<String>());
@@ -203,7 +207,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
 
     }
     
-    protected void createUtilsSpace() {
+    protected void createUtilsSpace() throws CMSException {
         
         // osivia-utils
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
@@ -235,8 +239,12 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
 
 
     protected void initDocuments() {
+        try {
         createTemplateSpace();
         createUtilsSpace();
+        } catch(Exception e)    {
+            throw new RuntimeException(e);
+        }
     }
 
 

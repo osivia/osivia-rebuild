@@ -50,7 +50,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
 
 
 
-    protected void addDocument(String internalID, RepositoryDocument document) {
+    protected void addDocument(String internalID, RepositoryDocument document) throws CMSException {
         getUserStorage().addDocument(internalID, document, batchMode);
      }
     

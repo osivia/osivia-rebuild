@@ -32,6 +32,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.jems.hibernate.ContextObject;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
@@ -273,7 +274,7 @@ public class ObjectNodeImplBase implements ContextObject, RepositoryListener
     @Override
     public void contentModified(CMSEvent e) {
         Document sourceDocument =  e.getSourceDocument();
-        if( sourceDocument == null || (! "document".equals(sourceDocument.getType()))) {
+        if( sourceDocument instanceof Space) {
             String templated =  (String) sourceDocument.getProperties().get("osivia.connect.templated");
             if( !"false".equals(templated)) {
                 dirty = true;

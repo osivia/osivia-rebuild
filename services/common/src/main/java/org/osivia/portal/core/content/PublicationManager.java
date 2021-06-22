@@ -239,8 +239,10 @@ public class PublicationManager implements IPublicationManager {
                  
                 
                 if( parentID == null)   {
-                    //parentID = getCMSService().getDefaultPortal(cmsContext);
-                    parentID = doc.getSpaceId();
+                    if( "false".equals(space.getProperties().get("osivia.connect.templated")))
+                        parentID = getCMSService().getDefaultPortal(cmsContext);
+                    else
+                        parentID = doc.getSpaceId();
                 }
                 
                  pagePath = getDynamicService().startDynamicPage(portalCtx, parentID.getRepositoryName()+":/"+parentID.getInternalID(), pageDynamicID,

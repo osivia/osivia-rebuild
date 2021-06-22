@@ -41,8 +41,9 @@ public class SiteRepository extends UserRepositoryTestBase  {
      *
      * @param id the id
      * @param properties the properties
+     * @throws CMSException 
      */
-    private void addSiteSpace(String id, List<String> children) {
+    private void addSiteSpace(String id, List<String> children) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", generateTitle("Site "+ id));
 
@@ -52,7 +53,11 @@ public class SiteRepository extends UserRepositoryTestBase  {
     }
 
 
-    protected void createTemplateSpace() {
+    /**
+     * Creates the template space.
+     * @throws CMSException 
+     */
+    protected void createTemplateSpace() throws CMSException {
         List<String> portalChildren = new ArrayList<String>();
 
         addSiteSpace("ID_SITE_A", portalChildren);
@@ -64,8 +69,9 @@ public class SiteRepository extends UserRepositoryTestBase  {
      *
      * @param id the id
      * @param properties the properties
+     * @throws CMSException 
      */
-    private void addSitePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) {
+    private void addSitePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", generateTitle("Page "+ id));
         MemoryRepositoryPage page = new MemoryRepositoryPage(this, id, name, null, parentId, spaceId, children, properties, modules);
@@ -81,7 +87,11 @@ public class SiteRepository extends UserRepositoryTestBase  {
 
 
     protected void initDocuments() {
-        createTemplateSpace();
+        try {
+            createTemplateSpace();
+        } catch (CMSException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

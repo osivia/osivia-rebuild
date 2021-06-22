@@ -49,7 +49,7 @@ public class TestUserStorage extends BaseUserStorage {
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#addDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
      */
     @Override
-    public void addDocument(String internalID, RepositoryDocument document, boolean batchMode)  {
+    public void addDocument(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException {
         
         getDocuments().put(internalID, document);
         
