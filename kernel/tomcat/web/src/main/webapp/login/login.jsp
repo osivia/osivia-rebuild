@@ -4,6 +4,7 @@
 <head>
 <title>Login Page</title>
 <link href="/osivia-portal-themes-generic-5.0-SNAPSHOT/css/socle.css" 	rel="stylesheet"/>
+<script src="/portal-assets/components/jquery/jquery-1.12.4.min.js"></script>
 <script src="/portal-assets/components/bootstrap/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>

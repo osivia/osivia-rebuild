@@ -87,7 +87,9 @@ public class DynamicPortal extends PortalImplBase {
                         dynamicChilds.put(child.getName(), child);
 
                     } catch (Exception e) {
-                        throw new RuntimeException("Can't instantiate template " + dynamicPage.getTemplateId(), e);
+                        // At this level, (during the mapping phase) do not throw exception
+                        // The template may have been moved or deleted...
+                        // If necessay the page wil be restored in PortalCommandFactory
                     }
                 }
             }

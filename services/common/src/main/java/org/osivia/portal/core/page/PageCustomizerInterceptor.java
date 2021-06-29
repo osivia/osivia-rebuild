@@ -15,16 +15,27 @@
 package org.osivia.portal.core.page;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 
 
@@ -48,7 +59,40 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
+    /**
+     * Unset max mode.
+     *
+     * @param windows the windows
+     * @param controllerCtx the controller ctx
+     */
+    public static void unsetMaxMode(Collection<PortalObject> windows, ControllerContext controllerCtx) {
 
+
+       Iterator<PortalObject> i = windows.iterator();
+
+        while (i.hasNext()) {
+
+            Window window = (Window) i.next();
+
+            NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+
+            WindowNavigationalState windowNavState = (WindowNavigationalState) controllerCtx.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+            // On regarde si la fenêtre est en vue MAXIMIZED
+
+
+            if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+
+                // On la force en vue NORMAL
+                WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
+                        windowNavState.getContentState());
+                controllerCtx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+            }
+        }
+    }
+
+    
+    
+    
     /**
      * Check if current user is an administrator.
      *
@@ -111,6 +155,19 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
           
         }
 
+        
+        if ((cmd instanceof InvokePortletWindowActionCommand) || (cmd instanceof InvokePortletWindowRenderCommand)) {
+            // Current window
+            Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
+
+            if ("true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode"))) {
+                Collection<PortalObject> windows = new ArrayList<PortalObject>(window.getPage().getChildren(PortalObject.WINDOW_MASK));
+
+                unsetMaxMode(windows, controllerContext);
+            }
+        }
+        
+        
 
         //
         return resp;

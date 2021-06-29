@@ -5,12 +5,19 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
@@ -28,7 +35,9 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -179,7 +188,7 @@ public class PublicationManager implements IPublicationManager {
             boolean pageDisplay = false;
             
             
-            System.out.println("*** PUBMANAGER " + docId );
+            //System.out.println("*** PUBMANAGER " + docId );
             
             NavigationItem navigation;
             String pagePath = null;
@@ -188,13 +197,24 @@ public class PublicationManager implements IPublicationManager {
             try {
                  navigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(docId);
                  
-                 if( docId.getInternalID().contains("kFG8vy"))
-                     System.out.println("*** PUBMANAGER NAV-> " + navigation.getDocumentId() );
+//                 if( docId.getInternalID().contains("kFG8vy"))
+//                     System.out.println("*** PUBMANAGER NAV-> " + navigation.getDocumentId() );
             } catch( CMSException e) {
                 navigation = null;
             }
             
             if( navigation != null) {
+                
+                ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
+                
+                final NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);               
+                
+                // TODO get in conversation
+                PageNavigationalState previousPNS = null;
+                PortalObjectId currentPageId = PortalObjectUtilsInternal.getPageId(controllerContext);
+                if( currentPageId != null)
+                    previousPNS = nsContext.getPageNavigationalState(currentPageId.toString());
+                
             
                 Document space = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getSpaceId());
                 
@@ -206,8 +226,7 @@ public class PublicationManager implements IPublicationManager {
                      Document template = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getCustomizedTemplateId());
 
                      templatePath = navigation.getCustomizedTemplateId().getRepositoryName()+":/"+ template.getSpaceId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName() + "/" + navigation.getCustomizedTemplateId().getInternalID();
-
-                }
+                 }
 
                 
                 if  (templatePath == null)
@@ -252,6 +271,35 @@ public class PublicationManager implements IPublicationManager {
                      if( navigation.getDocumentId().equals(doc.getId()))
                          pageDisplay = true;
                  }
+                 
+                 
+                 Page page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT));
+                 
+                 
+                 // Propagation des selecteurs si les paramètres ne sont pas explicites
+                 final Map<QName, String[]> pageState = new HashMap<QName, String[]>();   
+               
+//                 if ((previousPNS != null) && ((this.pageParams == null) || (this.pageParams.size() == 0))) {
+                 if (previousPNS != null) {
+                     if ("1".equals(page.getProperty("osivia.cms.propagateSelectors"))) {
+                         final String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+
+                         if (selectors != null) {
+                             previousPNS = nsContext.getPageNavigationalState(page.getId().toString());
+                             pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), selectors);
+                             nsContext.setPageNavigationalState(page.getId().toString(), new PageNavigationalState(pageState));
+                         }
+                     }
+                 }                
+                 
+                 
+                 
+                 
+                 
+                 
+                 
+                 
+                 
                 
             }   else    {
                 // Empty page

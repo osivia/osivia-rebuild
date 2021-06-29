@@ -21,6 +21,7 @@ import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -56,8 +57,10 @@ public  class RestorePageCommand extends ControllerCommand {
     public ControllerResponse execute() throws ControllerException {
         
         PortalObjectId pageId = PortalObjectUtilsInternal.getPageId(getControllerContext());
+  
         
-        return  this.context.execute( new ViewPageCommand(pageId));
+        return new UpdatePageResponse(pageId);
+//        return  this.context.execute( new ViewPageCommand(pageId));
 
     }
 

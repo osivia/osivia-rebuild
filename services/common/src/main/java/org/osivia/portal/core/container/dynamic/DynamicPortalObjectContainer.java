@@ -30,6 +30,12 @@ import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 
 
+/**
+ * Dynamic pages container.
+ * 
+ * Dynamic page are stored into DynamicPageBean and created on demand
+ * 
+ */
 public class DynamicPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
     protected StaticPortalObjectContainer portalObjectContainer;
@@ -91,20 +97,18 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         //System.out.println( "addCMSDynaPage " + cmsTemplateID.toString() );
         Map cmsProperties = new ConcurrentHashMap<String, String>();
 
-
-
         DynamicPageBean cmsPageBean1 = new DynamicPageBean(portal, name, null, null, cmsTemplateID, cmsProperties);
 
         addDynamicPage(cmsPageBean1);
     }
 
     private Object getNavigationalItem(String attribute) {
-        // le request ne marche pas dans la popup, je passe en session
+
         return this.getTracker().getHttpRequest().getAttribute(attribute);
     }
 
     private void setNavigationalItem(String attribute, Object value) {
-        // le request ne marche pas dans la popup, je passe en session
+
         this.getTracker().getHttpRequest().setAttribute(attribute, value);
     }
 
@@ -121,10 +125,10 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
 
         newWindows.add(newWindow);
 
-        // TODO : move to jbp conversation scopes
+
         setDynamicWindows(newWindows);
         
-        // TODO MOVE TO JBP NavigationalStateContext
+
         List<PortalObjectId> dirtyWindowIds = (List<PortalObjectId>) this.getTracker().getHttpRequest().getAttribute("osivia.dynamic.dirtyWindows");
         if( dirtyWindowIds == null) {
             dirtyWindowIds = new ArrayList<>();
@@ -354,12 +358,6 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         
         PortalObject staticObject = portalObjectContainer.getObject(id);
         
-        if (staticObject instanceof CMSPage) {
-            // fetch portal
-            Portal portal = (Portal) fetchDynamicObject ( ((CMSPage) staticObject).getPortal().getId());
-            addCMSPage(portal, (CMSPage) staticObject);
-            return getExistingDynamicObject(id);            
-        }
 
         if (staticObject instanceof PortalImplBase) {
              return new DynamicPortal(portalObjectContainer, (PortalImplBase) staticObject, this);
@@ -372,20 +370,7 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         return null;
     }
 
-    private void addCMSPage(Portal portal, Page page) {
-        if (page instanceof CMSPage) {
-            String pageDynamicName;
-            
-            if( "name".equals(portal.getDeclaredProperty("osivia.publication.nameType")))
-                pageDynamicName =  ((CMSPage) page).getName();
-            else
-                pageDynamicName = ((CMSPage) page).getCmsID();
 
-            addCMSDynaPage(portal,pageDynamicName, page.getId());
-
-
-        }
-    }
 
     @Override
     public <T extends PortalObject> T getObject(PortalObjectId id, Class<T> expectedType) throws IllegalArgumentException {

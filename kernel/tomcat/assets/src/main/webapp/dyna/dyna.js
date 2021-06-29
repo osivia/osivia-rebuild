@@ -448,25 +448,39 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	
 	  
 	  
-	  if (popping === undefined  && resp.push_history == "true" && resp.restore_url != "" && preventHistory == false) {
+	  if (popping === undefined   && resp.restore_url != "" && preventHistory == false) {
 	
-	      // update the current page
-		  if( history.state != null)	{
-	          var stateObject = history.state;
-	          stateObject.currentScroll = currentScroll;
-	          history.replaceState(stateObject,"", stateObject.fullUrl);
+		  if( resp.push_history == "true")	{
+		      // update the current page
+			  if( history.state != null)	{
+		          var stateObject = history.state;
+		          stateObject.currentScroll = currentScroll;
+		          history.replaceState(stateObject,"", stateObject.fullUrl);
+			  }
+			  
+			  
+		      // Add the current page
+		      var stateObject = {
+		          url: resp.pop_url,
+		          viewState:view_state,
+		          currentScroll:0,
+		          fullUrl: resp.full_state_url
+		      };
+		      
+		      history.pushState(stateObject, "", resp.full_state_url);
+		  }	else	{
+		      // update the current page
+			  if( history.state != null)	{
+			      var stateObject = {
+			          url: resp.pop_url,
+			          viewState:view_state,
+			          currentScroll:currentScroll,
+			          fullUrl: resp.full_state_url
+			      };
+		          history.replaceState(stateObject,"", stateObject.fullUrl);
+			  }			  
+			  
 		  }
-		  
-		  
-	      // Add the current page
-	      var stateObject = {
-	          url: resp.pop_url,
-	          viewState:view_state,
-	          currentScroll:0,
-	          fullUrl: resp.full_state_url
-	      };
-	      
-	      history.pushState(stateObject, "", resp.full_state_url);
 	  }
 	  
 	

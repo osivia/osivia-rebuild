@@ -129,6 +129,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_REFRESH_PAGE))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshpage", "true");
             }
+            
+            if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UNSET_MAX_MODE))) {
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
+            }
         }
 
 

@@ -50,7 +50,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         this.cmsContext = cmsContext;
         this.navItem = navItem;
         
-        //System.out.println("create CMSPage" +navItem.getDocumentId());
+        System.out.println("create CMSPage " +navItem.getDocumentId() + " " +cmsContext.isPreview());
         
         doc = cmsService.getCMSSession(cmsContext).getDocument( navItem.getDocumentId());
 
