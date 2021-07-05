@@ -33,19 +33,25 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 
 
 /**
@@ -56,46 +62,43 @@ public class ViewContentCommand extends ControllerCommand {
     /** . */
     private static final CommandInfo info = new ActionCommandInfo(false);
 
-    private CMSService cmsService;
-
 
     private IPublicationManager publicationManager;
+
+    private IPortalUrlFactory portalUrlFactory;
 
     /** . */
     private String contentId;
     private Locale locale;
-    
 
 
     private boolean preview;
 
-    
-    
+
     public ViewContentCommand(String contentId, Locale locale, boolean preview) {
         this.contentId = contentId;
         this.locale = locale;
         this.preview = preview;
     }
-    
+
     public Locale getLocale() {
         return locale;
     }
 
-    
+
     public boolean isPreview() {
         return preview;
     }
 
     private IPreviewModeService getPreviewModeService() {
 
-        return Locator.getService(IPreviewModeService.class);      
+        return Locator.getService(IPreviewModeService.class);
     }
-    
+
     private ILocaleService getLocaleService() {
 
-        return Locator.getService(ILocaleService.class);     
+        return Locator.getService(ILocaleService.class);
     }
-
 
 
     private IPublicationManager getPublicationManager() {
@@ -105,6 +108,13 @@ public class ViewContentCommand extends ControllerCommand {
         return publicationManager;
     }
 
+
+    private IPortalUrlFactory getPortalUrlFactory() {
+        if (portalUrlFactory == null) {
+            portalUrlFactory = Locator.getService(IPortalUrlFactory.class);
+        }
+        return portalUrlFactory;
+    }
 
     public CommandInfo getInfo() {
         return info;
@@ -118,27 +128,42 @@ public class ViewContentCommand extends ControllerCommand {
 
         ControllerContext controllerContext = this.getControllerContext();
 
+        PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+        
+        UniversalID contentUID = new UniversalID(getContentId().replaceAll("/", ":"));
+
         try {
+            
 
-            
-            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
-            
-            UniversalID contentId = new UniversalID(getContentId().replaceAll("/", ":"));
-            
             getLocaleService().setLocale(portalCtx, locale);
-            getPreviewModeService().setPreview(portalCtx, contentId, preview);
+            getPreviewModeService().setPreview(portalCtx, contentUID, preview);
 
 
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentId);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentUID);
 
             return new UpdatePageResponse(pageId);
 
 
-        } catch (Exception e) {
-            // TODO : error management
-            e.printStackTrace();
+        }  catch (ControllerException e) {
+            if( e.getCause() instanceof DocumentForbiddenException)    {
+                if (portalCtx.getHttpServletRequest().getUserPrincipal() == null) {
+                    // Redirect to auth
+                    CMSContext cmsContext = new CMSContext(portalCtx);
 
+                    cmsContext.setPreview(isPreview());
+                    cmsContext.setLocale(getLocale());
+
+
+                    String location = getPortalUrlFactory().getViewContentUrl(portalCtx, cmsContext, contentUID, true);
+                    return new RedirectionResponse(location);
+                } else
+                    return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);                
+                
+            }
+            else throw e;
+        } catch (PortalException e) {
             throw new ControllerException(e);
+            
         }
     }
 }

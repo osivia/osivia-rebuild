@@ -223,4 +223,7 @@ public interface IPortalUrlFactory {
      * @return refresh page URL
      */
     String getRefreshPageUrl(PortalControllerContext portalControllerContext);
+
+
+    String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id, boolean authentified);
 }

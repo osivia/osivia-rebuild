@@ -235,18 +235,25 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     @Override
     public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id) {
+        return getViewContentUrl(portalControllerContext, cmsContext, id, false);
+    }
+    
+    
+    @Override
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id, boolean wantAuthentification) {
 
 
         Locale locale = cmsContext.getlocale();
         Boolean preview = cmsContext.isPreview();
         
         final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview);
-        final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
+        final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), wantAuthentification, null);
 
         String url = portalURL.toString();
 
         return url;
     }
+    
     
     
     @Override

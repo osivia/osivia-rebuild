@@ -209,7 +209,7 @@ public class PublicationManager implements IPublicationManager {
                 
                 final NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);               
                 
-                // TODO get in conversation
+
                 PageNavigationalState previousPNS = null;
                 PortalObjectId currentPageId = PortalObjectUtilsInternal.getPageId(controllerContext);
                 if( currentPageId != null)

@@ -90,6 +90,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.core.cms.cache.RequestCacheManager;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
@@ -101,6 +102,7 @@ import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.resources.ResourceHandler;
+import org.osivia.portal.core.taskbar.TaskbarItemComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
@@ -111,6 +113,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -118,6 +122,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * todo:
@@ -566,10 +572,18 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     Set<PageResource> resources = new LinkedHashSet<PageResource>();
                     
+                    
+                    // Sort by order
+                     List<Window> sortedWindows = new ArrayList<Window>();
+                    for (Iterator i = refreshedWindows.iterator(); i.hasNext(); ) {
+                        sortedWindows.add((Window) i.next());
+                    }
+
+                    Collections.sort(sortedWindows, new WindowComparator());
+                    
                     //
-                    for (Iterator i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
+                    for ( Window refreshedWindow: sortedWindows ) {
                         try {
-                            Window refreshedWindow = (Window) i.next();
                             RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
                             WindowRendition rendition = rwc.render(controllerContext);
 
@@ -602,6 +616,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                             //
                             fullRefresh = true;
                         }
+                        
+                        if( fullRefresh)
+                            break;
                     }
                     
                      

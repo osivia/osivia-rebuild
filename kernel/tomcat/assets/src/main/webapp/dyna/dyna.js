@@ -58,11 +58,16 @@ function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId)
 // Check that the URL starts with the provided prefix
 function isURLAccepted(url)
 {
+	
+	var urlPrefix = server_base_url;
+	if( urlPrefix.endsWith("/auth/"))	{
+		urlPrefix = urlPrefix.substring( 0, urlPrefix.length - "/auth/".length);
+	}
 
-   var indexOfSessionId = server_base_url.indexOf(";jsessionid");
+   var indexOfSessionId = urlPrefix.indexOf(";jsessionid");
    if (indexOfSessionId > 0)
    {
-      server_base_url = server_base_url.substring(0, indexOfSessionId - ";jsessionid".length - 1);
+	   urlPrefix = urlPrefix.substring(0, indexOfSessionId - ";jsessionid".length - 1);
    }
 
    if (url.indexOf("http://") == 0)
@@ -75,13 +80,13 @@ function isURLAccepted(url)
       else if (indexOfSlash > 0)
       {
          var path = url.substring(indexOfSlash);
-         if (path.indexOf(server_base_url) != 0)
+         if (path.indexOf(urlPrefix) != 0)
          {
             return false;
          }
       }
    }
-   else if (url.indexOf(server_base_url) != 0)
+   else if (url.indexOf(urlPrefix) != 0)
    {
       return false;
    }
@@ -295,6 +300,8 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	   var newPage = false;
 		
 	   var preventHistory = false;
+	   
+	   var modale = false;
 	    
 	   if( layout != null){
 		     // New layout
@@ -304,10 +311,27 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	         newPage = true;
 	        }
 		
+	   // Is it a modal ?
+	   
+	   for (var regionName in resp.regions)	{
+		   	for( var i=0; i< resp.regions[regionName].length; i++)	{
+		   		if( regionName == "modal-region")	{
+	    			 modale = true;
+	    			 
+	    			// Modal window must not be reloadable
+				  	preventHistory = true;
+				  	
+		   		}
+		   	}
+	   }	   
 	   
 	   /* Update resources */
 	
 	   updateResources(resp.resources)
+	   
+	   
+	   
+
 	  
 	   
 	  // Iterate all changes
@@ -342,11 +366,13 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	     {
 	   	  // It may be a new windows
 	   	  // Check the regions ...
+	    	 
 	   	  
 	         for (var regionName in resp.regions)	{
 	     		  for( var i=0; i< resp.regions[regionName].length; i++)	{
 	     		      var windowId = resp.regions[regionName][i].replace(':','_');
 	     		      
+    				  
 	     		      if( windowId == id){
 	     			      var matchingWindow  = document.getElementById(windowId);
 	     			  
@@ -359,12 +385,9 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	         				  if( divRegion != null)	{
 	         					  
 	         					  	  if( regionName == "modal-region")	{
-	         					  		// Modal region already contains a default window that must be replaced
-	         					  		var $target = $JQry(divRegion);
-	         					  		$target.empty();
-	         					  		
-	         					  		// Modal window must not be reloadable
-	         					  		preventHistory = true;
+	         					  		  // Modal region already contains a default window that must be replaced
+	         					  		  var $target = $JQry(divRegion);
+	         					  		  $target.empty();
 	         					  	  }
 	         					  
 	         					  	  // Prepare new window
@@ -378,8 +401,8 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 		             				  
 		             				  // Search for first inserted windows to insert before it
 		             				  var children = divRegion.children;
-		             				  console.log("child" + children.length);
-	
+		             				  
+		        	
 		             				  var insertBefore = null;
 		             				  
 	
@@ -391,9 +414,10 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 			             					 
 			             					 // Browse by order to find if this window is after the window to insert
 			             					 for( var j=i+1; j< resp.regions[regionName].length && insertBefore == null; j++)	{
-			             						 if( resp.regions[regionName][j] == insertedId)	{
+			             						 var orderedWindowId = resp.regions[regionName][j].replace(':','_');
+			             						 if( orderedWindowId == insertedId)	{
 			             							 insertBefore = domWindow;
-			             							 //console.log("found "+ insertedId)
+
 			             						 }
 			             					 }
 		             					  }
@@ -432,11 +456,13 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	   
 	   
 	  
-	  if( newPage){
+	  if( newPage ){
 		  
-		  $JQry('#osivia-modal').modal('hide')
+		  if( modale == false){
+			  $JQry('#osivia-modal').modal('hide')
+		  }
 		  
-		   	  observePortlets();
+		  observePortlets();
 	  }
 	
 	
