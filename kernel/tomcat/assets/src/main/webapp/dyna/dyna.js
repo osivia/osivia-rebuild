@@ -286,6 +286,17 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
     }
 	
 	
+    // call save state
+    componentStates = new Map();
+	$JQry("[data-state-method]").each(function(index, element) {
+		var $element = $JQry(element);
+		var method = $element.data("state-method");
+		var componentState = window[$element.data("state-method")]($element, 'save');
+		
+		componentStates.set($element.data("state-id"), componentState);
+	})	
+	
+	
 	if (resp.type == "update_markup")
 	{
 		
@@ -296,6 +307,10 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	   if ((eventToStop != null) && (eventToStop.type === "popstate")) {
 	    	popping = true;
 	   }
+	   
+	   
+
+	   
 	   
 	   var newPage = false;
 		
@@ -473,27 +488,34 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	  }
 	
 	  
+	  // Save components state in history
 	  
 	  if (popping === undefined   && resp.restore_url != "" && preventHistory == false) {
-	
 		  if( resp.push_history == "true")	{
 		      // update the current page
 			  if( history.state != null)	{
 		          var stateObject = history.state;
 		          stateObject.currentScroll = currentScroll;
+		          if( componentStates !== undefined)	{
+		        	  stateObject.componentStates = componentStates;
+		          }
 		          history.replaceState(stateObject,"", stateObject.fullUrl);
 			  }
 			  
 			  
-		      // Add the current page
-		      var stateObject = {
+		      // Add the new page
+		      var newState = {
 		          url: resp.pop_url,
 		          viewState:view_state,
 		          currentScroll:0,
 		          fullUrl: resp.full_state_url
 		      };
 		      
-		      history.pushState(stateObject, "", resp.full_state_url);
+	          if( componentStates !== undefined)	{
+	        	  newState.componentStates = componentStates;
+	          }
+		      
+		      history.pushState(newState, "", resp.full_state_url);
 		  }	else	{
 		      // update the current page
 			  if( history.state != null)	{
@@ -501,6 +523,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 			          url: resp.pop_url,
 			          viewState:view_state,
 			          currentScroll:currentScroll,
+			          componentStates:componentStates,
 			          fullUrl: resp.full_state_url
 			      };
 		          history.replaceState(stateObject,"", stateObject.fullUrl);
@@ -508,15 +531,45 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 			  
 		  }
 	  }
+
+
 	  
-	
+	  
+	  
 	  
 	  // Call jQuery.ready() events
 	  $JQry(document).ready();         
 	  
 	  
-	  // Restore cursor
+
 	  
+	  //  restore component states
+	  var restoreComponentStates = null;
+	  
+	  if( popState !== undefined && popState!=null)    {
+		  restoreComponentStates = popState.componentStates;
+	  }	else {
+		if( history.state != null)  {
+			restoreComponentStates = history.state.componentStates;
+		} 
+	  }
+	  
+	  if( restoreComponentStates !=null)	{
+		  $JQry("[data-state-method]").each(function(index, element) {
+				var $element = $JQry(element);
+				var method = $element.data("state-method");
+				var id = $element.data("state-id");
+				var componentState = restoreComponentStates.get( id);
+				if( componentState != null){
+					window[$element.data("state-method")]($element, 'restore', componentState);
+				}
+		  })	
+	  }
+
+	  
+	  
+	  
+	  // Restore cursor
 	  if( popState !== undefined && popState!=null)    {
 	      if( popState.currentScroll != 0)	{
 	    	filler = $JQry(".portlet-filler").first();
@@ -588,15 +641,14 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
 		headers.push('session_check', session_check);
 	}
 	
-	// Compute current scroll position
+	// Save current scroll position
 	currentScroll = 0;
 	filler = $JQry(".portlet-filler").first();
     if( filler != undefined)	{
 		currentScroll = filler.scrollTop();
 	}	
 	
-
-
+	   
     
     // note : we don't convert query string to prototype parameters as in the case
     // of a post, the parameters will be appended to the body of the query which
