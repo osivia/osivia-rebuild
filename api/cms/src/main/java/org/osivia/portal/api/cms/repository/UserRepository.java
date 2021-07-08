@@ -11,6 +11,7 @@ import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -100,7 +101,7 @@ public interface UserRepository {
      * @param id the id
      * @throws CMSException the CMS exception
      */
-    Long getSpaceAwareTimestamp(String id) throws CMSException;
+    SpaceCacheBean getSpaceCacheInformations(String id) throws CMSException;
  
     
     /**

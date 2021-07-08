@@ -13,8 +13,13 @@ public class UpdateInformations {
     /** The document. */
     private final UniversalID spaceID;
  
+    /** The scope. */
+    private final UpdateScope scope;
 
     
+
+
+
 
     /** Is the update action asynchronous */
     private boolean async = false;
@@ -25,9 +30,9 @@ public class UpdateInformations {
      */
     public UpdateInformations( UniversalID documentID, UniversalID spaceID) {
 
-        super();
-        this.documentID = documentID;       
-        this.spaceID = spaceID;
+
+        this( documentID, spaceID, UpdateScope.SCOPE_SPACE, false);
+
     }
     
     /**
@@ -36,11 +41,12 @@ public class UpdateInformations {
      * @param documentID the document ID
      * @param async the async
      */
-    public UpdateInformations(UniversalID documentID, UniversalID spaceID, boolean async) {
+    public UpdateInformations(UniversalID documentID, UniversalID spaceID, UpdateScope scope, boolean async) {
         super();
         this.documentID = documentID;
         this.spaceID = spaceID;
         this.async = async;
+        this.scope = scope;
     }
 
     /**
@@ -73,18 +79,17 @@ public class UpdateInformations {
     }
 
     
+
+
+    
     /**
-     * Sets the async.
+     * Gets the scope.
      *
-     * @param async the new async
+     * @return the scope
      */
-    public void setAsync(boolean async) {
-        this.async = async;
+    public UpdateScope getScope() {
+        return scope;
     }
-
-
-
-
 
  
 

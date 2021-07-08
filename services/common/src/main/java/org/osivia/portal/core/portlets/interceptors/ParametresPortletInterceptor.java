@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -110,8 +111,16 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
 
                 Boolean refresh =  PageProperties.getProperties().isCheckingSpaceContents() || PageProperties.getProperties().isRefreshingPage(); 
-                if( refresh)
+                 
+                if( ! refresh) {
+                    refresh = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE,
+                            "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                    
+                }
+                
+                if( BooleanUtils.isTrue(refresh))
                     attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, refresh);
+
 
                 // Set attributes
                 invocation.setRequestAttributes(attributes);

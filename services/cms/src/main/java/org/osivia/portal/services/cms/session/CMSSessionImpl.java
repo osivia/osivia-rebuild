@@ -10,6 +10,7 @@ import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.core.sessions.CMSSessionRecycle;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
@@ -71,8 +72,8 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
     }
 
     @Override
-    public Long getSpaceAwareTimestamp(UniversalID spaceId) throws CMSException {
-        return ((UserRepository) cmsService.getUserRepository(cmsContext, spaceId.getRepositoryName())).getSpaceAwareTimestamp(spaceId.getInternalID());
+    public SpaceCacheBean getSpaceCacheInformations(UniversalID spaceId) throws CMSException {
+        return ((UserRepository) cmsService.getUserRepository(cmsContext, spaceId.getRepositoryName())).getSpaceCacheInformations(spaceId.getInternalID());
     }
 
 

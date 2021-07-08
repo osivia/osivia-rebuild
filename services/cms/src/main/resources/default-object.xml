@@ -2349,6 +2349,10 @@ return nuxeoRequest.toString();</value>
                                 <name>osivia.style</name>
                                 <value>mb-0</value>
                             </property>
+                            <property>
+                                <name>osivia.cms.cache.scope</name>
+                                <value>spaceContent</value>
+                            </property>                            
                         </properties>
                         <height>0</height>
                     </window>

@@ -29,6 +29,7 @@ import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.NativeRepository;
+import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
@@ -174,9 +175,9 @@ public class PublicationManager implements IPublicationManager {
                 CMSSession session;
                 try {
                     session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
-                    Long modifiedTs = session.getSpaceAwareTimestamp(spaceId);
-                    if( modifiedTs != null)
-                        PageProperties.getProperties().setCheckingSpaceTS(modifiedTs);
+                    SpaceCacheBean modifiedTs = session.getSpaceCacheInformations(spaceId);
+                    if( modifiedTs.getLastSpaceModification() != null)
+                        PageProperties.getProperties().setCheckingSpaceTS(modifiedTs.getLastSpaceModification());
                 } catch (CMSException e) {
                     throw new RuntimeException(e);
                 }

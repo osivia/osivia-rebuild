@@ -26,7 +26,7 @@ import org.osivia.portal.api.cms.repository.model.user.NavigationItemImpl;
 import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
-
+import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -404,8 +404,8 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
 
     @Override
-    public Long getSpaceAwareTimestamp(String id) throws CMSException {
-        return getSharedRepository().getSpaceTs(id);
+    public SpaceCacheBean getSpaceCacheInformations(String id) throws CMSException {
+        return getSharedRepository().getSpaceCacheInformations(id);
     }
     
 }

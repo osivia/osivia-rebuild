@@ -80,7 +80,7 @@ public interface CMSSession {
      * @throws CMSException the CMS exception
      */
     
-    Long getSpaceAwareTimestamp(UniversalID spaceId) throws CMSException;
+    SpaceCacheBean getSpaceCacheInformations(UniversalID spaceId) throws CMSException;
 
 
     /**

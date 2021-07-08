@@ -16,8 +16,9 @@ import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
-
+import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.cms.service.UpdateInformations;
+import org.osivia.portal.api.cms.service.UpdateScope;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -33,7 +34,7 @@ public class SharedRepository {
     
     private Map<String, RepositoryDocument> cachedDocument;
     
-    private Map<String, Long>  spaceTsMap ; 
+    private Map<String, SpaceCacheBean>  spaceTsMap ; 
     
     private final UserStorage defaultStorage;
 
@@ -43,7 +44,7 @@ public class SharedRepository {
         this.repositoryName = repositoryName;
         this.listeners = new ArrayList<>();
         this.cachedDocument= new Hashtable<String, RepositoryDocument>();
-        this.spaceTsMap  = new Hashtable<String, Long>();
+        this.spaceTsMap  = new Hashtable<String, SpaceCacheBean>();
         defaultStorage = storageRepository;
    }
 
@@ -107,9 +108,9 @@ public class SharedRepository {
         boolean reload = false;
         
         if( doc != null)    {
-            Long spaceTs = getSpaceTs(doc.getSpaceId().getInternalID());
-            if( spaceTs != null)    {
-                if( doc.getTimestamp() < spaceTs)
+            SpaceCacheBean spaceTs = getSpaceCacheInformations(doc.getSpaceId().getInternalID());
+            if( spaceTs.getLastSpaceModification() != null)    {
+                if(  doc.getTimestamp() < spaceTs.getLastSpaceModification())
                     // TODO : multiple calls for one item during asynchronous delay 
                     reload = true;
             }
@@ -139,32 +140,62 @@ public class SharedRepository {
     
     public void notifyUpdate(UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
         
-         Document space;
+         Document space = null;
          
          try    {
-             space = getDocument(storageRepository,updateInformation.getSpaceID().getInternalID());
+             if( updateInformation.getSpaceID() != null)
+                 space = getDocument(storageRepository,updateInformation.getSpaceID().getInternalID());
          } catch(CMSException e)   {
              // Document may have been deleted
-             space = null;
+
          }
+         
+         RepositoryDocument document = null;
+         
+         try    {
+             if( updateInformation.getDocumentID() != null)
+                 document = getDocument(storageRepository,updateInformation.getDocumentID().getInternalID());
+         } catch(CMSException e)   {
+             // Document may have been deleted
+         }         
         
          if( updateInformation.getDocumentID() != null)
-             cachedDocument.remove(storageRepository,updateInformation.getDocumentID().getInternalID());
+             cachedDocument.remove(updateInformation.getDocumentID().getInternalID());
          
-         if( space != null)  {
+         if( updateInformation.getScope().equals(UpdateScope.SCOPE_SPACE) && space != null)  {
              Long updateTs =  System.currentTimeMillis();
              if( updateInformation.isAsync())
                  updateTs += 10000L;
              
-             spaceTsMap.put(space.getId().getInternalID(), updateTs);
+             // Update space scope timestamp
+             SpaceCacheBean cacheBean = getSpaceCacheInformations(space.getId().getInternalID());
+             cacheBean.setLastSpaceModification(updateTs);
+             cacheBean.setLastContentModification(updateTs);
              
              notifyChanges(  createCMSEvent(space.getId().getInternalID(), new ArrayList<>()));    
+         }
+         
+         if( updateInformation.getScope().equals(UpdateScope.SCOPE_CONTENT) && space!= null && document != null)  {
+             
+             List<Request> dirtyRequests = new ArrayList<>();
+             dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
+ 
+             // Update content scope timestamp
+             SpaceCacheBean cacheBean = getSpaceCacheInformations(space.getId().getInternalID());
+             cacheBean.setLastContentModification(System.currentTimeMillis());
+             
+             notifyChanges(  createCMSEvent(space.getId().getInternalID(), dirtyRequests));    
          }
     }
 
    
-    public Long getSpaceTs( String spaceId) {
-        return spaceTsMap.get(spaceId);
+    public SpaceCacheBean getSpaceCacheInformations( String spaceId) {
+        SpaceCacheBean bean = spaceTsMap.get(spaceId);
+        if( bean == null) {
+            bean = new SpaceCacheBean();
+            spaceTsMap.put(spaceId, bean);
+        }
+        return bean;
     }
     
     public String getRepositoryName() {

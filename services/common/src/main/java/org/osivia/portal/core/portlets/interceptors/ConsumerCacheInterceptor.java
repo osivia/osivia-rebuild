@@ -22,55 +22,34 @@
  ******************************************************************************/
 package org.osivia.portal.core.portlets.interceptors;
 
-import org.jboss.portal.portlet.invocation.PortletInvocation;
-import org.jboss.portal.portlet.invocation.RenderInvocation;
-import org.jboss.portal.portlet.PortletInvokerInterceptor;
-import org.jboss.portal.portlet.aspects.portlet.cache.ContentRef;
-import org.jboss.portal.portlet.aspects.portlet.cache.StrongContentRef;
-import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
-import org.jboss.portal.portlet.invocation.response.RevalidateMarkupResponse;
-import org.jboss.portal.portlet.invocation.response.ContentResponse;
-import org.jboss.portal.portlet.StateString;
-import org.jboss.portal.portlet.ParametersStateString;
-import org.jboss.portal.portlet.PortletInvokerException;
-import org.jboss.portal.portlet.spi.UserContext;
-import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.CMSContext;
-import org.osivia.portal.api.cms.CMSController;
-import org.osivia.portal.api.cms.UniversalID;
-import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.service.CMSEvent;
-import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.api.cms.service.CMSSession;
-import org.osivia.portal.api.cms.service.GetChildrenRequest;
-import org.osivia.portal.api.cms.service.RepositoryListener;
-import org.osivia.portal.api.cms.service.Request;
-import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.cms.cache.CMSPortalCacheCacheListener;
-import org.osivia.portal.core.cms.cache.CMSPortalCacheEvent;
-import org.osivia.portal.core.cms.cache.RequestCacheManager;
-import org.osivia.portal.core.page.PageProperties;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.jboss.portal.portlet.cache.CacheControl;
+import java.io.Serializable;
+import java.util.Map;
+
+import org.apache.commons.lang3.BooleanUtils;
+import org.jboss.portal.Mode;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
-import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.portlet.WindowContextImpl;
-import org.jboss.portal.WindowState;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.jboss.portal.Mode;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+import org.jboss.portal.portlet.ParametersStateString;
+import org.jboss.portal.portlet.PortletInvokerException;
+import org.jboss.portal.portlet.PortletInvokerInterceptor;
+import org.jboss.portal.portlet.StateString;
+import org.jboss.portal.portlet.aspects.portlet.cache.ContentRef;
+import org.jboss.portal.portlet.aspects.portlet.cache.StrongContentRef;
+import org.jboss.portal.portlet.cache.CacheControl;
+import org.jboss.portal.portlet.invocation.PortletInvocation;
+import org.jboss.portal.portlet.invocation.RenderInvocation;
+import org.jboss.portal.portlet.invocation.response.ContentResponse;
+import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
+import org.jboss.portal.portlet.invocation.response.RevalidateMarkupResponse;
+import org.jboss.portal.portlet.spi.UserContext;
+import org.osivia.portal.api.cms.service.CMSEvent;
+import org.osivia.portal.api.cms.service.RepositoryListener;
 
 /**
  * Cache markup on the portal.
@@ -81,8 +60,6 @@ import java.util.Map;
 public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 {
 
-    @Autowired
-    private RequestCacheManager requestCacheMgr;
     
    public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException
    {
@@ -121,10 +98,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
              PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
              window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
          }
-         
-         if( window != null)
-             requestCacheMgr.registerListener(ctx, window);
-         
+
          
         // Window has been modified
         if (cachedEntry != null && window != null) {
@@ -133,15 +107,11 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
         }
 
 
-        // CMS cache has been modified (portle level)
+        // CMS cache has been modified (portlet level)
         if (cachedEntry != null && window != null) {
-
-            Long updateTs = requestCacheMgr.getCMSRequestUpdateTs(ctx, window);
-
-            if (updateTs != null) {
-                if (cachedEntry.creationTs < updateTs) {
-                    cachedEntry = null;
-                }
+            Boolean refreshWindow = (Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+            if( BooleanUtils.isTrue(refreshWindow)) {
+                     cachedEntry = null;
             }
         }         
         
@@ -318,7 +288,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
    /**
     * Encapsulate cache information.
     */
-   private static class CacheEntry implements RepositoryListener, Serializable
+   private static class CacheEntry implements  Serializable
    {
 
       /** The entry navigational state. */
@@ -382,10 +352,6 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
     }
 
 
-    @Override
-    public void contentModified(CMSEvent event) {
-        // TODO Auto-generated method stub
-        
-    }
+
    }
 }
