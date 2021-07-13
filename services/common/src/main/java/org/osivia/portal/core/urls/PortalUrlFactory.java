@@ -201,8 +201,12 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         // Server context
         final ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // Portal context path
-        final String portalContextPath = serverContext.getPortalContextPath();
-
+        String portalContextPath = serverContext.getPortalContextPath();
+        
+        // Remove /auth from url
+        
+        if( portalContextPath.endsWith("/auth"))
+            portalContextPath = portalContextPath.substring(0, portalContextPath.length() - "/auth".length());
 
         final String prefix = StringUtils.substringBefore(originalUrl, portalContextPath);
         String suffix = StringUtils.substringAfter(originalUrl, portalContextPath);
@@ -216,6 +220,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             suffix = StringUtils.removeStart(suffix, "/");
         }
 
+        // Add /modal prefix
+        
         // Popup command
         String popupCommand = PortalCommandFactory.MODAL+PortalCommandFactory.SESSION+"/";
 

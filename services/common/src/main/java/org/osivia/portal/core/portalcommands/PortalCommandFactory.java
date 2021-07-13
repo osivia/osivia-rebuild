@@ -290,22 +290,24 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
  
         // open a modal after session is lost
+        /*
         if( modal && !StringUtils.equals(currentServerCheck, browserSession))    {
             browserReload = true;
         }
-
+*/
         
         // Ajax no redirect url (example : load select2)
         if( noredirect && !StringUtils.equals(currentServerCheck, browserSession))    {
             handleAjaxReload = true;
         }
-        
+
+        /*
         // navigation inside the modal after session losed
         if( requestPath.startsWith("/templates/OSIVIA_PORTAL_UTILS") && !StringUtils.equals(currentServerCheck, browserSession)) {
             if( ! (cmd instanceof InvokePortletWindowResourceCommand))
-                returnToDefaultPage = true;
+                browserReload = true;
         }
-        
+        */
         
         // back after a session losed
         if( cmd instanceof RestorePageCommand && !StringUtils.equals(currentServerCheck, browserSession) )    {

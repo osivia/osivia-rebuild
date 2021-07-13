@@ -278,6 +278,14 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 			   eval("resp =" + t.responseText + ";");
 		   } catch ( e){
 			   
+			   	   // If modal, redirect to history page
+			   
+			   	   if( $JQry('#osivia-modal').is(':visible'))	{
+				   		var redirect = history.state.fullUrl;
+				   		window.location = redirect;
+				   		return;
+			   	   }
+			   
 				   window.location = url;
 				   return;
 			   
@@ -335,7 +343,6 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	    			 
 	    			// Modal window must not be reloadable
 				  	preventHistory = true;
-				  	
 		   		}
 		   	}
 	   }	   
@@ -675,9 +682,6 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
         Event.stop(eventToStop);
     }
 
-     
-    
-    
     
     new Ajax.Request(url, options);
 }
