@@ -89,6 +89,10 @@ public  class DynamicContext extends ContextImplBase {
 					 if( host.equals( portal.getDeclaredProperty("osivia.site.hostName")))
 							 return portal;
 				 }
+				  
+				  // If one child, return
+				  if( children.size() == 1)
+				      return children.get(0);
 			  }
 		  }
 

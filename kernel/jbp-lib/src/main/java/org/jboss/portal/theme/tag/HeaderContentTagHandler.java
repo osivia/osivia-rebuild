@@ -96,6 +96,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       // Filler
       out.write( "<script src='/portal-assets/js/fancytree-integration.js'></script>");       
       
+      // Logout
+      out.write( "<script src='/portal-assets/js/logout.js'></script>"); 
+      
       out.write("<!-- portlet resources -->");
       
       out.flush();

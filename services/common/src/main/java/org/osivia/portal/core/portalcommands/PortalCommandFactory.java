@@ -43,6 +43,7 @@ import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationRes
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -181,10 +182,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         ControllerCommand cmd = null;
         
-        
-              
+               
         boolean handleMapping = true;
-        
         
                
         // we can't handle an ajax Request without incorrect authentification
@@ -199,7 +198,38 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
              cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         }
                
-        
+        // redirect to default page
+        if( cmd == null || cmd instanceof ViewPortalCommand)    {
+
+            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+            UniversalID redirectId;
+            try {
+                 UniversalID portalId;
+                 CMSContext cmsContext = new CMSContext(portalCtx);
+                 if( cmd == null)   {
+                     portalId = getCMSService().getDefaultPortal(cmsContext);
+                 }  else{
+                     PortalObjectId poid = ((ViewPortalCommand) cmd).getTargetId();
+                     portalId = new UniversalID(poid.getNamespace(), poid.getPath().getLastComponentName());
+                 } 
+  
+                 Document portal = getCMSService().getCMSSession(cmsContext).getDocument(portalId);
+                 String pageName;
+                 if( request.getUserPrincipal() == null)
+                     pageName = (String) portal.getProperties().get("portal.defaultObjectName");
+                 else
+                     pageName = (String) portal.getProperties().get("osivia.unprofiled_home_page");                     
+
+                 if( pageName != null)
+                     redirectId = new UniversalID(portalId.getRepositoryName(), portalId.getInternalID()+"_"+pageName.toUpperCase());
+                 else 
+                     redirectId = portalId;
+                 
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
+            cmd = new ViewContentCommand(redirectId.toString(), Locale.FRENCH, false);
+        }
         
         // Restauration of pages in case of loose of sessions
         

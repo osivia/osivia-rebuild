@@ -43,6 +43,8 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.theming.IInternalAttributesBundle;
@@ -243,13 +245,22 @@ public class RegionsThemingService implements IRegionsThemingService {
      * @return attribute value
      */
     private Object computeAttributeValue(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes, String name) {
-        IInternalAttributesBundle bundle = this.getAttributeBundle(name);
+        Object bundle = this.getAttributeBundle(name);
         if (bundle != null) {
             try {
-                bundle.fill(renderPageCommand, pageRendition, attributes);
+                if( bundle instanceof IInternalAttributesBundle)
+                    ((IInternalAttributesBundle) bundle).fill(renderPageCommand, pageRendition, attributes);
+                if( bundle instanceof IAttributesBundle)    {
+                    // Portal controller context
+                    PortalControllerContext portalControllerContext = new PortalControllerContext(renderPageCommand.getControllerContext().getServerInvocation().getServerContext().getClientRequest());
+                    ((IAttributesBundle) bundle).fill(portalControllerContext, attributes);
+                }
+ 
                 return attributes.get(name);
             } catch (ControllerException e) {
                 // Do nothing
+            } catch( PortalException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -264,7 +275,7 @@ public class RegionsThemingService implements IRegionsThemingService {
      * @param name attribute name
      * @return attributes bundle
      */
-    private IInternalAttributesBundle getAttributeBundle(String name) {
+    private Object getAttributeBundle(String name) {
         for (DefaultAttributesBundles value : DefaultAttributesBundles.values()) {
             IInternalAttributesBundle bundle = value.getBundle();
             if (bundle.getAttributeNames().contains(name)) {
@@ -277,7 +288,7 @@ public class RegionsThemingService implements IRegionsThemingService {
         customizerAttributes.put(IAttributesBundle.CUSTOMIZER_ATTRIBUTE_NAME, name);
         CustomizationContext context = new CustomizationContext(customizerAttributes);
         this.customizationService.customize(IAttributesBundle.CUSTOMIZER_ID, context);
-        return (IInternalAttributesBundle) customizerAttributes.get(IAttributesBundle.CUSTOMIZER_ATTRIBUTE_RESULT);
+        return customizerAttributes.get(IAttributesBundle.CUSTOMIZER_ATTRIBUTE_RESULT);
     }
 
 

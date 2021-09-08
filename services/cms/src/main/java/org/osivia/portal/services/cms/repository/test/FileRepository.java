@@ -50,31 +50,7 @@ public class FileRepository extends UserRepositoryTestBase {
     }
 
 
-    protected void createSpace() throws CMSException {
 
-        // osivia-utils
-        List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        List<String> children = new ArrayList<String>();
-
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Folder");
-
-
-        MemoryRepositoryPage page = new MemoryRepositoryPage(this, "IDX_PAGE_FOLDER", "Folder", null, "IDX_TEMPLATES_PORTAL", "IDX_TEMPLATES_PORTAL", children,
-                properties, modules);
-        addDocument("IDX_PAGE_FOLDER", page);
-
-        List<String> portalChildren = new ArrayList<String>();
-        portalChildren.add("IDX_PAGE_FOLDER");
-        Map<String, Object> portalProperties = new ConcurrentHashMap<String, Object>();
-        portalProperties.put("dc:title", "Utils");
-
-        MemoryRepositorySpace space = new MemoryRepositorySpace(this, "IDX_TEMPLATES_PORTAL", "IDX_TEMPLATES_PORTAL", null, portalChildren, portalProperties,
-                new ArrayList<ModuleRef>());
-        addDocument("IDX_TEMPLATES_PORTAL", space);
-    }
-
-    
     
     
     
@@ -157,8 +133,7 @@ public class FileRepository extends UserRepositoryTestBase {
 
         Map<String, Object> portalProperties = configure(portalMetaData);
 
-        
-        
+         
         
         MemoryRepositorySpace space = new MemoryRepositorySpace(this, getPortalName(portalMetaData), getPortalName(portalMetaData), null, portalChildren, portalProperties,
                 new ArrayList<ModuleRef>());
@@ -194,11 +169,6 @@ public class FileRepository extends UserRepositoryTestBase {
 
     protected void initDocuments() {
 
-        try {
-            createSpace();
-        } catch (CMSException e1) {
-            throw new RuntimeException(e1);
-        }
         
         try {
             DocumentBuilder builder = XMLTools.getDocumentBuilderFactory().newDocumentBuilder();

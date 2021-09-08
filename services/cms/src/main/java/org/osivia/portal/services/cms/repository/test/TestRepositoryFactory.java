@@ -39,7 +39,7 @@ public class TestRepositoryFactory {
 
     
     public UniversalID getDefaultPortal() {
-        return new UniversalID("sites:ID_SITE_A");
+        return new UniversalID("idx:DEFAULT");
     }
     
     protected static final Log logger = LogFactory.getLog(TestRepositoryFactory.class);

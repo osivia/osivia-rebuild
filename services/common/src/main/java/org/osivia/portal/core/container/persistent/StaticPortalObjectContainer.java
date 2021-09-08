@@ -332,7 +332,16 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                 
                 if (document instanceof Space) {
                     Space space = (Space) document;
-                    portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, DefaultCMSPageFactory.getRootPageName());
+                    
+                    String defaultObjectName = (String) space.getProperties().get("portal.defaultObjectName");
+                    if( defaultObjectName == null)
+                        defaultObjectName = DefaultCMSPageFactory.getRootPageName();
+                    else
+                        defaultObjectName = "DEFAULT_HOME-ANONYMOUS";
+                       
+                    portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, defaultObjectName);
+                    
+                    
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
                    
                     NavigationItem navRoot = cmsService.getCMSSession(cmsContext).getNavigationItem(space.getId());

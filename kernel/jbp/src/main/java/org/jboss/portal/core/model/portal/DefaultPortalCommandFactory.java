@@ -67,6 +67,8 @@ public class DefaultPortalCommandFactory extends AbstractCommandFactory
    public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath)
    {
       ControllerCommand cmd = nextFactory.doMapping(controllerContext, invocation, host, contextPath, requestPath);
+      
+      /*
       if (cmd == null)
       {
          Context context = container.getContext();
@@ -87,6 +89,8 @@ public class DefaultPortalCommandFactory extends AbstractCommandFactory
          PortalObjectId id = page.getId();
          cmd = new ViewPageCommand(id);
       }
+      */
+      
       return cmd;
    }
 }
