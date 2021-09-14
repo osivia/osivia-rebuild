@@ -2,6 +2,8 @@ package org.osivia.portal.core.portalobjects;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -17,6 +19,8 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.portalobject.bridge.PortalBridge;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.container.dynamic.DynamicPage;
+import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.springframework.stereotype.Service;
 
@@ -77,6 +81,34 @@ public class PortalBridgeService implements PortalBridge {
     @Override
     public Object getPortalSessionAttribute(PortalControllerContext portalCtx, String name) {
         return  ControllerContextAdapter.getControllerContext(portalCtx).getAttribute(Scope.PRINCIPAL_SCOPE, name);
+    }
+
+    @Override
+    public boolean isDefaultMemberPage(PortalControllerContext portalCtx) {
+        
+        Page page = getPage(portalCtx);
+        if( page != null)   {
+            Portal portal = page.getPortal();
+            HttpServletRequest request = portalCtx.getHttpServletRequest();
+            String defaultPageId;
+            
+            if( request.getUserPrincipal() == null) {
+                defaultPageId =  portal.getProperties().get("portal.defaultPageId");
+            }   else    {
+                defaultPageId =  portal.getProperties().get("portal.unprofiledPageId");
+            }
+            
+            if( page instanceof DynamicTemplatePage)    {
+                PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
+                if( templateId != null) {
+                    String templateName = templateId.getPath().getLastComponentName();
+                    if( templateName.equals(defaultPageId))
+                        return true;
+                }
+            }
+            
+        }
+        return false;
     }
 
     

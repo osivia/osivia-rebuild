@@ -197,39 +197,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         if( handleMapping) {
              cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
         }
-               
-        // redirect to default page
-        if( cmd == null || cmd instanceof ViewPortalCommand)    {
-
-            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
-            UniversalID redirectId;
-            try {
-                 UniversalID portalId;
-                 CMSContext cmsContext = new CMSContext(portalCtx);
-                 if( cmd == null)   {
-                     portalId = getCMSService().getDefaultPortal(cmsContext);
-                 }  else{
-                     PortalObjectId poid = ((ViewPortalCommand) cmd).getTargetId();
-                     portalId = new UniversalID(poid.getNamespace(), poid.getPath().getLastComponentName());
-                 } 
-  
-                 Document portal = getCMSService().getCMSSession(cmsContext).getDocument(portalId);
-                 String pageName;
-                 if( request.getUserPrincipal() == null)
-                     pageName = (String) portal.getProperties().get("portal.defaultObjectName");
-                 else
-                     pageName = (String) portal.getProperties().get("osivia.unprofiled_home_page");                     
-
-                 if( pageName != null)
-                     redirectId = new UniversalID(portalId.getRepositoryName(), portalId.getInternalID()+"_"+pageName.toUpperCase());
-                 else 
-                     redirectId = portalId;
-                 
-            } catch (CMSException e) {
-                throw new RuntimeException(e);
-            }
-            cmd = new ViewContentCommand(redirectId.toString(), Locale.FRENCH, false);
-        }
+        
+        
         
         // Restauration of pages in case of loose of sessions
         
@@ -278,6 +247,50 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 }
             }
         }   
+        
+        
+        
+        
+        
+        
+        
+               
+        // redirect to default page
+        // portal, portal/auth -> cmd = null
+        // signout -> ViewportalCommand
+        if( cmd == null || cmd instanceof ViewPortalCommand)    {
+
+            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+            UniversalID redirectId;
+            try {
+                 UniversalID portalId;
+                 CMSContext cmsContext = new CMSContext(portalCtx);
+                 if( cmd == null)   {
+                     portalId = getCMSService().getDefaultPortal(cmsContext);
+                 }  else{
+                     PortalObjectId poid = ((ViewPortalCommand) cmd).getTargetId();
+                     portalId = new UniversalID(poid.getNamespace(), poid.getPath().getLastComponentName());
+                 } 
+  
+                 Document portal = getCMSService().getCMSSession(cmsContext).getDocument(portalId);
+                 String pageId;
+                 if( request.getUserPrincipal() == null)
+                     pageId = (String) portal.getProperties().get("portal.defaultPageId");
+                 else
+                     pageId = (String) portal.getProperties().get("portal.unprofiledPageId");                     
+
+                 if( pageId != null)
+                     redirectId = new UniversalID(portalId.getRepositoryName(), pageId);
+                 else 
+                     redirectId = portalId;
+                 
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
+            cmd = new ViewContentCommand(redirectId.toString(), Locale.FRENCH, false);
+        }
+        
+
         
 
         
@@ -391,13 +404,12 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
           
-        
-        
-        
+ /*       
         if(cmd instanceof RenderPageCommand)    {
             PortalObjectUtilsInternal.setPageId(controllerContext, ((RenderPageCommand) cmd).getTargetId());
         }
-        
+ */       
+      
  
 
         return cmd;

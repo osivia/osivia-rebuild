@@ -56,14 +56,29 @@ public class FileRepository extends UserRepositoryTestBase {
     
     
     
-    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList) throws CMSException {
+    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList, Map<String, Object> portalProperties) throws CMSException {
         
-        log.info("create page " + getPageName(pageMetaData, parentHierarchy));
+        String pageName = getPageName(pageMetaData, parentHierarchy);
+        
+        log.debug("create page " + pageName);
         
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         List<String> children = new ArrayList<String>();
         
         Map<String, Object> pageProperties = configure(pageMetaData);
+        
+        /* change defaut page properties */
+        
+        String portaldefaultObjectName =  (String) portalProperties.get("portal.defaultObjectName");
+        if(StringUtils.equals(portaldefaultObjectName, pageMetaData.getName())) {
+            portalProperties.put("portal.defaultPageId", pageName);
+        }
+        
+        String unprofiledPageName =  (String) portalProperties.get("osivia.unprofiled_home_page");
+        if(StringUtils.equals(unprofiledPageName, pageMetaData.getName())) {
+            portalProperties.put("portal.unprofiledPageId", pageName);
+        }
+        
         
         /* get childrens */
         
@@ -92,7 +107,7 @@ public class FileRepository extends UserRepositoryTestBase {
                pageHierarchy.add( pageMetaData.getName().toUpperCase());
                
                // Add page as a child of container
-               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, pageList);
+               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, pageList, portalProperties);
            }
         }
 
@@ -109,7 +124,11 @@ public class FileRepository extends UserRepositoryTestBase {
     
     protected void createSpace(PortalMetaData portalMetaData) throws CMSException {
         
-        log.info("create space " + getPortalName(portalMetaData));        
+        log.info("create space " + getPortalName(portalMetaData));       
+        
+
+        Map<String, Object> portalProperties = configure(portalMetaData);
+        
         
         /* Create pages */
         
@@ -123,16 +142,13 @@ public class FileRepository extends UserRepositoryTestBase {
         for (PortalObjectMetaData portalObjectMD : children.values())
         {
            if( portalObjectMD instanceof PageMetaData)  {
-               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, portalChildren);
+               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, portalChildren,portalProperties);
            }
         }
 
          
         /* Create portal */
         
-
-        Map<String, Object> portalProperties = configure(portalMetaData);
-
          
         
         MemoryRepositorySpace space = new MemoryRepositorySpace(this, getPortalName(portalMetaData), getPortalName(portalMetaData), null, portalChildren, portalProperties,

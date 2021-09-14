@@ -336,11 +336,16 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                     String defaultObjectName = (String) space.getProperties().get("portal.defaultObjectName");
                     if( defaultObjectName == null)
                         defaultObjectName = DefaultCMSPageFactory.getRootPageName();
-                    else
-                        defaultObjectName = "DEFAULT_HOME-ANONYMOUS";
-                       
                     portal.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, defaultObjectName);
-                    
+  
+                    String defaultObjectId = (String) space.getProperties().get("portal.defaultPageId");
+                    if( defaultObjectId != null)    {
+                        portal.setDeclaredProperty("portal.defaultPageId", defaultObjectId);
+                    }
+                    String defaultUnprofiled = (String) space.getProperties().get("portal.unprofiledPageId");
+                    if( defaultUnprofiled != null)    {
+                        portal.setDeclaredProperty("portal.unprofiledPageId", defaultUnprofiled);
+                    }
                     
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
                    

@@ -135,7 +135,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         if (cmd instanceof RenderPageCommand) {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
 
-            //PortalObjectUtils.setPageId(controllerContext, rpc.getPage().getId());
+            PortalObjectUtilsInternal.setPageId(controllerContext, rpc.getPage().getId());
 
         }
 

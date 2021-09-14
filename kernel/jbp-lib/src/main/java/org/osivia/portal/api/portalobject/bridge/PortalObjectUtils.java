@@ -85,6 +85,17 @@ public class PortalObjectUtils {
         return getService().getPage(portalCtx);
     }
 
+    
+    /**
+     * Get current page.
+     *
+     * @param controllerContext controller context
+     * @return current page
+     */
+    public static final boolean isDefaultMemberPage(PortalControllerContext portalCtx) {
+        return getService().isDefaultMemberPage(portalCtx);
+    }
+    
 
     /**
      * Get current portal 

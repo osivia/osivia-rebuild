@@ -21,6 +21,15 @@ public interface PortalBridge {
          * @return the page
          */
         public  Page getPage(PortalControllerContext portalCtx) ;
+        
+        
+        /**
+         * Checks if is default member page.
+         *
+         * @param portalCtx the portal ctx
+         * @return true, if is default member page
+         */
+        public boolean isDefaultMemberPage(PortalControllerContext portalCtx);
 
         /**
          * Gets the page id.
