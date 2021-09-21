@@ -208,7 +208,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }   else
                     pageChange = true;
                 
-                   
+                 if( BooleanUtils.isTrue((Boolean)controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.refreshPageLayout"))) {
+                     pageChange = true;
+                 }
 
                 // Changes have been commited during the restore page state
                 // ctx.getChanges doesn't contain modified windows

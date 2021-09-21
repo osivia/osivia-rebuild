@@ -129,8 +129,8 @@ public class RegionsThemingService implements IRegionsThemingService {
             WindowContext windowContext = new WindowContext(renderedRegion.getName(), renderedRegion.getName(), "0", windowResult);
             pageRendition.getPageResult().addWindowContext(windowContext);
 
-            Region region = pageRendition.getPageResult().getRegion2(renderedRegion.getName());
-            DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+            //Region region = pageRendition.getPageResult().getRegion2(renderedRegion.getName());
+            //DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
         }
     }
 

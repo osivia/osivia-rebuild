@@ -117,6 +117,9 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
          markup.print("<script type='text/javascript' src='");
          markup.print(jsBase);
          markup.print("/react-dom.production.min.js'></script>\n");
+         
+         
+         
           markup.print("<script type='text/javascript' src='");
          markup.print(jsBase);
          markup.print("/prototype.js'></script>\n");
