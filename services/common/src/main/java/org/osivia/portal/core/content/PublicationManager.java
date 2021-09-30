@@ -319,6 +319,7 @@ public class PublicationManager implements IPublicationManager {
             if ((!(doc instanceof Templateable)) && pageDisplay == false) {
 
                 Map<String, String> windowProperties = new HashMap<String, String>();
+                Map<String, String> windowParams = new HashMap<String, String>();
 
                 windowProperties.put(Constants.WINDOW_PROP_URI, doc.getId().toString());
                 
@@ -347,7 +348,7 @@ public class PublicationManager implements IPublicationManager {
                     
                 
                 
-                getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", instance, windowProperties);
+                getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", instance, windowProperties, windowParams);
 
             }
 

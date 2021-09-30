@@ -123,24 +123,28 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 if ("startDynamicWindowInNewPage".equals(action)) {
 
                     String parentId = null;
-                    String pageId = null;
+                    UniversalID pageId = null;
                     String pageDisplayName = null;
                     String instanceId = null;
                     String windowProps = null;
                     String params = null;
+                    String templateRegion = null;
 
 
                     if ((parameterMap.get("parentId") != null) && (parameterMap.get("instanceId") != null)) {
 
                         parentId = URLDecoder.decode(parameterMap.get("parentId")[0], CharEncoding.UTF_8);
-                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        if( parameterMap.get("pageId") != null)
+                            pageId = new UniversalID(URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8));
                         pageDisplayName = URLDecoder.decode(parameterMap.get("pageDisplayName")[0], CharEncoding.UTF_8);
                         instanceId = URLDecoder.decode(parameterMap.get("instanceId")[0], CharEncoding.UTF_8);
                         windowProps = URLDecoder.decode(parameterMap.get("props")[0], CharEncoding.UTF_8);
                         params = URLDecoder.decode(parameterMap.get("params")[0], CharEncoding.UTF_8);
+                        if( parameterMap.get("templateRegion") != null)
+                                templateRegion = URLDecoder.decode(parameterMap.get("templateRegion")[0], CharEncoding.UTF_8);
 
-                        return this.applicationContext.getBean(StartDynamicWindowInNewPageCommand.class, new UniversalID(parentId), new UniversalID(pageId), pageDisplayName, instanceId,
-                                WindowPropertiesEncoder.decodeProperties(windowProps), WindowPropertiesEncoder.decodeProperties(params));
+                        return this.applicationContext.getBean(StartDynamicWindowInNewPageCommand.class, new UniversalID(parentId), pageId, pageDisplayName, instanceId,
+                                WindowPropertiesEncoder.decodeProperties(windowProps), WindowPropertiesEncoder.decodeProperties(params), templateRegion);
                     }
                 }
                 

@@ -347,6 +347,8 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                         portal.setDeclaredProperty("portal.unprofiledPageId", defaultUnprofiled);
                     }
                     
+                    portal.setDeclaredProperty("portal.cms.id", document.getId().toString());
+                    
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");
                    
                     NavigationItem navRoot = cmsService.getCMSSession(cmsContext).getNavigationItem(space.getId());

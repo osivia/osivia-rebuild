@@ -147,7 +147,10 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
     
 
     public UniversalID getSpaceId() {
-        return new UniversalID(userRepository.getRepositoryName(), getSpaceInternalId());
+        if( getSpaceInternalId() != null)
+            return new UniversalID(userRepository.getRepositoryName(), getSpaceInternalId());
+        else
+            return null;
     }
 
 

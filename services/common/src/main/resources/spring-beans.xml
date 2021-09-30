@@ -172,11 +172,18 @@
 	
 
     <!-- Documents browser service -->
-    
    	<bean class="org.osivia.portal.core.path.BrowserService" id="osivia:service=BrowserService" >
         <property name="PortalURLFactory" ref="osivia:service=UrlFactory"/>   
         <property name="CmsServiceLocator" ref="osivia:service=CmsServiceLocator"/>     
 	</bean>
+	
+	
+	<!-- Tasks service -->
+	<bean class="org.osivia.portal.core.tasks.TasksService" id="osivia:service=TasksService" >
+ 		<property name="CustomizationService" ref="osivia:service=CustomizationService"/>  
+        <property name="CmsServiceLocator" ref="osivia:service=CmsServiceLocator"/>     
+	</bean>
+	
 	
 	 <!-- Theming services -->
 	
@@ -195,6 +202,9 @@
         <property name="TaskbarService" ref="osivia:service=TaskbarService"/>   
   -->
 	</bean>
+
+
+
 
      
 </beans>

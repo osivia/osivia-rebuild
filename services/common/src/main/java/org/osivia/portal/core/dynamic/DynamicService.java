@@ -33,7 +33,7 @@ public class DynamicService implements IDynamicService {
 
     @Override
     public void startDynamicWindow(PortalControllerContext portalControllerContext, String parentPath, String windowName, String regionId, String portletInstance,
-            Map<String, String> windowProperties) throws PortalException {
+            Map<String, String> windowProperties, Map<String, String> windowParams) throws PortalException {
 
         ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
@@ -62,17 +62,25 @@ public class DynamicService implements IDynamicService {
         Map<String, String[]> parameters = new HashMap<String, String[]>();
 
         
+        if( windowParams != null)   {
+            for (String keyParam : windowParams.keySet()) {
+                parameters.put(keyParam, new String[]{windowParams.get(keyParam)});
+            }        
+        }
+        
+        
+        
         WindowNavigationalState newNS;
         
-        if (StringUtils.equals(properties.get("osivia.windowState"), "normal")) {
-            // On force la maximisation
-
-
-             newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
-                    ParametersStateString.create(parameters));
-        }   else    {
+        if (!StringUtils.equals(properties.get("osivia.windowState"), "normal")) {
+            // On force la maximisation            
             newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED, windowNavState.getMode(),
-                    ParametersStateString.create(parameters));
+                    ParametersStateString.create(parameters));            
+
+        }   else    {
+
+            newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
+                    ParametersStateString.create(parameters));          
         }
 
 
@@ -146,7 +154,7 @@ public class DynamicService implements IDynamicService {
         
         String windowName = "dyna" + System.currentTimeMillis();
 
-        startDynamicWindow(portalControllerContext, parentPath, windowName, regionId, portletInstance, windowProperties);
+        startDynamicWindow(portalControllerContext, parentPath, windowName, regionId, portletInstance, windowProperties, null);
 
 
     }

@@ -132,12 +132,11 @@ public class StartDynamicWindowCommand extends DynamicCommand {
             for (String dynaKey : this.dynaProps.keySet()) {
                 properties.put(dynaKey, this.dynaProps.get(dynaKey));
             }
-            
-
+ 
 
             String parentPath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
 
-            dynamicService.startDynamicWindow(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), parentPath, this.windowName, regionId, instanceId, properties);
+            dynamicService.startDynamicWindow(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), parentPath, this.windowName, regionId, instanceId, properties, this.params);
            
             return new UpdatePageResponse(page.getId());
         } catch (Exception e) {

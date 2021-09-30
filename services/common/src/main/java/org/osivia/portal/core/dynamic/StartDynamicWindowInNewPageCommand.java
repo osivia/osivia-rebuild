@@ -62,7 +62,8 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
     private Map<String, String> dynaProps;
     /** Window parameters. */
     private Map<String, String> params;
-
+    /** Window portlet region. */
+    private String templateRegion;
 
     /** Command info. */
     private final CommandInfo info;
@@ -99,7 +100,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
      * @param params window parameters
      */
     public StartDynamicWindowInNewPageCommand(UniversalID parentId, UniversalID templateId, String displayName, String portletInstance, Map<String, String> props,
-            Map<String, String> params) {
+            Map<String, String> params, String templateRegion) {
         this();
         this.parentId = parentId;
         this.templateId = templateId;
@@ -107,6 +108,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
         this.instanceId = portletInstance;
         this.dynaProps = props;
         this.params = params;
+        this.templateRegion = templateRegion;
     }
 
 
@@ -126,26 +128,34 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
     public ControllerResponse execute() throws ControllerException {
         try {
             
-            /*
-            // Generic template name
-            String templateName = this.dynaProps.get("template.name");
-            if (templateName == null) {
-
-                String genericTemplateName = System.getProperty("template.generic.name");
-                if (genericTemplateName == null) {
-                    throw new ControllerException("template.generic.name undefined. Cannot instantiate this page");
-                } else
-                    templateName = genericTemplateName;
-            }
-
-            // Generic template region name
-            String genericTemplateRegion = System.getProperty("template.generic.region");
-            if (genericTemplateRegion == null) {
-                throw new ControllerException("template.generic.region undefined. Cannot instantiate this page");
-            }
-*/
             
-            String genericTemplateRegion="modal-region";
+            // Generic template name
+            if( templateId == null) {
+                String sTemplateId = this.dynaProps.get("template.id");
+                if (sTemplateId == null) {
+                    String genericTemplateId = System.getProperty("template.generic.id");
+                    if (genericTemplateId == null) {
+                        throw new ControllerException("template.generic.id undefined. Cannot instantiate this page");
+                    } else
+                        templateId = new  UniversalID("idx",  genericTemplateId);
+                }   else    {
+                    templateId = new  UniversalID("templates",  sTemplateId);
+                }
+            }
+            
+            
+
+            if( templateRegion == null) {
+                // Generic template region name
+                String genericTemplateRegion = System.getProperty("template.generic.region");
+                if (genericTemplateRegion == null) {
+                    throw new ControllerException("template.generic.region undefined. Cannot instantiate this page");
+                }
+                
+                templateRegion = genericTemplateRegion;
+            }
+            
+
 
             // Page display names
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
@@ -200,7 +210,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId);
 
             // Nuxeo command
-            StartDynamicWindowCommand windowCommand = this.applicationContext.getBean(StartDynamicWindowCommand.class, pageId.toString(PortalObjectPath.SAFEST_FORMAT), genericTemplateRegion,
+            StartDynamicWindowCommand windowCommand = this.applicationContext.getBean(StartDynamicWindowCommand.class, pageId.toString(PortalObjectPath.SAFEST_FORMAT), templateRegion,
                     this.instanceId, "virtual", windowProps, this.params);
             
 

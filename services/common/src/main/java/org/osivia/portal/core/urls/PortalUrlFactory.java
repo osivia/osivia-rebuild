@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.ServerInvocationContext;
@@ -144,7 +146,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 builder.append("&windowName=").append(windowName);
                 builder.append("&instanceId=").append(portletInstance);
                 builder.append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties));
-                builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(windowParams));            
+                builder.append("&params=").append(WindowPropertiesEncoder.encodeProperties(windowParams));
+                builder.append("&templateRegion=").append("modal-region");
                 
     
                 url = builder.toString();
@@ -300,7 +303,63 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance,
                                            Map<String, String> windowProperties, Map<String, String> params) throws PortalException {
         
-        return null;
+        try {
+
+            // Controller context
+            ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
+
+            // Window properties
+            if (windowProperties == null) {
+                windowProperties = new HashMap<String, String>();
+            }
+
+            // URL
+            String url;
+
+            // Valeurs par défaut
+            if (windowProperties.get("osivia.hideDecorators") == null) {
+                windowProperties.put("osivia.hideDecorators", "1");
+            }
+            if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
+                windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+            }
+
+
+            Page page = PortalObjectUtilsInternal.getPage(controllerContext);
+            Portal portal = page.getPortal();
+            UniversalID spaceId  = new UniversalID(portal.getDeclaredProperty("portal.cms.id"));
+            
+            
+            // Start dynamic window command
+            ControllerCommand command = new StartDynamicWindowInNewPageCommand();
+
+            // Portal URL
+            PortalURLImpl portalUrl = new PortalURLImpl(command, controllerContext, null, null);
+
+            // URL
+            StringBuilder builder = new StringBuilder();
+            builder.append(portalUrl.toString());
+
+            builder.append("&parentId=").append(spaceId);
+            
+            if (pageName != null) {
+                builder.append("&pageName=").append(URLEncoder.encode(pageName, "UTF-8"));
+            }
+            if (pageDisplayName != null) {
+                builder.append("&pageDisplayName=").append(URLEncoder.encode(pageDisplayName, "UTF-8"));
+            }
+
+            builder.append("&instanceId=").append(portletInstance).append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties))
+                    .append("&params=").append(WindowPropertiesEncoder.encodeProperties(params));
+
+
+            url = builder.toString();
+
+            return url;
+
+        } catch (final Exception e) {
+            throw new PortalException(e);
+        }
     }
     
     

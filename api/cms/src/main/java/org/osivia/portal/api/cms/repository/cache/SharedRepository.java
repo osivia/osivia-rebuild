@@ -103,30 +103,32 @@ public class SharedRepository {
     
     public RepositoryDocument getDocument(UserStorage storageRepository,String internalID) throws CMSException {
         try {
-        RepositoryDocument doc = cachedDocument.get(internalID);
-        
-        boolean reload = false;
-        
-        if( doc != null)    {
-            SpaceCacheBean spaceTs = getSpaceCacheInformations(doc.getSpaceId().getInternalID());
-            if( spaceTs.getLastSpaceModification() != null)    {
-                if(  doc.getTimestamp() < spaceTs.getLastSpaceModification())
-                    // TODO : multiple calls for one item during asynchronous delay 
-                    reload = true;
+            RepositoryDocument doc = cachedDocument.get(internalID);
+
+            boolean reload = false;
+
+            if (doc != null) {
+                if (doc.getSpaceId() != null) {
+                    SpaceCacheBean spaceTs = getSpaceCacheInformations(doc.getSpaceId().getInternalID());
+                    if (spaceTs.getLastSpaceModification() != null) {
+                        if (doc.getTimestamp() < spaceTs.getLastSpaceModification())
+                            // TODO : multiple calls for one item during asynchronous delay
+                            reload = true;
+                    }
+                }
+            } else
+                reload = true;
+
+            if (reload) {
+                reload(storageRepository, internalID);
+                doc = cachedDocument.get(internalID);
             }
-        }   else
-            reload = true;
-        
-        if( reload) {
-             reload( storageRepository, internalID);
-             doc = cachedDocument.get(internalID);
-        }
-        
-        if( doc == null)
-            throw new CMSException();
-        
-        return doc.duplicate();
-        } catch(Exception e)    {
+
+            if (doc == null)
+                throw new CMSException();
+
+            return doc.duplicate();
+        } catch (Exception e) {
             throw new CMSException(e);
         }
     }
