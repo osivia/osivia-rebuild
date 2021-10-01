@@ -74,11 +74,13 @@ public class ViewContentCommand extends ControllerCommand {
 
     private boolean preview;
 
+    private Map<String,String> pageProps;
 
-    public ViewContentCommand(String contentId, Locale locale, boolean preview) {
+    public ViewContentCommand(String contentId, Locale locale, boolean preview, Map<String,String> pageProps) {
         this.contentId = contentId;
         this.locale = locale;
         this.preview = preview;
+        this.pageProps = pageProps;
     }
 
     public Locale getLocale() {
@@ -139,7 +141,7 @@ public class ViewContentCommand extends ControllerCommand {
             getPreviewModeService().setPreview(portalCtx, contentUID, preview);
 
 
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentUID);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentUID, pageProps);
 
             return new UpdatePageResponse(pageId);
 

@@ -2,6 +2,7 @@ package org.osivia.portal.core.content;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
 import org.osivia.portal.core.context.ControllerContextAdapter;
@@ -140,7 +142,7 @@ public class PublicationManager implements IPublicationManager {
 
 
     @Override
-    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId) throws ControllerException {
+    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String,String> pageProps) throws ControllerException {
 
 
         PortalObjectId pageId = null;
@@ -234,12 +236,22 @@ public class PublicationManager implements IPublicationManager {
                      templatePath = getPageTemplate(cmsContext, doc, navigation).toString(PortalObjectPath.CANONICAL_FORMAT);
     
                 Map<String, String> properties = new HashMap<String, String>();
+                
+                // Add custom page Props
+                if( pageProps != null)  {
+                    for (String name: pageProps.keySet()) {
+                        properties.put(name, pageProps.get(name));
+                    }
+                }
+                
     
                 properties.put("osivia.contentId", docId.toString());
                 properties.put("osivia.navigationId", navigation.getDocumentId().toString());
                 properties.put("osivia.spaceId", navigation.getSpaceId().toString());
                 properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));            
                 properties.put("osivia.content.locale", doc.getLocale().toString()); 
+                
+  
     
                 Map<String, String> parameters = new HashMap<String, String>();
     
@@ -296,11 +308,6 @@ public class PublicationManager implements IPublicationManager {
                  
                  
                  
-                 
-                 
-                 
-                 
-                 
                 
             }   else    {
                 // Empty page
@@ -325,8 +332,7 @@ public class PublicationManager implements IPublicationManager {
                 
                 String instance;
                 
-                
-
+    
                 
                 if( "nx".equals(doc.getId().getRepositoryName()))   {
                         instance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
@@ -351,6 +357,42 @@ public class PublicationManager implements IPublicationManager {
                 getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", instance, windowProperties, windowParams);
 
             }
+            
+            
+            // Initial window 
+            if( pageProps != null && pageProps.get("osivia.initialWindowInstance") != null) {
+
+                // Nuxeo command
+//                StartDynamicWindowCommand windowCommand = this.applicationContext.getBean(StartDynamicWindowCommand.class, pageId.toString(PortalObjectPath.SAFEST_FORMAT), templateRegion,
+//                        this.instanceId, "virtual", windowProps, this.params);
+                
+
+
+                
+                String instanceName = pageProps.get("osivia.initialWindowInstance");
+                String region = pageProps.get("osivia.initialWindowRegion");
+                
+                Map<String, String> windowProps = new HashMap<>();
+                Map<String, List<String>> initProps = PageParametersEncoder.decodeProperties(pageProps.get("osivia.initialWindowProps"));
+                if (initProps != null) {
+                    for (String prop : initProps.keySet()) {
+                        windowProps.put(prop, initProps.get(prop).get(0));
+                    }
+                }
+
+                Map<String, String> windowParams = new HashMap<>();
+                Map<String, List<String>> initParams = PageParametersEncoder.decodeProperties(pageProps.get("osivia.initialWindowParams"));
+                if (initParams != null) {
+                    for (String param : initParams.keySet()) {
+                        windowParams.put(param, initParams.get(param).get(0));
+                    }
+                }
+
+                
+                getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", region, instanceName, windowProps, windowParams);
+            }
+            
+            
 
 
             pageId = PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT);

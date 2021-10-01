@@ -77,7 +77,7 @@ public class ViewContentCommandFactoryService extends AbstractCommandFactory imp
         }
 
   
-        ViewContentCommand cmsCommand = new ViewContentCommand(contentId, locale, preview);
+        ViewContentCommand cmsCommand = new ViewContentCommand(contentId, locale, preview, null);
         return cmsCommand;
     }
 

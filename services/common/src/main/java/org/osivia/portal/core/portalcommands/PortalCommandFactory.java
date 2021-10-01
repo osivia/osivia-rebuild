@@ -287,7 +287,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             } catch (CMSException e) {
                 throw new RuntimeException(e);
             }
-            cmd = new ViewContentCommand(redirectId.toString(), Locale.FRENCH, false);
+            cmd = new ViewContentCommand(redirectId.toString(), Locale.FRENCH, false, null);
         }
         
 
@@ -368,7 +368,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             } catch (CMSException e) {
                 throw new RuntimeException(e);
             }
-            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false, null);
             request.setAttribute("osivia.full_refresh_url", "/refresh");
           
         } else
@@ -382,7 +382,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             } catch (CMSException e) {
                 throw new RuntimeException(e);
             }
-            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false, null);
             request.setAttribute("osivia.full_refresh_url", "/portal-assets/redirection/ajax-reload.jsp");
           
         }   else
@@ -396,7 +396,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             } catch (CMSException e) {
                 throw new RuntimeException(e);
             }
-            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false);
+            cmd = new ViewContentCommand(defaultPortalId.toString(), Locale.FRENCH, false, null);
             String url = controllerContext.renderURL(cmd, null, null);    
             //request.setAttribute("osivia.full_refresh_url", "/refresh");
             request.setAttribute("osivia.full_refresh_url", url);

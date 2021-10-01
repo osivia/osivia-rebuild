@@ -58,12 +58,12 @@ public class RestorablePageUtils {
         
         String pageType = decodePath(names[1]);
                
-        if (pageType.startsWith(TEMPLATE_ID)) {
-            templateId = PortalObjectId.parse(names[1].substring(TEMPLATE_ID.length()), PortalObjectPath.SAFEST_FORMAT).toString(PortalObjectPath.CANONICAL_FORMAT);
-
-            restoreCmd = new StartDynamicPageCommand(portalId.toString(PortalObjectPath.CANONICAL_FORMAT), businessName, displayNames, templateId,
-                    props, params, completeName);
-        }
+//        if (pageType.startsWith(TEMPLATE_ID)) {
+//            templateId = PortalObjectId.parse(names[1].substring(TEMPLATE_ID.length()), PortalObjectPath.SAFEST_FORMAT).toString(PortalObjectPath.CANONICAL_FORMAT);
+//
+//            restoreCmd = new StartDynamicPageCommand(portalId.toString(PortalObjectPath.CANONICAL_FORMAT), businessName, displayNames, templateId,
+//                    props, params, completeName);
+//        }
  
         if (pageType.startsWith(CONTENT_PATH)) {
             String contentId = names[1].substring(CONTENT_PATH.length());
@@ -71,7 +71,7 @@ public class RestorablePageUtils {
             Boolean isPreviewing = BooleanUtils.toBooleanObject(props.get("osivia.content.preview"));            
             Locale locale = new Locale(props.get("osivia.content.locale"));
             
-            restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing);
+            restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing, props);
           }        
 
 
@@ -175,7 +175,8 @@ public class RestorablePageUtils {
 
         Map<String, String> hProps = new HashMap<String, String>();
         for (String hKey : map.keySet()) {
-            hProps.put(hKey, map.get(hKey).get(0));
+            if( map.get(hKey).size() > 0)
+                hProps.put(hKey, map.get(hKey).get(0));
         }
 
         return hProps;

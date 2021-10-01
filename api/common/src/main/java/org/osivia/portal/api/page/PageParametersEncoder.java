@@ -97,14 +97,16 @@ public class PageParametersEncoder {
 		for(int i=0; i< tabParams.length; i++){
 			String[] valParams = tabParams[i].split("=");
 			
-			if( valParams.length != 2)
-				throw new IllegalArgumentException("Bad parameter format");
-			
-			String[] values = valParams[1].split(",");
-			List<String> decodedValues = new ArrayList<String>();
-			for( int j=0; j< values.length; j++)
-				decodedValues.add( decodeValue( values[ j]));
-			params.put(valParams[0], decodedValues);
+			if( valParams.length == 1)
+			    params.put(valParams[0], new ArrayList<>());
+			else if( valParams.length == 2)  {
+			    String[] values = valParams[1].split(",");
+			    List<String> decodedValues = new ArrayList<String>();
+			    for( int j=0; j< values.length; j++)
+			        decodedValues.add( decodeValue( values[ j]));
+			    params.put(valParams[0], decodedValues);
+			}    else
+			    throw new IllegalArgumentException("Bad parameter format");			    
 		}
 		
 		return params;

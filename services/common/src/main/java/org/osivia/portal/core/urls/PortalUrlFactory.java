@@ -30,14 +30,18 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locale.ILocaleService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
@@ -75,6 +79,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /** The locale service. */
     @Autowired
     private ILocaleService localeService;
+    
+    private CMSService cmsService;
 
     private IPreviewModeService getPreviewModeService() {
 
@@ -86,6 +92,13 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return localeService;       
     }
     
+    private CMSService getCMSService() {
+        if (cmsService == null) {
+            cmsService = Locator.getService(CMSService.class);
+        }
+
+        return cmsService;
+    }
     
     /**
      * {@inheritDoc}
@@ -255,7 +268,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         Locale locale = cmsContext.getlocale();
         Boolean preview = cmsContext.isPreview();
         
-        final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview);
+        final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview, null);
         final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), wantAuthentification, null);
 
         String url = portalURL.toString();
@@ -324,10 +337,11 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
             }
 
-
-            Page page = PortalObjectUtilsInternal.getPage(controllerContext);
-            Portal portal = page.getPortal();
-            UniversalID spaceId  = new UniversalID(portal.getDeclaredProperty("portal.cms.id"));
+            
+            
+            CMSContext cmsContext = new CMSContext(portalCtx);
+            UniversalID spaceId =  getCMSService().getDefaultPortal(cmsContext);
+            
             
             
             // Start dynamic window command

@@ -182,8 +182,10 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             /* Make this page restorable */
              
             properties.put("osivia.initialWindowInstance", instanceId);
+            
+            properties.put("osivia.initialWindowRegion", templateRegion);
 
-            if (windowProps != null) {
+            if (windowProps != null && windowProps.size() > 0) {
                 Map<String, List<String>> initProps = new HashMap<>();
                 for (String hKey : windowProps.keySet()) {
                     java.util.List<String> lProps = new ArrayList<String>();
@@ -193,7 +195,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
                 properties.put("osivia.initialWindowProps", PageParametersEncoder.encodeProperties(initProps));                
             }
 
-            if (params != null) {
+            if (params != null && params.size() > 0) {
                Map<String, List<String>> initParams = new HashMap<>();
                 for (String hKey : params.keySet()) {
                     java.util.List<String> lProps = new ArrayList<String>();
@@ -207,14 +209,11 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 
             // New page identifier
             PortalControllerContext portalCtx = new PortalControllerContext( this.context.getServerInvocation().getServerContext().getClientRequest());
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId, properties);
 
-            // Nuxeo command
-            StartDynamicWindowCommand windowCommand = this.applicationContext.getBean(StartDynamicWindowCommand.class, pageId.toString(PortalObjectPath.SAFEST_FORMAT), templateRegion,
-                    this.instanceId, "virtual", windowProps, this.params);
+
             
-
-            return this.context.execute(windowCommand);
+            return new UpdatePageResponse(pageId);
         } catch (Exception e) {
             throw new ControllerException(e);
         }

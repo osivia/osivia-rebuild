@@ -25,8 +25,8 @@ public interface IPublicationManager {
      * @return the page id
      * @throws ControllerException the controller exception
      */
-    PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId) throws ControllerException; 
-    
+    PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String, String> pageProps)
+            throws ControllerException;    
     
     /** The Constant PAGEID_PREFIX. */
     public static final String PAGEID_VALUE_SEPARATOR = "_";
@@ -41,6 +41,7 @@ public interface IPublicationManager {
     
     /** The Constant PAGEID_LOCALE. */
     public static final String PAGEID_LOCALE =  "locale";
+
 
 
     
