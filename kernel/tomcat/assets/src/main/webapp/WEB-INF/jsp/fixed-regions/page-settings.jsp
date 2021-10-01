@@ -1,3 +1,4 @@
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 <%--Modal--%>
 <div id="osivia-modal" class="modal fade" role="dialog">
