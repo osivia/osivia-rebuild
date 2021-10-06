@@ -181,16 +181,14 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
     /**
      * {@inheritDoc}
      */
-    public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
-                // Controller context
-        ControllerContext controllerContext = renderPageCommand.getControllerContext();
+    public void fill(ControllerContext controllerContext, Page page, Map<String, Object> attributes) throws ControllerException {
+        
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
 
-        // Current page
-        Page page = renderPageCommand.getPage();
+
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
 

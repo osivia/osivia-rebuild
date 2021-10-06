@@ -18,6 +18,7 @@ import org.osivia.portal.api.theming.IInternalAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.PageSettingsAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.ToolbarAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.TransversalAttributesBundle;
+import org.osivia.portal.core.theming.attributesbundle.BreadcrumbAttributesBundle;
 
 /**
  * Default attributes bundles enumeration.
@@ -29,8 +30,8 @@ public enum DefaultAttributesBundles {
 //    /** "Back" function attributes bundle. */
 //    BACK(BackAttributesBundle.getInstance()),
 //    /** Breadcrumb attributes bundle. */
-//    BREADCRUMB(BreadcrumbAttributesBundle.getInstance()),
-//    /** Page settings attributes bundle. */
+    BREADCRUMB(BreadcrumbAttributesBundle.getInstance()),
+    /** Page settings attributes bundle. */
     PAGE_SETTINGS(PageSettingsAttributesBundle.getInstance()),
 //        /** Search attributes bundle. */
 //        SEARCH(SearchAttributesBundle.getInstance());

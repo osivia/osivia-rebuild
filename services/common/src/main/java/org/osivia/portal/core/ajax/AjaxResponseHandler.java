@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -82,7 +83,9 @@ import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
+import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.ThemeService;
 import org.jboss.portal.theme.impl.render.dynamic.response.PageResource;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationResponse;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateResponse;
@@ -92,16 +95,24 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.theming.AbstractRegionBean;
+import org.osivia.portal.api.theming.IRegionsThemingService;
+import org.osivia.portal.api.theming.IRenderedRegions;
+import org.osivia.portal.api.theming.PortletsRegionBean;
+import org.osivia.portal.api.theming.RenderedRegionBean;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
+import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -110,7 +121,10 @@ import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.resources.ResourceHandler;
+import org.osivia.portal.core.theming.RenderedRegions;
 import org.w3c.dom.Element;
+
+import com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer;
 
 /**
  * todo:
@@ -130,7 +144,10 @@ public class AjaxResponseHandler implements ResponseHandler {
 
     private DynamicLayoutService dynamicLayoutService;
     
-
+    /** Regions theming service. */
+    private IRegionsThemingService regionsThemingService;
+    /** Customization service. */
+    private ICustomizationService customizationService;
 
 
     /** . */
@@ -163,6 +180,25 @@ public class AjaxResponseHandler implements ResponseHandler {
     }
 
 
+    /**
+     * Setter for regionsThemingService.
+     *
+     * @param regionsThemingService the regionsThemingService to set
+     */
+    public void setRegionsThemingService(IRegionsThemingService regionsThemingService) {
+        this.regionsThemingService = regionsThemingService;
+    }
+
+    /**
+     * Setter for customizationService.
+     *
+     * @param customizationService the customizationService to set
+     */
+    public void setCustomizationService(ICustomizationService customizationService) {
+        this.customizationService = customizationService;
+    }
+    
+    
     public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
             throws ResponseHandlerException {
         try {
@@ -524,10 +560,20 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
-                    // Obtain layout
-                    LayoutService layoutService = getPageService().getLayoutService();
-                    PortalLayout layout = RenderPageCommand.getLayout(layoutService, page);
                     
+
+
+                    LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
+                    String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
+                    PortalLayout layout = layoutService.getLayoutById(layoutId);
+                    String layoutContextPath = layout.getLayoutInfo().getContextPath();
+
+
+                    ThemeService themeService = controllerContext.getController().getPageService().getThemeService();
+                    String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
+                    PortalTheme theme = themeService.getThemeById(themeId);
+                    String themeContextPath = theme.getThemeInfo().getContextPath();
+
                     
                     Integer viewId = PageMarkerUtils.generateViewState(controllerContext);
                     PageMarkerUtils.setViewState(controllerContext, viewId);
@@ -608,6 +654,18 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     Collections.sort(sortedWindows, new WindowComparator());
                     
+                    
+                    /* Pre-portlet computings */
+                    
+                    if (pageChange == true)    {
+                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, "breadcrumb", null);
+                    }
+                    if (refreshPageStructure == true)   {
+                        // windows change state need breadcrum recomputation
+                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH, null);
+                    }
+                    
+                    
                     //
                     for ( Window refreshedWindow: sortedWindows ) {
                         try {
@@ -687,9 +745,58 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     regionList.add(IMenubarService.MENUBAR_WINDOW_ID);                            
                                     updatePage.getRegions().put(IMenubarService.MENUBAR_REGION_NAME, regionList);
                                                                        
-                               }
+ 
+                                    // Rendered regions
+                                    RenderedRegions renderedRegions = new RenderedRegions(page);
 
+                                    Map<String, Object> customizerAttributes = new HashMap<String, Object>();
+                                    customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_LAYOUT_CONTEXT_PATH, layoutContextPath);
+                                    customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_THEME_CONTEXT_PATH, themeContextPath);
 
+                                    customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS, renderedRegions);
+                                    CustomizationContext context = new CustomizationContext(customizerAttributes);
+                                    this.customizationService.customize(IRenderedRegions.CUSTOMIZER_ID, context);
+
+                                    // Add regions
+                                    for (AbstractRegionBean region : renderedRegions.getRenderedRegions()) {
+                                        
+                                        boolean recompute = false;
+                                        
+                                        /* Regions specific precomputings */
+                                        
+                                        if (region instanceof RenderedRegionBean) { 
+                                             recompute = true;
+                                            
+                                            if ("toolbar".equals(region.getName()) && (refreshPageStructure == false)) {
+                                                recompute = false;
+                                            }
+                                        }
+                                        
+                                        
+                                        if (recompute) {
+                                            if (region instanceof RenderedRegionBean) {
+                                                // Rendered region
+                                                RenderedRegionBean renderedRegion = (RenderedRegionBean) region;
+                                                WindowContext wCtx = this.regionsThemingService.createAjaxRegionContext(controllerContext, page,
+                                                        renderedRegion);
+
+                                                res.addWindowContext(wCtx);
+                                                
+                                                this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wCtx);
+
+                                                List<String> regionWindowsList = new ArrayList<String>();
+                                                regionWindowsList.add(renderedRegion.getName());
+                                                updatePage.getRegions().put(renderedRegion.getName(), regionWindowsList);
+
+                                            }
+                                            // else if (region instanceof PortletsRegionBean) {
+                                            // // Portlets region
+                                            // PortletsRegionBean portletsRegion = (PortletsRegionBean) region;
+                                            // this.regionsThemingService.decorateRegion(renderPageCommand, portletsRegion);
+                                            // }
+                                        }
+                                    }
+                                }
                             }
                             
             

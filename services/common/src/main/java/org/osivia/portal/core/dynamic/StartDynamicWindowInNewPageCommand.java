@@ -168,13 +168,14 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             // Window properties
             Map<String, String> windowProps = new HashMap<String, String>();
             windowProps.putAll(this.dynaProps);
-            windowProps.put("osivia.dynamic.disable.close", "1");
+
 
             
             // Page properties
             Map<String, String> properties = new HashMap<String, String>();
 
-
+            properties.put("osivia.pageType", "template");
+            
             if ("normal".equals(this.dynaProps.get("osivia.windowState"))) {
                 properties.put("osivia.windowState", "normal");
             }

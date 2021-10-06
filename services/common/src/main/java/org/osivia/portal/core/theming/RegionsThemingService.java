@@ -23,6 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.MapUtils;
+import org.dom4j.Element;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
@@ -30,6 +31,7 @@ import org.jboss.portal.common.servlet.BufferingResponseWrapper;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerRequestDispatcher;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.server.ServerInvocation;
@@ -46,6 +48,8 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.theming.IInternalAttributesBundle;
 import org.osivia.portal.api.theming.IRegionsThemingService;
@@ -59,7 +63,7 @@ import org.osivia.portal.core.customization.ICustomizationService;
  *
  * @author Cédric Krommenhoek
  * @see IRegionsThemingService
- */
+ */     
 public class RegionsThemingService implements IRegionsThemingService {
 
     /** Request attributes key. */
@@ -84,7 +88,7 @@ public class RegionsThemingService implements IRegionsThemingService {
     /**
      * {@inheritDoc}
      */
-    public void addRegion(RenderPageCommand renderPageCommand, PageRendition pageRendition, RenderedRegionBean renderedRegion) throws ControllerException {
+    public void addRegion(ControllerContext controllerContext, Page page, PageRendition pageRendition, RenderedRegionBean renderedRegion) throws ControllerException {
         // Context path
         String contextPath;
         if (renderedRegion.isDefaultRegion()) {
@@ -92,20 +96,20 @@ public class RegionsThemingService implements IRegionsThemingService {
         } else if (renderedRegion.getContextPath() != null) {
             contextPath = renderedRegion.getContextPath();
         } else {
-            contextPath = this.getLayoutContextPath(renderPageCommand);
+            contextPath = this.getLayoutContextPath(controllerContext, page);
         }
 
         // Server invocation
-        ServerInvocation serverInvocation = renderPageCommand.getControllerContext().getServerInvocation();
+        ServerInvocation serverInvocation = controllerContext.getServerInvocation();
         // Server context
         ServerInvocationContext serverContext = serverInvocation.getServerContext();
         // Servlet context
         ServletContext servletContext = serverContext.getClientRequest().getSession().getServletContext().getContext(contextPath);
         // Locales
         Locale[] locales = serverInvocation.getRequest().getLocales();
-
+/*
         // Request
-        RegionsRequestWrapper request = new RegionsRequestWrapper(renderPageCommand, pageRendition, serverContext.getClientRequest(), contextPath, locales);
+        RegionsRequestWrapper request = new RegionsRequestWrapper(controllerContext, page,  serverContext.getClientRequest(), contextPath, locales);
         // Response
         BufferingResponseWrapper response = new BufferingResponseWrapper(serverContext.getClientResponse());
 
@@ -117,7 +121,10 @@ public class RegionsThemingService implements IRegionsThemingService {
             throw new ControllerException(e);
         }
         String markup = response.getContent();
+        */
 
+        String markup = "";
+        
         if (markup != null) {
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, EMPTY_RENDERER);
@@ -133,23 +140,86 @@ public class RegionsThemingService implements IRegionsThemingService {
             //DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
         }
     }
+    
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    public WindowContext createAjaxRegionContext(ControllerContext controllerContext, Page page, RenderedRegionBean renderedRegion) throws ControllerException {
+        // Context path
+        String contextPath;
+        if (renderedRegion.isDefaultRegion()) {
+            contextPath = this.defaultContextPath;
+        } else if (renderedRegion.getContextPath() != null) {
+            contextPath = renderedRegion.getContextPath();
+        } else {
+            contextPath = this.getLayoutContextPath(controllerContext, page);
+        }
+
+        // Server invocation
+        ServerInvocation serverInvocation = controllerContext.getServerInvocation();
+        // Server context
+        ServerInvocationContext serverContext = serverInvocation.getServerContext();
+        // Servlet context
+        ServletContext servletContext = serverContext.getClientRequest().getSession().getServletContext().getContext(contextPath);
+        // Locales
+        Locale[] locales = serverInvocation.getRequest().getLocales();
+
+        // Request
+        RegionsRequestWrapper request = new RegionsRequestWrapper(controllerContext, page,  serverContext.getClientRequest(), contextPath, locales);
+        // Response
+        BufferingResponseWrapper response = new BufferingResponseWrapper(serverContext.getClientResponse());
+
+        // Request dispatcher
+        RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher(renderedRegion.getPath());
+        try {
+            requestDispatcher.include(request, response);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+        String markup = response.getContent();      
+        
+        markup = "<dyna-window id=\""+renderedRegion.getName()+"\"><dyna-window-content>"+markup+"</dyna-window-content></dyna-window>";
+      
+
+        if (markup != null) {
+            Map<String, String> windowProperties = new HashMap<String, String>();
+            windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, EMPTY_RENDERER);
+            windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, EMPTY_RENDERER);
+            windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, EMPTY_RENDERER);
+
+            WindowResult windowResult = new WindowResult(renderedRegion.getName(), markup, MapUtils.EMPTY_MAP, windowProperties, null, WindowState.NORMAL,
+                    Mode.VIEW);
+            WindowContext windowContext = new WindowContext(renderedRegion.getName(), renderedRegion.getName(), "0", windowResult);
+
+
+            //Region region = pageRendition.getPageResult().getRegion2(renderedRegion.getName());
+            //DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+            
+           return windowContext;
+        }
+        
+        return null;
+    }
+    
 
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public void decorateRegion(RenderPageCommand renderPageCommand, PortletsRegionBean portletsRegion) {
+    public void decorateRegion(ControllerContext controllerContext, Page page,PortletsRegionBean portletsRegion) {
         // Context path
         String contextPath;
         if (portletsRegion.getContextPath() != null) {
             contextPath = portletsRegion.getContextPath();
         } else {
-            contextPath = this.getLayoutContextPath(renderPageCommand);
+            contextPath = this.getLayoutContextPath(controllerContext, page);
         }
 
         // Controller context
-        ControllerContext controllerContext = renderPageCommand.getControllerContext();
+
         // Request
         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
 
@@ -185,9 +255,9 @@ public class RegionsThemingService implements IRegionsThemingService {
     /**
      * {@inheritDoc}
      */
-    public String getLayoutContextPath(RenderPageCommand renderPageCommand) {
-        LayoutService layoutService = renderPageCommand.getControllerContext().getController().getPageService().getLayoutService();
-        String layoutId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
+    public String getLayoutContextPath(ControllerContext controllerContext, Page page) {
+        LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
+        String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PortalLayout layout = layoutService.getLayoutById(layoutId);
         return layout.getLayoutInfo().getContextPath();
     }
@@ -196,9 +266,9 @@ public class RegionsThemingService implements IRegionsThemingService {
     /**
      * {@inheritDoc}
      */
-    public String getThemeContextPath(RenderPageCommand renderPageCommand) {
-        ThemeService themeService = renderPageCommand.getControllerContext().getController().getPageService().getThemeService();
-        String themeId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_THEME);
+    public String getThemeContextPath(ControllerContext controllerContext, Page page) {
+        ThemeService themeService = controllerContext.getController().getPageService().getThemeService();
+        String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
         PortalTheme theme = themeService.getThemeById(themeId);
         return theme.getThemeInfo().getContextPath();
     }
@@ -207,13 +277,12 @@ public class RegionsThemingService implements IRegionsThemingService {
     /**
      * {@inheritDoc}
      */
-    public Object getAttribute(RenderPageCommand renderPageCommand, PageRendition pageRendition, String name) {
-        ControllerContext controllerContext = renderPageCommand.getControllerContext();
+    public Object getAttribute(ControllerContext controllerContext, Page page, String name) {
         Map<String, Object> attributes = this.getRequestAttributes(controllerContext);
         if (attributes.containsKey(name)) {
             return attributes.get(name);
         } else {
-            return this.computeAttributeValue(renderPageCommand, pageRendition, attributes, name);
+            return this.computeAttributeValue(controllerContext, page,  attributes, name);
         }
     }
 
@@ -244,15 +313,15 @@ public class RegionsThemingService implements IRegionsThemingService {
      * @param name attribute name
      * @return attribute value
      */
-    private Object computeAttributeValue(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes, String name) {
+    private Object computeAttributeValue(ControllerContext controllerContext, Page page, Map<String, Object> attributes, String name) {
         Object bundle = this.getAttributeBundle(name);
         if (bundle != null) {
             try {
                 if( bundle instanceof IInternalAttributesBundle)
-                    ((IInternalAttributesBundle) bundle).fill(renderPageCommand, pageRendition, attributes);
+                    ((IInternalAttributesBundle) bundle).fill(controllerContext, page,  attributes);
                 if( bundle instanceof IAttributesBundle)    {
                     // Portal controller context
-                    PortalControllerContext portalControllerContext = new PortalControllerContext(renderPageCommand.getControllerContext().getServerInvocation().getServerContext().getClientRequest());
+                    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
                     ((IAttributesBundle) bundle).fill(portalControllerContext, attributes);
                 }
  

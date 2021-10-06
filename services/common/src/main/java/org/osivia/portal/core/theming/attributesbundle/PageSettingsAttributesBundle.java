@@ -23,6 +23,7 @@ import org.apache.commons.collections.Predicate;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.instance.InstanceContainer;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
@@ -97,14 +98,13 @@ public final class PageSettingsAttributesBundle implements IInternalAttributesBu
     /**
      * {@inheritDoc}
      */
-    public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
+    public void fill(ControllerContext controllerContext, Page page, Map<String, Object> attributes) throws ControllerException {
         // Attributes initialization to prevent multiple fill call
         for (String attributeName : this.names) {
             attributes.put(attributeName, null);
         }
 
         // Controller context
-        ControllerContext controllerContext = renderPageCommand.getControllerContext();
 
         if (PageCustomizerInterceptor.isAdministrator(controllerContext)) {
 

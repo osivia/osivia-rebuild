@@ -90,6 +90,8 @@
       <property name="PageService" ref="portal:service=PageService"/>
       <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
       <property name="DynamicLayoutService" ref="portal:service=DynamicLayoutService"/>
+      <property name="RegionsThemingService" ref="osivia:service=RegionsThemingService"/>   
+      <property name="CustomizationService" ref="osivia:service=CustomizationService"/>       
       
    </bean>
     

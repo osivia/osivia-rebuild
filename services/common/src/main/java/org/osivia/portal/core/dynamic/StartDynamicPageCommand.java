@@ -16,6 +16,7 @@ package org.osivia.portal.core.dynamic;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
@@ -113,6 +114,9 @@ public class StartDynamicPageCommand extends DynamicCommand {
                     parameters, restorableName);
             
             PortalObjectId pageId = PortalObjectId.parse(pagePath, PortalObjectPath.CANONICAL_FORMAT);
+            
+            // Maj du breadcrumb
+            this.getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", null);
 
 
             return new UpdatePageResponse(pageId);

@@ -14,9 +14,12 @@
  */
 package org.osivia.portal.api.theming;
 
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
+import org.jboss.portal.theme.page.WindowContext;
 
 /**
  * Regions theming service interface.
@@ -37,16 +40,31 @@ public interface IRegionsThemingService {
      * @param renderedRegion rendered region bean
      * @throws ControllerException
      */
-    void addRegion(RenderPageCommand renderPageCommand, PageRendition pageRendition, RenderedRegionBean renderedRegion) throws ControllerException;
+    void addRegion(ControllerContext controllerContext, Page page, PageRendition pageRendition, RenderedRegionBean renderedRegion) throws ControllerException;
 
 
+
+    /**
+     * Creates the ajax region context.
+     *
+     * @param controllerContext the controller context
+     * @param page the page
+     * @param renderedRegion the rendered region
+     * @return the window context
+     * @throws ControllerException the controller exception
+     */
+    public WindowContext createAjaxRegionContext(ControllerContext controllerContext, Page page, RenderedRegionBean renderedRegion) throws ControllerException;
+
+    
+    
+    
     /**
      * Decorate portlets region.
      *
      * @param renderPageCommand render page command
      * @param portletsRegion portlets region bean
      */
-    void decorateRegion(RenderPageCommand renderPageCommand, PortletsRegionBean portletsRegion);
+    void decorateRegion(ControllerContext controllerContext, Page page, PortletsRegionBean portletsRegion);
 
 
     /**
@@ -55,7 +73,7 @@ public interface IRegionsThemingService {
      * @param renderPageCommand render page command
      * @return layout context path
      */
-    String getLayoutContextPath(RenderPageCommand renderPageCommand);
+    String getLayoutContextPath(ControllerContext controllerContext, Page page);
 
 
     /**
@@ -64,7 +82,7 @@ public interface IRegionsThemingService {
      * @param renderPageCommand render page command
      * @return theme context path
      */
-    String getThemeContextPath(RenderPageCommand renderPageCommand);
+    String getThemeContextPath(ControllerContext controllerContext, Page page);
 
 
     /**
@@ -74,6 +92,6 @@ public interface IRegionsThemingService {
      * @param name attribute name
      * @return attribute
      */
-    Object getAttribute(RenderPageCommand renderPageCommand, PageRendition pageRendition, String name);
+    Object getAttribute(ControllerContext controllerContext, Page page,  String name);
 
 }

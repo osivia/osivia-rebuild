@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 
@@ -35,6 +36,10 @@ public class PageMarkerInfo implements Serializable {
     /** Default serial version ID. */
     private static final long serialVersionUID = 1L;
 
+
+    /** Breadcrumb. */
+    private Breadcrumb breadcrumb;
+    
 
 
     /** Dynamic pages. */
@@ -215,4 +220,27 @@ public class PageMarkerInfo implements Serializable {
         return this.viewState;
     }
 
+    
+    /**
+     * Gets the breadcrumb.
+     *
+     * @return the breadcrumb
+     */
+    public Breadcrumb getBreadcrumb() {
+        return breadcrumb;
+    }
+
+
+
+
+    
+    /**
+     * Sets the breadcrumb.
+     *
+     * @param breadcrumb the new breadcrumb
+     */
+    public void setBreadcrumb(Breadcrumb breadcrumb) {
+        this.breadcrumb = breadcrumb;
+    }
+    
 }

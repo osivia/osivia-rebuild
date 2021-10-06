@@ -112,9 +112,8 @@ public final class TransversalAttributesBundle implements IInternalAttributesBun
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
-        // Controller context
-        ControllerContext controllerContext = renderPageCommand.getControllerContext();
+    public void fill(ControllerContext controllerContext, Page page, Map<String, Object> attributes) throws ControllerException {
+        
         attributes.put(InternalConstants.ATTR_CONTROLLER_CONTEXT, controllerContext);
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
@@ -122,15 +121,14 @@ public final class TransversalAttributesBundle implements IInternalAttributesBun
         // Request
         HttpServletRequest request = serverContext.getClientRequest();
 
-        // Current page
-        Page page = renderPageCommand.getPage();
+
 
 
         // Generic command URL
         String commandUrl = serverContext.getPortalContextPath() + "/commands";
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, commandUrl);
         // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(renderPageCommand.getControllerContext().getServerInvocation().getServerContext().getClientRequest());
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
         attributes.put(Constants.ATTR_PORTAL_CTX, portalControllerContext);
 
 		// User datas
@@ -142,7 +140,7 @@ public final class TransversalAttributesBundle implements IInternalAttributesBun
         DirectoryPerson person = (DirectoryPerson) controllerContext.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON);
         attributes.put(Constants.ATTR_LOGGED_PERSON, person);
 
-        attributes.put(Constants.ATTR_PAGE_CATEGORY, renderPageCommand.getPage().getProperty("osivia.pageCategory"));
+        attributes.put(Constants.ATTR_PAGE_CATEGORY, page.getProperty("osivia.pageCategory"));
 
 
         // URL factory

@@ -153,10 +153,11 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
         // Header metadata default region
         renderedRegions.defineDefaultRenderedRegion("header-metadata", this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
 
-        /*
+
         // Breadcrumb default region
         renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
 
+        /*
         if (renderedRegions.isSpaceSite()) {
             // Web toolbar default region
             renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(WEB_TOOLBAR_PATH_INIT_PARAM));

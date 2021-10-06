@@ -19,6 +19,8 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.portal.common.servlet.BufferingRequestWrapper;
+import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.locator.Locator;
@@ -35,10 +37,14 @@ public class RegionsRequestWrapper extends BufferingRequestWrapper {
     /** Regions theming service. */
     private final IRegionsThemingService regionsThemingService;
 
-    /** Render page command. */
-    private final RenderPageCommand renderPageCommand;
-    /** Page rendition. */
-    private final PageRendition pageRendition;
+
+    /** The controller context. */
+    private final ControllerContext controllerContext;
+    
+    /** The page. */
+    private final Page page;
+    
+  
 
 
     /**
@@ -50,11 +56,12 @@ public class RegionsRequestWrapper extends BufferingRequestWrapper {
      * @param contextPath context path
      * @param locales locales
      */
-    public RegionsRequestWrapper(RenderPageCommand renderPageCommand, PageRendition pageRendition, HttpServletRequest servletRequest, String contextPath,
+    public RegionsRequestWrapper(ControllerContext controllerContext, Page page, HttpServletRequest servletRequest, String contextPath,
             Locale[] locales) {
         super(servletRequest, contextPath, locales);
-        this.renderPageCommand = renderPageCommand;
-        this.pageRendition = pageRendition;
+        this.controllerContext = controllerContext;
+        this.page = page;
+
 
         this.regionsThemingService = Locator.findMBean(IRegionsThemingService.class, IRegionsThemingService.MBEAN_NAME);
     }
@@ -67,7 +74,7 @@ public class RegionsRequestWrapper extends BufferingRequestWrapper {
     public Object getAttribute(String name) {
         Object attribute = super.getAttribute(name);
         if (attribute == null) {
-            attribute = this.regionsThemingService.getAttribute(this.renderPageCommand, this.pageRendition, name);
+            attribute = this.regionsThemingService.getAttribute(controllerContext, page,  name);
         }
         return attribute;
     }

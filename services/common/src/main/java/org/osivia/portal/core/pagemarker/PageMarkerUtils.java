@@ -39,6 +39,8 @@ import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.osivia.portal.api.theming.Breadcrumb;
+import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 
@@ -123,7 +125,16 @@ public class PageMarkerUtils {
                 // Sauvegarde des pages dynamiques
                 markerInfo.setDynamicPages(poc.getDynamicPages());
 
-                
+                // sauvegarde breadcrumb
+                Breadcrumb breadcrumb = (Breadcrumb) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb");
+                if (breadcrumb != null) {
+                    Breadcrumb savedBreadcrum = new Breadcrumb();
+                    for (BreadcrumbItem bi : breadcrumb.getChildren()) {
+                        savedBreadcrum.getChildren().add(bi);
+
+                    }
+                    markerInfo.setBreadcrumb(savedBreadcrum);
+                }                
                   
                 
                 
@@ -278,6 +289,17 @@ public class PageMarkerUtils {
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.initialPageId", markerInfo.getPageId());
         }
 
+        
+        // restauration breadcrumb
+        Breadcrumb savedBreadcrum = markerInfo.getBreadcrumb();
+        if (savedBreadcrum != null) {
+            Breadcrumb breadcrumb = new Breadcrumb();
+            for (BreadcrumbItem bi : savedBreadcrum.getChildren()) {
+                breadcrumb.getChildren().add(bi);
+            }
+            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", breadcrumb);
+        }
+        
         return page;
     }
     

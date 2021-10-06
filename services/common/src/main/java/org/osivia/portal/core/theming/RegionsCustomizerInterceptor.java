@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.Page;
@@ -63,8 +64,14 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
         ControllerResponse response = (ControllerResponse) command.invokeNext();
 
         if ((command instanceof RenderPageCommand) && (response instanceof PageRendition)) {
+            
+
+
             // Render page command
             RenderPageCommand renderPageCommand = (RenderPageCommand) command;
+            
+            // Controller context
+            ControllerContext controllerContext = renderPageCommand.getControllerContext();
             // Page
             Page page = renderPageCommand.getPage();
 
@@ -74,8 +81,8 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
                 // Page rendition
                 PageRendition pageRendition = (PageRendition) response;
 
-                String layoutContextPath = this.regionsThemingService.getLayoutContextPath(renderPageCommand);
-                String themeContextPath = this.regionsThemingService.getThemeContextPath(renderPageCommand);
+                String layoutContextPath = this.regionsThemingService.getLayoutContextPath(controllerContext, page);
+                String themeContextPath = this.regionsThemingService.getThemeContextPath(controllerContext, page);
                 Boolean administrator = PageCustomizerInterceptor.isAdministrator(renderPageCommand.getControllerContext());
 
                 // Rendered regions
@@ -92,13 +99,13 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
                 // Add regions
                 for (AbstractRegionBean region : renderedRegions.getRenderedRegions()) {
                     if (region instanceof RenderedRegionBean) {
-                        // Rendered region
-                        RenderedRegionBean renderedRegion = (RenderedRegionBean) region;
-                        this.regionsThemingService.addRegion(renderPageCommand, pageRendition, renderedRegion);
-                    } else if (region instanceof PortletsRegionBean) {
+                            // Rendered region
+                            RenderedRegionBean renderedRegion = (RenderedRegionBean) region;
+                            this.regionsThemingService.addRegion(controllerContext, page, pageRendition, renderedRegion);
+                   } else if (region instanceof PortletsRegionBean) {
                         // Portlets region
                         PortletsRegionBean portletsRegion = (PortletsRegionBean) region;
-                        this.regionsThemingService.decorateRegion(renderPageCommand, portletsRegion);
+                        this.regionsThemingService.decorateRegion(controllerContext, page, portletsRegion);
                     }
                 }
             }

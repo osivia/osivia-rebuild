@@ -37,6 +37,7 @@ import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
@@ -111,9 +112,17 @@ public class PortletAttributesController extends PortletInvokerInterceptor {
                     }
                 }
 
+                /* breadcrumb path set by portlet */
 
-            }
-
+                if (invocation.getWindowContext() instanceof WindowContextImpl) {
+                    List<PortletPathItem> portletPath = (List<PortletPathItem>) cr.getAttributes().get(Constants.PORTLET_ATTR_PORTLET_PATH);
+                    if (portletPath != null) {
+                        if (invocation.getWindowState().equals(WindowState.MAXIMIZED)) {
+                            ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH , portletPath);
+                        }
+                    }
+                }
+           }
 
         }
 

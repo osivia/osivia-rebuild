@@ -16,10 +16,13 @@ package org.osivia.portal.core.dynamic;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.impl.api.node.PageURL;
+import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -28,6 +31,8 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.theming.Breadcrumb;
+import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -138,6 +143,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
             dynamicService.startDynamicWindow(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), parentPath, this.windowName, regionId, instanceId, properties, this.params);
            
+             
             return new UpdatePageResponse(page.getId());
         } catch (Exception e) {
             throw new ControllerException(e);
