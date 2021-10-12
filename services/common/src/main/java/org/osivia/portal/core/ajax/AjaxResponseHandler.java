@@ -383,6 +383,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                             dirtyWindowIds.add(key.getId());
                         } else if (type == PageNavigationalState.class) {
                             
+                            
+                            // Selector modification do not do a refresh but just force recomputation
+                            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS, Boolean.TRUE);  
+                            
                             PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
                             
                             // force full refresh for now... for JBPORTAL-2326

@@ -175,7 +175,9 @@ public final class Constants {
     /** Edition path  */
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
     /** refresh indicator. */
-    public static final String PORTLET_ATTR_PAGE_REFRESH = "osivia.pageRefresh";    
+    public static final String PORTLET_ATTR_PAGE_REFRESH = "osivia.pageRefresh";  
+    /** refresh indicator. */
+    public static final String PORTLET_ATTR_RECOMPUTE_MODELS = "osivia.recomputeModels";   
     /** To notify data change */
     public static final String PORTLET_ATTR_UPDATE_SPACE_DATA_TS = "osivia.updateSpaceDataTs";        
     /** Menu bar. */

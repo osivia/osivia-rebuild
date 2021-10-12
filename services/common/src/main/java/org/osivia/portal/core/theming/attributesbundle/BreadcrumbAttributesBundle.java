@@ -216,22 +216,32 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
                     
                     // current document
                     UniversalID contentId = new UniversalID(sContentId);
-                    addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, contentId);
+                    String title;
                     
                     // first navigation item
                     NavigationItem navItem = cmsService.getCMSSession(cmsContext).getNavigationItem(contentId);
+                    
                     if( navItem.getDocumentId().equals(contentId))    {
-                        if( ! navItem.isRoot())
+                        title = navItem.getTitle();
+                        if( ! navItem.isRoot()) {
                             navItem = navItem.getParent();
-                        else
+                        }
+                        else    {
                             navItem = null;
-                    }   
+                        }
+                    }   else    {
+                        Document doc = cmsService.getCMSSession(cmsContext).getDocument(contentId);       
+                        title = (String) doc.getProperties().get("dc:title");
+                    }
+                    
+                    addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, contentId, title);
+                    
                     
                     // Browse navigation tree
                     if( navItem != null) {
                        boolean isRoot = false;
                        do {
-                            addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, navItem.getDocumentId());
+                            addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, navItem.getDocumentId(), navItem.getTitle());
                               
                             if( ! navItem.isRoot())
                                 navItem = navItem.getParent();
@@ -309,11 +319,11 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
     }
 
 
-    private void addDocToBreadcrumb(PortalControllerContext portalControllerContext, CMSContext cmsContext, Breadcrumb breadcrumb, UniversalID contentId)
+    private void addDocToBreadcrumb(PortalControllerContext portalControllerContext, CMSContext cmsContext, Breadcrumb breadcrumb, UniversalID contentId, String title)
             throws CMSException {
-        Document doc = cmsService.getCMSSession(cmsContext).getDocument(contentId);
-        String url = urlFactory.getViewContentUrl(portalControllerContext, cmsContext, doc.getId());
-        BreadcrumbItem contentItem = new BreadcrumbItem(doc.getTitle(), url, "", true);
+
+        String url = urlFactory.getViewContentUrl(portalControllerContext, cmsContext, contentId);
+        BreadcrumbItem contentItem = new BreadcrumbItem(title, url, "", true);
         breadcrumb.getChildren().add(0,contentItem);
 
     }

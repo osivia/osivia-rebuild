@@ -120,6 +120,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 
                 if( BooleanUtils.isTrue(refresh))
                     attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, refresh);
+                
+                
+                Boolean recomputeModels = (Boolean) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS);      
+                if( BooleanUtils.isTrue(recomputeModels))
+                    attributes.put(Constants.PORTLET_ATTR_RECOMPUTE_MODELS, recomputeModels);
 
 
                 // Set attributes

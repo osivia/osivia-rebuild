@@ -245,8 +245,11 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 
                 // Refresh indicator
 				Boolean refresh = (Boolean) invocation.getRequestAttributes().get(Constants.PORTLET_ATTR_PAGE_REFRESH);
+                Boolean recomputeModels = (Boolean) invocation.getRequestAttributes().get(Constants.PORTLET_ATTR_RECOMPUTE_MODELS);
+
 				
-				if( BooleanUtils.isTrue(refresh) )   {
+				if( BooleanUtils.isTrue(refresh) || BooleanUtils.isTrue(recomputeModels))
+                {
                     Window window = (Window) invocation.getRequestAttributes().get("osivia.window");
                     String attributePrefix = "javax.portlet.p." + window.getId() + "?";
                     
