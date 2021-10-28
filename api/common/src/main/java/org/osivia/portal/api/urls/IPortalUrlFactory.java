@@ -204,6 +204,8 @@ public interface IPortalUrlFactory {
 
 
     String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) ;
+    
+
 
     /**
      * Get back URL.
@@ -225,5 +227,15 @@ public interface IPortalUrlFactory {
     String getRefreshPageUrl(PortalControllerContext portalControllerContext);
 
 
-    String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id, boolean authentified);
+    /**
+     * Gets the view content url.
+     *
+     * @param portalControllerContext the portal controller context
+     * @param cmsContext the cms context
+     * @param id the id
+     * @param authentified the authentified
+     * @param pageParameters the page parameters
+     * @return the view content url
+     */
+    String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id, boolean authentified, Map<String, String> pageParameters);
 }

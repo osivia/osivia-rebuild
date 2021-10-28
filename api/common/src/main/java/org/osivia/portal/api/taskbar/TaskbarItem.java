@@ -1,5 +1,6 @@
 package org.osivia.portal.api.taskbar;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.panels.PanelPlayer;
 
 /**
@@ -62,7 +63,7 @@ public interface TaskbarItem {
      *
      * @return template
      */
-    String getTemplate();
+    UniversalID getTemplate();
 
 
     /**

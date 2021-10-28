@@ -1,5 +1,6 @@
 package org.osivia.portal.api.taskbar;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.panels.PanelPlayer;
 
 /**
@@ -50,7 +51,7 @@ public interface TaskbarFactory {
      * @param template template
      * @return taskbar item
      */
-    TaskbarItem createStapledTaskbarItem(String id, String key, String icon, String template);
+    TaskbarItem createStapledTaskbarItem(String id, String key, String icon, UniversalID uid);
 
 
     /**

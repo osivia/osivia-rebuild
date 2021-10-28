@@ -257,18 +257,18 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     @Override
     public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id) {
-        return getViewContentUrl(portalControllerContext, cmsContext, id, false);
+        return getViewContentUrl(portalControllerContext, cmsContext, id, false, new HashMap<>());
     }
     
     
     @Override
-    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id, boolean wantAuthentification) {
+    public String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext,UniversalID id, boolean wantAuthentification, Map<String, String> pageParameters) {
 
 
         Locale locale = cmsContext.getlocale();
         Boolean preview = cmsContext.isPreview();
         
-        final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview, null);
+        final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview, null, pageParameters);
         final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), wantAuthentification, null);
 
         String url = portalURL.toString();
@@ -285,6 +285,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return getViewContentUrl(portalControllerContext,cmsContext, id);
     }
+    
+
 
     /**
      * {@inheritDoc}

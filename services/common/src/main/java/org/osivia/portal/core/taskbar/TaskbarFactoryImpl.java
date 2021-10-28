@@ -1,5 +1,6 @@
 package org.osivia.portal.core.taskbar;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.portlet.PortalGenericPortlet;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
@@ -57,7 +58,7 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarItem createStapledTaskbarItem(String id, String key, String icon, String template) {
+    public TaskbarItem createStapledTaskbarItem(String id, String key, String icon, UniversalID template) {
         TaskbarItemImpl item = this.createTaskbarItem(id, TaskbarItemType.STAPLED, key, icon);
         item.setTemplate(template);
         return item;

@@ -4,8 +4,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.WindowState;
+
 import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -15,7 +19,9 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.theme.ThemeConstants;
@@ -134,6 +140,18 @@ public class DynamicService implements IDynamicService {
             resolver.setAttribute(scopeKey, null);            
         }
         
+        
+        
+        // Maj des paramètres publics de la page
+        if(parameters == null)
+            parameters = new HashMap<>();
+            
+        NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+        Map<QName, String[]> state = new HashMap<QName, String[]>();
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, entry.getKey()), new String[]{entry.getValue()});
+        }
+        nsContext.setPageNavigationalState(pageId.toString(), new PageNavigationalState(state));
         
 
         return pageId.toString(PortalObjectPath.CANONICAL_FORMAT);

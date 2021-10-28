@@ -136,7 +136,7 @@ public class TestRepositoryFactory {
 
         SharedRepositoryKey repositoryKey = new SharedRepositoryKey(repositoryName, cmsContext.isPreview(), cmsContext.getlocale());
 
-        if (cmsContext.getPortalControllerContext().getHttpServletRequest() == null ) {
+        if (cmsContext.isSuperUserMode() ) {
 
             userRepository = (BaseUserRepository) staticRepositories.get(repositoryKey);
             if (userRepository == null) {

@@ -15,7 +15,12 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.panels.IPanelsService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
@@ -40,13 +45,15 @@ import org.springframework.stereotype.Service;;
  * @author Cédric Krommenhoek
  * @see ITaskbarService
  */
-@Service
+@Service(ITaskbarService.MBEAN_NAME)
 public class TaskbarService implements ITaskbarService {
 
     /** Taskbar active task identifier attribute name. */
     private static final String ACTIVE_ID_ATTRIBUTE = "osivia.taskbar.active.id";
 
 
+    private CMSService cmsService;
+    
     /** CMS service locator. */
     @Autowired
     private ICMSServiceLocator cmsServiceLocator;
@@ -72,6 +79,15 @@ public class TaskbarService implements ITaskbarService {
     }
 
 
+    private CMSService getCMSService() {
+        if (cmsService == null) {
+            cmsService = Locator.getService(CMSService.class);
+        }
+
+        return cmsService;
+    }
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -249,6 +265,7 @@ public class TaskbarService implements ITaskbarService {
                 }
 
                 if (activeId == null) {
+/*                    
                     // Base path
                     String basePath = page.getProperty("osivia.cms.basePath");
 
@@ -294,7 +311,40 @@ public class TaskbarService implements ITaskbarService {
                             }
                         }
                     }
+*/
+
+                    /* Virtual tasks */
+                    CMSServiceCtx cmsServiceContext = new CMSServiceCtx();
+                    cmsServiceContext.setPortalControllerContext(portalControllerContext);
+
+                    String taskPath = page.getProperty("osivia.virtualTaskPath");
+
+                    if (taskPath != null) {
+                        String basePath;
+                        try {
+                            basePath = cmsServiceLocator.getCMSService().getPathFromUniversalID(cmsServiceContext,
+                                    new UniversalID(page.getProperty("osivia.spaceId")));
+                        } catch (Exception e)   {
+                            throw new RuntimeException(e);
+                        }
+
+                        if (basePath != null) {
+
+                            List<TaskbarTask> navigationTasks = this.getTasks(portalControllerContext, basePath, true);
+
+                            String protectedTaskPath = taskPath + "/";
+
+                            for (TaskbarTask navigationTask : navigationTasks) {
+                                String protectedPath = navigationTask.getPath() + "/";
+                                if (StringUtils.startsWith(protectedTaskPath, protectedPath)) {
+                                    activeId = navigationTask.getId();
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
+                
             }
 
             // Save active task identifier in request scope

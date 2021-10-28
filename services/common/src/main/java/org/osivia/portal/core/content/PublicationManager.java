@@ -23,6 +23,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.VirtualNavigationUtils;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -37,6 +38,8 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageProperties;
@@ -60,6 +63,8 @@ public class PublicationManager implements IPublicationManager {
     @Autowired
     private ILocaleService localeService;
 
+    private ICMSServiceLocator cmServiceLocator;
+    
     private CMSService getCMSService() {
         if (cmsService == null) {
             cmsService = Locator.getService(CMSService.class);
@@ -86,7 +91,12 @@ public class PublicationManager implements IPublicationManager {
         return localeService;       
     }
     
-    
+    public ICMSServiceLocator getCmsServiceLocator() {
+        if( cmServiceLocator == null)
+            cmServiceLocator = Locator.getService( ICMSServiceLocator.MBEAN_NAME,ICMSServiceLocator.class);
+        return cmServiceLocator;
+    }
+
 
     protected PortalObjectId getPageTemplate(CMSContext cmsContext, Document doc, NavigationItem navigation) throws ControllerException {
 
@@ -142,7 +152,7 @@ public class PublicationManager implements IPublicationManager {
 
 
     @Override
-    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String,String> pageProps) throws ControllerException {
+    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String,String> pageProps, Map<String,String> pageParams) throws ControllerException {
 
 
         PortalObjectId pageId = null;
@@ -166,6 +176,21 @@ public class PublicationManager implements IPublicationManager {
 
              
             Document doc = getCMSService().getCMSSession(cmsContext).getDocument( docId);
+            
+            UniversalID virtualTaskId = null;
+            String virtualTaskPath = null;
+            
+            if( doc.getId().getRepositoryName().equals("nx"))   {
+                CMSServiceCtx  cmsReadItemContext = new CMSServiceCtx();
+                cmsReadItemContext.setPortalControllerContext(portalCtx);
+                cmsReadItemContext.setDoc(doc.getNativeItem());
+                virtualTaskPath = getCmsServiceLocator().getCMSService().getAdaptedNavigationPath(cmsReadItemContext);
+                if( virtualTaskPath != null)  {
+                    virtualTaskId = getCmsServiceLocator().getCMSService().getUniversalIDFromPath(cmsReadItemContext, virtualTaskPath);
+                    virtualTaskPath = VirtualNavigationUtils.adaptPath(virtualTaskPath, doc.getId().getInternalID());
+                }
+            }
+            
             
             
             
@@ -246,14 +271,21 @@ public class PublicationManager implements IPublicationManager {
                 
     
                 properties.put("osivia.contentId", docId.toString());
-                properties.put("osivia.navigationId", navigation.getDocumentId().toString());
-                properties.put("osivia.spaceId", navigation.getSpaceId().toString());
+                if( virtualTaskId != null)    {
+                    properties.put("osivia.navigationId", virtualTaskId.toString());
+                    properties.put("osivia.spaceId", virtualTaskId.toString());
+                    properties.put("osivia.virtualTaskPath", virtualTaskPath);
+                }
+                else    {
+                        
+                    properties.put("osivia.navigationId", navigation.getDocumentId().toString());
+                    properties.put("osivia.spaceId", navigation.getSpaceId().toString());
+                }
+
                 properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));            
                 properties.put("osivia.content.locale", doc.getLocale().toString()); 
                 
   
-    
-                Map<String, String> parameters = new HashMap<String, String>();
     
                 Map<Locale, String> displayNames = new HashMap<Locale, String>();
                 String displayName = space.getTitle();
@@ -278,7 +310,7 @@ public class PublicationManager implements IPublicationManager {
                 }
                 
                  pagePath = getDynamicService().startDynamicPage(portalCtx, parentID.getRepositoryName()+":/"+parentID.getInternalID(), pageDynamicID,
-                        displayNames, templatePath, properties, parameters, null);
+                        displayNames, templatePath, properties, pageParams, null);
                  
                  if(  "nx".equals(doc.getId().getRepositoryName())) {
                      if( navigation.getDocumentId().equals(doc.getId()))

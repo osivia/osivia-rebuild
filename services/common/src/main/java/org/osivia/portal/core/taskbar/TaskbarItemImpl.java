@@ -1,5 +1,6 @@
 package org.osivia.portal.core.taskbar;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemExecutor;
@@ -32,7 +33,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /** Player. */
     private PanelPlayer player;
     /** Template. */
-    private String template;
+    private UniversalID template;
 
     /** Document type. */
     private String documentType;
@@ -120,7 +121,7 @@ public class TaskbarItemImpl implements TaskbarItem {
      * {@inheritDoc}
      */
     @Override
-    public String getTemplate() {
+    public UniversalID getTemplate() {
         return this.template;
     }
 
@@ -275,7 +276,7 @@ public class TaskbarItemImpl implements TaskbarItem {
      *
      * @param template the template to set
      */
-    public void setTemplate(String template) {
+    public void setTemplate(UniversalID template) {
         this.template = template;
     }
 

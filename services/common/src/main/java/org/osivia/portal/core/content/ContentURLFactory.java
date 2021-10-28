@@ -22,7 +22,9 @@
  ******************************************************************************/
 package org.osivia.portal.core.content;
 
+import java.net.URLEncoder;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -31,6 +33,7 @@ import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
 
@@ -73,6 +76,22 @@ public class ContentURLFactory extends URLFactoryDelegate
          portalRequestPath += "/" + BooleanUtils.toStringTrueFalse(preview) ; 
 
          asu.setPortalRequestPath(portalRequestPath);
+         
+         
+         Map<String, String> pageParams = cmsCommand.getPageParams();
+         if (pageParams != null)
+         {
+            try
+            {
+               asu.setParameterValue("pageParams",  URLEncoder.encode(WindowPropertiesEncoder.encodeProperties(pageParams),"UTF-8"));
+            }
+            catch (Exception e)
+            {
+               // ignore
+            }
+         }    
+
+         
 
          return asu;
       }

@@ -75,12 +75,18 @@ public class ViewContentCommand extends ControllerCommand {
     private boolean preview;
 
     private Map<String,String> pageProps;
+    
+    private Map<String,String> pageParams;
 
-    public ViewContentCommand(String contentId, Locale locale, boolean preview, Map<String,String> pageProps) {
+    
+
+
+    public ViewContentCommand(String contentId, Locale locale, boolean preview, Map<String,String> pageProps, Map<String,String> pageParams) {
         this.contentId = contentId;
         this.locale = locale;
         this.preview = preview;
         this.pageProps = pageProps;
+        this.pageParams = pageParams;
     }
 
     public Locale getLocale() {
@@ -125,6 +131,10 @@ public class ViewContentCommand extends ControllerCommand {
     public String getContentId() {
         return contentId;
     }
+    
+    public Map<String, String> getPageParams() {
+        return pageParams;
+    }
 
     public ControllerResponse execute() throws ControllerException {
 
@@ -141,7 +151,7 @@ public class ViewContentCommand extends ControllerCommand {
             getPreviewModeService().setPreview(portalCtx, contentUID, preview);
 
 
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentUID, pageProps);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentUID, pageProps, pageParams);
 
             return new UpdatePageResponse(pageId);
 
@@ -156,7 +166,7 @@ public class ViewContentCommand extends ControllerCommand {
                     cmsContext.setLocale(getLocale());
 
 
-                    String location = getPortalUrlFactory().getViewContentUrl(portalCtx, cmsContext, contentUID, true);
+                    String location = getPortalUrlFactory().getViewContentUrl(portalCtx, cmsContext, contentUID, true, pageParams);
                     return new RedirectionResponse(location);
                 } else
                     return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);                

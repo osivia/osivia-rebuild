@@ -15,9 +15,13 @@
 
 package org.osivia.portal.core.content;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
@@ -27,6 +31,7 @@ import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -55,7 +60,7 @@ public class ViewContentCommandFactoryService extends AbstractCommandFactory imp
 
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
 
-  
+        ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
         
         if( requestPath.startsWith("/")) {
             requestPath = requestPath.substring(1);
@@ -76,8 +81,27 @@ public class ViewContentCommandFactoryService extends AbstractCommandFactory imp
             preview = BooleanUtils.toBoolean(names[3]);
         }
 
-  
-        ViewContentCommand cmsCommand = new ViewContentCommand(contentId, locale, preview, null);
+        
+        Map<String,String> pageParams = null;
+        if (parameterMap != null)
+        {
+          
+           try
+           {
+              if (parameterMap.get("pageParams") != null)
+              {
+                  String sPageParms = URLDecoder.decode(parameterMap.get("pageParams")[0], "UTF-8");
+                  pageParams =  WindowPropertiesEncoder.decodeProperties(sPageParms);
+              }
+           }
+           catch (UnsupportedEncodingException e)
+           {
+              throw new RuntimeException(e);
+           }      
+        }
+        
+        
+        ViewContentCommand cmsCommand = new ViewContentCommand(contentId, locale, preview, null, pageParams);
         return cmsCommand;
     }
 

@@ -93,6 +93,6 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
         String locale = "";
         if(  cmsContext.getlocale() !=null)
             locale = cmsContext.getlocale().toString();
-        return locale + "." + cmsContext.isPreview();
+        return locale + "." + cmsContext.isPreview() + "." + cmsContext.isSuperUserMode();
     }
 }

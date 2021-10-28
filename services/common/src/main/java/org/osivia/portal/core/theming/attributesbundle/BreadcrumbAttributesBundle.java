@@ -29,7 +29,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -55,6 +55,7 @@ import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.theme.page.WindowContext;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.UniversalID;
@@ -73,6 +74,7 @@ import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -91,6 +93,7 @@ import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 
 import org.osivia.portal.core.web.IWebIdService;
+import org.springframework.stereotype.Service;
 
 /**
  * Breadcrumb attributes bundle.
@@ -115,6 +118,9 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
     private final IMenubarService menubarService;
 
     private final CMSService cmsService;
+    
+    private final ITaskbarService taskbarService;
+    
 
     /** Attributes names. */
     private final Set<String> names;
@@ -138,6 +144,7 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
         this.menubarService = Locator.getService(IMenubarService.MBEAN_NAME, IMenubarService.class);
 
         this.cmsService = Locator.getService(CMSService.class);
+        this.taskbarService= Locator.getService(ITaskbarService.MBEAN_NAME, ITaskbarService.class);
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_BREADCRUMB);
@@ -210,9 +217,11 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
             
         }   else    {
              try {
+                 
+                 
                 // CMS Publication
                 String sContentId = page.getProperties().get("osivia.contentId");
-                if (sContentId != null) {
+                if ((sContentId != null)) {
                     
                     // current document
                     UniversalID contentId = new UniversalID(sContentId);
@@ -250,7 +259,7 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
                         } while( ! isRoot);
                     }
                }
-            } catch (CMSException e) {
+            } catch (Exception e) {
                 throw new ControllerException(e);
             }
          }        

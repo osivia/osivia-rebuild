@@ -20,7 +20,7 @@ public class CMSController {
     /** The locale service. */
     private ILocaleService localeService;
     
-    private boolean superUserMode = false;;
+    private boolean superUserMode = false;
     
   
 
@@ -46,6 +46,15 @@ public class CMSController {
             }
         }
     }
+    
+    
+    public CMSController(PortalControllerContext portalCtx, boolean superUser) {
+        this( portalCtx);
+        this.superUserMode = superUser;
+     }
+    
+    
+    
     
     public void setSuperUserMode(boolean superUserMode) {
         this.superUserMode = superUserMode;
@@ -104,6 +113,7 @@ public class CMSController {
         } catch( Exception e) {
             throw new RuntimeException(e);
         }
+        cmsContext.setSuperUserMode(this.superUserMode);
          
         return cmsContext;
     }

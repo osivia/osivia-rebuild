@@ -183,7 +183,12 @@ function bilto(event)
                   }
                }
             } else {
-                event.preventDefault();
+                //event.preventDefault();
+                
+                
+                if ((event !== undefined) &&  (event !== null) && !(event.type === "popstate")) {
+                    Event.stop(event);
+                }
 
                 var $form = $JQry(current);
                 var formdata = (window.FormData) ? new FormData($form[0]) : null;
@@ -463,10 +468,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 		
 		                            // Copy the region content
 		                            copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window");
-		                            
-		                            // Fix bug : bilto called twice on modal update document 
-		                            if(newPage == false)
-		                            	observePortlet(partialWindowDiv);
+
 	         				  }
 	
 	          			  }

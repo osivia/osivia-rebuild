@@ -28,6 +28,20 @@ public class CMSContext {
 
 
 
+    
+    public boolean isSuperUserMode() {
+        return superUserMode;
+    }
+
+
+
+    
+    public void setSuperUserMode(boolean superUserMode) {
+        this.superUserMode = superUserMode;
+    }
+
+
+
     /**
      * Instantiates a new CMS context.
      *

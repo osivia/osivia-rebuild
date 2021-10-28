@@ -206,7 +206,12 @@
 	</bean>
 
 
+    <!-- Virtual navigation service -->
+    <bean class="org.osivia.portal.core.cms.VirtualNavigationServiceImpl" id="osivia:service=VirtualNavigationService" >
 
+	</bean>
+    
+    
 
      
 </beans>

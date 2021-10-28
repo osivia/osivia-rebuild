@@ -71,7 +71,7 @@ public class RestorablePageUtils {
             Boolean isPreviewing = BooleanUtils.toBooleanObject(props.get("osivia.content.preview"));            
             Locale locale = new Locale(props.get("osivia.content.locale"));
             
-            restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing, props);
+            restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing, props, params);
           }        
 
 

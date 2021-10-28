@@ -210,7 +210,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 
             // New page identifier
             PortalControllerContext portalCtx = new PortalControllerContext( this.context.getServerInvocation().getServerContext().getClientRequest());
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId, properties);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId, properties, null);
 
 
             
