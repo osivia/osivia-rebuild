@@ -31,6 +31,7 @@ import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
@@ -42,14 +43,21 @@ import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.aspects.portlet.cache.ContentRef;
 import org.jboss.portal.portlet.aspects.portlet.cache.StrongContentRef;
 import org.jboss.portal.portlet.cache.CacheControl;
+import org.jboss.portal.portlet.invocation.ActionInvocation;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.RenderInvocation;
 import org.jboss.portal.portlet.invocation.response.ContentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.RevalidateMarkupResponse;
 import org.jboss.portal.portlet.spi.UserContext;
+import org.osivia.portal.api.cms.CMSController;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.service.CMSEvent;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.api.cms.service.SpaceCacheBean;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
 
 /**
  * Cache markup on the portal.
@@ -74,6 +82,29 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
       
       ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
 
+      
+      
+   // v2.0-SP1 : cache init on action
+      if (invocation instanceof ActionInvocation) {
+          userContext.setAttribute(scopeKey, null);
+
+
+          // JSS 20130319 : shared cache initialization
+          if (invocation.getWindowContext() instanceof WindowContextImpl) {
+              String windowId = invocation.getWindowContext().getId();
+              PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
+              Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+              String sharedCacheID = window.getDeclaredProperty("osivia.cacheID");
+
+              if ((window != null) && (sharedCacheID != null)) {
+                  Map<String, String[]> publicNavigationalState = invocation.getPublicNavigationalState();
+                  sharedCacheID = computedCacheID(sharedCacheID, window, publicNavigationalState);
+                  userContext.setAttribute("sharedcache." + sharedCacheID, null);
+              }
+          }
+       }
+      
+      
       //
       if (invocation instanceof RenderInvocation)
       {
@@ -88,8 +119,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
   
          //
-         CacheEntry cachedEntry = (CacheEntry) userContext.getAttribute(scopeKey);
-         
+         CacheEntry cachedEntry = null;         
          
          Window window = null;
 
@@ -100,25 +130,92 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          }
 
          
-        // Window has been modified
-        if (cachedEntry != null && window != null) {
-            if (cachedEntry.getCreationTs() < window.getUpdateTs())
-                cachedEntry = null;
-        }
+         
+         
+         // v2.0.2 -JSS20130318
+         // Shared user's cache
+         // pour plus de cohérence, le cache partagé est priorisé par rapport au cache portlet
+
+         boolean skipNavigationCheck = false;
+         boolean sharedCache = false;
+         
+
+         if (window != null) {
+             String sharedCacheID = window.getDeclaredProperty("osivia.cacheID");
+
+             if (sharedCacheID != null) {
+
+                 // On controle que l'état permet une lecture depuis le cache partagé
+
+                 if (((navigationalState == null) || (((ParametersStateString) navigationalState).getSize() == 0))
+                         && ((windowState == null) || WindowState.NORMAL.equals(windowState)) && ((mode == null) || Mode.VIEW.equals(mode))) {
+                     sharedCacheID = computedCacheID(sharedCacheID, window, publicNavigationalState);
+                     cachedEntry = (CacheEntry) userContext.getAttribute("sharedcache." + sharedCacheID);
+                     if( cachedEntry != null) {
+                         
+                         // If space Data is refreshed, all shared cache relative to space are refreshed,
+                         // even they are not in the page
+                         // -> 'ex:quota'        
+
+                         
+                         if( sharedCacheID.contains("/"))   {
+                             String spaceId = sharedCacheID.substring(0, sharedCacheID.indexOf("/"));
+                         
+                             PortalControllerContext portalCtx = new PortalControllerContext( ctx.getServerInvocation().getServerContext().getClientRequest());
+                             CMSController ctrl = new CMSController(portalCtx);
+                             SpaceCacheBean modifiedTs;
+                             
+                             try    {
+                             
+                                 CMSSession session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
+    
+                                 modifiedTs = session.getSpaceCacheInformations(new UniversalID(spaceId));
+                             } catch( Exception e)  {
+                                 throw new RuntimeException( e);
+                             }
+                             
+                             if( modifiedTs.getLastSpaceModification() != null) {
+                                 if (cachedEntry.getCreationTs() < modifiedTs.getLastSpaceModification())
+                                     cachedEntry = null;    
+                             }
+                             
+                             
+                             if( cachedEntry != null)   {
+                                 sharedCache = true;
+                                 skipNavigationCheck = true;
+                             }
+                             
+                         }
+                     }
+                 }
+             }
+
+             if (cachedEntry == null) {
+                 cachedEntry = (CacheEntry) userContext.getAttribute(scopeKey);
+              }
+
+         }
+         
+         
+         // Don't test for shared cache, because each time you change of navigation item
+         // The page is re-created
+         if( cachedEntry != null && sharedCache == false)    {
+             if (cachedEntry.getCreationTs() < window.getUpdateTs())
+                 cachedEntry = null;
+         }
 
 
         // CMS cache has been modified (portlet level)
         if (cachedEntry != null && window != null) {
             Boolean refreshWindow = (Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
             if( BooleanUtils.isTrue(refreshWindow)) {
-                     cachedEntry = null;
+               cachedEntry = null;
             }
         }         
         
  
          //
-         if (cachedEntry != null)
-         {
+        if ((cachedEntry != null) && (skipNavigationCheck == false)) {
             // Check time validity for fragment
             boolean useEntry = false;
             StateString entryNavigationalState = cachedEntry.navigationalState;
@@ -190,6 +287,9 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          }
 
          boolean refresh = BooleanUtils.isTrue((Boolean)ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.refreshCaches"));
+         if( refresh && sharedCache) {
+             refresh = false;
+         }
          
          
          
@@ -261,6 +361,23 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                
                
                userContext.setAttribute(scopeKey, cacheEntry);
+               
+
+               // Shared user's cache
+               if ((expirationTimeMillis > 0) && (window != null) && (window.getDeclaredProperty("osivia.cacheID") != null)) {
+
+                   String sharedID = window.getDeclaredProperty("osivia.cacheID");
+
+                   // On controle que l'état permet une mise dans le cache global
+
+                   if (((navigationalState == null) || (((ParametersStateString) navigationalState).getSize() == 0))
+                           && ((windowState == null) || WindowState.NORMAL.equals(windowState)) && ((mode == null) || Mode.VIEW.equals(mode))) {
+                       sharedID = computedCacheID(sharedID, window, publicNavigationalState);
+
+                       CacheEntry sharedCacheEntry = new CacheEntry(null, null, null, null,  fragment, expirationTimeMillis, System.currentTimeMillis(), validationToken);
+                       userContext.setAttribute("sharedcache." + sharedID, sharedCacheEntry);
+                   }
+               }               
             }
 
             //
@@ -354,4 +471,31 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
 
    }
+   
+
+   
+   
+   public static String computedCacheID(String cacheID, Window window, Map<String, String[]> publicNavigationalState) {
+
+       String computedPath = "";
+
+
+       // Si le cache est relatif, on préfixe par l'ID de l'espace de publication
+       // ce qui permet de partager au sein d'un espace
+
+       if (!(cacheID.charAt(0) == '/')) {
+
+           String spacePath = window.getPage().getProperty("osivia.spaceId");
+
+           if (spacePath != null) {
+               computedPath += spacePath + "/";
+           }
+       }
+
+       computedPath += cacheID;
+
+       return computedPath;
+
+   }
+   
 }
