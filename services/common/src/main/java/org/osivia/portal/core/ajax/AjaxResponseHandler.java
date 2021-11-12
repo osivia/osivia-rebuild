@@ -384,10 +384,18 @@ public class AjaxResponseHandler implements ResponseHandler {
                         } else if (type == PageNavigationalState.class) {
                             
                             
-                            // Selector modification do not do a refresh but just force recomputation
-                            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS, Boolean.TRUE);  
+                            
                             
                             PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
+                            PageNavigationalState old = (PageNavigationalState) update.getOldValue();
+                            
+                            
+                            // Exclude simple action (ex: trash sort)
+                            if( pns.getParameters().size() > 0 || old.getParameters().size() > 0)   {
+                                // Selector modification do not do a refresh but just force recomputation
+                                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS, Boolean.TRUE);                                 
+                            }
+                            
                             
                             // force full refresh for now... for JBPORTAL-2326
                             
@@ -660,15 +668,13 @@ public class AjaxResponseHandler implements ResponseHandler {
                     
                     
                     /* Pre-portlet computings */
-                    
-                    if (pageChange == true)    {
-                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, "breadcrumb", null);
-                    }
+/*
                     if (refreshPageStructure == true)   {
                         // windows change state need breadcrum recomputation
+                        // 
                         controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH, null);
                     }
-                    
+  */                  
                     
                     //
                     for ( Window refreshedWindow: sortedWindows ) {

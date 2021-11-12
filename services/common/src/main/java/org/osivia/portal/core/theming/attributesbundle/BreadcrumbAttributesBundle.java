@@ -205,7 +205,11 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
         PageNavigationalState pageState = stateContext.getPageNavigationalState(page.getId().toString());
 
         // Breadcrumb memo
-
+        Breadcrumb breadcrumbMemo = (Breadcrumb) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "breadcrumb");
+        if (breadcrumbMemo == null) {
+            breadcrumbMemo = new Breadcrumb();
+            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", breadcrumbMemo);
+        }
 
         // Breadcrum initialization
         Breadcrumb breadcrumb = new Breadcrumb();
@@ -264,7 +268,24 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
             }
          }        
 
-         // Portlet Path
+        // Find first non navigation portlet index
+        int firstPortletIndex = -1;
+        int i = 0;
+        for (BreadcrumbItem item : breadcrumbMemo.getChildren()) {
+            if (!item.isNavigationPlayer()) {
+                firstPortletIndex = i;
+                break;
+            }
+            i++;
+        }
+        
+        
+        
+         
+        
+        // Update current item
+        if (breadcrumbMemo.getChildren().size() > 0) {
+       
            Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
             for (PortalObject window : windows) {
 
@@ -274,14 +295,15 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
 
 
                 if (windowNavState != null && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
-
+                    
+                    BreadcrumbItem last = breadcrumbMemo.getChildren().get(breadcrumbMemo.getChildren().size() - 1);
+                    
                     // Update path
                     List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,
                             Constants.PORTLET_ATTR_PORTLET_PATH);
                     if (portletPath != null) {
                         // Valorize labels and path related URLs
 
-                        int iPath = 0;
                         for (PortletPathItem pathItem : portletPath) {
                             // Set the content as a render parameter
                             ParametersStateString parameters = ParametersStateString.create();
@@ -310,19 +332,37 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
 
                             // Perform a render URL on the target window
                             String url = new PortalURLImpl(renderCmd, controllerContext, null, null).toString();
-
+                            pathItem.setUrl(url);
                            
-                            
-                            BreadcrumbItem  item = new BreadcrumbItem(pathItem.getLabel(), url, "", true);
-                            breadcrumb.getChildren().add(iPath,item);
-                            iPath++;
+                            String label = pathItem.getLabel();
+                            pathItem.setLabel(label);
+                            last.setPortletPath(portletPath);
+
                         }
                      }
                 }
             }
-        
+        }
 
        
+        // Add memorized items
+        for (BreadcrumbItem itemMemo : breadcrumbMemo.getChildren()) {
+
+            if (!itemMemo.isNavigationPlayer()) {
+                if (itemMemo.getPortletPath() != null) {
+                    // Add corresponding item to portlet path
+                    for (PortletPathItem pathItem : itemMemo.getPortletPath()) {
+                        BreadcrumbItem pathDisplayItem = new BreadcrumbItem(pathItem.getLabel(), pathItem.getUrl(), itemMemo.getId(), true);
+                        breadcrumb.getChildren().add(pathDisplayItem);
+                    }
+                } else {
+                    // No portlet path : add corresponding item to portlet title
+                    breadcrumb.getChildren().add(itemMemo);
+                }
+            }
+        }
+        
+        
 
         return breadcrumb;
     }

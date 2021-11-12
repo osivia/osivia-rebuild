@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.WindowState;
 
@@ -14,6 +15,7 @@ import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.impl.api.node.PageURL;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -28,6 +30,9 @@ import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.theming.Breadcrumb;
+import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
@@ -45,9 +50,12 @@ public class DynamicService implements IDynamicService {
 
         DynamicPortalObjectContainer poc = (DynamicPortalObjectContainer) ctx.getController().getPortalObjectContainer();
 
+        // Get current page
         PortalObjectId pageId = PortalObjectId.parse(parentPath, PortalObjectPath.CANONICAL_FORMAT);
+        Page page = (Page) ctx.getController().getPortalObjectContainer().getObject(pageId);
 
 
+        // Init properties
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
         properties.put(ThemeConstants.PORTAL_PROP_REGION, regionId);
@@ -55,6 +63,10 @@ public class DynamicService implements IDynamicService {
         for (String dynaKey : windowProperties.keySet()) {
             properties.put(dynaKey, windowProperties.get(dynaKey));
         }
+        
+        
+       
+        
 
         DynamicWindowBean windowBean = new DynamicWindowBean(pageId, windowName, portletInstance, properties, null);
 
@@ -89,9 +101,39 @@ public class DynamicService implements IDynamicService {
                     ParametersStateString.create(parameters));          
         }
 
+        
+        
+        ctx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);      
+        
+        // Maj du breadcrumb
+        Breadcrumb breadcrumb = (Breadcrumb) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb");
+
+        if (breadcrumb == null) {
+            breadcrumb = new Breadcrumb();
+        }
+        else    {
+            breadcrumb.getChildren().clear();
+        }
+
+        // Ajout du nouvel item
+        PageURL url = new PageURL(pageId, ctx);
+
+        String name = properties.get("osivia.title");
+
+        BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), windowId, false);
+        
+        // Task identifier
+        if (windowProperties != null) {
+            String taskId = windowProperties.get(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
+            item.setTaskId(taskId);
+        }            
 
 
-        ctx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+        breadcrumb.getChildren().add(item);
+
+        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", breadcrumb);
+     
+  
     }
 
     @Override
@@ -177,5 +219,5 @@ public class DynamicService implements IDynamicService {
 
     }
 
-
+ 
 }

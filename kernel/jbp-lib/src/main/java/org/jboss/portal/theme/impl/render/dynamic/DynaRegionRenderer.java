@@ -131,7 +131,10 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
          markup.print("/dragdrop.js'></script>\n");
          markup.print("<script type='text/javascript' src='");
          markup.print(jsBase);
-         markup.print("/dyna.js'></script>\n");
+         markup.print("/prototype-bootstrap-workaround.js'></script>\n");
+          markup.print("<script type='text/javascript' src='");
+         markup.print(jsBase);
+         markup.print("/dyna.js'></script>\n");        
          markup.print("<link rel=\"stylesheet\" id=\"dyna_css\" href=\"" + jsBase + "/style.css\" type=\"text/css\"/>\n");
 
          

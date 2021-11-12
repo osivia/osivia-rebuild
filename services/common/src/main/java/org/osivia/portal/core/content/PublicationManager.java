@@ -1,7 +1,9 @@
 package org.osivia.portal.core.content;
 
 
+
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -11,14 +13,20 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.portlet.ParametersStateString;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
@@ -251,9 +259,28 @@ public class PublicationManager implements IPublicationManager {
                 // Navigation associated to the type of item (eq: folder)
                 if( navigation.getCustomizedTemplateId() != null) {
                     
-                     Document template = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getCustomizedTemplateId());
+                     UniversalID templateId = navigation.getCustomizedTemplateId();
+                     
+                     // TODO :  Apply template adapters
+//                     List<TemplateAdapter> templateAdapters = this.getCMSService().getTemplateAdapters(cmsReadNavContext);
+//                     for (TemplateAdapter adapter : templateAdapters) {
+//                         String adaptedTemplate = adapter.adapt(this.basePublishPath, pathToCheck, spaceTemplate, template);
+//                         if (adaptedTemplate != null) {
+//                             template = adaptedTemplate;
+//                             break;
+//                         }
+//                     }
+                     
+                     if( templateId.getRepositoryName().equals("idx"))  {
+                         if( templateId.getInternalID().equals("DEFAULT_TEMPLATES_WORKSPACE"))  {
+                             templateId = new UniversalID("idx", "DEFAULT_TEMPLATES_USER-WORKSPACE");
+                         }
+                     }
+                         
+                    
+                     Document template = getCMSService().getCMSSession(cmsContext).getDocument( templateId);
 
-                     templatePath = navigation.getCustomizedTemplateId().getRepositoryName()+":/"+ template.getSpaceId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName() + "/" + navigation.getCustomizedTemplateId().getInternalID();
+                     templatePath = navigation.getCustomizedTemplateId().getRepositoryName()+":/"+ template.getSpaceId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName() + "/" +templateId.getInternalID();
                  }
 
                 
@@ -324,8 +351,7 @@ public class PublicationManager implements IPublicationManager {
                  // Propagation des selecteurs si les paramètres ne sont pas explicites
                  final Map<QName, String[]> pageState = new HashMap<QName, String[]>();   
                
-//                 if ((previousPNS != null) && ((this.pageParams == null) || (this.pageParams.size() == 0))) {
-                 if (previousPNS != null) {
+                 if ((previousPNS != null) && ((pageParams == null) || (pageParams.size() == 0))) {
                      if ("1".equals(page.getProperty("osivia.cms.propagateSelectors"))) {
                          final String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
 
@@ -337,7 +363,20 @@ public class PublicationManager implements IPublicationManager {
                      }
                  }                
                  
-                 
+                 // Reinitialisation des renders parameters et de l'état
+                 final Iterator<PortalObject> i = page.getChildren(Page.WINDOW_MASK).iterator();
+                 while (i.hasNext()) {
+                     final Window window = (Window) i.next();
+
+                     final NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+
+                     final WindowNavigationalState windowNavState = WindowNavigationalState.create();
+
+                     // On la force en vue NORMAL
+                     final WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
+                             ParametersStateString.create());
+                     controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+                 }
                  
                  
                 
