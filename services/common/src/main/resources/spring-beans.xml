@@ -46,6 +46,12 @@
 		id="osivia:service=Interceptor,type=Command,name=PageCustomizer">
 	</bean>
 	
+	<bean class="org.osivia.portal.core.login.LoginInterceptor"
+		id="osivia:service=Interceptor,type=Server,name=ServerLogin">
+		<property name="CustomizationService" ref="osivia:service=CustomizationService"/>
+		<property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
+	</bean>
+	
 	
 	<bean class="org.osivia.portal.core.window.WindowThemingInterceptor"
 		id="osivia:service=Interceptor,type=Command,name=WindowTheming">

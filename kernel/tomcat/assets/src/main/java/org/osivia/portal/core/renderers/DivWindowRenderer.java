@@ -24,6 +24,7 @@ package org.osivia.portal.core.renderers;
 
 import java.io.PrintWriter;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
@@ -63,6 +64,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         PageProperties properties = PageProperties.getProperties();
         // Set current window identifier for decorators
         properties.setCurrentWindowId(wrc.getId());
+        
+        // Bootstrap panel style indicator
+        boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.bootstrapPanelStyle"));
+
 
 
         // Window identifier
@@ -95,6 +100,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         out.print("<section class=\"portlet-container " + styles + "\">");
 
 
+        if (bootstrapPanelStyle) {
+            out.print("<div class=\"card\"><div class=\"card-body\">");
+        }
+        
         // Div rendering
 
         String headerClass;
@@ -118,7 +127,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Footer
-
+        
+        // Portlet container
+        if (bootstrapPanelStyle) {
+            out.print("</div></div>");
+        }
 
         // Portlet container
         out.print("</section>");

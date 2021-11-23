@@ -20,6 +20,13 @@ public interface NavigationItem {
     
     
     /**
+     * Checks if is visible.
+     *
+     * @return true, if is visible
+     */
+    boolean isVisible();
+    
+    /**
      * Get document identifier.
      *
      * @return identifier

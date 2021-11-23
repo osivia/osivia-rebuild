@@ -4,7 +4,7 @@
 <c:set var="childLevel" value="${level + 1}" />
 
 
-<c:if test="${parent.selected || (level <= openLevels)}">
+
 
         <c:forEach var="child" items="${parent.children}">
             <!-- Selected item ? -->
@@ -21,9 +21,8 @@
     
    
                    <!-- Link -->
-                <a href="${child.url}" class="list-group-item ${selected} ${current}">            
+                <a href="${child.url}" class="list-group-item ${selected} ${current} pl-${level+1}">            
                     ${child.title}
-
                 </a>     
             
 
@@ -31,11 +30,11 @@
                 <c:if test="${not empty child.children}">
                     <c:set var="parent" value="${child}" scope="request" />
                     <c:set var="level" value="${childLevel}" scope="request" />
-                    <div class="list-group">
+
                     	<jsp:include page="display-items.jsp" />
-                     </div>
+
                 </c:if>
 
         </c:forEach>
 
-</c:if>
+

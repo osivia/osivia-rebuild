@@ -29,6 +29,8 @@ import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.service.GroupService;
 
 
 /**
@@ -70,6 +72,17 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     public ThreadLocal<PortalControllerContext> portalCtx = new ThreadLocal<PortalControllerContext>();
     
    
+
+    /** The group service */
+    private GroupService groupService;
+    
+    public GroupService getGroupService() {
+        if( groupService == null)
+            groupService = DirServiceFactory.getService(GroupService.class);
+        return groupService;
+    }
+    
+    
 
     public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, UserStorage userStorage) {
         super();

@@ -25,7 +25,8 @@
                 <include>javax.ccpp:ccpp</include>
                 <include>javax.portlet:portlet-api</include>
                 <include>log4j:log4j</include>
-                <include>dom4j:dom4j</include>    
+                <include>dom4j:dom4j</include> 
+                <include>quartz:quartz</include>    
                 <include>org.jboss.portal.portlet:portlet-portlet</include>
                 <include>org.jboss.portal.web:web-web</include>                
                 <include>xerces:xercesImpl</include>  

@@ -112,6 +112,8 @@ function bilto(event)
       var url;
 
       
+
+      
       // if unknow source (IMG, SPAN, ...) , search the ancestor A, INPUT or BUTTON
       if ((source.nodeName != "A") && (source.nodeName != "INPUT") && (source.nodeName != "BUTTON")) {
           source = Element.up(source, "A, INPUT, BUTTON");
@@ -119,6 +121,9 @@ function bilto(event)
               return;
       }
       
+      if (source.disabled) { 
+          return;
+      }
       
       if (!source.classList.contains("ajax-link")
     	        && ((Element.up(source, ".no-ajax-link") != null) || source.hasClassName("no-ajax-link"))) {

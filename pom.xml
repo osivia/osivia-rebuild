@@ -151,7 +151,8 @@
 		<portlet-api.version>2.0</portlet-api.version>
         <el-api.version>1.0</el-api.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <apache.httpcomponents.version>4.1</apache.httpcomponents.version>        
+        <apache.httpcomponents.version>4.1</apache.httpcomponents.version>      
+        <quartz.version>1.5.2</quartz.version>  
         
         <!-- REST -->
         <json.version>2.4</json.version>
@@ -293,6 +294,12 @@
 				</exclusions>
 			</dependency>
 
+			<dependency>
+				<groupId>quartz</groupId>
+				<artifactId>quartz</artifactId>
+				<version>${quartz.version}</version>
+				<scope>provided</scope>
+			</dependency>
 
 			<!-- Spring framework -->
 
@@ -615,6 +622,12 @@
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
 		</dependency>		
+		
+		<dependency>
+			<groupId>quartz</groupId>
+			<artifactId>quartz</artifactId>
+		</dependency>
+		
 
         <!-- Test -->
         <dependency>

@@ -46,6 +46,7 @@ import org.jboss.portal.server.request.URLFormat;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.IDirProvider;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -156,6 +157,7 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
         this.names.add(Constants.ATTR_TOOLBAR_MY_SPACE_URL);
         this.names.add(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL);
         this.names.add(Constants.ATTR_TOOLBAR_SIGN_OUT_URL);
+        this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);        
         this.names.add(Constants.ATTR_TOOLBAR_USER_CONTENT);
         this.names.add(Constants.ATTR_TOOLBAR_MY_PROFILE);
         this.names.add(Constants.ATTR_TOOLBAR_USER_SETTINGS_URL);
@@ -270,7 +272,10 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
         PortalURL signOutPortalUrl = new PortalURLImpl(signOutCommand, controllerContext, false, null);
         attributes.put(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, signOutPortalUrl.toString());
 
-
+        // Administration content
+        String administrationContent = this.formatHTMLAdministration(controllerContext, page);
+        attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
+        
         // Userbar content
         String userbarContent = this.formatHTMLUserbar(controllerContext, page, principal, person, serverContext.getPortalContextPath(), myProfileUrl,
                 signOutPortalUrl.toString());
@@ -418,6 +423,47 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
     }
 
 
+    
+    private String formatHTMLAdministration(ControllerContext context, Page page) {
+
+        // Administration root element
+        Element administration = DOM4JUtils.generateElement(HTMLConstants.UL, "navbar-nav", StringUtils.EMPTY);
+
+        if (PageCustomizerInterceptor.isAdministrator(context)) {
+
+            // fonctionnal administration
+            String customAdminPage = page.getProperty("osivia.portal.admin.page");
+            if( customAdminPage != null)    {
+                
+                String[] tokens = customAdminPage.split("/");
+                String pageInternalID = "";
+                for(String token: tokens)    {
+                    if( pageInternalID.length() > 0)
+                        pageInternalID+="_";
+                    pageInternalID += token.toUpperCase();
+                }
+               
+                UniversalID myAccountDocumentId = new UniversalID( "idx", pageInternalID);
+                String customAdminPageURL = urlFactory.getViewContentUrl(new PortalControllerContext(context.getServerInvocation().getServerContext().getClientRequest()), myAccountDocumentId);
+                
+                
+                Element functionalhome = DOM4JUtils.generateLinkElement(customAdminPageURL, null, null, "nav-link", "", "glyphicons glyphicons-basic-cogwheel");
+                administration.add(functionalhome);
+            }
+            
+            // Configuration menu dropdown element
+            Element configurationDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
+            administration.add(configurationDropdown);
+
+       }
+
+     
+        // Write HTML content
+        return DOM4JUtils.write(administration);
+    }
+
+    
+    
     /**
      * Add dropdown divider.
      * @param menu dropdown menu

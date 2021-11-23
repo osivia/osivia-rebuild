@@ -172,6 +172,11 @@ public class TestUserStorage extends BaseUserStorage {
 
                     if (userRepository.getUserName() != null && acls.contains("group:members"))
                         aclControl = true;
+                    
+                    if (userRepository.isAdministrator())
+                        aclControl = true;
+                    
+                    
                 } else
                     aclControl = true;
             }

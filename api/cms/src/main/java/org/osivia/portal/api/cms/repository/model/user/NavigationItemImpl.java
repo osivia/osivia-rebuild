@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
@@ -79,5 +80,10 @@ public class NavigationItemImpl implements NavigationItem {
     @Override
     public UniversalID getCustomizedTemplateId()    {
         return null;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return BooleanUtils.isNotTrue((Boolean) document.getProperties().get("osivia.hidden"));
     }
 }

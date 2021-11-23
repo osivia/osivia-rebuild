@@ -234,8 +234,14 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
                     // first navigation item
                     NavigationItem navItem = cmsService.getCMSSession(cmsContext).getNavigationItem(contentId);
                     
+                    boolean hideItem = false;
+                    
                     if( navItem.getDocumentId().equals(contentId))    {
                         title = navItem.getTitle();
+                        
+                        if( !navItem.isVisible())
+                            hideItem = true;
+                        
                         if( ! navItem.isRoot()) {
                             navItem = navItem.getParent();
                         }
@@ -244,17 +250,19 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
                         }
                     }   else    {
                         Document doc = cmsService.getCMSSession(cmsContext).getDocument(contentId);       
-                        title = (String) doc.getProperties().get("dc:title");
+                        title = (String) doc.getTitle();
                     }
                     
-                    addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, contentId, title);
+                    if( hideItem == false)
+                        addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, contentId, title);
                     
                     
                     // Browse navigation tree
                     if( navItem != null) {
                        boolean isRoot = false;
                        do {
-                            addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, navItem.getDocumentId(), navItem.getTitle());
+                           if( navItem.isVisible())
+                               addDocToBreadcrumb(portalControllerContext, cmsContext, breadcrumb, navItem.getDocumentId(), navItem.getTitle());
                               
                             if( ! navItem.isRoot())
                                 navItem = navItem.getParent();

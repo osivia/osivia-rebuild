@@ -19,11 +19,11 @@
                 <!-- Menu -->
                 <c:set var="parent" value="${displayItem}" scope="request" />
                 <c:set var="level" value="1" scope="request" />
-				<div class="just-padding">
-					<div class="list-group list-group-root card card-body bg-light">                
-                		<jsp:include page="display-items.jsp" />
-               		</div>
-                </div>
+
+				<div class="list-group list-group-root card card-body bg-light p-0 m-2">                
+               		<jsp:include page="display-items.jsp" />
+              	</div>
+
             </nav>
         </c:when>
         

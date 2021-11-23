@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
@@ -65,6 +66,10 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             title = drc.getTitle();
         }
 
+        
+        // Bootstrap panel style indicator
+        boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(currentWindowId, "osivia.bootstrapPanelStyle"));
+
      // Display title indicator
         boolean displayTitle = ! "1".equals(drc.getProperty("osivia.hideTitle"));
         
@@ -73,8 +78,12 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             // Title container
             Element titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, null, StringUtils.EMPTY);
             StringBuilder builder = new StringBuilder();
-            builder.append("portlet-titlebar-title");
+            builder.append("portlet-titlebar-title h5");
     
+            
+            if (bootstrapPanelStyle) {
+                builder.append(" card-title");
+            }
     
             DOM4JUtils.addAttribute(titleContainer, HTMLConstants.CLASS, builder.toString());
     

@@ -36,6 +36,7 @@ import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.core.container.dynamic.DynamicWindow;
 import org.osivia.portal.core.page.PageProperties;
@@ -125,6 +126,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 Boolean recomputeModels = (Boolean) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS);      
                 if( BooleanUtils.isTrue(recomputeModels))
                     attributes.put(Constants.PORTLET_ATTR_RECOMPUTE_MODELS, recomputeModels);
+                
+                
+                Person p2 = (Person) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2);
+                if (p2 != null) {
+                    attributes.put(Constants.ATTR_LOGGED_PERSON_2, p2);
+                }
 
 
                 // Set attributes

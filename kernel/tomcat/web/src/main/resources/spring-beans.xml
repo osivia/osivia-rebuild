@@ -83,7 +83,8 @@
            <value>portal:service=Interceptor,type=Server,name=Locale</value>
            <value>portal:service=Interceptor,type=Server,name=PortalContextPath</value>
            <value>portal:service=Interceptor,type=Server,name=ContentType</value>
-			<value>osivia:service=Interceptor,type=Server,name=ServerTracker</value>            
+			<value>osivia:service=Interceptor,type=Server,name=ServerTracker</value> 
+			<value>osivia:service=Interceptor,type=Server,name=ServerLogin</value>            
 		 </list>
       </property>
    </bean>

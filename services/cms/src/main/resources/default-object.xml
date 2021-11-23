@@ -202,19 +202,19 @@
                 <page-name>home-member</page-name>
                 <display-name xml:lang="fr">Accueil</display-name>
 
+                <security-constraint>
+                    <policy-permission>
+                        <action-name>view</action-name>
+                        <role-name>Authenticated</role-name>
+                    </policy-permission>
+                </security-constraint>
+
                 <properties>
                     <property>
                         <name>layout.id</name>
                         <value>cloud-ens-home</value>
                     </property>
                 </properties>
-
-                <security-constraint>
-                    <policy-permission>
-                        <action-name>view</action-name>
-                        <unchecked/>
-                    </policy-permission>
-                </security-constraint>
 
                 <window>
                     <window-name>toutatice-portail-cms-nuxeo-viewListPortletInstance_1556902653408</window-name>
@@ -505,43 +505,28 @@ return nuxeoRequest.toString();</value>
                 <display-name xml:lang="fr">Administration</display-name>
                 <properties />
                 <security-constraint />
-                <window>
-                    <window-name>osivia-services-procedure-portletInstance_1511346200826</window-name>
-                    <instance-ref>osivia-services-procedure-portletInstance</instance-ref>
+                
+				<window>
+                    <window-name>menu-instance</window-name>
+                    <instance-ref>MenuInstance</instance-ref>
                     <region>col-1</region>
                     <properties>
                         <property>
-                            <name>osivia.hideDecorators</name>
+                            <name>osivia.hideTitle</name>
                             <value>1</value>
-                        </property>
-                        <property>
+                        </property>                    
+                           <property>
                             <name>portal.windowContentType</name>
                             <value>portlet</value>
-                        </property>
-                        <property>
-                            <name>osivia.bootstrapPanelStyle</name>
-                            <value>true</value>
-                        </property>
-                        <property>
-                            <name>osivia.title</name>
-                            <value>Modélisation des procédures</value>
-                        </property>
-                        <property>
-                            <name>osivia.hideEmptyPortlet</name>
-                            <value>1</value>
                         </property>
                         <property>
                             <name>theme.order</name>
                             <value>0</value>
                         </property>
-                        <property>
-                            <name>osivia.services.procedure.procedurePath</name>
-                            <value>/default-domain/procedures</value>
-                        </property>
                     </properties>
                     <height>0</height>
-                </window>
-            </page>
+                </window>                
+             </page>
 
             <page>
                 <page-name>change-password</page-name>
@@ -1459,7 +1444,13 @@ return nuxeoRequest.toString();</value>
             <page>
                 <page-name>templates</page-name>
                 <properties/>
-                <security-constraint/>
+                <security-constraint>
+                    <policy-permission>
+                        <action-name>view</action-name>
+                        <unchecked/>
+                    </policy-permission>
+                </security-constraint>
+
 
                 <page>
                     <page-name>publish</page-name>

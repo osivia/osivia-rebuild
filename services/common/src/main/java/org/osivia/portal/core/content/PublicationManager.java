@@ -45,6 +45,7 @@ import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
+import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -105,6 +106,8 @@ public class PublicationManager implements IPublicationManager {
         return cmServiceLocator;
     }
 
+    
+    
 
     protected PortalObjectId getPageTemplate(CMSContext cmsContext, Document doc, NavigationItem navigation) throws ControllerException {
 
@@ -228,14 +231,17 @@ public class PublicationManager implements IPublicationManager {
             
             NavigationItem navigation;
             String pagePath = null;
-            
+            if (spaceId != null) {
 
-            try {
-                 navigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(docId);
-                 
-//                 if( docId.getInternalID().contains("kFG8vy"))
-//                     System.out.println("*** PUBMANAGER NAV-> " + navigation.getDocumentId() );
-            } catch( CMSException e) {
+                    try {
+                         navigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(docId);
+                         
+        //                 if( docId.getInternalID().contains("kFG8vy"))
+        //                     System.out.println("*** PUBMANAGER NAV-> " + navigation.getDocumentId() );
+                    } catch( CMSException e) {
+                        navigation = null;
+                    }
+            }   else    {
                 navigation = null;
             }
             
@@ -279,8 +285,21 @@ public class PublicationManager implements IPublicationManager {
                          
                     
                      Document template = getCMSService().getCMSSession(cmsContext).getDocument( templateId);
+                     
+                     NavigationItem navTemplate = getCMSService().getCMSSession(cmsContext).getNavigationItem(template.getId());
 
-                     templatePath = navigation.getCustomizedTemplateId().getRepositoryName()+":/"+ template.getSpaceId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName() + "/" +templateId.getInternalID();
+                     
+                     /* Adapt to template engine naming rules */
+                     String templatePagePath = "";
+                     
+                     while (!navTemplate.isRoot()) {
+                         templatePagePath = "/" + navTemplate.getDocumentId().getInternalID() + templatePagePath;
+                         navTemplate = navTemplate.getParent();
+                     }
+                     
+
+                     templatePath = navigation.getCustomizedTemplateId().getRepositoryName()+":/"+ template.getSpaceId().getInternalID() + "/" + DefaultCMSPageFactory.getRootPageName() + templatePagePath;
+      
                  }
 
                 
@@ -381,14 +400,20 @@ public class PublicationManager implements IPublicationManager {
                  
                 
             }   else    {
-                // Empty page
-                Map<Locale, String> displayNames = new HashMap<Locale, String>();
-                String displayName = "content";
-                if (StringUtils.isNotEmpty(displayName)) {
-                    displayNames.put(Locale.FRENCH, displayName);
+                if( "nx".equals(doc.getId().getRepositoryName()))   {
+                    pageId = PortalObjectUtilsInternal.getPageId(ControllerContextAdapter.getControllerContext(portalCtx));
+                    pagePath = pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
+                    
+                }   else    {
+                    // Empty page
+                    Map<Locale, String> displayNames = new HashMap<Locale, String>();
+                    String displayName = "content";
+                    if (StringUtils.isNotEmpty(displayName)) {
+                        displayNames.put(Locale.FRENCH, displayName);
+                    }
+                    pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "content",
+                            displayNames, "templates:/portalA__ctx__locale_fr/root/ID_EMPTY", new HashMap<>(), new HashMap<>(), null);
                 }
-                pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "content",
-                        displayNames, "templates:/portalA__ctx__locale_fr/root/ID_EMPTY", new HashMap<>(), new HashMap<>(), null);
               
             }
             
@@ -406,7 +431,22 @@ public class PublicationManager implements IPublicationManager {
     
                 
                 if( "nx".equals(doc.getId().getRepositoryName()))   {
-                        instance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
+                    ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
+                     
+                    CMSServiceCtx  handlerCtx = new CMSServiceCtx();
+                    handlerCtx.setPortalControllerContext(portalCtx);
+                    handlerCtx.setDoc(doc.getNativeItem());
+                    handlerCtx.setServletRequest(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+                    
+                    
+                    Player contentProperties = getCmsServiceLocator().getCMSService().getItemHandler(handlerCtx);
+                    instance = contentProperties.getPortletInstance();
+                    
+                    windowProperties.putAll(contentProperties.getWindowProperties());
+                    
+                    
+                    //    instance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
+                        
                     
                 }   else    {
                     if( "folder".equals(doc.getType())) {

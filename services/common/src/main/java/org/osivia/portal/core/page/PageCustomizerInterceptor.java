@@ -29,11 +29,13 @@ import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
@@ -139,7 +141,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         }
 
-   
+        if (cmd instanceof RenderWindowCommand) {
+
+            RenderWindowCommand rwc = (RenderWindowCommand) cmd;
+            Window window = rwc.getWindow();
+            String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+
+
+            PageProperties properties = PageProperties.getProperties();
+            
+            // Bootstrap panel style indicator
+            String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");
+            properties.setWindowProperty(windowId, "osivia.bootstrapPanelStyle", bootstrapPanelStyle);
+
+        }  
 
 
         ControllerResponse resp;

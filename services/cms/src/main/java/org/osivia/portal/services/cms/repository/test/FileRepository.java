@@ -3,7 +3,9 @@ package org.osivia.portal.services.cms.repository.test;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -11,6 +13,7 @@ import javax.xml.parsers.DocumentBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.common.i18n.LocalizedString.Value;
 import org.jboss.portal.common.io.IOTools;
 import org.jboss.portal.common.xml.XMLTools;
 import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
@@ -21,11 +24,15 @@ import org.jboss.portal.core.model.portal.metadata.PageMetaData;
 import org.jboss.portal.core.model.portal.metadata.PortalMetaData;
 import org.jboss.portal.core.model.portal.metadata.PortalObjectMetaData;
 import org.jboss.portal.core.model.portal.metadata.WindowMetaData;
+import org.jboss.portal.security.RoleSecurityBinding;
+import org.jboss.portal.security.SecurityConstants;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.locator.Locator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -34,6 +41,9 @@ import org.xml.sax.EntityResolver;
 
 /**
  * File based repository
+ */
+/**
+ * @author Jean-Sébastien
  */
 public class FileRepository extends UserRepositoryTestBase {
 
@@ -44,6 +54,8 @@ public class FileRepository extends UserRepositoryTestBase {
 
     /** . */
     public static final int KEEP_IF_EXISTS = 1;
+    
+
 
     public FileRepository(SharedRepositoryKey repositoryKey, String userName) {
         super(repositoryKey, null, userName);
@@ -51,20 +63,44 @@ public class FileRepository extends UserRepositoryTestBase {
 
 
 
+
     
     
     
-    
-    
-    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList, Map<String, Object> portalProperties) throws CMSException {
+    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList, Map<String, Object> portalProperties, List<String> inheritedAcls) throws CMSException {
+        
+       try  {
+        
+           
+           List<String> acls = new ArrayList<>( inheritedAcls);
+           
+
+        if( pageMetaData.getSecurityConstraints() != null) {
+            Set<RoleSecurityBinding> pageConstraints = (Set<RoleSecurityBinding>) pageMetaData.getSecurityConstraints().getConstraints();
+            for(RoleSecurityBinding  constraint: pageConstraints)  {
+                for(Object action : constraint.getActions())    {
+                    if( "view".equals(action))   {
+                        //Authenticated,unchecked
+                        if( SecurityConstants.UNCHECKED_ROLE_NAME.equals(constraint.getRoleName()))
+                            acls.clear();
+                        else if( SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(constraint.getRoleName()))
+                            acls.add( "group:members");
+                        else
+                            acls.add( "group:" + constraint.getRoleName());
+                    }
+                }
+            }            
+        }
+
+
+       
         
         String pageName = getPageName(pageMetaData, parentHierarchy);
         
         log.debug("create page " + pageName);
         
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        List<String> children = new ArrayList<String>();
-        
+                
         Map<String, Object> pageProperties = configure(pageMetaData);
         
         /* change defaut page properties */
@@ -81,6 +117,8 @@ public class FileRepository extends UserRepositoryTestBase {
         
         
         /* get childrens */
+        List<String>children = new ArrayList<>();
+        
         
         Map<String, PortalObjectMetaData> childrenMetadata = pageMetaData.getChildren();
 
@@ -106,28 +144,42 @@ public class FileRepository extends UserRepositoryTestBase {
                pageHierarchy.addAll(parentHierarchy);
                pageHierarchy.add( pageMetaData.getName().toUpperCase());
                
+               
                // Add page as a child of container
-               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, pageList, portalProperties);
+               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, children, portalProperties, acls);
+               
            }
         }
 
         
-        MemoryRepositoryPage page = new MemoryRepositoryPage(this, getPageName(pageMetaData, parentHierarchy), getPageName(pageMetaData, parentHierarchy), null, getPortalName(portalMetaData), getPortalName(portalMetaData), children,
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this, getPageName(pageMetaData, parentHierarchy), getPageName(pageMetaData, parentHierarchy), null, getParentName( parentHierarchy), getPortalName(portalMetaData), children,
                 pageProperties, modules);
         
         addDocument(getPageName(pageMetaData, parentHierarchy), page);
         
+        setACL(getPageName(pageMetaData, parentHierarchy), acls);
+        
         pageList.add(getPageName(pageMetaData, parentHierarchy));
+        
+       } catch (Exception e)    {
+           e.printStackTrace();
+           
+       }
         
     } 
     
     
     protected void createSpace(PortalMetaData portalMetaData) throws CMSException {
         
-        log.info("create space " + getPortalName(portalMetaData));       
+        log.info("create space " + getPortalName(portalMetaData)); 
+        
         
 
         Map<String, Object> portalProperties = configure(portalMetaData);
+        
+        portalProperties = configure(portalMetaData);
+        
+        portalProperties.put("osivia.hidden", Boolean.TRUE);
         
         
         /* Create pages */
@@ -139,10 +191,25 @@ public class FileRepository extends UserRepositoryTestBase {
         
         List<String> portalChildren = new ArrayList<String>();
 
+        @SuppressWarnings("unchecked")
+        List<String> acls = new ArrayList<>();
+        if (portalMetaData.getSecurityConstraints() != null) {
+            Set<RoleSecurityBinding> portalConstraints = (Set<RoleSecurityBinding>) portalMetaData.getSecurityConstraints().getConstraints();
+
+            for (RoleSecurityBinding constraint : portalConstraints) {
+                for (Object action : constraint.getActions()) {
+                    if ("viewrecursive".equals(action)) {
+                        acls.add("group:" + constraint.getRoleName());
+                    }
+                }
+            }
+        }
+        
+        
         for (PortalObjectMetaData portalObjectMD : children.values())
         {
            if( portalObjectMD instanceof PageMetaData)  {
-               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, portalChildren,portalProperties);
+               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, portalChildren,portalProperties, acls);
            }
         }
 
@@ -165,7 +232,24 @@ public class FileRepository extends UserRepositoryTestBase {
         {
             portalProperties.put(entry.getKey(), entry.getValue());
         }
-        portalProperties.put("dc:title", metaData.getName());
+        
+        String title=null;
+        
+        try {
+            if (metaData.getDisplayName() != null) {
+                if (metaData.getDisplayName() != null) {
+                    Value localeTitle = metaData.getDisplayName().getValue(Locale.FRENCH, true);
+                    if (localeTitle != null)
+                        title = localeTitle.getString();
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+       
+        if( title == null)
+            title = metaData.getName();
+        portalProperties.put("dc:title", title);
         return portalProperties;
     }
 
@@ -178,6 +262,19 @@ public class FileRepository extends UserRepositoryTestBase {
         }
         return  hierarchy + pageMetaData.getName().toUpperCase();
     }
+    
+    
+    private String getParentName( List<String> parentHierarchy) {
+        String hierarchy = "";
+        for( String curHierarchy : parentHierarchy) {
+            if( hierarchy.length() > 0)
+                hierarchy += "_";
+             hierarchy += curHierarchy;
+           
+        }
+        return  hierarchy ;
+    }
+    
     
     private String getPortalName(PortalMetaData portalMetaData) {
         return  portalMetaData.getName().toUpperCase();
