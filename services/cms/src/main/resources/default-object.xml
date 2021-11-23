@@ -525,6 +525,27 @@ return nuxeoRequest.toString();</value>
                         </property>
                     </properties>
                     <height>0</height>
+                </window>           
+                
+                <window>
+                    <window-name>initializer-instance</window-name>
+                    <instance-ref>index-cloud-ens-initializer-instance</instance-ref>
+                    <region>col-2</region>
+                    <properties>
+                        <property>
+                            <name>osivia.hideTitle</name>
+                            <value>1</value>
+                        </property>                    
+                           <property>
+                            <name>portal.windowContentType</name>
+                            <value>portlet</value>
+                        </property>
+                        <property>
+                            <name>theme.order</name>
+                            <value>0</value>
+                        </property>
+                    </properties>
+                    <height>0</height>
                 </window>                
              </page>
 

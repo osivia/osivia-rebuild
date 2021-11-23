@@ -626,10 +626,15 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	}
 }
 
-function directAjaxCall(container, options, url, eventToStop, callerId, popState, refresh){
-    // Setup headers
-    var headers = ["ajax","true"],
-    	$ajaxWaiter = $JQry(".ajax-waiter");
+
+function getHeaders(popState, refresh)	{
+	
+	 // Setup headers
+	var headers =  new Object();
+	
+	headers.ajax = true;    
+    
+    
 
 	var headerState = null;
 	if (popState !== undefined) {
@@ -643,17 +648,29 @@ function directAjaxCall(container, options, url, eventToStop, callerId, popState
 	}
 	
 	if (headerState != null) {
-		headers.push('view_state', headerState);
+		headers.view_state= headerState;
 	}
 
-	if( refresh != null)
-		headers.push('refresh', refresh);
-
+	if (refresh !== undefined) {
+		if( refresh != null)
+			headers.refresh = refresh;
+	}
 
     
 	if( session_check != null)	{
-		headers.push('session_check', session_check);
+		headers.session_check= session_check;
 	}
+	
+	return headers;
+}
+
+
+function directAjaxCall(container, options, url, eventToStop, callerId, popState, refresh){
+   
+	var headers = getHeaders(popState, refresh);
+	
+	$ajaxWaiter = $JQry(".ajax-waiter");
+
 	
 	// Save current scroll position
 	currentScroll = 0;
