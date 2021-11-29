@@ -139,7 +139,7 @@
 
         <org.springframework.ldap.version>2.1.0.RELEASE</org.springframework.ldap.version>		
 		<org.springframework.security.version>5.3.12.RELEASE</org.springframework.security.version>
-		<org.springframework.security.oauth2.version>2.0.16.RELEASE</org.springframework.security.oauth2.version>
+		<org.springframework.security.oauth2.version>2.0.18.RELEASE</org.springframework.security.oauth2.version>
 		<!-- Commons -->
 		<commons-lang3.version>3.4</commons-lang3.version>
 		<commons-logging.version>1.2</commons-logging.version>
