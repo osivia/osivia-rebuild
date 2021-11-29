@@ -46,7 +46,7 @@
                 <include>org.springframework:spring-web</include>
                 <include>org.springframework:spring-aop</include>                
                 <include>org.springframework:spring-webmvc</include>
-                <include>org.springframework:spring-webmvc-portlet</include> 
+                <include>org.osivia.portal.kernel:osivia-portal-kernel-spring-mvc-portlet</include>
                 <include>org.springframework:spring-context-support</include>
                 <include>org.springframework:spring-tx</include>                                  
                 <include>org.springframework.security:spring-security-core</include>

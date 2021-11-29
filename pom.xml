@@ -128,14 +128,17 @@
 		<javax-ccpp.version>1.0</javax-ccpp.version>
 		<javax-mail.version>1.4</javax-mail.version>
 
+
 		<!-- JBoss portlet container -->
 		<jboss-portlet-container.version>2.0.9</jboss-portlet-container.version>
 		<jboss-portal-web.version>1.2.0</jboss-portal-web.version>
 
 		<!-- Spring framework -->
-		<springframework.version>4.2.6.RELEASE</springframework.version>
+		<springframework.version>5.3.13</springframework.version>
+		<springframework.webmvc-portlet.version>4.2.6.RELEASE</springframework.webmvc-portlet.version>
+
         <org.springframework.ldap.version>2.1.0.RELEASE</org.springframework.ldap.version>		
-		<org.springframework.security.version>4.0.4.RELEASE</org.springframework.security.version>
+		<org.springframework.security.version>5.3.12.RELEASE</org.springframework.security.version>
 		<org.springframework.security.oauth2.version>2.0.16.RELEASE</org.springframework.security.oauth2.version>
 		<!-- Commons -->
 		<commons-lang3.version>3.4</commons-lang3.version>
@@ -366,7 +369,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc-portlet</artifactId>
-				<version>${springframework.version}</version>
+				<version>${springframework.webmvc-portlet.version}</version>
 				<scope>provided</scope>
 			</dependency>
 

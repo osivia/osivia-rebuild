@@ -12,7 +12,7 @@
         
         <init-param>
             <name>contextClass</name>
-            <value>org.osivia.portal.sample.configuration.AnnotationPortletApplicationContext</value>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>

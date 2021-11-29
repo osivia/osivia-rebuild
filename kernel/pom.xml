@@ -24,6 +24,7 @@
         <module>jbp</module>
 		<module>jbp-lib</module>
 		<module>tomcat</module>
+		<module>spring-mvc-portlet</module>
     </modules>
     
     

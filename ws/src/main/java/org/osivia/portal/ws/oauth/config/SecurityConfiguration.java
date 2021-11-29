@@ -1,5 +1,7 @@
 package org.osivia.portal.ws.oauth.config;
 
+import org.osivia.portal.ws.oauth.authentication.IPortalAuthenticationProvider;
+import org.osivia.portal.ws.oauth.authentication.PortalAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +23,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-//    @Autowired
-//    PortalAuthenticationProvider authProvider;
+    @Autowired
+    IPortalAuthenticationProvider authProvider;
 //    
 //    @Autowired
 //    PortalUserDetailService userDetailService;    

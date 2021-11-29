@@ -61,6 +61,15 @@
             <groupId>org.osivia.portal.api</groupId>
             <artifactId>osivia-portal-api-cms</artifactId>
         </dependency>
+        
+         <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-spring-mvc-portlet</artifactId>
+			<version>${project.version}</version>
+             <scope>provided</scope>            
+        </dependency>
+
+
 
     </dependencies>
     

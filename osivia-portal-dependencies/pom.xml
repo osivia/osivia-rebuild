@@ -37,6 +37,12 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-spring-mvc-portlet</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>        
+        <dependency>
             <groupId>org.jboss.portal.common</groupId>
             <artifactId>common-common</artifactId>
             <version>1.2.5</version>
@@ -58,23 +64,69 @@
         </dependency>
    
         <!-- Spring framework -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc-portlet</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
             <scope>runtime</scope>
         </dependency>
         
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <scope>runtime</scope>
+        </dependency>        
        <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-core</artifactId>
             <scope>runtime</scope>
-        </dependency> 
+	    </dependency>
+	
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<scope>runtime</scope>
+		</dependency>  
+         
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${springframework.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        
+        
+        
         
  		<dependency>
             <groupId>org.apache.httpcomponents</groupId>

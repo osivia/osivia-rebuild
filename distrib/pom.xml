@@ -102,6 +102,14 @@
             <type>war</type>
         </dependency>    
                 
+        <dependency>
+            <groupId>org.osivia.portal.kernel</groupId>
+            <artifactId>osivia-portal-kernel-spring-mvc-portlet</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>        
+
+              
          <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
