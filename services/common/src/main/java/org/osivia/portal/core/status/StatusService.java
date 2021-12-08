@@ -60,7 +60,7 @@ import org.springframework.stereotype.Service;
 import com.sun.mail.smtp.SMTPTransport;
 
 
-@Service
+@Service("osivia:service=StatusServices")
 public class StatusService extends ServiceMBeanSupport implements IStatusService, Serializable {
 
 	/**

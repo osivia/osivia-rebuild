@@ -17,7 +17,8 @@
                 <include>org.apache.commons:commons-lang3</include>
                 <include>commons-logging:commons-logging</include>
                 <include>commons-collections:commons-collections</include>  
-                <include>commons-pool:commons-pool</include>    
+                <include>commons-pool:commons-pool</include>
+                <include>commons-codec:commons-codec</include>                    
                 <include>javax.security.jacc:javax.security.jacc-api</include>
                 <include>org.jboss.portal.common:common-common</include>
                 <include>org.jboss.portal.common:common-portal</include>

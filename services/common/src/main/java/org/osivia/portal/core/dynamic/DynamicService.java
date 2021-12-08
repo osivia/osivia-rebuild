@@ -212,7 +212,9 @@ public class DynamicService implements IDynamicService {
 
         String parentPath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
         
-        String windowName = "dyna" + System.currentTimeMillis();
+        String windowName = windowProperties.get("osivia.windowName");
+        if(windowName == null)
+            windowName = "dyna" + System.currentTimeMillis();
 
         startDynamicWindow(portalControllerContext, parentPath, windowName, regionId, portletInstance, windowProperties, null);
 

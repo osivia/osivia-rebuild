@@ -389,8 +389,16 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	           new Insertion.Bottom(srcContainer, markup);
 	
 	           // Copy the region content
-	           copyInnerHTML(srcContainer, dstContainer, "dyna-portlet")
-	           copyInnerHTML(srcContainer, dstContainer, "dyna-decoration")
+	           copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
+	           copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
+	           
+	           if( newPage == false)	{
+	        	   // StartDynamic window in normal mode
+	        	   var $dstContainer = $JQry(dstContainer);
+	        	   $dstContainer.find('#'+id).each(function( index ) {
+	        		   observePortlet( this);
+	        	   });	
+	           }
 	        }
 	       
 	     }
@@ -473,6 +481,14 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 		
 		                            // Copy the region content
 		                            copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window");
+		                            
+		                            if( newPage == false)	{
+		             	        	   // StartDynamic window in normal mode
+		             	        	   var $dstContainer = $JQry(newWindowDiv);
+		             	        	   $dstContainer.find('#'+id).each(function( index ) {
+		             	        		   observePortlet( this);
+		             	        	   });	
+		             	           }
 
 	         				  }
 	
