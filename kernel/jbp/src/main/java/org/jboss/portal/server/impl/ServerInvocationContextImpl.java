@@ -37,6 +37,7 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.jboss.portal.web.Body;
 import org.jboss.portal.web.WebRequest;
+import org.osivia.portal.core.utils.URLUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -109,26 +110,12 @@ public class ServerInvocationContextImpl extends AbstractInvocationContext imple
       this.portalContextPath = portalContextPath;
       this.portalHost = portalHost;
       this.urlContext = urlContext;
-      this.buffers = new Buffer[16];
 
-      //
-      StringBuffer requestRelativePrefix = new StringBuffer();
-      requestRelativePrefix.append(req.getScheme()).append("://").append(req.getServerName());
-      if (req.isSecure())
-      {
-         if (req.getServerPort() != 443)
-         {
-            requestRelativePrefix.append(":").append(Integer.toString(req.getServerPort()));
-         }
-      }
-      else if (req.getServerPort() != 80)
-      {
-         requestRelativePrefix.append(":").append(Integer.toString(req.getServerPort()));
-      }
-      requestRelativePrefix.append(req.getContextPath());
-
-      //
-      this.requestRelativePrefix = requestRelativePrefix.toString();
+      // Request relative prefix
+      String url = URLUtils.createUrl(req, req.getContextPath(), null);
+      this.requestRelativePrefix = url;
+      
+      // Request prefix
       this.requestPrefix = req.getContextPath();
 
       //
@@ -203,13 +190,8 @@ public class ServerInvocationContextImpl extends AbstractInvocationContext imple
 
    public String renderURL(ServerURL url, URLContext context, URLFormat format)
    {
-      int index = context.getMask() << 2 | format.getMask();
-      if (buffers[index] == null)
-      {
-         buffers[index] = new Buffer(resp, context, format);
-      }
-      Buffer buffer = buffers[index];
-      return buffer.toString(url);
+       Buffer buffer = new Buffer(this.resp, context, format);
+       return buffer.toString(url);
    }
 
    public class Buffer extends CharBuffer

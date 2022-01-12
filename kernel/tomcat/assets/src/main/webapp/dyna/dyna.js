@@ -58,41 +58,46 @@ function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId)
 // Check that the URL starts with the provided prefix
 function isURLAccepted(url)
 {
-	
 	var urlPrefix = server_base_url;
 	if( urlPrefix.endsWith("/auth/"))	{
 		urlPrefix = urlPrefix.substring( 0, urlPrefix.length - "/auth/".length);
 	}
+    if (url.indexOf("&action=f") != -1) {
+        // Pas d'ajax pour les ressources
+        return false;
+    } else if (url.indexOf("&action=b") != -1) {
+        // Pas d'ajax pour les ressources
+        return false;
+    }
 
-   var indexOfSessionId = urlPrefix.indexOf(";jsessionid");
-   if (indexOfSessionId > 0)
-   {
-	   urlPrefix = urlPrefix.substring(0, indexOfSessionId - ";jsessionid".length - 1);
-   }
+    var indexOfSessionId = urlPrefix.indexOf(";jsessionid");
+    if (indexOfSessionId > 0) {
+        urlPrefix = urlPrefix.substring(0, indexOfSessionId
+            - ";jsessionid".length - 1);
+    }
 
-   if (url.indexOf("http://") == 0)
-   {
-      var indexOfSlash = url.indexOf("/", "http://".length);
-      if (indexOfSlash < 0)
-      {
-         return false;
-      }
-      else if (indexOfSlash > 0)
-      {
-         var path = url.substring(indexOfSlash);
-         if (path.indexOf(urlPrefix) != 0)
-         {
+    var scheme = "";
+    if (url.indexOf("http://") == 0) {
+        scheme = "http://";
+    } else if (url.indexOf("https://") == 0) {
+        scheme = "https://";
+    }
+    if (scheme) {
+        var indexOfSlash = url.indexOf("/", scheme.length);
+        if (indexOfSlash < 0) {
             return false;
-         }
-      }
-   }
-   else if (url.indexOf(urlPrefix) != 0)
-   {
-      return false;
-   }
+        } else {
+            var path = url.substring(indexOfSlash);
+            if (path.indexOf(urlPrefix) != 0) {
+                return false;
+            }
+        }
+    } else if (url.indexOf(urlPrefix) != 0) {
+        return false;
+    }
 
-   //
-   return true;
+    //
+    return true;
 }
 
 function bilto(event)
