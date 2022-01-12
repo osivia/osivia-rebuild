@@ -78,14 +78,7 @@
                     <name>control.page.resource_uri</name>
                     <value>/WEB-INF/jsp/error/page.jsp</value>
                 </property>
-                <property>
-                    <name>osivia.services.cgu.path</name>
-                    <value>/default-domain/publication-space/cgu</value>
-                </property>
-                <property>
-                    <name>osivia.services.cgu.level</name>
-                    <value>1</value>
-                </property>
+
              
             </properties>
         </context>
@@ -159,7 +152,15 @@
                 <property>
                     <name>osivia.portal.admin.page</name>
                     <value>/default/admin</value>
-                </property>                  
+                </property>    
+                <property>
+                    <name>osivia.services.cgu.path</name>
+                    <value>/default-domain/publication-space/cgu</value>
+                </property>
+                <property>
+                    <name>osivia.services.cgu.level</name>
+                    <value>1</value>
+                </property>
             </properties>
 
             <security-constraint>

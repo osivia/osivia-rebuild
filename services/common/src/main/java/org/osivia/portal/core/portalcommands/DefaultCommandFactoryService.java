@@ -15,10 +15,15 @@
 package org.osivia.portal.core.portalcommands;
 
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -30,6 +35,8 @@ import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
+import org.osivia.portal.core.tasks.UpdateTaskCommand;
+import org.osivia.portal.core.tasks.ViewTaskCommand;
 import org.osivia.portal.core.ui.SaveResizableWidthCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,6 +164,57 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                          return command;
 
                 }      
+                
+                
+                // Update task command
+                if (UpdateTaskCommand.ACTION.equals(action)) {
+                    // Parameters
+                    String[] uuidParameter = parameterMap.get(UpdateTaskCommand.UUID_PARAMETER);
+                    String[] actionIdParameter = parameterMap.get(UpdateTaskCommand.ACTION_ID_PARAMETER);
+                    String[] variablesParameter = parameterMap.get(UpdateTaskCommand.VARIABLES_PARAMETER);
+
+                    if (ArrayUtils.isNotEmpty(uuidParameter) && ArrayUtils.isNotEmpty(actionIdParameter)) {
+                        // UUID
+                        UUID uuid = UUID.fromString(URLDecoder.decode(uuidParameter[0], CharEncoding.UTF_8));
+                        // Action identifier
+                        String actionId = URLDecoder.decode(actionIdParameter[0], CharEncoding.UTF_8);
+                        // Variables
+                        Map<String, String> variables;
+                        if (ArrayUtils.isEmpty(variablesParameter)) {
+                            variables = null;
+                        } else {
+                            String[] properties = StringUtils.split(URLDecoder.decode(variablesParameter[0], CharEncoding.UTF_8), "&");
+                            variables = new HashMap<String, String>(properties.length);
+                            for (String property : properties) {
+                                String[] entry = StringUtils.split(property, "=");
+                                if (entry.length == 2) {
+                                    String key = StringEscapeUtils.unescapeHtml4(entry[0]);
+                                    String value = StringEscapeUtils.unescapeHtml4(entry[1]);
+                                    variables.put(key, value);
+                                }
+                            }
+                        }
+
+                        return new UpdateTaskCommand(uuid, actionId, variables);
+                    }
+                }
+                
+                
+                // Update task command
+                if (ViewTaskCommand.ACTION.equals(action)) {
+                    // Parameters
+                    String[] uuidParameter = parameterMap.get(UpdateTaskCommand.UUID_PARAMETER);
+
+
+                    if (ArrayUtils.isNotEmpty(uuidParameter)) {
+                        // UUID
+                        UUID uuid = UUID.fromString(URLDecoder.decode(uuidParameter[0], CharEncoding.UTF_8));
+
+
+                        return new ViewTaskCommand(uuid);
+                    }
+                }
+                
                 
                 // Save jQuery UI resizable component value
                 if (SaveResizableWidthCommand.ACTION.equals(action)) {

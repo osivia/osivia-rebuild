@@ -20,7 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
@@ -31,6 +34,8 @@ import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
+import org.osivia.portal.core.tasks.UpdateTaskCommand;
+import org.osivia.portal.core.tasks.ViewTaskCommand;
 import org.osivia.portal.core.ui.SaveResizableWidthCommand;
 
 
@@ -95,6 +100,57 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             return asu;
         }
        
+        
+        
+        
+        // Update task command
+        if (cmd instanceof UpdateTaskCommand) {
+            UpdateTaskCommand command = (UpdateTaskCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            // Command parameters
+            try {
+                asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, UpdateTaskCommand.ACTION);
+
+                asu.setParameterValue(UpdateTaskCommand.UUID_PARAMETER, URLEncoder.encode(command.getUuid().toString(), CharEncoding.UTF_8));
+                asu.setParameterValue(UpdateTaskCommand.ACTION_ID_PARAMETER, URLEncoder.encode(command.getActionId(), CharEncoding.UTF_8));
+                if (MapUtils.isNotEmpty(command.getVariables())) {
+                    List<String> variables = new ArrayList<String>(command.getVariables().size());
+                    for (Entry<String, String> entry : command.getVariables().entrySet()) {
+                        variables.add(StringEscapeUtils.escapeHtml4(entry.getKey()) + "=" + StringEscapeUtils.escapeHtml4(entry.getValue()));
+                    }
+                    asu.setParameterValue(UpdateTaskCommand.VARIABLES_PARAMETER, URLEncoder.encode(StringUtils.join(variables, "&"), CharEncoding.UTF_8));
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+        
+        // Update task command
+        if (cmd instanceof ViewTaskCommand) {
+            ViewTaskCommand command = (ViewTaskCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            // Command parameters
+            try {
+                asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, ViewTaskCommand.ACTION);
+
+                asu.setParameterValue(UpdateTaskCommand.UUID_PARAMETER, URLEncoder.encode(command.getUuid().toString(), CharEncoding.UTF_8));
+
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+
+        
         // Save jQuery UI resizable component value
         if (cmd instanceof SaveResizableWidthCommand) {
             SaveResizableWidthCommand command = (SaveResizableWidthCommand) cmd;

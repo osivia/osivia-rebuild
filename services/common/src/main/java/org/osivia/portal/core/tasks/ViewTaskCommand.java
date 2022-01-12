@@ -7,6 +7,7 @@ import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -90,11 +91,10 @@ public class ViewTaskCommand extends ControllerCommand {
         try {
             CMSItem task = cmsService.getTask(cmsContext, uuid);
             if (task != null) {
-                // Display context
-                String displayContext = task.getProperties().get("displayContext");
                 // Redirection URL
-                String redirectionUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, task.getCmsPath(), null, null, displayContext, null, null, null, null);
+                String redirectionUrl = this.portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID("task",uuid.toString()));
                 response = new RedirectionResponse(redirectionUrl);
+                
             } else {
                 throw new CMSException(CMSException.ERROR_NOTFOUND);
             }

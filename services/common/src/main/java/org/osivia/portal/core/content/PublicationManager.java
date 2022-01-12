@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -47,6 +48,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
@@ -171,30 +173,51 @@ public class PublicationManager implements IPublicationManager {
         try {
             CMSContext cmsContext = new CMSContext(portalCtx);
             
-            // check if user repository is compatible with context (locale, preview)
             
-            NativeRepository userRepository = getCMSService().getUserRepository(cmsContext, docId.getRepositoryName());
-            if(  getPreviewModeService().isPreviewing(portalCtx, docId) && !userRepository.supportPreview())
-                getPreviewModeService().changePreviewMode(portalCtx, docId);
-            if( !userRepository.getLocales().contains(getLocaleService().getLocale(portalCtx)))
-                getLocaleService().setLocale(portalCtx, null);
-            
-            
-            
-            cmsContext.setPreview(getPreviewModeService().isPreviewing(portalCtx, docId));
-            cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
-            
+            Document doc;
+            CMSItem notSupportedCMSItem;
+            Object nxNativeItem;
 
-             
-            Document doc = getCMSService().getCMSSession(cmsContext).getDocument( docId);
+            
+            CMSServiceCtx  cmsReadItemContext = new CMSServiceCtx();
+            cmsReadItemContext.setPortalControllerContext(portalCtx);
+
+            
+            
+            if ("task".equals(docId.getRepositoryName())) {
+                doc = null;
+                notSupportedCMSItem = getCmsServiceLocator().getCMSService().getTask(cmsReadItemContext, UUID.fromString(docId.getInternalID()));
+                nxNativeItem = notSupportedCMSItem.getNativeItem();
+            } else {
+                // check if user repository is compatible with context (locale, preview)
+                
+                NativeRepository userRepository = getCMSService().getUserRepository(cmsContext, docId.getRepositoryName());
+                
+                
+                if(  getPreviewModeService().isPreviewing(portalCtx, docId) && !userRepository.supportPreview())
+                    getPreviewModeService().changePreviewMode(portalCtx, docId);
+                if( !userRepository.getLocales().contains(getLocaleService().getLocale(portalCtx)))
+                    getLocaleService().setLocale(portalCtx, null);
+                
+                 
+                cmsContext.setPreview(getPreviewModeService().isPreviewing(portalCtx, docId));
+                cmsContext.setLocale(getLocaleService().getLocale(portalCtx));
+                
+                doc = getCMSService().getCMSSession(cmsContext).getDocument(docId);
+                
+                if( "nx".equals(docId.getRepositoryName()))
+                    nxNativeItem = doc.getNativeItem();
+                else
+                    nxNativeItem = null;
+                
+                notSupportedCMSItem = null;
+             }
             
             UniversalID virtualTaskId = null;
             String virtualTaskPath = null;
             
-            if( doc.getId().getRepositoryName().equals("nx"))   {
-                CMSServiceCtx  cmsReadItemContext = new CMSServiceCtx();
-                cmsReadItemContext.setPortalControllerContext(portalCtx);
-                cmsReadItemContext.setDoc(doc.getNativeItem());
+            if( nxNativeItem != null)   {
+                cmsReadItemContext.setDoc(nxNativeItem);
                 virtualTaskPath = getCmsServiceLocator().getCMSService().getAdaptedNavigationPath(cmsReadItemContext);
                 if( virtualTaskPath != null)  {
                     virtualTaskId = getCmsServiceLocator().getCMSService().getUniversalIDFromPath(cmsReadItemContext, virtualTaskPath);
@@ -205,8 +228,15 @@ public class PublicationManager implements IPublicationManager {
             
             
             
+            // Get space
+            UniversalID spaceId;
+            if (doc != null) {
+                spaceId = doc.getSpaceId();
+            } else {
+                spaceId = null;
+            }
+           
             // Force load of dirty datas associated to current space
-            UniversalID spaceId = doc.getSpaceId();
             if (spaceId != null) {
                 CMSController ctrl = new CMSController(portalCtx);
 
@@ -214,15 +244,12 @@ public class PublicationManager implements IPublicationManager {
                 try {
                     session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
                     SpaceCacheBean modifiedTs = session.getSpaceCacheInformations(spaceId);
-                    if( modifiedTs.getLastSpaceModification() != null)
+                    if (modifiedTs.getLastSpaceModification() != null)
                         PageProperties.getProperties().setCheckingSpaceTS(modifiedTs.getLastSpaceModification());
                 } catch (CMSException e) {
                     throw new RuntimeException(e);
                 }
-            }
-           
-            
-            
+            }           
             
             boolean pageDisplay = false;
             
@@ -400,9 +427,22 @@ public class PublicationManager implements IPublicationManager {
                  
                 
             }   else    {
-                if( "nx".equals(doc.getId().getRepositoryName()))   {
+                
+                if( nxNativeItem != null )   {
                     pageId = PortalObjectUtilsInternal.getPageId(ControllerContextAdapter.getControllerContext(portalCtx));
-                    pagePath = pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
+                    if( pageId != null)
+                        pagePath = pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
+                    else    {
+                        // Procedure from mail
+                        // Empty page
+                        Map<Locale, String> displayNames = new HashMap<Locale, String>();
+                        String displayName = "content";
+                        if (StringUtils.isNotEmpty(displayName)) {
+                            displayNames.put(Locale.FRENCH, displayName);
+                        }                        
+                        pagePath = getDynamicService().startDynamicPage(portalCtx, "idx:/DEFAULT", "content",
+                                displayNames, "idx:/DEFAULT/root/DEFAULT_TEMPLATES/DEFAULT_TEMPLATES_PUBLISH", new HashMap<>(), new HashMap<>(), null);                        
+                    }
                     
                 }   else    {
                     // Empty page
@@ -419,23 +459,29 @@ public class PublicationManager implements IPublicationManager {
             
 
 
-            if ((!(doc instanceof Templateable)) && pageDisplay == false) {
+            if ( (( doc == null && notSupportedCMSItem != null ) || ( doc != null && !(doc instanceof Templateable))) && pageDisplay == false) {
 
                 Map<String, String> windowProperties = new HashMap<String, String>();
                 Map<String, String> windowParams = new HashMap<String, String>();
 
-                windowProperties.put(Constants.WINDOW_PROP_URI, doc.getId().toString());
+                if( doc != null)
+                    windowProperties.put(Constants.WINDOW_PROP_URI, doc.getId().toString());
+                else    {
+                    if( notSupportedCMSItem != null) {
+                        windowProperties.put(Constants.WINDOW_PROP_NOT_SUPPORTED_PATH, notSupportedCMSItem.getCmsPath());
+                    }
+                }
                 
                 String instance;
                 
     
                 
-                if( "nx".equals(doc.getId().getRepositoryName()))   {
+                if( nxNativeItem != null)   {
                     ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
                      
                     CMSServiceCtx  handlerCtx = new CMSServiceCtx();
                     handlerCtx.setPortalControllerContext(portalCtx);
-                    handlerCtx.setDoc(doc.getNativeItem());
+                    handlerCtx.setDoc(nxNativeItem);
                     handlerCtx.setServletRequest(controllerContext.getServerInvocation().getServerContext().getClientRequest());
                     
                     
@@ -443,11 +489,6 @@ public class PublicationManager implements IPublicationManager {
                     instance = contentProperties.getPortletInstance();
                     
                     windowProperties.putAll(contentProperties.getWindowProperties());
-                    
-                    
-                    //    instance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
-                        
-                    
                 }   else    {
                     if( "folder".equals(doc.getType())) {
                         instance = "BrowserInstance";

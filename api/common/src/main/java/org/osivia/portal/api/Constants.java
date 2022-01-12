@@ -213,6 +213,8 @@ public final class Constants {
 
     /** The CMS URI of the portlet. */
     public static final String WINDOW_PROP_URI = "osivia.cms.uri";
+    /** The CMS path of the portlet. */
+    public static final String WINDOW_PROP_NOT_SUPPORTED_PATH = "osivia.cms.notSupportedPath";
     /** The version of the content. */
     public static final String WINDOW_PROP_VERSION = "osivia.cms.displayLiveVersion";
     /** The scope of the request. */
