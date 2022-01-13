@@ -522,6 +522,11 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	     view_state = resp.view_state;
 	  }
 	
+	  // update view state
+	  if (resp.session_check != null)
+	  {
+		  session_check = resp.session_check;
+	  }
 	  
 	  // Save components state in history
 	  

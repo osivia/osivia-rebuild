@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
+
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
@@ -122,9 +123,15 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     
     public boolean isAdministrator()    {
-        Principal principal = getPrincipal();
-        if( principal != null && principal.toString().contains("Administrators")) {
-            return true;
+        PortalControllerContext ctx = portalCtx.get();
+        if( ctx.getHttpServletRequest() != null &&  ctx.getHttpServletRequest().getUserPrincipal() != null)    {
+            Boolean isAdministrator = (Boolean) ctx.getHttpServletRequest().getSession().getAttribute("osivia.isAdmin");
+            if (isAdministrator == null) {
+                isAdministrator = ctx.getHttpServletRequest().isUserInRole("Administrators");
+                ctx.getHttpServletRequest().getSession().setAttribute("osivia.isAdmin", isAdministrator);
+            }
+            return isAdministrator;
+
         }
         return false;
     }

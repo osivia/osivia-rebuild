@@ -105,14 +105,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         Boolean isAdministrator = (Boolean) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
         if (isAdministrator == null) {
 
-            Principal principal = controllerContext.getServerInvocation().getServerContext().getClientRequest().getUserPrincipal();
-
-            if( principal != null && principal.toString().contains("Administrators")) {
-                isAdministrator =  true;
-            }   else
-                isAdministrator =  false;
- 
-
+            isAdministrator = controllerContext.getServerInvocation().getServerContext().getClientRequest().isUserInRole("Administrators");
+            
+          
             controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin", isAdministrator);
         }
         return isAdministrator;
