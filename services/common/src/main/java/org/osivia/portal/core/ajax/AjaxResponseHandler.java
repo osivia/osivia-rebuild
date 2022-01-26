@@ -121,6 +121,7 @@ import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.resources.ResourceHandler;
+import org.osivia.portal.core.theming.IPageHeaderResourceService;
 import org.osivia.portal.core.theming.RenderedRegions;
 import org.w3c.dom.Element;
 
@@ -148,9 +149,13 @@ public class AjaxResponseHandler implements ResponseHandler {
     private IRegionsThemingService regionsThemingService;
     /** Customization service. */
     private ICustomizationService customizationService;
+    
+    /** Page header resource service. */
+    private  IPageHeaderResourceService pageHeaderResourceService;
 
 
-    /** . */
+
+
     private PageService pageService;
 
     public PortalObjectContainer getPortalObjectContainer() {
@@ -180,24 +185,27 @@ public class AjaxResponseHandler implements ResponseHandler {
     }
 
 
-    /**
-     * Setter for regionsThemingService.
-     *
-     * @param regionsThemingService the regionsThemingService to set
-     */
+
     public void setRegionsThemingService(IRegionsThemingService regionsThemingService) {
         this.regionsThemingService = regionsThemingService;
     }
 
-    /**
-     * Setter for customizationService.
-     *
-     * @param customizationService the customizationService to set
-     */
+
     public void setCustomizationService(ICustomizationService customizationService) {
         this.customizationService = customizationService;
     }
     
+    
+    
+    
+    public IPageHeaderResourceService getPageHeaderResourceService() {
+        return pageHeaderResourceService;
+    }
+
+    
+    public void setPageHeaderResourceService(IPageHeaderResourceService pageHeaderResourceService) {
+        this.pageHeaderResourceService = pageHeaderResourceService;
+    }
     
     public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
             throws ResponseHandlerException {
@@ -924,7 +932,10 @@ public class AjaxResponseHandler implements ResponseHandler {
         if (headElements != null) {
             for (Element element : headElements) {
                 if (!"title".equals(element.getNodeName().toLowerCase())) {
-                       resources.add(ResourceHandler.getResource(element.toString()));
+                    String resource = getPageHeaderResourceService().adaptResourceElement(element.toString());
+                    if (resource != null) {
+                        resources.add(ResourceHandler.getResource(resource));
+                    }                    
                 }
             }
         }                                    

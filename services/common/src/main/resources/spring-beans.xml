@@ -92,13 +92,12 @@
 	   <!-- The ajax response handler -->
    <bean class="org.osivia.portal.core.ajax.AjaxResponseHandler"
           id="portal:service=ResponseHandler,type=Ajax" >
-      
       <property name="PageService" ref="portal:service=PageService"/>
       <property name="PortalObjectContainer" ref="portal:container=PortalObject"/>
       <property name="DynamicLayoutService" ref="portal:service=DynamicLayoutService"/>
       <property name="RegionsThemingService" ref="osivia:service=RegionsThemingService"/>   
-      <property name="CustomizationService" ref="osivia:service=CustomizationService"/>       
-      
+      <property name="CustomizationService" ref="osivia:service=CustomizationService"/>
+      <property name="PageHeaderResourceService" ref="osivia:service=PageHeaderResourceService"/>        
    </bean>
     
     

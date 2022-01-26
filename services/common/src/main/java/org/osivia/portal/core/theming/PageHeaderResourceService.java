@@ -46,7 +46,7 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
     /** Manifest attribute name for maven-generated version number. */
     private static final String MAVEN_VERSION_MANIFEST_ATTRIBUTE = "Implementation-Version";
     /** Portal default context path. */
-    private static final String PORTAL_DEFAULT_CONTEXT_PATH = "/osivia-portal-custom-web-assets";
+    private static final String PORTAL_DEFAULT_CONTEXT_PATH = "/portal-assets";
 
     /** Page header resource cache. */
     private final PageHeaderResourceCache cache;

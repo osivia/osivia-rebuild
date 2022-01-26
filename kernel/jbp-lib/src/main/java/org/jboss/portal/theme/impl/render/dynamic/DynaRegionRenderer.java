@@ -32,8 +32,13 @@ import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.theming.IPageHeaderResourceService;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+
+import javax.servlet.jsp.JspWriter;
 
 /**
  * Implementation of a drag and drop Region renderer.
@@ -48,6 +53,9 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
    /** . */
    private static final PropertyFetch RENDER_OPTIONS_FETCH = new PropertyFetch(PropertyFetch.ANCESTORS_SCOPE);
 
+   /** Page header resource service. */
+   private  static IPageHeaderResourceService pageHeaderResourceService = null;
+   
    /** . */
    private RegionRenderer delegate;
 
@@ -58,6 +66,16 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
       delegate = regionRenderer;
    }
 
+   
+   private IPageHeaderResourceService getPageHeaderService()    {
+   // Page header resource service
+       if( pageHeaderResourceService == null)
+           pageHeaderResourceService = Locator.findMBean(IPageHeaderResourceService.class, IPageHeaderResourceService.MBEAN_NAME);
+       return pageHeaderResourceService;
+   }
+
+
+   
    public void startContext(RendererContext rendererContext, ObjectRendererContext objectRenderContext)
    {
       RegionRendererContext rrc = (RegionRendererContext)objectRenderContext;
@@ -108,34 +126,26 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
       // Handle special ajax region here
       if ("AJAXScripts".equals(rrc.getId()))
       {
+          try   {
           
+          // AJAX header
+          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/prototype.js'></script>");
+          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/prototype-bootstrap-workaround.js'></script>");
+          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/effects.js'></script>");
+          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/dragdrop.js'></script>");
+          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/dyna.js'></script>");
+          } catch(IOException e) {
+              throw new RenderException( e);
+          }
           
-          
+          /*
          markup.print("<script type='text/javascript' src='");
          markup.print(jsBase);
          markup.print("/react.production.min.js'></script>\n");
          markup.print("<script type='text/javascript' src='");
          markup.print(jsBase);
          markup.print("/react-dom.production.min.js'></script>\n");
-         
-         
-         
-          markup.print("<script type='text/javascript' src='");
-         markup.print(jsBase);
-         markup.print("/prototype.js'></script>\n");
-         markup.print("<script type='text/javascript' src='");
-         markup.print(jsBase);
-         markup.print("/effects.js'></script>\n");
-         markup.print("<script type='text/javascript' src='");
-         markup.print(jsBase);
-         markup.print("/dragdrop.js'></script>\n");
-         markup.print("<script type='text/javascript' src='");
-         markup.print(jsBase);
-         markup.print("/prototype-bootstrap-workaround.js'></script>\n");
-          markup.print("<script type='text/javascript' src='");
-         markup.print(jsBase);
-         markup.print("/dyna.js'></script>\n");        
-         markup.print("<link rel=\"stylesheet\" id=\"dyna_css\" href=\"" + jsBase + "/style.css\" type=\"text/css\"/>\n");
+         */
 
          
 
@@ -209,6 +219,19 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
          }
       }
    }
+   
+
+   /**
+    * Write resource element.
+    *
+    * @param out JSP writer
+    * @param resource resource element
+    * @throws IOException
+    */
+   private void writeResource(PrintWriter out, String resource) throws IOException {
+       out.write(getPageHeaderService().adaptResourceElement(resource));
+   }
+   
 
    /** @see org.jboss.portal.theme.render.renderer.RegionRenderer#renderBody */
    public void renderBody(RendererContext rendererContext, final RegionRendererContext rrc) throws RenderException

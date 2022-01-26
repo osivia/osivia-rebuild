@@ -5,6 +5,8 @@ import org.jboss.portal.theme.LayoutConstants;
 import org.jboss.portal.theme.page.PageResult;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.theming.IPageHeaderResourceService;
 import org.w3c.dom.Element;
 import org.apache.xml.serialize.XMLSerializer;
 import org.apache.xml.serialize.OutputFormat;
@@ -35,7 +37,21 @@ public class HeaderContentTagHandler extends SimpleTagSupport
           setOmitXMLDeclaration(true);
        }
    };
+   
+   /** Page header resource service. */
+   private final IPageHeaderResourceService pageHeaderResourceService;
 
+   
+   /**
+    * Constructor.
+    */
+   public HeaderContentTagHandler() {
+       super();
+
+       // Page header resource service
+       this.pageHeaderResourceService = Locator.findMBean(IPageHeaderResourceService.class, IPageHeaderResourceService.MBEAN_NAME);
+   }
+   
    public void doTag() throws JspException, IOException
    {
       // Get page and region
@@ -47,63 +63,76 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       JspWriter out = this.getJspContext().getOut();
       if (page == null)
       {
-//         out.write("<p bgcolor='red'>No page to render!</p>");
-//         out.write("<p bgcolor='red'>The page to render (PageResult) must be set in the request attribute '" + LayoutConstants.ATTR_PAGE + "'</p>");
+//         this.writeResource(out, "<p bgcolor='red'>No page to render!</p>");
+//         this.writeResource(out, "<p bgcolor='red'>The page to render (PageResult) must be set in the request attribute '" + LayoutConstants.ATTR_PAGE + "'</p>");
          out.flush();
          return;
       }
 
       // Jquery
-      out.write( "<script src='/portal-assets/components/jquery/jquery-1.12.4.min.js'></script>");
-      out.write( "<script src='/portal-assets/js/jquery-integration.js'></script>");    
+      this.writeResource(out,  "<script src='/portal-assets/components/jquery/jquery-1.12.4.min.js'></script>");
+      this.writeResource(out,  "<script src='/portal-assets/js/jquery-integration.js'></script>");    
       
       // jQuery UI
-      out.write( "<script type='text/javascript' src='/portal-assets/components/jquery-ui/jquery-ui-1.11.3.min.js'></script>");
-      out.write("<link rel='stylesheet' href='/portal-assets/components/jquery-ui/jquery-ui-1.11.3.min.css'>");
+      this.writeResource(out,  "<script type='text/javascript' src='/portal-assets/components/jquery-ui/jquery-ui-1.11.3.min.js'></script>");
+      this.writeResource(out, "<link rel='stylesheet' href='/portal-assets/components/jquery-ui/jquery-ui-1.11.3.min.css'>");
   
       
-      out.write( "<script src='/portal-assets/js/ajax-redirection.js'></script>");  
+      this.writeResource(out,  "<script src='/portal-assets/js/ajax-redirection.js'></script>");  
       
-      out.write( "<script src='/portal-assets/js/auto-submit.js'></script>");  
-      out.write( "<script src='/portal-assets/js/modal.js'></script>");        
+      this.writeResource(out,  "<script src='/portal-assets/js/auto-submit.js'></script>");  
+      this.writeResource(out,  "<script src='/portal-assets/js/modal.js'></script>");        
       
       // Bootstrap
-      out.write( "<script src='/portal-assets/components/bootstrap/js/bootstrap.bundle.min.js'></script>");
+      this.writeResource(out,  "<script src='/portal-assets/components/bootstrap/js/bootstrap.bundle.min.js'></script>");
 
       // Fancytree
-      out.write( "<script src='/portal-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");
+      this.writeResource(out,  "<script src='/portal-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");
 
       
       // Select2
-      out.write( "<link rel='stylesheet' href='/portal-assets/components/select2/css/select2.min.css'>");
-      out.write( "<script src='/portal-assets/components/select2/js/select2.full.min.js'></script>");
+      this.writeResource(out,  "<link rel='stylesheet' href='/portal-assets/components/select2/css/select2.min.css'>");
+      this.writeResource(out,  "<script src='/portal-assets/components/select2/js/select2.full.min.js'></script>");
 
       
-      out.write( "<script src='/portal-assets/js/select2-integration.js'></script>");  
+      this.writeResource(out,  "<script src='/portal-assets/js/select2-integration.js'></script>");  
 
       // Inline-edition
-      out.write( "<script src='/portal-assets/js/inline-edition.js'></script>");  
+      this.writeResource(out,  "<script src='/portal-assets/js/inline-edition.js'></script>");  
    
       // Table
-      out.write( "<script src='/portal-assets/js/table.js'></script>");  
+      this.writeResource(out,  "<script src='/portal-assets/js/table.js'></script>");  
       
       // Filler
-      out.write( "<script src='/portal-assets/js/portlet-filler.js'></script>");      
+      this.writeResource(out,  "<script src='/portal-assets/js/portlet-filler.js'></script>");      
       
       // Resizable
-      out.write( "<script src='/portal-assets/js/resizable.js'></script>");      
+      this.writeResource(out,  "<script src='/portal-assets/js/resizable.js'></script>");      
       
       // Filler
-      out.write( "<script src='/portal-assets/js/fancytree-integration.js'></script>");      
+      this.writeResource(out,  "<script src='/portal-assets/js/fancytree-integration.js'></script>");      
       
       //Location
-      out.write( "<script src='/portal-assets/js/location.js'></script>");  
+      this.writeResource(out,  "<script src='/portal-assets/js/location.js'></script>");  
       
       // Logout
-      out.write( "<script src='/portal-assets/js/logout.js'></script>"); 
+      this.writeResource(out,  "<script src='/portal-assets/js/logout.js'></script>"); 
       
-      out.write("<!-- portlet resources -->");
+      this.writeResource(out, "<!-- portlet resources -->");
       
       out.flush();
    }
+   
+   
+   /**
+    * Write resource element.
+    *
+    * @param out JSP writer
+    * @param resource resource element
+    * @throws IOException
+    */
+   private void writeResource(JspWriter out, String resource) throws IOException {
+       out.write(this.pageHeaderResourceService.adaptResourceElement(resource));
+   }
+
 }
