@@ -142,10 +142,30 @@
        <property name="Tracker" ref="osivia:service=Tracker"/>
    </bean>
    
-       
+   
+   
+    <!-- Log context -->
+
+    <bean class="org.osivia.portal.core.log.LogContextImpl"
+		id="osivia:service=LogContext" >
+	</bean>
+
+   <!-- Custom control policies : error management -->
+   
+   <bean class="org.osivia.portal.core.error.CustomPageControlPolicy"
+          id="portal:service=ControlPolicy,type=Page" >
+       <property name="PortalObjectContainer" ref="portal:container=TemplatePortalObject"/>
+       <property name="LogContext" ref="osivia:service=LogContext"/>
+   </bean>
+   
+   <bean class="org.osivia.portal.core.error.CustomPortalControlPolicy"
+          id="portal:service=ControlPolicy,type=Portal" >
+       <property name="PortalObjectContainer" ref="portal:container=TemplatePortalObject"/>
+       <property name="LogContext" ref="osivia:service=LogContext"/>
+   </bean>
+   
        
     <!--  content -->
-
    
  	<bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
 		id="osivia:commandFactory=Delegate,path=content">

@@ -35,6 +35,7 @@ import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
+import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
@@ -42,7 +43,9 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
+import org.osivia.portal.api.cms.exception.DocumentNotFoundException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
@@ -157,7 +160,9 @@ public class ViewContentCommand extends ControllerCommand {
 
 
         }  catch (ControllerException e) {
-            if( e.getCause() instanceof DocumentForbiddenException)    {
+            if( e.getCause() instanceof DocumentNotFoundException)  {
+                return new UnavailableResourceResponse(getContentId(), false);
+            } else if( e.getCause() instanceof DocumentForbiddenException)    {
                 if (portalCtx.getHttpServletRequest().getUserPrincipal() == null) {
                     // Redirect to auth
                     CMSContext cmsContext = new CMSContext(portalCtx);

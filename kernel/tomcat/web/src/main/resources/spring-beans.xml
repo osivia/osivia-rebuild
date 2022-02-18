@@ -13,8 +13,7 @@
    </bean>
    
    <!-- DTD repository -->
-   <bean class="org.jboss.portal.server.impl.xml.EntityResolverService" id="portal:service=EntityResolver"
-           >
+   <bean class="org.jboss.portal.server.impl.xml.EntityResolverService" id="portal:service=EntityResolver">
       
       <property name="DTDMapping">
          <props>
@@ -112,7 +111,6 @@
    <bean class="org.jboss.portal.core.model.instance.InstanceInvoker"
           id="portal:service=Interceptor,type=Portlet,name=InstanceInvoker" >
          <property name="PortletInvoker" ref="portal:service=PortletInvoker,type=Federating"/>
-      
    </bean>
 
 
@@ -136,13 +134,14 @@
    </bean>
 
 
-
+   <bean class="org.jboss.portal.core.aspects.controller.ControlInterceptor" id="portal:service=Interceptor,type=Command,name=Control" >
+       <property name="PortalControlPolicy" ref="portal:service=ControlPolicy,type=Portal"/>
+   </bean>   
 
 
 	<bean
 		class="org.jboss.portal.core.aspects.controller.ResourceAcquisitionInterceptor"
 		id="portal:service=Interceptor,type=Command,name=ResourceAcquisition">
-
 	</bean>
 
 	<bean class="org.jboss.portal.core.controller.ajax.AjaxInterceptor"
@@ -150,11 +149,9 @@
 	</bean>
 
 
-
 	<bean
 		class="org.jboss.portal.core.aspects.controller.NavigationalStateInterceptor"
 		id="portal:service=Interceptor,type=Command,name=NavigationalState">
-
 	</bean>
    
    <bean class="org.jboss.portal.server.impl.invocation.JBossInterceptorStackFactory"
@@ -167,8 +164,9 @@
          <value>portal:service=Interceptor,type=Command,name=Ajax</value>
          <value>portal:service=Interceptor,type=Command,name=NavigationalState</value>
          <value>osivia:service=Interceptor,type=Command,name=WindowTheming</value>
-<!--          
-         <ref bean="portal:service=Interceptor,type=Command,name=Control"/>
+         
+         <value>portal:service=Interceptor,type=Command,name=Control</value>
+<!-- 
          <ref bean="portal:service=Interceptor,type=Command,name=BackwardCompatibility"/>
          <ref bean="portal:service=Interceptor,type=Command,name=PortalNode"/>
          <ref bean="portal:service=Interceptor,type=Command,name=PolicyEnforcement"/>
@@ -189,10 +187,10 @@
    
    
    <bean class="org.jboss.portal.theme.impl.ThemeServiceImpl" id="portal:service=ThemeService" >
-      
-      <property name="DefaultThemeName" value="renewal"/>
+       <property name="DefaultThemeName" value="renewal"/>
    </bean>   
-      <bean class="org.jboss.portal.theme.impl.LayoutServiceImpl" id="portal:service=LayoutService" >
+   
+   <bean class="org.jboss.portal.theme.impl.LayoutServiceImpl" id="portal:service=LayoutService" >
       
       <property name="DefaultLayoutName" value="generic"/>
       <property name="DefaultRenderSetName" value="divRenderer"/>
@@ -218,7 +216,7 @@
      
       <property name="ContainerContext" ref="portal:service=InstanceContainerContext"/>
       <property name="StackFactory" ref="portal:service=InterceptorStackFactory,type=Instance"/>
-     <property name="PortletInvoker" ref="portal:service=PortletInvoker,type=Federating"/>
+      <property name="PortletInvoker" ref="portal:service=PortletInvoker,type=Federating"/>
 <!--       
       <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
       <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
@@ -360,12 +358,6 @@
    
     
 
-	<bean
-		class="org.jboss.portal.core.model.portal.control.page.DefaultPageControlPolicy"
-		id="portal:service=ControlPolicy,type=Page">
-
-		<property name="PortalObjectContainer" ref="portal:container=PortalObject" />
-	</bean>
    
         
      <bean class="org.jboss.portal.core.controller.Controller" id="portal:service=Controller" >

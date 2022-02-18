@@ -347,6 +347,12 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                         portal.setDeclaredProperty("portal.unprofiledPageId", defaultUnprofiled);
                     }
                     
+                    String defaultThemeId = (String) space.getProperties().get(ThemeConstants.PORTAL_PROP_THEME);
+                    if( defaultThemeId != null)    {
+                        portal.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME, defaultThemeId);
+                    }
+
+                    
                     portal.setDeclaredProperty("portal.cms.id", document.getId().toString());
                     
                     portal.setDeclaredProperty("osivia.publication.nameType", "name");

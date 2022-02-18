@@ -129,7 +129,10 @@ public class SharedRepository {
 
             return doc.duplicate();
         } catch (Exception e) {
-            throw new CMSException(e);
+            if( e instanceof CMSException)
+                throw (CMSException) e;
+            else
+                throw new CMSException(e);
         }
     }
     
