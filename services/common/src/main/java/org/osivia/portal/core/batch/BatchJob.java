@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.batch.AbstractBatch;
+import org.osivia.portal.api.ha.IHAService;
 import org.osivia.portal.api.locator.Locator;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -54,9 +55,10 @@ public class BatchJob implements Job {
 				AbstractBatch b = (AbstractBatch) object;
 
 				// Clustering, check if this batch can run in all nodes or only on master
-				/*if (b.isRunningOnMasterOnly()) {
+				if (b.isRunningOnMasterOnly()) {
 
-					HABatchDeployer haBean = Locator.findMBean(HABatchDeployer.class, HABatchDeployer.MBEAN_NAME);
+				    IHAService haBean = Locator.getService(IHAService.MBEAN_NAME, IHAService.class);
+
 
 					if (haBean.isMaster()) {
 
@@ -68,10 +70,7 @@ public class BatchJob implements Job {
 						logger.debug("We are on a slave node, skip the batch " + context.getJobDetail().getName());
 
 					}
-				} else
-				
-				*/
-				{
+				} else	{
 					b.execute(triggerDataMap);
 				}
 

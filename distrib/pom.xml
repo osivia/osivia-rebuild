@@ -203,7 +203,12 @@
             <groupId>quartz</groupId>
             <artifactId>quartz</artifactId>
             <scope>compile</scope>
-        </dependency>		
+        </dependency>	
+        <dependency>
+			<groupId>org.jgroups</groupId>
+			<artifactId>jgroups</artifactId>
+            <scope>compile</scope>
+        </dependency>        	
 		
         <dependency>
             <groupId>javax.portlet</groupId>

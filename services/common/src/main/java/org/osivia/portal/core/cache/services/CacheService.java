@@ -26,8 +26,9 @@ import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.cache.services.ICacheDataListener;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.cache.services.IGlobalParameters;
-
+import org.osivia.portal.api.ha.IHAService;
 import org.osivia.portal.core.page.PageProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -52,7 +53,8 @@ public class CacheService extends ServiceMBeanSupport implements ICacheService, 
 	
 
 
-	private long portalParameterslastInitialisationTs = 0L;
+	@Autowired
+	private IHAService HAService;
 	
 
 	
@@ -355,14 +357,14 @@ public class CacheService extends ServiceMBeanSupport implements ICacheService, 
 
     @Override
     public void initPortalParameters() {
-        // TODO Auto-generated method stub
+        HAService.initPortalParameters();
         
     }
 
     @Override
     public boolean checkIfPortalParametersReloaded(long savedTS) {
-        // TODO Auto-generated method stub
-        return true;
+
+        return HAService.checkIfPortalParametersReloaded(savedTS);
     }
 
 

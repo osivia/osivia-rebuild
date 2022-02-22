@@ -76,7 +76,12 @@
            <groupId>javax.mail</groupId>
            <artifactId>mail</artifactId>
            <scope>provided</scope>
-       </dependency>	            
+       </dependency>	     
+       
+       <dependency>
+			<groupId>org.jgroups</groupId>
+			<artifactId>jgroups</artifactId>
+        </dependency>         
                    
     </dependencies>
 
