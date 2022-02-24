@@ -57,7 +57,7 @@ public class SharedRepository {
         listeners.add(listener);
     }
 
-    
+
     
     public void endBatch(UserStorage storageRepository)  {
         storageRepository.endBatch();
@@ -210,9 +210,36 @@ public class SharedRepository {
     
  
     public void notifyChanges( CMSEvent e) {
+        
+        List<RepositoryListener> obsoleteListeners = new ArrayList<>();
+        
         for (RepositoryListener listener : listeners) {
-            listener.contentModified(e);
+            try {
+                listener.contentModified(e);
+            } catch( NoClassDefFoundError err) {
+                obsoleteListeners.add(listener);
+            }
         }
+        
+        // Remove obsolete listeners 
+        // (hot deploy of custom-services)
+        if( obsoleteListeners.size() > 0)   {
+            List<RepositoryListener> newListeners = new ArrayList<>();
+            for( RepositoryListener listener : listeners)   {
+                boolean obsolete = false;
+                for (RepositoryListener obsoleteListener : obsoleteListeners) {
+                    if( obsoleteListener == listener)   
+                        obsolete = true;
+                }
+                if( obsolete == false)
+                    newListeners.add(listener);
+            }
+            
+            listeners.clear();
+            listeners.addAll(newListeners);
+        }
+        
+        
     }
     
     public void clear() {

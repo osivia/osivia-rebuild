@@ -14,22 +14,12 @@ public class Token implements Serializable {
 
     public Token() {
         super();
-   }
-
-
-    private long creationTs;
-    private Map<String, String> attributes;
-
-    
-    
-    /**
-     * Getter for creationTs.
-     * @return the creationTs
-     */
-    public long getCreationTs() {
-        return creationTs;
     }
 
+
+    private Map<String, String> attributes;
+
+ 
 
     
     /**
@@ -46,20 +36,9 @@ public class Token implements Serializable {
      * @param creationTs the creationTs to set
      */
      public Token(Map<String,String> attributes) {
-        this.creationTs = System.currentTimeMillis();
         this.attributes=attributes;
     }
 
-
-
-    
-    /**
-     * Setter for creationTs.
-     * @param creationTs the creationTs to set
-     */
-    public void setCreationTs(long creationTs) {
-        this.creationTs = creationTs;
-    }
 
 
 

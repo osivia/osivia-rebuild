@@ -21,8 +21,11 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osivia.portal.api.ha.ClusterMap;
+import org.osivia.portal.api.ha.IHAService;
 
 import org.osivia.portal.api.tokens.ITokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,26 +37,13 @@ public class TokenService implements ITokenService {
 
     /** Logger. */
     private static final Log logger = LogFactory.getLog(TokenService.class);
+    
+    @Autowired
+    private IHAService haService;
 
      
     private String sync = new String("SYNC");
     private int modulo = 1;
-
-
-    
-    /** The tree cache. */
-    private Map<String,Token> treeCache;
-    
-    /**
-     * Getter for treeCache.
-     * 
-     * @return the treeCache
-     */
-    public Map<String,Token> getTreeCache() {
-        if( treeCache == null)
-            treeCache = new Hashtable<>();
-        return treeCache;
-    }
 
 
 
@@ -82,10 +72,10 @@ public class TokenService implements ITokenService {
         
         // Hashmap is ready for serialization
         HashMap<String, String> serMap = new HashMap<>(attributes);
-        Token token = new Token(serMap);
+
 
         try {
-            getTreeCache().put( tokenKey, token);
+            haService.shareMap(tokenKey, serMap);
             return tokenKey;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -97,27 +87,31 @@ public class TokenService implements ITokenService {
 
 
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.osivia.portal.api.tokens.ITokenService#validateToken(java.lang.String, boolean)
      */
     public Map<String, String> validateToken(String tokenKey, boolean renew) {
-        
-        if( logger.isDebugEnabled())
-            logger.debug("validateToken" + tokenKey);
-        
-        Map<String, String> attributes = null;
-        Token token;
-        try {
-            token = (Token) getTreeCache().get( tokenKey);
 
-            if (token != null) {
+        if (logger.isDebugEnabled())
+            logger.debug("validateToken" + tokenKey);
+
+        Map<String, String> attributes = null;
+
+        try {
+            ClusterMap wrappedObject = haService.getSharedMap(tokenKey);
+
+            if (wrappedObject != null) {
+
                 long ts = System.currentTimeMillis();
-                if (ts - token.getCreationTs() < TOKEN_TIMEOUT) {
-                    attributes = token.getAttributes();
+                if (ts - wrappedObject.getReceptionTs() < TOKEN_TIMEOUT) {
+                    attributes = wrappedObject.getObject();
                     if (!renew) {
-                        getTreeCache().remove(tokenKey);
+                        haService.unshareMap(tokenKey);
                     }
                 }
+
             }
             return attributes;
         } catch (Exception e) {

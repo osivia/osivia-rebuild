@@ -1,5 +1,7 @@
 package org.osivia.portal.core.ha;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -10,17 +12,22 @@ import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
+import org.jgroups.blocks.ReplicatedHashMap;
+import org.jgroups.protocols.UDP;
+import org.jgroups.stack.Protocol;
+import org.jgroups.stack.ProtocolStack;
+import org.osivia.portal.api.ha.ClusterMap;
 import org.osivia.portal.api.ha.IHAService;
-import org.osivia.portal.api.oauth2.IOAuth2Service;
-import org.osivia.portal.core.cache.services.CacheService;
 import org.springframework.stereotype.Service;
 
 @Service(IHAService.MBEAN_NAME)
 public class HAService implements IHAService{
 
     private static final String INIT_PARAMETERS = "init-parameters";
-    JChannel channel = null ;
+    JChannel msgChannel = null ;
+    JChannel mapChannel = null ;
     Long portalParametersTs = 0L;
+    ReplicatedHashMap<String, ClusterMap> rmh = null;
     
     
     protected static final Log logger = LogFactory.getLog(HAService.class);
@@ -28,13 +35,12 @@ public class HAService implements IHAService{
     @PostConstruct
     private void init()  {
          try {
-            channel = new JChannel();
+             msgChannel = new JChannel();
             
-            
-            channel.setReceiver(new ReceiverAdapter() {
+             msgChannel.setReceiver(new ReceiverAdapter() {
                 public void receive(Message msg) {
                     String s = new String( msg.getBuffer());
-                    if( !msg.getSrc().equals(channel.getAddress()))  {
+                    if( !msg.getSrc().equals(msgChannel.getAddress()))  {
                         if( s.equals(INIT_PARAMETERS))  {
                             logger.info("receive init parameters");
                             portalParametersTs = System.currentTimeMillis();
@@ -46,8 +52,28 @@ public class HAService implements IHAService{
                 }
             });
             
+              
+            msgChannel.connect("osivia-msg");     
             
-            channel.connect("osivia-cluster");     
+            
+            mapChannel = new JChannel();
+            
+            // Add 1 to map channel
+            ProtocolStack stack = mapChannel.getProtocolStack();
+            Protocol transport = stack.getTransport();
+            if (transport instanceof UDP) {
+                int mcast_port = ((UDP) transport).getMulticastPort();
+                ((UDP) transport).setMulticastPort(mcast_port+ 1);
+            }
+            
+            mapChannel.connect("osivia-map");
+            
+
+
+            
+            rmh=new ReplicatedHashMap<>(mapChannel);
+            rmh.setBlockingUpdates(true);
+            
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,8 +82,10 @@ public class HAService implements IHAService{
     
     @PreDestroy
     private void close()  {
-        if( channel != null)
-            channel.close();
+        if( msgChannel != null)
+            msgChannel.close();
+        if( mapChannel != null)
+            mapChannel.close();
     }
   
     private void sendMsg( String sInfos)  {
@@ -65,7 +93,7 @@ public class HAService implements IHAService{
         msg.setBuffer(sInfos.getBytes());
         
         try {
-            channel.send(msg);
+            msgChannel.send(msg);
         } catch (Exception e) {
             throw new RuntimeException( e);
         }
@@ -74,9 +102,9 @@ public class HAService implements IHAService{
     
     @Override
     public boolean isMaster() {
-        View view = channel.getView();
+        View view = msgChannel.getView();
         Address address = view.getMembers().get(0);
-        if (address.equals(channel.getAddress())) {
+        if (address.equals(msgChannel.getAddress())) {
             return true;
         }   else    {
             return false;
@@ -84,6 +112,7 @@ public class HAService implements IHAService{
     }
 
     @Override
+    //TODO REIMPLEMENT
     public void initPortalParameters() {
         portalParametersTs = System.currentTimeMillis();
         logger.info("Send init parameters");
@@ -92,8 +121,28 @@ public class HAService implements IHAService{
 
     @Override
     public boolean checkIfPortalParametersReloaded(long savedTS) {
-        
         return savedTS > portalParametersTs;
     }
+
+
+
+    @Override
+    public void unshareMap(String objectId) {
+        rmh.remove(objectId);
+   }
+
+
+    @Override
+    public void shareMap(String objectId, Map<String, String> object) {
+        rmh.put(objectId, new ClusterMap(object));
+        
+    }
+
+    @Override
+    public ClusterMap getSharedMap(String objectId) {
+        ClusterMap res = rmh.get(objectId);
+        return res;
+    }
+
 
 }

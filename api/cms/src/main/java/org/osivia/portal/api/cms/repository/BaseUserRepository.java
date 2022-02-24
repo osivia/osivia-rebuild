@@ -1,5 +1,6 @@
 package org.osivia.portal.api.cms.repository;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -297,7 +298,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     public void contentModified( CMSEvent e) {
             
         for (RepositoryListener listener : listeners) {
-            listener.contentModified( e);
+                listener.contentModified( e);
         }
     }
 
