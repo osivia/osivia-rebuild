@@ -205,8 +205,11 @@ public class PublicationManager implements IPublicationManager {
                 
                 doc = getCMSService().getCMSSession(cmsContext).getDocument(docId);
                 
-                if( "nx".equals(docId.getRepositoryName()))
+                if( "nx".equals(docId.getRepositoryName())) {
                     nxNativeItem = doc.getNativeItem();
+                    
+                    
+                }
                 else
                     nxNativeItem = null;
                 

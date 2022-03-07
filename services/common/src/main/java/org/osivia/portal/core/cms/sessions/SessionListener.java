@@ -48,7 +48,7 @@ public class SessionListener implements HttpSessionListener {
     /**
      * Statistics service.
      */
-    //private final IStatisticsService statisticsService;
+    private final IStatisticsService statisticsService;
     /**
      * Update user preferences service.
      */
@@ -64,10 +64,10 @@ public class SessionListener implements HttpSessionListener {
         // Nuxeo service
         this.integrationService = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
         
-        /*
+
         // Statistics service
         this.statisticsService = Locator.findMBean(IStatisticsService.class, IStatisticsService.MBEAN_NAME);
-        */
+
         
     }
 
@@ -100,7 +100,7 @@ public class SessionListener implements HttpSessionListener {
         HttpSession httpSession = sessionEvent.getSession();
 
         try {
-            //this.statisticsService.aggregateUserStatistics(httpSession);
+            this.statisticsService.aggregateUserStatistics(httpSession);
             getUpdateUserPreferencesService().update(httpSession);
         } catch (Exception e) {
             log.error("Update preferences ", e);

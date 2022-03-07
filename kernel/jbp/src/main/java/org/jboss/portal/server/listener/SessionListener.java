@@ -26,6 +26,7 @@ import org.jboss.logging.Logger;
 import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.portal.server.aspects.server.SignOutInterceptor.Invalidation;
 import org.jboss.portal.web.ServletContainer;
+import org.osivia.portal.api.locator.Locator;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -89,14 +90,14 @@ public class SessionListener implements HttpSessionListener
 
       if (contexts != null)
       {
-         MBeanServer server = MBeanServerLocator.locateJBoss();
-         ObjectName objectName = null;
+
+
          ServletContainer servletContainer = null;
 
          try
          {
-            objectName = new ObjectName("portal:service=ServletContainerFactory");
-            servletContainer = (ServletContainer)server.getAttribute(objectName, "ServletContainer");
+             servletContainer = Locator.getService("ServletContainer", ServletContainer.class);
+
          }
          catch (Exception e1)
          {

@@ -9,6 +9,7 @@ import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.CCPPInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.ConsumerCacheInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.ContextDispatcherInterceptor;
+import org.jboss.portal.portlet.aspects.portlet.ContextTrackerInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.EventPayloadInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.PortletCustomizationInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.ProducerCacheInterceptor;
@@ -256,8 +257,16 @@ public class PortalConfiguration implements ApplicationContextAware {
         ContextDispatcherWrapperInterceptor contextDispatcherInterceptor = new ContextDispatcherWrapperInterceptor();
         contextDispatcherInterceptor.setServletContainerFactory(this.applicationContext.getBean("ServletContainerFactory", ServletContainerFactory.class));
         contextDispatcherInterceptor.setTracker(this.applicationContext.getBean("osivia:service=Tracker", ITracker.class));
-        contextDispatcherInterceptor.setNext(this.applicationContext.getBean("AjaxInterceptor", PortletInvoker.class));
+        contextDispatcherInterceptor.setNext(this.applicationContext.getBean("ContextTrackerInterceptor", PortletInvoker.class));
         return contextDispatcherInterceptor;
+    }
+    
+    
+    @Bean(name = "ContextTrackerInterceptor")
+    public PortletInvoker getContextTrackerInterceptor() {
+        ContextTrackerInterceptor contextTrackInterceptor = new ContextTrackerInterceptor();
+        contextTrackInterceptor.setNext(this.applicationContext.getBean("AjaxInterceptor", PortletInvoker.class));
+        return contextTrackInterceptor;
     }
     
 
