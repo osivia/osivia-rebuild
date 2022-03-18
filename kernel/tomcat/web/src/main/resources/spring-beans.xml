@@ -98,9 +98,7 @@
    </bean>
    <bean class="org.jboss.portal.core.model.instance.InstanceSecurityInterceptor"
           id="portal:service=Interceptor,type=Portlet,name=InstanceSecurity" >
-<!--       
-      <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
--->
+		<property name="DomainConfigurator" ref="portal:container=Instance"/>
    </bean>
 
    
@@ -123,9 +121,8 @@
 			 <ref bean="osivia:service=Interceptor,type=Portlet,name=ConsumerCache"/>
 			 <ref bean="osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor"/>
 			 
-<!-- 			 
 			 <ref bean="portal:service=Interceptor,type=Portlet,name=InstanceSecurity"/>
--->			 
+		 
 			 <ref bean="portal:service=Interceptor,type=Portlet,name=PortalSessionSynchronization"/>
 			 <ref bean="osivia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor"/>
 			 <ref bean="portal:service=Interceptor,type=Portlet,name=InstanceInvoker"/>

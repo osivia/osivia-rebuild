@@ -16,10 +16,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
- * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
- * @version $Revision: 10228 $
+ * Instance definition implementation
  */
+
 class InstanceDefinitionImpl extends AbstractInstanceDefinition implements ContextObject
 {
 
@@ -68,7 +69,7 @@ class InstanceDefinitionImpl extends AbstractInstanceDefinition implements Conte
       this.instanceId = instanceMD.getId();
       this.displayNames = getDisplayNamesMap(instanceMD.getDisplayName());
       this.relatedSecurityBindings = new HashMap();
-      this.relatedCustomizations = new HashMap();
+      this.relatedCustomizations = instanceMD.getPreferences().getPortletPreferences();
       this.state = null;
    }
 
@@ -188,6 +189,12 @@ class InstanceDefinitionImpl extends AbstractInstanceDefinition implements Conte
    public Set getSecurityBindings()
    {
       Set constraints = new HashSet();
+      for (Iterator i = relatedSecurityBindings.values().iterator(); i.hasNext();)
+      {
+    	  MemoryInstanceSecurityBinding isc = (MemoryInstanceSecurityBinding)i.next();
+         RoleSecurityBinding sc = new RoleSecurityBinding(isc.getActions(), isc.getRole());
+         constraints.add(sc);
+      }
       return constraints;
    }
 

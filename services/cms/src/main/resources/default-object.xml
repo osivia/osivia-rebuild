@@ -198,6 +198,50 @@
 
               
             </page>
+            
+            
+           <page>
+                <page-name>test-rights</page-name>
+                <display-name xml:lang="fr">Accueil</display-name>
+
+                <properties>
+                    <property>
+                        <name>layout.id</name>
+                        <value>cloud-ens-home</value>
+                    </property>
+                </properties>
+
+                <security-constraint>
+                    <policy-permission>
+                        <action-name>view</action-name>
+                        <unchecked/>
+                    </policy-permission>
+                </security-constraint>
+                
+               <window>
+                    <window-name>initializer-instance</window-name>
+                    <instance-ref>index-cloud-ens-test-admin-instance</instance-ref>
+                    <region>col-1-top</region>
+                    <properties>
+                        <property>
+                            <name>osivia.hideTitle</name>
+                            <value>1</value>
+                        </property>                    
+                           <property>
+                            <name>portal.windowContentType</name>
+                            <value>portlet</value>
+                        </property>
+                        <property>
+                            <name>theme.order</name>
+                            <value>0</value>
+                        </property>
+                    </properties>
+                    <height>0</height>
+                </window>                        
+
+              
+            </page>
+            
 
             <page>
                 <page-name>home-member</page-name>
