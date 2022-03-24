@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -33,6 +34,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.taglib.portal.tag.FormatRelativeDateTag;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.NoSuchMessageException;
 
@@ -146,6 +148,12 @@ public class InternationalizationService implements IInternationalizationService
                     Thread.currentThread().setContextClassLoader(savedClassLoader);
                 }
             }
+            
+            
+            if (pattern == null) {
+            	// Portal Resources that have be renamed not to be overloaded
+            	pattern = this.getPattern(key, locale, "tag", classLoader);
+            }
         }
 
 
@@ -182,11 +190,29 @@ public class InternationalizationService implements IInternationalizationService
      * @return pattern
      */
     private String getPattern(String key, Locale locale, ClassLoader classLoader) {
+        return getPattern(key, locale, null, classLoader);
+    }
+
+
+    /**
+     * Get pattern.
+     *
+     * @param key         internationalization key
+     * @param locale      locale
+     * @param classLoader class loader
+     * @return pattern
+     */
+    private String getPattern(String key, Locale locale, String nameSuffixe, ClassLoader classLoader) {
         String pattern = null;
 
         if (classLoader != null) {
+        	String resourceName = InternationalizationConstants.RESOURCE_BUNDLE_NAME;
+        	if( StringUtils.isNotEmpty(nameSuffixe))	{
+        		resourceName += "-" + nameSuffixe;
+        	}
+        	
             // Class loader resource bundle
-            ResourceBundle resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, classLoader);
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceName, locale, classLoader);
             if (resourceBundle != null) {
                 try {
                     pattern = resourceBundle.getString(key);
@@ -198,8 +224,8 @@ public class InternationalizationService implements IInternationalizationService
 
         return pattern;
     }
-
-
+    
+    
     /**
      * Utility method used to format arguments.
      *
