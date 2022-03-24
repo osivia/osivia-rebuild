@@ -81,7 +81,7 @@
             <scope>runtime</scope>
  			<includes>
                 <include>org.osivia.portal.portlets:osivia-portal-portlets-sample:war:${project.version}</include>
-                 <include>org.osivia.portal.portlets:osivia-portal-portlets-react:war:${project.version}</include>
+ <!--                <include>org.osivia.portal.portlets:osivia-portal-portlets-react:war:${project.version}</include> -->
                 <include>org.osivia.portal.portlets:osivia-portal-portlets-cms:war:${project.version}</include>
                 <include>org.osivia.portal.themes:osivia-portal-themes-generic:war:${project.version}</include>
                 <include>org.osivia.portal.ws:osivia-portal-ws:war:${project.version}</include>
