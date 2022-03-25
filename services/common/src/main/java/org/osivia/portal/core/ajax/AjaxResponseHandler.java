@@ -399,7 +399,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                             
                             
                             // Exclude simple action (ex: trash sort)
-                            if( pns.getParameters().size() > 0 || old.getParameters().size() > 0)   {
+                            if( (pns!= null && pns.getParameters().size() > 0) || (old != null && old.getParameters().size() > 0))   {
                                 // Selector modification do not do a refresh but just force recomputation
                                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS, Boolean.TRUE);                                 
                             }

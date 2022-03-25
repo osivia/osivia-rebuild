@@ -23,6 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -286,7 +288,11 @@ public class PageMarkerUtils {
         if (markerInfo.getPageId() != null) {
             PortalObjectUtilsInternal.setPageId(controllerContext, markerInfo.getPageId());
             
-            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.initialPageId", markerInfo.getPageId());
+            HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+            
+            // Page initialization
+            if( !"footer".equals(request.getHeader("ajax_context")))
+            	controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.initialPageId", markerInfo.getPageId());
         }
 
         

@@ -272,7 +272,7 @@ function updatePortletContent(item, url) {
         // We don't block
         options.asynchronous = true;
 
-        directAjaxCall(container, options, url, null, null);
+        directAjaxCall(null, options, url, null, null);
     } else {
         document.location = url;
     }
@@ -691,9 +691,13 @@ function getHeaders(popState, refresh)	{
 }
 
 
-function directAjaxCall(container, options, url, eventToStop, callerId, popState, refresh){
+function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popState, refresh){
    
 	var headers = getHeaders(popState, refresh);
+	
+	if( ajaxContext !== undefined)	{
+		headers.ajax_context = ajaxContext;
+	}
 	
 	$ajaxWaiter = $JQry(".ajax-waiter");
 
@@ -920,7 +924,7 @@ function footer()
         // We don't block
         options.asynchronous = false;
 
-    	directAjaxCall(null,options, window.location.href,null);
+    	directAjaxCall("footer",options, window.location.href,null);
 
 
 }
