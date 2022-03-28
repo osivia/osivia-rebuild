@@ -283,12 +283,24 @@ public class PublicationManager implements IPublicationManager {
                 
 
                 PageNavigationalState previousPNS = null;
-                PortalObjectId currentPageId = PortalObjectUtilsInternal.getPageId(controllerContext);
-                if( currentPageId != null)
-                    previousPNS = nsContext.getPageNavigationalState(currentPageId.toString());
+
+                
+                Document space = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getSpaceId());
+
+                // Get previous pns in same space
+                Page oldPage = PortalObjectUtilsInternal.getPage(controllerContext);
+                if( oldPage != null)	{
+                	String sSpaceId =  oldPage.getProperty("osivia.spaceId");
+                    if( spaceId != null)	{
+                        UniversalID oldSpaceId = new UniversalID(sSpaceId);  
+                        if( space.getId().equals(oldSpaceId))	{
+                        	previousPNS = nsContext.getPageNavigationalState(oldPage.getId().toString());
+                        }
+                    }
+                }
                 
             
-                Document space = getCMSService().getCMSSession(cmsContext).getDocument( navigation.getSpaceId());
+                
                 
                 String templatePath = null;
                 
@@ -400,7 +412,7 @@ public class PublicationManager implements IPublicationManager {
                  // Propagation des selecteurs si les paramètres ne sont pas explicites
                  final Map<QName, String[]> pageState = new HashMap<QName, String[]>();   
                
-                 if ((previousPNS != null) && ((pageParams == null) || (pageParams.size() == 0))) {
+                 if ((previousPNS != null) && ((pageParams == null) || (pageParams.size() == 0)) ) {
                      if ("1".equals(page.getProperty("osivia.cms.propagateSelectors"))) {
                          final String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
 
