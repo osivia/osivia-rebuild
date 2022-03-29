@@ -38,7 +38,9 @@ import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateRespo
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicWindow;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 
 
@@ -94,6 +96,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 // Ajout du controleur
                 attributes.put("osivia.controller", controllerContext);
+                
+                // Ajout du mode admin
+                if (PageCustomizerInterceptor.isAdministrator(controllerContext)) {
+                    attributes.put(InternalConstants.ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME, true);
+                }                
 
 
                 if (!(invocation instanceof ResourceInvocation)) {
