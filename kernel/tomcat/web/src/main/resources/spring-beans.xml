@@ -168,6 +168,7 @@
          <ref bean="portal:service=Interceptor,type=Command,name=PortalNode"/>
          <ref bean="portal:service=Interceptor,type=Command,name=PolicyEnforcement"/>
          -->
+         <value>osivia:service=Interceptor,type=Command,name=ProjectCustomizer</value>
          <value>osivia:service=Interceptor,type=Command,name=PageCustomizer</value>
 <!--          
          <ref bean="portal:service=Interceptor,type=Command,name=EventBroadcaster"/>

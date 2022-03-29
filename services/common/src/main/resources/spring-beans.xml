@@ -198,6 +198,17 @@
   	</bean>
 	
 
+
+	<!-- Project customizer interceptor -->
+	
+	<bean class="org.osivia.portal.core.customization.ProjectCustomizerInterceptor" id="osivia:service=Interceptor,type=Command,name=ProjectCustomizer" >
+        <property name="CustomizationService" ref="osivia:service=CustomizationService"/> 
+        <property name="PortalUrlFactory" ref="osivia:service=UrlFactory"/>   
+        <property name="CmsServiceLocator" ref="osivia:service=CmsServiceLocator"/>  
+         <property name="HAService" ref="osivia:service=HAService"/>  
+	</bean>
+
+
     <!-- Documents browser service -->
    	<bean class="org.osivia.portal.core.path.BrowserService" id="osivia:service=BrowserService" >
         <property name="PortalURLFactory" ref="osivia:service=UrlFactory"/>   

@@ -153,14 +153,7 @@
                     <name>osivia.portal.admin.page</name>
                     <value>/default/admin</value>
                 </property>    
-                <property>
-                    <name>osivia.services.cgu.path</name>
-                    <value>/default-domain/publication-space/cgu</value>
-                </property>
-                <property>
-                    <name>osivia.services.cgu.level</name>
-                    <value>1</value>
-                </property>
+
             </properties>
 
             <security-constraint>

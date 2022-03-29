@@ -238,8 +238,6 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 PortalObjectId pageId = upw.getPageId();
 
-                
-                PortalObjectUtilsInternal.setPageId(controllerContext, pageId);
  
                 PortalObjectId oldPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,"osivia.initialPageId");
                 

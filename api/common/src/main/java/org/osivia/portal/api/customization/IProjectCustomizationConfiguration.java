@@ -34,21 +34,6 @@ public interface IProjectCustomizationConfiguration {
     String getWebId();
 
 
-    /**
-     * Get current page.
-     *
-     * @return page
-     */
-    //Page getPage();
-
-
-    /**
-     * Check if customization occurs before invocation.
-     *
-     * @return true if customization occurs before invocation
-     */
-    boolean isBeforeInvocation();
-
 
     /**
      * Get HTTP servlet request.
