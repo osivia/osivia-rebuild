@@ -19,6 +19,7 @@ $JQry(function () {
         
         if( tags == true)	{
         	options["dropdownCssClass"] = 'd-none';
+        	
         	options["tokenSeparators"] = [','];
         	
         	// BUG-FIX #completion

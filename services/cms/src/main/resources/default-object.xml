@@ -1661,13 +1661,26 @@ nuxeoRequest.append("idxcl:format = '").append(format).append("' ");&#13;
 nuxeoRequest.append(") ");&#13;
 }&#13;
 &#13;
+&#13;
+// Licence&#13;
+List licences= params.get("licences");&#13;
+if ((licences!= null) &amp;&amp; !licences.isEmpty()) {&#13;
+boolean first = true;&#13;
+nuxeoRequest.append("AND (");&#13;
+for (String licence: licences) {&#13;
+first ? first = false : nuxeoRequest.append("OR ");&#13;
+nuxeoRequest.append("mtz:licence = '").append(licence).append("' ");&#13;
+}&#13;
+nuxeoRequest.append(") ");&#13;
+}&#13;
+&#13;
 List sizes = params.get("size");&#13;
 List sizeRanges = params.get("size-range");&#13;
 &#13;
 if ((sizes!= null) &amp;&amp; !sizes.isEmpty() &amp;&amp; (sizeRanges!= null) &amp;&amp; !sizeRanges.isEmpty()) {&#13;
 nuxeoRequest.append("AND file:content/length ").append("LESS".equals(sizeRanges.get(0)) ? "&lt;" : "&gt;").append(" ").append(sizes.get(0)).append(" ");&#13;
 }&#13;
-&#13;
+
 &#13;
 // Authors&#13;
 List authors= params.get("authors");&#13;
@@ -1823,7 +1836,7 @@ return nuxeoRequest.toString();</value>
                           </property>
                           <property>
                             <name>osivia.title</name>
-                            <value>Catégorie</value>
+                            <value>Type</value>
                           </property>
                           <property>
                             <name>osivia.selector.monoValued</name>
@@ -1851,7 +1864,7 @@ return nuxeoRequest.toString();</value>
                           </property>
                           <property>
                             <name>osivia.selector.allLabel</name>
-                            <value>Catégorie</value>
+                            <value>Type</value>
                           </property>
                           <property>
                             <name>theme.dyna.partial_refresh_enabled</name>
