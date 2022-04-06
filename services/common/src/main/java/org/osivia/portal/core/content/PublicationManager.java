@@ -48,6 +48,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -309,15 +310,17 @@ public class PublicationManager implements IPublicationManager {
                     
                      UniversalID templateId = navigation.getCustomizedTemplateId();
                      
+                     /*
                      // TODO :  Apply template adapters
-//                     List<TemplateAdapter> templateAdapters = this.getCMSService().getTemplateAdapters(cmsReadNavContext);
-//                     for (TemplateAdapter adapter : templateAdapters) {
-//                         String adaptedTemplate = adapter.adapt(this.basePublishPath, pathToCheck, spaceTemplate, template);
-//                         if (adaptedTemplate != null) {
-//                             template = adaptedTemplate;
-//                             break;
-//                         }
-//                     }
+                     List<TemplateAdapter> templateAdapters = getCmsServiceLocator().getCMSService().getTemplateAdapters(cmsReadItemContext);
+                     for (TemplateAdapter adapter : templateAdapters) {
+                         String adaptedTemplate = adapter.adapt(this.basePublishPath, pathToCheck, spaceTemplate, template);
+                         if (adaptedTemplate != null) {
+                             template = adaptedTemplate;
+                             break;
+                         }
+                     }
+                     */
                      
                      if( templateId.getRepositoryName().equals("idx"))  {
                          if( templateId.getInternalID().equals("DEFAULT_TEMPLATES_WORKSPACE"))  {
