@@ -3,6 +3,7 @@ $JQry(function () {
     $JQry("select.select2.select2-default").each(function (index, element) {
         var $element = $JQry(element);
         var url = $element.data("url");
+        var sort = $element.data("sort");
         var options = {
             minimumInputLength: 0,
             theme: "bootstrap4",
@@ -17,8 +18,33 @@ $JQry(function () {
         }
         
         if( tags == true)	{
-        	options["selectOnClose"] = true;
+        	options["dropdownCssClass"] = 'd-none';
         	options["tokenSeparators"] = [','];
+        	
+        	// BUG-FIX #completion
+	    	// When dropdownClass is hidden, the current item may not have been inserted
+	    	// ex: 'histoire-géographie' is already tagged and user enters 'histoire'
+	    	// -> select2 selects histoire-géographie and ignores histoire
+        	
+        	// Add listener on container because input field is recreated at each insertion
+        	$element.parent().on("keyup",".select2-container--bootstrap4", function (event) {
+        		var key = event.which;
+        		// Carriage return
+        	    if (key === 13) {
+        	    	// Ensure value has been inserted
+        	    	var newValue = $element.data("tag-value");
+        	        if(  ! $element.val().includes(newValue))	{
+    	        	      // Append it to the select
+       	        		 selected = $element.val();
+       	        		 selected.push(newValue);
+       	        		 $element.val(selected).trigger('change');    
+        	        }
+       	        } 	else	{
+       	        	// Memorize current value
+       	        	var source = event.target ;
+       	        	$element.data("tag-value", source.value);
+       	        }
+            });        	
         }
  
         if (url !== undefined) {
@@ -32,9 +58,20 @@ $JQry(function () {
                     };
                 },
                 processResults: function (data, params) {
+                	if( sort !== undefined)	{
+                		data.sort(  function(a,b){  
+                   			           if(a[sort] > b[sort])  
+                   			              return 1;  
+                   			           else if(a[sort] < b[sort])  
+                   			              return -1;  
+                   			        return 0;  
+                   			   }  
+                		);
+                    }	
                     return {
                         results: data
                     };
+                	
                 },
                 cache: true
             };
