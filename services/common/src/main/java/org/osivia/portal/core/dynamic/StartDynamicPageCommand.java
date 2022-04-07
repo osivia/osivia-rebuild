@@ -108,8 +108,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         try {
-            System.out.println("StartdynamicPage template="+templateId);
-
+            
             String pagePath = getDynamicPageService().startDynamicPage(new PortalControllerContext(this.getControllerContext().getServerInvocation().getServerContext().getClientRequest()), parentId, pageName, displayNames, templateId, properties,
                     parameters, restorableName);
             

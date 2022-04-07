@@ -9,6 +9,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 
 import org.jboss.portal.common.invocation.AttributeResolver;
@@ -40,6 +42,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DynamicService implements IDynamicService {
+	
+    private static final Log log=  LogFactory.getLog(DynamicService.class);
 
 
     @Override
@@ -151,7 +155,7 @@ public class DynamicService implements IDynamicService {
 
         PortalObjectId potemplateid = PortalObjectId.parse(templatePath, PortalObjectPath.CANONICAL_FORMAT);
         
-        System.out.println("StartdynamicPage template="+templatePath);        
+        log.debug("StartdynamicPage template="+templatePath);        
         
         
         // Base path

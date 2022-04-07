@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -21,6 +22,7 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.core.ajax.AjaxResponseHandler;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.ContainerContext;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
@@ -33,6 +35,8 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
     CMSContext cmsContext;
     Document doc;
 
+    
+    private static final Logger log = Logger.getLogger(DefaultCMSPageFactory.class);
 
     public static String getRootPageName() {
         return "root";
@@ -50,7 +54,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         this.cmsContext = cmsContext;
         this.navItem = navItem;
         
-        System.out.println("create CMSPage " +navItem.getDocumentId() + " " +cmsContext.isPreview());
+        log.debug("create CMSPage " +navItem.getDocumentId() + " " +cmsContext.isPreview());
         
         doc = cmsService.getCMSSession(cmsContext).getDocument( navItem.getDocumentId());
 

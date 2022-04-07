@@ -316,7 +316,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                  }
 
                 
-                log.info("updateTs = "+page.getUpdateTs());
+                log.debug("updateTs = "+page.getUpdateTs());
                 
                 
                 
@@ -532,7 +532,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 
                 
                 if( refreshPageStructure)   {
-                    log.info("refresh page structure");
+                    log.debug("refresh page structure");
                 }
 
                 // Commit changes
