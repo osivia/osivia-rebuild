@@ -38,6 +38,7 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 
 
@@ -90,6 +91,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 controllerCtx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
             }
         }
+        
+        controllerCtx.removeAttribute(Scope.REQUEST_SCOPE, "osivia.taskbar.active.id");
     }
 
     

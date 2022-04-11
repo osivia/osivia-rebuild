@@ -202,10 +202,11 @@
 	<!-- Project customizer interceptor -->
 	
 	<bean class="org.osivia.portal.core.customization.ProjectCustomizerInterceptor" id="osivia:service=Interceptor,type=Command,name=ProjectCustomizer" >
-        <property name="CustomizationService" ref="osivia:service=CustomizationService"/> 
-        <property name="PortalUrlFactory" ref="osivia:service=UrlFactory"/>   
-        <property name="CmsServiceLocator" ref="osivia:service=CmsServiceLocator"/>  
-         <property name="HAService" ref="osivia:service=HAService"/>  
+         <property name="CustomizationService" ref="osivia:service=CustomizationService"/> 
+         <property name="PortalUrlFactory" ref="osivia:service=UrlFactory"/>   
+         <property name="CmsServiceLocator" ref="osivia:service=CmsServiceLocator"/>  
+         <property name="HAService" ref="osivia:service=HAService"/> 
+         <property name="TaskbarService" ref="osivia:service=TaskbarService"/>             
 	</bean>
 
 
@@ -236,9 +237,7 @@
 	</bean>
 		    
    	<bean class="org.osivia.portal.core.ui.ResizableService" id="osivia:service=ResizableService" >
- <!-- 
-        <property name="TaskbarService" ref="osivia:service=TaskbarService"/>   
-  -->
+
 	</bean>
 
 

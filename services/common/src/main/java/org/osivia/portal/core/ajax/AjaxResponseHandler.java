@@ -144,17 +144,14 @@ public class AjaxResponseHandler implements ResponseHandler {
     private PortalObjectContainer portalObjectContainer;
 
     private DynamicLayoutService dynamicLayoutService;
-    
+
     /** Regions theming service. */
     private IRegionsThemingService regionsThemingService;
     /** Customization service. */
     private ICustomizationService customizationService;
-    
+
     /** Page header resource service. */
-    private  IPageHeaderResourceService pageHeaderResourceService;
-
-
-
+    private IPageHeaderResourceService pageHeaderResourceService;
 
     private PageService pageService;
 
@@ -174,49 +171,39 @@ public class AjaxResponseHandler implements ResponseHandler {
         this.pageService = pageService;
     }
 
-
     public DynamicLayoutService getDynamicLayoutService() {
         return dynamicLayoutService;
     }
-
 
     public void setDynamicLayoutService(DynamicLayoutService dynamicLayoutService) {
         this.dynamicLayoutService = dynamicLayoutService;
     }
 
-
-
     public void setRegionsThemingService(IRegionsThemingService regionsThemingService) {
         this.regionsThemingService = regionsThemingService;
     }
 
-
     public void setCustomizationService(ICustomizationService customizationService) {
         this.customizationService = customizationService;
     }
-    
-    
-    
-    
+
     public IPageHeaderResourceService getPageHeaderResourceService() {
         return pageHeaderResourceService;
     }
 
-    
     public void setPageHeaderResourceService(IPageHeaderResourceService pageHeaderResourceService) {
         this.pageHeaderResourceService = pageHeaderResourceService;
     }
-    
-    public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
-            throws ResponseHandlerException {
+
+    public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse) throws ResponseHandlerException {
         try {
-            
+
             controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.controllerContext", controllerContext);
-            
+
             String redirectUrl = (String) controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.full_refresh_url");
-            if( redirectUrl != null)
-                 return HTTPResponse.sendRedirect(redirectUrl);
-            
+            if (redirectUrl != null)
+                return HTTPResponse.sendRedirect(redirectUrl);
+
             if (controllerResponse instanceof PortletWindowActionResponse) {
                 PortletWindowActionResponse pwr = (PortletWindowActionResponse) controllerResponse;
                 StateString contentState = pwr.getContentState();
@@ -231,96 +218,82 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }
             } else if (controllerResponse instanceof UpdatePageResponse) {
                 UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
-                
+
                 // Portal controller context
                 PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
-                
 
                 PortalObjectId pageId = upw.getPageId();
 
- 
-                PortalObjectId oldPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,"osivia.initialPageId");
-                
+                PortalObjectId oldPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.initialPageId");
+
                 Boolean pageChange = false;
-                
-                if( oldPageId != null) {
-                    if( !oldPageId.equals(pageId))  {
+
+                if (oldPageId != null) {
+                    if (!oldPageId.equals(pageId)) {
                         pageChange = true;
                     }
-                }   else
+                } else
                     pageChange = true;
-                
-                 if( BooleanUtils.isTrue((Boolean)controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.refreshPageLayout"))) {
-                     pageChange = true;
-                 }
+
+                if (BooleanUtils.isTrue((Boolean) controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.refreshPageLayout"))) {
+                    pageChange = true;
+                }
 
                 // Changes have been commited during the restore page state
                 // ctx.getChanges doesn't contain modified windows
                 // for examples, maximized window is not considered ads dirty
-                if( commeand instanceof RestorePageCommand) {
+                if (commeand instanceof RestorePageCommand) {
                     pageChange = true;
                 }
-                
-                
-                boolean pageStructureModified = false;  
-                boolean pushHistory = false;  
 
-//                String pagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath");
-//                if (pagePath != null) {
-//                    pageId = PortalObjectId.parse("", pagePath, PortalObjectPath.CANONICAL_FORMAT);
-//                    newAjaxPage = true;
-//                }
+                boolean pageStructureModified = false;
+                boolean pushHistory = false;
+
+                // String pagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath");
+                // if (pagePath != null) {
+                // pageId = PortalObjectId.parse("", pagePath, PortalObjectPath.CANONICAL_FORMAT);
+                // newAjaxPage = true;
+                // }
 
                 // Obtain page
                 final Page page = (Page) portalObjectContainer.getObject(pageId);
-                
-                
-                 Long lastUpdateTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,"osivia.updateTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT));
-                 if( lastUpdateTs != null) {
-                     if (page.getUpdateTs() > lastUpdateTs)
-                         pageStructureModified = true;
-                 }
-                 controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.updateTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT), System.currentTimeMillis());
-                 
-                 
-                 
-                 
-                 
-                 
-                 // Check if Space structure has been modified
-                 String spaceId = page.getProperty("osivia.spaceId");
-                 if (StringUtils.isNotEmpty(spaceId)) {
-                     Long lastDisplayTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,"osivia.lastDisplayTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT));
 
+                Long lastUpdateTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateTs." + pageId.toString(PortalObjectPath.CANONICAL_FORMAT));
+                if (lastUpdateTs != null) {
+                    if (page.getUpdateTs() > lastUpdateTs)
+                        pageStructureModified = true;
+                }
+                controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateTs." + pageId.toString(PortalObjectPath.CANONICAL_FORMAT), System.currentTimeMillis());
 
-                     // Get Id
-                     PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
-                     CMSController ctrl = new CMSController(portalCtx);
+                // Check if Space structure has been modified
+                String spaceId = page.getProperty("osivia.spaceId");
+                if (StringUtils.isNotEmpty(spaceId)) {
+                    Long lastDisplayTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.lastDisplayTs." + pageId.toString(PortalObjectPath.CANONICAL_FORMAT));
 
-                     CMSSession session;
-                     try {
-                         session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
+                    // Get Id
+                    PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+                    CMSController ctrl = new CMSController(portalCtx);
 
-                         SpaceCacheBean modifiedTs = session.getSpaceCacheInformations(new UniversalID(spaceId));
-                         if ( modifiedTs.getLastSpaceModification() != null) {
-                             if (lastDisplayTs == null || lastDisplayTs < modifiedTs.getLastSpaceModification()) {
-                                 PageProperties.getProperties().setCheckingSpaceTS(modifiedTs.getLastSpaceModification());
-                              }
-                         }
-                     } catch (CMSException e) {
-                         throw new RuntimeException(e);
-                     }
+                    CMSSession session;
+                    try {
+                        session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
 
-                     
-                     controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.lastDisplayTs."+ pageId.toString(PortalObjectPath.CANONICAL_FORMAT), System.currentTimeMillis());
-                 }
+                        SpaceCacheBean modifiedTs = session.getSpaceCacheInformations(new UniversalID(spaceId));
+                        if (modifiedTs.getLastSpaceModification() != null) {
+                            if (lastDisplayTs == null || lastDisplayTs < modifiedTs.getLastSpaceModification()) {
+                                PageProperties.getProperties().setCheckingSpaceTS(modifiedTs.getLastSpaceModification());
+                            }
+                        }
+                    } catch (CMSException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                
-                log.debug("updateTs = "+page.getUpdateTs());
-                
-                
-                
-                boolean refreshPageStructure = false;              
+                    controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.lastDisplayTs." + pageId.toString(PortalObjectPath.CANONICAL_FORMAT), System.currentTimeMillis());
+                }
+
+                log.debug("updateTs = " + page.getUpdateTs());
+
+                boolean refreshPageStructure = false;
 
                 //
                 NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
@@ -331,14 +304,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // Whether we need a full refresh or not
                 boolean fullRefresh = false;
                 // Prevent menubar refresh indicator
-                boolean preventMenubarRefresh = false;                
+                boolean preventMenubarRefresh = false;
 
                 // in case we have we have a page navigational state...
                 Map<String, String[]> parameters = null;
 
-
-
-                if (BooleanUtils.isNotTrue(pageChange)  && ctx.getChanges() != null )  {
+                if (BooleanUtils.isNotTrue(pageChange) && ctx.getChanges() != null) {
                     for (Iterator i = ctx.getChanges(); i.hasNext();) {
                         NavigationalStateChange change = (NavigationalStateChange) i.next();
 
@@ -374,77 +345,66 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 pushHistory = true;
                             }
 
-                            
                             // Render parameters modified
-                            if( BooleanUtils.isNotTrue((Boolean)controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.actionForward")))  {
-                                if (( newNS != null && oldNS == null) 
-                                        || (newNS == null && oldNS != null)
-                                        || (newNS != null && oldNS != null && newNS.getContentState() != null && !newNS.getContentState().equals(oldNS.getContentState())))  {
+                            if (BooleanUtils.isNotTrue((Boolean) controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.actionForward"))) {
+                                if ((newNS != null && oldNS == null) || (newNS == null && oldNS != null) || (newNS != null && oldNS != null && newNS.getContentState() != null && !newNS.getContentState().equals(oldNS.getContentState()))) {
                                     pushHistory = true;
                                 }
                             }
-                                    
-                            
+
                             // Collect the dirty window id
                             dirtyWindowIds.add(key.getId());
                         } else if (type == PageNavigationalState.class) {
-                            
-                            
-                            
-                            
+
                             PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
                             PageNavigationalState old = (PageNavigationalState) update.getOldValue();
-                            
-                            
+
                             // Exclude simple action (ex: trash sort)
-                            if( (pns!= null && pns.getParameters().size() > 0) || (old != null && old.getParameters().size() > 0))   {
+                            if ((pns != null && pns.getParameters().size() > 0) || (old != null && old.getParameters().size() > 0)) {
                                 // Selector modification do not do a refresh but just force recomputation
-                                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS, Boolean.TRUE);                                 
+                                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, Constants.PORTLET_ATTR_RECOMPUTE_MODELS, Boolean.TRUE);
                             }
-                            
-                            
+
                             // force full refresh for now... for JBPORTAL-2326
-                            
+
                             // Mise en commentaire portage tomcat8
                             // Use case : éciter le rechargement page sur modification méta-données document
- 
-                            /*fullRefresh = true;
 
-                            // TODO: implement proper propagation of PRPs and events
-                            PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
-
-                            if (pns != null) {
-
-                                // todo: fix-me, this is a hack to copy PRPs when we force the full refresh as parameters to ViewPageCommand...
-                                Map<QName, String[]> qNameMap = pns.getParameters();
-                                if (qNameMap != null && !qNameMap.isEmpty()) {
-                                    parameters = new HashMap<String, String[]>(qNameMap.size());
-
-                                    for (Map.Entry<QName, String[]> entry : qNameMap.entrySet()) {
-                                        parameters.put(entry.getKey().toString(), entry.getValue());
-                                    }
-                                }
-
-
-
-                            }
-                            */                            
+                            /*
+                             * fullRefresh = true;
+                             * 
+                             * // TODO: implement proper propagation of PRPs and events
+                             * PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
+                             * 
+                             * if (pns != null) {
+                             * 
+                             * // todo: fix-me, this is a hack to copy PRPs when we force the full refresh
+                             * as parameters to ViewPageCommand... Map<QName, String[]> qNameMap =
+                             * pns.getParameters(); if (qNameMap != null && !qNameMap.isEmpty()) {
+                             * parameters = new HashMap<String, String[]>(qNameMap.size());
+                             * 
+                             * for (Map.Entry<QName, String[]> entry : qNameMap.entrySet()) {
+                             * parameters.put(entry.getKey().toString(), entry.getValue()); } }
+                             * 
+                             * 
+                             * 
+                             * }
+                             */
                         }
                     }
-                }   else    {
+                } else {
                     // New Ajax Page
-                    
+
                     refreshPageStructure = true;
                     pushHistory = true;
 
-                 }
-                
-                if( BooleanUtils.isTrue(pageStructureModified))  {
+                }
+
+                if (BooleanUtils.isTrue(pageStructureModified)) {
                     // Modification of stucture
                     refreshPageStructure = true;
                 }
-                
-                
+
                 if (PageProperties.getProperties().isRefreshingPage() || PageProperties.getProperties().isCheckingSpaceContents()) {
                     controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.refreshCaches", Boolean.TRUE);
                     dirtyWindowIds.clear();
@@ -455,16 +415,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
                 }
-                
-                
-                
-                
+
                 // Check if Space content has been modified
                 if (StringUtils.isNotEmpty(spaceId)) {
 
                     // Get Id
-                    PortalControllerContext portalCtx = new PortalControllerContext(
-                            controllerContext.getServerInvocation().getServerContext().getClientRequest());
+                    PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
                     CMSController ctrl = new CMSController(portalCtx);
 
                     CMSSession session;
@@ -475,18 +431,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                         if (modifiedTs.getLastContentModification() != null) {
                             // CMS Cache windows
                             for (PortalObject window : page.getChildren(PortalObject.WINDOW_MASK)) {
-                                if( "spaceContent".equals(window.getProperty("osivia.cms.cache.scope")))  {
-    
-                                    Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
-                                            "osivia.ajax.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                                if ("spaceContent".equals(window.getProperty("osivia.cms.cache.scope"))) {
+
+                                    Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.ajax.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
                                     if (lastSentTs == null || modifiedTs.getLastContentModification() > lastSentTs) {
                                         if (!dirtyWindowIds.contains(window.getId())) {
                                             dirtyWindowIds.add(window.getId());
                                         }
-                                        
+
                                         // Needed for spring models
-                                        controllerContext.setAttribute(Scope.REQUEST_SCOPE,
-                                                "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
+                                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
                                     }
                                 }
 
@@ -498,28 +452,20 @@ public class AjaxResponseHandler implements ResponseHandler {
                     }
 
                 }
-                
-                
-                
-                
-  /*
-                // CMS Cache windows
-                for (PortalObject window : page.getChildren(PortalObject.WINDOW_MASK)) {
-                    Long updateTs = requestCacheMgr.getCMSRequestUpdateTs(controllerContext, (Window) window);
-                    if (updateTs != null) {
-                        Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
-                                "osivia.ajax.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-                        if (lastSentTs == null || updateTs > lastSentTs) {
-                            if (!dirtyWindowIds.contains(window.getId())) {
-                                dirtyWindowIds.add(window.getId());
-                            }
-                            controllerContext.setAttribute(Scope.REQUEST_SCOPE,
-                                    "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
-                        }
-                    }
-                }
- */               
-                
+
+                /*
+                 * // CMS Cache windows for (PortalObject window :
+                 * page.getChildren(PortalObject.WINDOW_MASK)) { Long updateTs =
+                 * requestCacheMgr.getCMSRequestUpdateTs(controllerContext, (Window) window); if
+                 * (updateTs != null) { Long lastSentTs = (Long)
+                 * controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
+                 * "osivia.ajax.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                 * if (lastSentTs == null || updateTs > lastSentTs) { if
+                 * (!dirtyWindowIds.contains(window.getId())) {
+                 * dirtyWindowIds.add(window.getId()); }
+                 * controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.refreshWindow." +
+                 * window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE); } } }
+                 */
 
                 if (!fullRefresh) {
                     // Prevent Ajax refresh
@@ -527,11 +473,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                     if (StringUtils.isNotEmpty(preventAjaxRefreshWindowId)) {
                         PortalObjectId objectId = PortalObjectId.parse(preventAjaxRefreshWindowId, PortalObjectPath.CANONICAL_FORMAT);
                         preventMenubarRefresh = dirtyWindowIds.remove(objectId);
-                    }                    
+                    }
                 }
-                
-                
-                if( refreshPageStructure)   {
+
+                if (refreshPageStructure) {
                     log.debug("refresh page structure");
                 }
 
@@ -542,19 +487,17 @@ public class AjaxResponseHandler implements ResponseHandler {
                 if (!fullRefresh) {
                     ArrayList<PortalObject> refreshedWindows = new ArrayList<PortalObject>();
 
-
                     // Windows to refresh
-                    if ( refreshPageStructure) {
+                    if (refreshPageStructure) {
                         Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
                         for (PortalObject window : windows) {
-                            refreshedWindows.add( window);
+                            refreshedWindows.add(window);
                         }
-                        
-                    }   else    {
-                    
+
+                    } else {
+
                         // New window
-                        List<PortalObjectId> requestDirtyWindowIds = (List<PortalObjectId>) controllerContext.getServerInvocation().getServerContext()
-                                .getClientRequest().getAttribute("osivia.dynamic.dirtyWindows");
+                        List<PortalObjectId> requestDirtyWindowIds = (List<PortalObjectId>) controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.dynamic.dirtyWindows");
                         if (requestDirtyWindowIds != null) {
                             for (PortalObjectId requestDirtyWindow : requestDirtyWindowIds) {
                                 if (!dirtyWindowIds.contains(requestDirtyWindow)) {
@@ -563,11 +506,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                             }
                         }
 
-                        
                         // Windows
                         Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
-                        
-                        
+
                         for (Object dirtyWindowId : dirtyWindowIds) {
                             PortalObjectId poid = (PortalObjectId) dirtyWindowId;
                             String windowName = poid.getPath().getLastComponentName();
@@ -578,51 +519,41 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
-                    
-
-
                     LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
                     String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
                     PortalLayout layout = layoutService.getLayoutById(layoutId);
                     String layoutContextPath = layout.getLayoutInfo().getContextPath();
-
 
                     ThemeService themeService = controllerContext.getController().getPageService().getThemeService();
                     String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
                     PortalTheme theme = themeService.getThemeById(themeId);
                     String themeContextPath = theme.getThemeInfo().getContextPath();
 
-                    
                     Integer viewId = PageMarkerUtils.generateViewState(controllerContext);
                     PageMarkerUtils.setViewState(controllerContext, viewId);
 
                     //
                     UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId());
                     updatePage.setSessionCheck((String) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute(InternalConstants.SESSION_CHECK));
-                    
+
                     RestorePageCommand restoreCmd = new RestorePageCommand();
                     updatePage.setRestoreUrl(controllerContext.renderURL(restoreCmd, null, null));
-                    
-                    
+
                     ViewPageCommand vpc = new ViewPageCommand(pageId);
                     updatePage.setFullStateUrl(controllerContext.renderURL(vpc, null, null));
-                    
-                  
-                    
+
                     // Regions
                     Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
                     for (PortalObject window : windows) {
-                        
-                        NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());                        
+
+                        NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
                         WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
 
                         String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
                         if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
                             region = "maximized";
                         }
-                        
-                        
-                        
+
                         if (StringUtils.isNotEmpty(region)) {
                             List<String> regionList = updatePage.getRegions().get(region);
                             if (regionList == null) {
@@ -632,20 +563,18 @@ public class AjaxResponseHandler implements ResponseHandler {
                             regionList.add(window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
                         }
                     }
-                    
- 
+
                     // Layout
                     if (refreshPageStructure) {
                         String layoutCode = getDynamicLayoutService().getLayoutCode(controllerContext, page);
 
                         updatePage.setLayout(layoutCode);
                     }
-                    
+
                     updatePage.setPageChanged(pageChange);
-                    
+
                     // History indicator
                     updatePage.setPushHistory(pushHistory);
-
 
                     // Call to the theme framework
                     PageResult res = new PageResult(page.getName(), page.getProperties());
@@ -658,32 +587,27 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     //
                     ControllerPortletControllerContext portletControllerContext = new ControllerPortletControllerContext(controllerContext, page);
-                    ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext()
-                            .createPortletPageNavigationalState(true);
+                    ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext().createPortletPageNavigationalState(true);
 
                     Set<PageResource> resources = new LinkedHashSet<PageResource>();
-                    
-                    
+
                     // Sort by order
-                     List<Window> sortedWindows = new ArrayList<Window>();
-                    for (Iterator i = refreshedWindows.iterator(); i.hasNext(); ) {
+                    List<Window> sortedWindows = new ArrayList<Window>();
+                    for (Iterator i = refreshedWindows.iterator(); i.hasNext();) {
                         sortedWindows.add((Window) i.next());
                     }
 
                     Collections.sort(sortedWindows, new WindowComparator());
-                    
-                    
+
                     /* Pre-portlet computings */
-/*
-                    if (refreshPageStructure == true)   {
-                        // windows change state need breadcrum recomputation
-                        // 
-                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH, null);
-                    }
-  */                  
-                    
+                    /*
+                     * if (refreshPageStructure == true) { // windows change state need breadcrum
+                     * recomputation // controllerContext.setAttribute(Scope.REQUEST_SCOPE,
+                     * Constants.PORTLET_ATTR_PORTLET_PATH, null); }
+                     */
+
                     //
-                    for ( Window refreshedWindow: sortedWindows ) {
+                    for (Window refreshedWindow : sortedWindows) {
                         try {
                             RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
                             WindowRendition rendition = rwc.render(controllerContext);
@@ -698,17 +622,18 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                                     //
                                     res.addWindowContext(wc);
-                                    
-                                    
+
                                     this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wc);
-                                    
-                                  } else {
-                                    //TODO:display error
-                                    //updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT), "An error occured during rendering");
+
+                                } else {
+                                    // TODO:display error
+                                    // updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT),
+                                    // "An error occured during rendering");
                                 }
                             } else {
                                 // We'd better do a full refresh for now
-                                // It could be handled as a portlet removal in the protocol between the client side and server side
+                                // It could be handled as a portlet removal in the protocol between the client
+                                // side and server side
                                 fullRefresh = true;
                             }
                         } catch (Exception e) {
@@ -717,123 +642,115 @@ public class AjaxResponseHandler implements ResponseHandler {
                             //
                             fullRefresh = true;
                         }
-                        
-                        if( fullRefresh)
+
+                        if (fullRefresh)
                             break;
                     }
-                    
-                     
+
                     updatePage.setResources(resources);
-                    
+
                     // Notifications & menubar refresh
                     if (!fullRefresh) {
                         try {
                             // Check if current page is a modal
                             boolean modal = false;
 
-                            if( page instanceof DynamicTemplatePage)     {
+                            if (page instanceof DynamicTemplatePage) {
                                 PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
-                                if(templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
+                                if (templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
                                     modal = true;
                             }
-                            
+
                             if (!modal) {
                                 // Notifications window context
-                              
+
                                 WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
                                 res.addWindowContext(notificationsWindowContext);
                                 this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, notificationsWindowContext);
-                                
+
                                 List<String> notificationsRegionList = new ArrayList<String>();
-                                notificationsRegionList.add(NotificationsUtils.WINDOW_ID);                            
+                                notificationsRegionList.add(NotificationsUtils.WINDOW_ID);
                                 updatePage.getRegions().put(NotificationsUtils.REGION_NAME, notificationsRegionList);
 
                                 // Menubar region needs data in request
                                 // If portlet is not displayed, menu can't be refreshed
                                 if (!preventMenubarRefresh) {
-                               
+
                                     // Menubar window context
                                     WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
                                     res.addWindowContext(menubarWindowContext);
                                     this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, menubarWindowContext);
-                                    
+
                                     List<String> regionList = new ArrayList<String>();
-                                    regionList.add(IMenubarService.MENUBAR_WINDOW_ID);                            
+                                    regionList.add(IMenubarService.MENUBAR_WINDOW_ID);
                                     updatePage.getRegions().put(IMenubarService.MENUBAR_REGION_NAME, regionList);
-                                                                       
- 
-                                    // Rendered regions
-                                    RenderedRegions renderedRegions = new RenderedRegions(page);
+                                }
 
-                                    Map<String, Object> customizerAttributes = new HashMap<String, Object>();
-                                    customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_LAYOUT_CONTEXT_PATH, layoutContextPath);
-                                    customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_THEME_CONTEXT_PATH, themeContextPath);
+                                // Rendered regions
+                                RenderedRegions renderedRegions = new RenderedRegions(page);
 
-                                    customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS, renderedRegions);
-                                    CustomizationContext context = new CustomizationContext(customizerAttributes);
-                                    this.customizationService.customize(IRenderedRegions.CUSTOMIZER_ID, context);
+                                Map<String, Object> customizerAttributes = new HashMap<String, Object>();
+                                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_LAYOUT_CONTEXT_PATH, layoutContextPath);
+                                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_THEME_CONTEXT_PATH, themeContextPath);
 
-                                    // Add regions
-                                    for (AbstractRegionBean region : renderedRegions.getRenderedRegions()) {
-                                        
-                                        boolean recompute = false;
-                                        
-                                        /* Regions specific precomputings */
-                                        
-                                        if (region instanceof RenderedRegionBean) { 
-                                             recompute = true;
-                                            
-                                            if ("toolbar".equals(region.getName()) && (refreshPageStructure == false)) {
-                                                recompute = false;
-                                            }
-                                        }
-                                        
-                                        
-                                        if (recompute) {
-                                            if (region instanceof RenderedRegionBean) {
-                                                // Rendered region
-                                                RenderedRegionBean renderedRegion = (RenderedRegionBean) region;
-                                                WindowContext wCtx = this.regionsThemingService.createAjaxRegionContext(controllerContext, page,
-                                                        renderedRegion);
+                                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS, renderedRegions);
+                                CustomizationContext context = new CustomizationContext(customizerAttributes);
+                                this.customizationService.customize(IRenderedRegions.CUSTOMIZER_ID, context);
 
-                                                res.addWindowContext(wCtx);
-                                                
-                                                this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wCtx);
+                                // Add regions
+                                for (AbstractRegionBean region : renderedRegions.getRenderedRegions()) {
 
-                                                List<String> regionWindowsList = new ArrayList<String>();
-                                                regionWindowsList.add(renderedRegion.getName());
-                                                updatePage.getRegions().put(renderedRegion.getName(), regionWindowsList);
+                                    boolean recompute = false;
 
-                                            }
-                                            // else if (region instanceof PortletsRegionBean) {
-                                            // // Portlets region
-                                            // PortletsRegionBean portletsRegion = (PortletsRegionBean) region;
-                                            // this.regionsThemingService.decorateRegion(renderPageCommand, portletsRegion);
-                                            // }
+                                    /* Regions specific precomputings */
+
+                                    if (region instanceof RenderedRegionBean) {
+                                        recompute = true;
+
+                                        if ("toolbar".equals(region.getName()) && (refreshPageStructure == false)) {
+                                            recompute = false;
                                         }
                                     }
+
+                                    if (recompute) {
+                                        if (region instanceof RenderedRegionBean) {
+                                            // Rendered region
+                                            RenderedRegionBean renderedRegion = (RenderedRegionBean) region;
+                                            WindowContext wCtx = this.regionsThemingService.createAjaxRegionContext(controllerContext, page, renderedRegion);
+
+                                            res.addWindowContext(wCtx);
+
+                                            this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wCtx);
+
+                                            List<String> regionWindowsList = new ArrayList<String>();
+                                            regionWindowsList.add(renderedRegion.getName());
+                                            updatePage.getRegions().put(renderedRegion.getName(), regionWindowsList);
+
+                                        }
+                                        // else if (region instanceof PortletsRegionBean) {
+                                        // // Portlets region
+                                        // PortletsRegionBean portletsRegion = (PortletsRegionBean) region;
+                                        // this.regionsThemingService.decorateRegion(renderPageCommand, portletsRegion);
+                                        // }
+                                    }
                                 }
+
                             }
-                            
-            
-                            
+
                         } catch (Exception e) {
                             log.error("An error occured during the computation of window markup", e);
 
                             //
                             fullRefresh = true;
                         }
-                    }                    
+                    }
 
                     //
                     if (!fullRefresh) {
-                        PageMarkerUtils.savePageState(controllerContext, updatePage.getViewState());                        
+                        PageMarkerUtils.savePageState(controllerContext, updatePage.getViewState());
                         return new AjaxResponse(updatePage);
                     }
                 }
-                
-                
-
 
                 // We perform a full refresh
                 ViewPageCommand rpc;
@@ -847,44 +764,41 @@ public class AjaxResponseHandler implements ResponseHandler {
                 String url = controllerContext.renderURL(rpc, null, null);
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
                 return new AjaxResponse(dresp);
-            }else if (controllerResponse instanceof RedirectionResponse) { 
-                
+            } else if (controllerResponse instanceof RedirectionResponse) {
+
                 String location = ((RedirectionResponse) controllerResponse).getLocation();
-                
-                if( location.equals("/back") || (location.equals("/back-refresh")) || (location.equals("/refresh")) )   {
+
+                if (location.equals("/back") || (location.equals("/back-refresh")) || (location.equals("/refresh"))) {
                     // Default (http redirection)
                     UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());
-                    return new AjaxResponse(dresp);                   
+                    return new AjaxResponse(dresp);
                 }
-                
 
                 boolean ajaxRedirect = false;
-                String contextPath  = controllerContext.getServerInvocation().getServerContext().getClientRequest().getContextPath();
-               
+                String contextPath = controllerContext.getServerInvocation().getServerContext().getClientRequest().getContextPath();
+
                 String requestedLocation = ((RedirectionResponse) controllerResponse).getLocation();
                 URL redirectURL;
                 try {
                     redirectURL = new URL(requestedLocation);
-                    if(redirectURL.getPath().startsWith(contextPath))
+                    if (redirectURL.getPath().startsWith(contextPath))
                         ajaxRedirect = true;
-                            
+
                 } catch (MalformedURLException e) {
                     // do nothing
                 }
 
-                if( ajaxRedirect)   {
+                if (ajaxRedirect) {
                     // Ajax redirection
                     return HTTPResponse.sendRedirect(((RedirectionResponse) controllerResponse).getLocation());
-                } 
-                
-                
-                
+                }
+
                 // Default (http redirection)
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());
                 return new AjaxResponse(dresp);
-                
+
             }
-            
+
             else {
                 return null;
             }
@@ -893,12 +807,10 @@ public class AjaxResponseHandler implements ResponseHandler {
         }
     }
 
-    private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, Set<PageResource> resources,PageResult res,
-            WindowContext wc)  throws Exception {
-        
+    private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, Set<PageResource> resources, PageResult res, WindowContext wc) throws Exception {
+
         // Server invocation
         ServerInvocation invocation = controllerContext.getServerInvocation();
-
 
         //
         MarkupInfo markupInfo = (MarkupInfo) invocation.getResponse().getContentInfo();
@@ -907,10 +819,10 @@ public class AjaxResponseHandler implements ResponseHandler {
         StringWriter buffer = new StringWriter();
 
         // Get a dispatcher
-        ServletContextDispatcher dispatcher = new ServletContextDispatcher(invocation.getServerContext().getClientRequest(),
-                invocation.getServerContext().getClientResponse(), controllerContext.getServletContainer());
+        ServletContextDispatcher dispatcher = new ServletContextDispatcher(invocation.getServerContext().getClientRequest(), invocation.getServerContext().getClientResponse(), controllerContext.getServletContainer());
 
-        // Not really used for now in that context, so we can pass null (need to change that of course)
+        // Not really used for now in that context, so we can pass null (need to change
+        // that of course)
         ThemeContext themeContext = new ThemeContext(null, null);
 
         // get render context
@@ -925,7 +837,7 @@ public class AjaxResponseHandler implements ResponseHandler {
 
         // Render
         rendererContext.render(wc);
-        
+
         List<Element> headElements = wc.getResult().getHeaderContent();
         if (headElements != null) {
             for (Element element : headElements) {
@@ -933,10 +845,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                     String resource = getPageHeaderResourceService().adaptResourceElement(element.toString());
                     if (resource != null) {
                         resources.add(ResourceHandler.getResource(resource));
-                    }                    
+                    }
                 }
             }
-        }                                    
+        }
 
         // Pop region
         rendererContext.popObjectRenderContext();
@@ -946,9 +858,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
         // Add render to the page
         updatePage.addFragment(wc.getId(), buffer.toString());
-        
-        
-        controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE,"osivia.ajax.ts."+ wc.getId(), System.currentTimeMillis());
-        
+
+        controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.ajax.ts." + wc.getId(), System.currentTimeMillis());
+
     }
 }

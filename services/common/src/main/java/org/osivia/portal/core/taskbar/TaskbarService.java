@@ -267,6 +267,14 @@ public class TaskbarService implements ITaskbarService {
                 }
 
                 if (activeId == null) {
+                	
+                	
+    				String sNavId = page.getProperties().get("osivia.navigationId");
+    				String sSpaceId = page.getProperties().get("osivia.spaceId");
+    				if (StringUtils.equals(sNavId, sSpaceId)) {
+    					 activeId = ITaskbarService.HOME_TASK_ID;
+    				}
+                	
 /*                    
                     // Base path
                     String basePath = page.getProperty("osivia.cms.basePath");

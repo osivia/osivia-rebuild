@@ -187,7 +187,7 @@ public class PageMarkerUtils {
     @SuppressWarnings("unchecked")
     public static void restorePageState(ControllerContext controllerContext, String viewState) {
 
-           
+    		controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("initial.view.state", viewState);
              
             Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
             if (markers != null) {
