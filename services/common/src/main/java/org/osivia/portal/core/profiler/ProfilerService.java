@@ -35,7 +35,8 @@ import org.osivia.portal.core.tracker.ITracker;
 
 public class ProfilerService implements IProfilerService {
     
-    private static Log logger = LogFactory.getLog("PORTAL_PROFILER");    
+    private Log logger = LogFactory.getLog("PORTAL_PROFILER");    
+//  private static final Logger logger = Logger.getLogger("PORTAL_PROFILER");        
 
     private ITracker tracker;
 

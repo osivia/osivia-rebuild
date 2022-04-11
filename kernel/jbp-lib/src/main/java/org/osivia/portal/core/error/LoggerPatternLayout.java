@@ -36,11 +36,13 @@ public class LoggerPatternLayout extends PatternLayout {
     /* (non-Javadoc)
      * @see org.apache.log4j.PatternLayout#getConversionPattern()
      */
+    /*
     @Override
     public String getConversionPattern() {
        
         return "%d %-5p [%c] %m%n";
     }
+    */
   
     /* (non-Javadoc)
      * @see org.apache.log4j.PatternLayout#ignoresThrowable()

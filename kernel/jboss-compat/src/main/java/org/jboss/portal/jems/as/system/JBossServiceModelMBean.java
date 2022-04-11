@@ -22,35 +22,18 @@
  ******************************************************************************/
 package org.jboss.portal.jems.as.system;
 
-import org.apache.log4j.Logger;
-import org.jboss.mx.interceptor.AbstractInterceptor;
-import org.jboss.mx.interceptor.Interceptor;
-import org.jboss.mx.modelmbean.ModelMBeanInvoker;
-import org.jboss.mx.server.Invocation;
-import org.jboss.mx.server.InvocationContext;
 
-import org.jboss.portal.common.mx.JavaBeanModelMBeanBuilder;
-import org.jboss.portal.common.util.Tools;
-import org.jboss.system.ServiceMBeanSupport;
-import org.w3c.dom.Element;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.modelmbean.InvalidTargetObjectTypeException;
-import javax.management.modelmbean.ModelMBeanAttributeInfo;
-import javax.management.modelmbean.ModelMBeanConstructorInfo;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.ModelMBeanInfoSupport;
-import javax.management.modelmbean.ModelMBeanNotificationInfo;
-import javax.management.modelmbean.ModelMBeanOperationInfo;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Iterator;
-import java.util.List;
+
+import org.jboss.mx.modelmbean.ModelMBeanInvoker;
+import org.jboss.system.ServiceMBeanSupport;
+import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
