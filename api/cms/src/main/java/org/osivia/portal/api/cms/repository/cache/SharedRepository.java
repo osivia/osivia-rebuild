@@ -1,9 +1,11 @@
 package org.osivia.portal.api.cms.repository.cache;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -19,6 +21,7 @@ import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.cms.service.UpdateScope;
+
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -37,6 +40,8 @@ public class SharedRepository {
     private Map<String, SpaceCacheBean>  spaceTsMap ; 
     
     private final UserStorage defaultStorage;
+    
+    public static ThreadLocal<Set<String>> requestDocs = new ThreadLocal<>();
 
 
     public SharedRepository(String repositoryName, UserStorage storageRepository) {
@@ -49,6 +54,19 @@ public class SharedRepository {
    }
 
 
+   private Set<String> getRequestUpdates()  {
+       if( requestDocs.get() == null)
+           requestDocs.set(new HashSet<String>());
+       return requestDocs.get();
+   }
+   
+   
+   
+   private void initRequestUpdates()  {
+        requestDocs.set(new HashSet<String>());
+   }
+    
+    
     /**
      * {@inheritDoc}
      */
@@ -111,9 +129,12 @@ public class SharedRepository {
                 if (doc.getSpaceId() != null) {
                     SpaceCacheBean spaceTs = getSpaceCacheInformations(doc.getSpaceId().getInternalID());
                     if (spaceTs.getLastSpaceModification() != null) {
-                        if (doc.getTimestamp() < spaceTs.getLastSpaceModification())
-                            // TODO : multiple calls for one item during asynchronous delay
-                            reload = true;
+                        // Avoid multiple calls in same request for one item during asynchronous delay
+                       if( !getRequestUpdates().contains(internalID))    {
+                            if (doc.getTimestamp() < spaceTs.getLastSpaceModification())    {
+                                reload = true;
+                            }
+                        }
                     }
                 }
             } else
@@ -122,6 +143,8 @@ public class SharedRepository {
             if (reload) {
                 reload(storageRepository, internalID);
                 doc = cachedDocument.get(internalID);
+                
+                getRequestUpdates().add(internalID);
             }
 
             if (doc == null)
@@ -171,6 +194,8 @@ public class SharedRepository {
              Long updateTs =  System.currentTimeMillis();
              if( updateInformation.isAsync())
                  updateTs += 10000L;
+             
+             initRequestUpdates();
              
              // Update space scope timestamp
              SpaceCacheBean cacheBean = getSpaceCacheInformations(space.getId().getInternalID());

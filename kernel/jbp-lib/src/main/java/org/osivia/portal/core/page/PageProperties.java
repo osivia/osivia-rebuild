@@ -61,10 +61,11 @@ public class PageProperties {
 	}
 
 
-	public PageProperties(Map<String, Map<String, String>> properties, Map<String,String> pageMap) {
+	public PageProperties(Map<String, Map<String, String>> properties, Map<String,String> pageMap, Map<String,Object> requestCache) {
 		super();
 		this.windowProperties = properties;
 		this.pageMap = pageMap;
+		this.requestCache = requestCache;
 	}
 
 	protected static final Log logger = LogFactory.getLog(PageProperties.class);
@@ -146,8 +147,24 @@ public class PageProperties {
 		return pageProperties;
 
 	}
+    
+    
+    public  Map<String, Object> getPageRequestCache()  {
+
+        Map<String, Object> requestCache;
+        if( this.parent == null)
+            requestCache =  this.requestCache;
+        else
+            requestCache =  this.parent.requestCache;
+
+
+        return requestCache;
+
+    }
 
 	private Map<String, String> pageMap = null;
+	
+	private Map<String, Object> requestCache = null;
 
 	private PageProperties parent;
 
@@ -210,7 +227,7 @@ public class PageProperties {
 
 
     public static void init() {
-		localProperties.set(new PageProperties(new Hashtable<String, Map<String,String>>(), new Hashtable<String, String>()));
+		localProperties.set(new PageProperties(new Hashtable<String, Map<String,String>>(), new Hashtable<String, String>(), new Hashtable<String, Object>()));
 
 	}
     
