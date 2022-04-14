@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+    <Appenders>
+         <Console name="LogToConsole">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>  
+        <File name="PortalFile" fileName="/var/log/portal/portal.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+        </File>
+        <File name="StatusFile" fileName="/var/log/portal/portal_status.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+	     </File>
+		<RollingFile name="ServerFile"
+			fileName="/var/log/portal/server.log"
+			filePattern="/var/log/portal/server.%d{dd-MMM}.log.gz"
+			ignoreExceptions="false">
+			<PatternLayout>
+				<Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>               
+    </Appenders>
+    <Loggers>
+    <!-- 
+        <Logger name="org.osivia.portal.core.ajax" level="debug" additivity="false">
+            <AppenderRef ref="PortalFile"/>
+        </Logger>
+        -->
+        <Logger name="PORTAL_PROFILER" level="info" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger> 
+        <Logger name="PORTAL_STATUS" level="info" additivity="false">
+            <AppenderRef ref="StatusFile"/>
+        </Logger> 
+        <Root level="info">
+            <AppenderRef ref="ServerFile"/>
+            <AppenderRef ref="LogToConsole"/>
+        </Root>
+    </Loggers>
+</Configuration>

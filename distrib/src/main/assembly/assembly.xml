@@ -26,13 +26,6 @@
                 <include>javax.activation:activation</include>
                 <include>javax.ccpp:ccpp</include>
                 <include>javax.portlet:portlet-api</include>
-                <include>org.apache.logging.log4j:log4j-api</include>
-                <include>org.apache.logging.log4j:log4j-core</include>
-                <include>org.apache.logging.log4j:log4j-web</include>          
-				<include>org.apache.logging.log4j:log4j-jcl</include>                
-                <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
-                <include>org.apache.logging.log4j:log4j-1.2-api</include>                
-				<include>org.slf4j:slf4j-api</include>                       
                 <include>dom4j:dom4j</include> 
                 <include>quartz:quartz</include>   
                 <include>org.jgroups:jgroups</include> 
@@ -75,11 +68,23 @@
                 <include>com.fasterxml.jackson.core:jackson-core:jar:${jackson.version}</include>     
                 <include>com.fasterxml.jackson.core:jackson-databind:jar:${jackson.version}</include>                    
                 <include>com.fasterxml.jackson.core:jackson-annotations:jar:${jackson.version}</include>                  
- 
-
-    
-             </includes>
-        </dependencySet>  
+              </includes>
+        	</dependencySet> 
+            <dependencySet>
+	            <outputDirectory>/log4j2/lib</outputDirectory>
+	            <unpack>false</unpack>
+	            <scope>runtime</scope>
+	            <includes>
+	                <include>org.apache.logging.log4j:log4j-api</include>
+	                <include>org.apache.logging.log4j:log4j-core</include>
+	                <include>org.apache.logging.log4j:log4j-web</include>          
+					<include>org.apache.logging.log4j:log4j-jcl</include>                
+	                <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
+	                <include>org.apache.logging.log4j:log4j-appserver</include>
+	                <include>org.apache.logging.log4j:log4j-1.2-api</include>                
+					<include>org.slf4j:slf4j-api</include>                       
+             	</includes>
+        	</dependencySet> 
         <dependencySet>
             <outputDirectory>/webapps</outputDirectory>
             <unpack>false</unpack>
@@ -119,17 +124,8 @@
 		<fileSet>
 			<outputDirectory>/</outputDirectory>
 			<directory>src/main/resources</directory>
-      		<excludes>
-        		<exclude>webapp/samples-remotecontroller-portlet.war.remove_ext</exclude>
-      		</excludes>			
+
 		</fileSet>		
      </fileSets>
-	  <files>
-	    <file>
-	      <source>src/main/resources/webapps/samples-remotecontroller-portlet.war.remove_ext</source>
-	      <outputDirectory>/webapps</outputDirectory>
-		  <destName>samples-remotecontroller-portlet.war</destName>
-	    </file>
-	  </files>     
 
 </assembly>
