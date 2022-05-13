@@ -1,6 +1,7 @@
 package org.osivia.portal.core.container.persistent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -130,19 +131,33 @@ public  class  CMSPage extends PageImplBase {
 		/* Template Windows */
 
 		for (PortalObjectId templateID : getTemplatesId()) {
-
+		    
             PortalObject template = container.getObject(templateID);
-
+            
+            String sRegions = template.getProperties().get("cms.regions");
+            
+            List<String> regions;
+            if( sRegions != null)   
+               regions = Arrays.asList(sRegions.split(","));
+            else
+                regions = new ArrayList<>();
+            
+            
             if (template instanceof Page) {
                 Collection<PortalObject> tmplWindows = template.getChildren(PortalObject.WINDOW_MASK);
 
                 for (PortalObject tmplWindow : tmplWindows) {
 
                     if (tmplWindow instanceof WindowImplBase) {
-                        ObjectNodeImplBase dupWinNode = duplicateWindow(tmplWindow, true);
-                        if (dupWinNode != null)
-
-                            windows.put(tmplWindow.getName(), dupWinNode);
+                        
+                        // exclude cms_regions
+                        String region = tmplWindow.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
+                        
+                        if( region != null && ! regions.contains(region))   {
+                            ObjectNodeImplBase dupWinNode = duplicateWindow(tmplWindow, true);
+                            if (dupWinNode != null)
+                                windows.put(tmplWindow.getName(), dupWinNode);
+                       }
                     }
 
                 }

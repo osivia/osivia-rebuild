@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.controller;
+package org.osivia.portal.cms.portlets.edition.add.controller;
 
 import java.util.List;
 import java.util.Locale;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EditionForm {
+public class AddForm {
     
     private Locale locale;
     

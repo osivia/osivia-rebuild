@@ -24,6 +24,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPath.CanonicalFormat;
@@ -36,12 +37,29 @@ import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locale.ILocaleService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.edition.CMSEditionService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicWindow;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 
 /**
@@ -57,6 +75,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     public ParametresPortletInterceptor() {
         super();
     }
+
+
+    @Autowired
+    private CMSEditionService cmsEditionService;
+    
 
 
     /**
@@ -161,6 +184,21 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UNSET_MAX_MODE))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
+            
+            WrappedPortalWindow  portalWindow = (WrappedPortalWindow) invocation.getRequestAttributes().get("osivia.portal.window");
+            if( portalWindow != null )  {
+                Map<String, String> localProperties = portalWindow.getLocalProperties();
+                if( localProperties.size() > 0) {
+
+                    String windowId = invocation.getWindowContext().getId();
+                    PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);                    
+                    Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
+                    
+                    cmsEditionService.updateModule(controllerContext, window, localProperties);
+                }
+            }
+            
+            
         }
 
 

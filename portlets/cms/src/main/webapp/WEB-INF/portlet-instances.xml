@@ -47,6 +47,14 @@
    </deployment>   
    <deployment>    
       <instance>
+         <display-name xml:lang="en">CMS EditionAddPortlet portlet</display-name>
+         <display-name xml:lang="fr">Portlet EditionAddPortlet</display-name>
+         <instance-id>EditionAddPortletInstance</instance-id>
+         <portlet-ref>EditionAddPortlet</portlet-ref>
+      </instance>      
+   </deployment>    
+   <deployment>    
+      <instance>
          <display-name xml:lang="en">CMS rename portlet</display-name>
          <display-name xml:lang="fr">Portlet renommage contenu</display-name>
          <instance-id>RenameInstance</instance-id>

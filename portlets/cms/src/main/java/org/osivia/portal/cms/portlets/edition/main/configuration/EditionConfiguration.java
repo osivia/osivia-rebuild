@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.configuration;
+package org.osivia.portal.cms.portlets.edition.main.configuration;
 
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Jean-Sébastien Steux
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition")
+@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition.main")
 public class EditionConfiguration {
 
     /**
@@ -39,7 +39,7 @@ public class EditionConfiguration {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setCache(true);
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/edition/");
+        viewResolver.setPrefix("/WEB-INF/jsp/edition/main/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }

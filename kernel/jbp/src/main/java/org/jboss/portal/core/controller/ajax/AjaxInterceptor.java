@@ -86,6 +86,7 @@ public class AjaxInterceptor extends ControllerInterceptor
          
          HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
          pageProps.put(DynaConstants.SESSION_CHECK, request.getSession().getAttribute(InternalConstants.SESSION_CHECK));
+         
 
          // If user is logged in and is on dashboard we enable ajax
 //         if (cmd instanceof RenderPageCommand)

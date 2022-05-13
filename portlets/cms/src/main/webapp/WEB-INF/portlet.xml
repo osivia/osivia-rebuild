@@ -116,7 +116,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.portal.cms.portlets.edition.configuration.EditionConfiguration</value>
+            <value>org.osivia.portal.cms.portlets.edition.main.configuration.EditionConfiguration</value>
         </init-param>
         
         <expiration-cache>180</expiration-cache>
@@ -130,6 +130,32 @@
             <title>CMS Menu</title>
         </portlet-info>
     </portlet>
+    
+  <portlet>
+        <portlet-name>EditionAddPortlet</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.portal.cms.portlets.edition.add.configuration.AddConfiguration</value>
+        </init-param>
+        
+        <expiration-cache>180</expiration-cache>
+        
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        
+        <portlet-info>
+            <title>CMS AddPortlet</title>
+        </portlet-info>
+    </portlet>
+        
     <portlet>
         <portlet-name>Rename</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>

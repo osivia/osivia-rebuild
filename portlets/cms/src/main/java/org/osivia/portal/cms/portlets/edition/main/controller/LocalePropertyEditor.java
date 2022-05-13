@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.controller;
+package org.osivia.portal.cms.portlets.edition.main.controller;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Locale;

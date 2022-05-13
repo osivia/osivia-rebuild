@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.core.portlets.interceptors;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.portal.core.model.portal.Window;
@@ -27,8 +28,13 @@ public class WrappedPortalWindow  implements PortalWindow	{
 	 
  	/** The internal reference. */
  	private Window internalReference;
+ 	
+ 	  /** The local properties. */
+ 	private Map<String, String> localProperties;
 
-	 /**
+	 
+
+    /**
  	 * Instantiates a new internal window.
  	 *
  	 * @param internalReference the internal reference
@@ -36,6 +42,7 @@ public class WrappedPortalWindow  implements PortalWindow	{
  	public WrappedPortalWindow(Window internalReference) {
 		super();
 		this.internalReference = internalReference;
+		localProperties = new HashMap<>();
 	}
 	
 	/* (non-Javadoc)
@@ -50,7 +57,10 @@ public class WrappedPortalWindow  implements PortalWindow	{
      * @see org.osivia.portal.api.windows.PortalWindow#getProperty(java.lang.String)
      */
     public String getProperty(String name)	{
-   	 return internalReference.getDeclaredProperty( name);
+     String value =  localProperties.get(name);
+     if( value == null)
+   	      value = internalReference.getDeclaredProperty( name);
+     return value;
    	 
     }
 	 
@@ -58,7 +68,7 @@ public class WrappedPortalWindow  implements PortalWindow	{
  	 * @see org.osivia.portal.api.windows.PortalWindow#setProperty(java.lang.String, java.lang.String)
  	 */
  	public void setProperty(String name, String value)	{
-		 internalReference.setDeclaredProperty( name, value);
+ 	   localProperties.put(name,  value);
 		 
 	 }
 	 
@@ -70,4 +80,11 @@ public class WrappedPortalWindow  implements PortalWindow	{
    	 
      }
   
+     /**
+     * @return
+     */
+    public Map<String, String> getLocalProperties() {
+         return localProperties;
+     }
+
 }

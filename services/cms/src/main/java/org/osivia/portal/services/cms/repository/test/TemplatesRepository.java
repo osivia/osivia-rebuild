@@ -51,6 +51,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> editionProperties = new ConcurrentHashMap<>();
         editionProperties.put("osivia.hideTitle", "1");
+        editionProperties.put("osivia.sequence.priority", "1");
         ModuleRef edition = new ModuleRef("edition" , "top", "EditionInstance", editionProperties); 
         modules.add(edition);  
         Map<String,String> navProperties = new ConcurrentHashMap<>(); 
@@ -69,9 +70,13 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      * @param properties the properties
      * @throws CMSException 
      */
-    private void addTemplatePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) throws CMSException {
+    private void addTemplatePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules, Map propMap) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
+        
+        if( propMap != null)    {
+            properties.putAll(propMap);
+        }
 
         
         MemoryRepositoryPage page = new MemoryRepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
@@ -130,29 +135,34 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
     protected void pageA(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
 
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        Map<String,String> aProperties = new ConcurrentHashMap<>();       
+        Map<String,String> aProperties = new ConcurrentHashMap<>(); 
         ModuleRef moduleA = new ModuleRef("winA-" + id, "col-2",  "SampleInstance", aProperties);
-        Map<String,String> bProperties = new ConcurrentHashMap<>();          
-        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2",  "ReactPortletInstance", bProperties);
 
 
         modules.add(moduleA);
-        modules.add(moduleB);
-        
+        /*
+        Map<String,String> bProperties = new ConcurrentHashMap<>();          
+        ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2",  "ReactPortletInstance", bProperties);
+        modules.add(moduleB);        
+*/
+  
+        /*
         Map<String,String> cProperties = new ConcurrentHashMap<>();   
         ModuleRef indexContent = new ModuleRef("index-" + id, "col-2", "IndexContentInstance", cProperties);
         modules.add(indexContent);
+        */
         
+        /*
         Map<String,String> vProperties = new ConcurrentHashMap<>();    
-        //vProperties.put("osivia.cms.uri","/default-domain/UserWorkspaces/a/d/m/admin/documents/facture-copie-docx");
         vProperties.put("osivia.cms.uri","/default-domain/UserWorkspaces/d/e/m/demo/documents/etat-des-lieux-osivia");
                 
         ModuleRef viewContent = new ModuleRef("view-" + id, "col-2", "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance", vProperties);
         modules.add(viewContent);       
+        */
         
 
 
-        addTemplatePage(id, name, parentId, spaceId, children, modules);
+        addTemplatePage(id, name, parentId, spaceId, children, modules, null);
     }
     
     
@@ -164,7 +174,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
 
         modules.add(moduleC);
 
-        addTemplatePage(id, name, parentId, spaceId, children, modules);
+        addTemplatePage(id, name, parentId, spaceId, children, modules, null);
     }
 
 
@@ -173,11 +183,15 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> bProperties = new ConcurrentHashMap<>();    
         ModuleRef moduleB = new ModuleRef("winB-" + id, "col-2", "SampleInstance", bProperties);
-        ModuleRef indexContent = new ModuleRef("index-" + id, "col-2", "IndexContentInstance", bProperties);
+        //ModuleRef indexContent = new ModuleRef("index-" + id, "col-2", "IndexContentInstance", bProperties);
         modules.add(moduleB);
-        modules.add(indexContent);
+        //modules.add(indexContent);
+        
+        Map<String,String> pageProperties = new ConcurrentHashMap<>();
+        pageProperties.put("cms.regions", "col-1,col-2");
+        
 
-        addTemplatePage(id, name, parentId, spaceId, children, modules);
+        addTemplatePage(id, name, parentId, spaceId, children, modules, pageProperties);
     }
 
     protected void pageC(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
@@ -233,7 +247,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
 @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
         RepositoryDocument parent = getSharedDocument(parentId);
-        addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
+        addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>(), null);
     }
     
 

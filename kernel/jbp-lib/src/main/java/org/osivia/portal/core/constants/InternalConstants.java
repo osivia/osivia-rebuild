@@ -203,6 +203,7 @@ public final class InternalConstants {
 
     /** Show CMS tools indicator window or region property name. */
     public static final String SHOW_CMS_TOOLS_INDICATOR_PROPERTY = "osivia.cms.showTools";
+
     /** Show advanced CMS tools indicator window or region property name, and session attribute. */
     public static final String SHOW_ADVANCED_CMS_TOOLS_INDICATOR = "osivia.cms.showAdvancedTools";
 

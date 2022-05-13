@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +37,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -96,6 +99,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -105,11 +109,14 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.theming.AbstractRegionBean;
 import org.osivia.portal.api.theming.IRegionsThemingService;
 import org.osivia.portal.api.theming.IRenderedRegions;
 import org.osivia.portal.api.theming.PortletsRegionBean;
 import org.osivia.portal.api.theming.RenderedRegionBean;
+import org.osivia.portal.api.urls.PortalUrlType;
+import org.osivia.portal.core.cms.edition.CMSEditionService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.customization.ICustomizationService;
@@ -154,6 +161,21 @@ public class AjaxResponseHandler implements ResponseHandler {
     private IPageHeaderResourceService pageHeaderResourceService;
 
     private PageService pageService;
+    
+    private IPreviewModeService previewModeService;
+    
+    private CMSEditionService CMSEditionService;
+
+
+    
+    public CMSEditionService getCMSEditionService() {
+        return CMSEditionService;
+    }
+
+    
+    public void setCMSEditionService(CMSEditionService cmsEditionService) {
+        this.CMSEditionService = cmsEditionService;
+    }
 
     public PortalObjectContainer getPortalObjectContainer() {
         return portalObjectContainer;
@@ -466,6 +488,35 @@ public class AjaxResponseHandler implements ResponseHandler {
                  * controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.refreshWindow." +
                  * window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE); } } }
                  */
+                
+             // Windows
+                 try {
+                     String contentId = page.getProperty("osivia.contentId");
+    
+                     if (contentId != null) {
+    
+                         UniversalID id = new UniversalID(contentId);
+                         if (getPreviewModeService().isPreviewing(portalControllerContext, id)) {
+//                             Collection<PortalObject> specialWindows = page.getChildren(PortalObject.WINDOW_MASK);
+//    
+//                             for (PortalObject window : specialWindows) {
+//                                 dirtyWindowIds.add(window.getId());
+//                             }
+    
+                             refreshPageStructure = true;    
+                             
+                         }
+                     }
+    
+                 } catch (Exception e) {
+                     log.error("An error occured during preview mode tests", e);
+    
+                     //
+                     fullRefresh = true;
+                 }
+
+
+                                
 
                 if (!fullRefresh) {
                     // Prevent Ajax refresh
@@ -544,7 +595,16 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     // Regions
                     Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
-                    for (PortalObject window : windows) {
+                    
+
+                    // Sort by order
+                    List<Window> sortedByOrderWindows = new ArrayList<Window>();
+                    for (Iterator i = windows.iterator(); i.hasNext();) {
+                        sortedByOrderWindows.add((Window) i.next());
+                    }
+
+                    Collections.sort(sortedByOrderWindows, new OrderWindowComparator());                    
+                    for (PortalObject window : sortedByOrderWindows) {
 
                         NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
                         WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
@@ -564,12 +624,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
-                    // Layout
-                    if (refreshPageStructure) {
-                        String layoutCode = getDynamicLayoutService().getLayoutCode(controllerContext, page);
 
-                        updatePage.setLayout(layoutCode);
-                    }
 
                     updatePage.setPageChanged(pageChange);
 
@@ -591,13 +646,13 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     Set<PageResource> resources = new LinkedHashSet<PageResource>();
 
-                    // Sort by order
+                    // Sort by priority
                     List<Window> sortedWindows = new ArrayList<Window>();
                     for (Iterator i = refreshedWindows.iterator(); i.hasNext();) {
                         sortedWindows.add((Window) i.next());
                     }
 
-                    Collections.sort(sortedWindows, new WindowComparator());
+                    Collections.sort(sortedWindows, new PriorityWindowComparator());
 
                     /* Pre-portlet computings */
                     /*
@@ -747,6 +802,18 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     //
                     if (!fullRefresh) {
+                       
+                        
+                        // Layout
+                        if (refreshPageStructure) {
+                            // Update layout
+                            getCMSEditionService().prepareEdition(controllerContext, page);
+                            
+                            String layoutCode = getDynamicLayoutService().getLayoutCode(controllerContext, page);
+
+                            updatePage.setLayout(layoutCode);
+                        }
+                        
                         PageMarkerUtils.savePageState(controllerContext, updatePage.getViewState());
                         return new AjaxResponse(updatePage);
                     }
@@ -862,4 +929,44 @@ public class AjaxResponseHandler implements ResponseHandler {
         controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.ajax.ts." + wc.getId(), System.currentTimeMillis());
 
     }
+    
+    
+    
+
+    private class PriorityWindowComparator implements Comparator<Window> {
+
+        public int compare(Window w1, Window w2) {
+
+            String order1 = w1.getDeclaredProperty("osivia.sequence.priority");
+            String order2 = w2.getDeclaredProperty("osivia.sequence.priority");
+
+
+            if (order1 == null) {
+                if (order2 == null) {
+                    return w1.getName().compareTo(w2.getName());
+                } else {
+                    return 1;
+                }
+            } else if (order2 == null) {
+                return -1;
+            } else {
+                return Integer.valueOf(order1).compareTo(Integer.valueOf(order2));
+            }
+
+        }
+
+    }
+    
+    
+    public IPreviewModeService getPreviewModeService() {
+        return previewModeService;
+    }
+
+    
+    public void setPreviewModeService(IPreviewModeService previewModeService) {
+        this.previewModeService = previewModeService;
+    }
+
+    
+    
 }

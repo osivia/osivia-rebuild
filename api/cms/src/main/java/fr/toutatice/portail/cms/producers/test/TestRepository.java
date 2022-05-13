@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.NativeRepository;
 
 public interface TestRepository extends NativeRepository {
@@ -39,4 +40,8 @@ public interface TestRepository extends NativeRepository {
     void renameDocument(String id, String title) throws CMSException;
     
     void reloadDatas();
+    
+    public void addDocument(String internalID, RepositoryDocument document) throws CMSException  ;
+    
+    public void updateDocument(String internalID, RepositoryDocument document) throws CMSException ;
 }

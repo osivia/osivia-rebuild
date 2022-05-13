@@ -95,7 +95,9 @@
                 <include>org.osivia.portal.portlets:osivia-portal-portlets-cms:war:${project.version}</include>
                 <include>org.osivia.portal.themes:osivia-portal-themes-generic:war:${project.version}</include>
                 <include>org.osivia.portal.ws:osivia-portal-ws:war:${project.version}</include>
-             </includes>           
+             </includes>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>                        
         </dependencySet> 
         <dependencySet>
             <outputDirectory>/webapps</outputDirectory>

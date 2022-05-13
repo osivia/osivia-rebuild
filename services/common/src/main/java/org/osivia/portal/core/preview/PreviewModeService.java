@@ -9,7 +9,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service( "osivia:service=PreviewModeService")
 public class PreviewModeService implements IPreviewModeService {
 
     @Override

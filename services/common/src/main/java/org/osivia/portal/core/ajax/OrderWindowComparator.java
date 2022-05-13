@@ -11,12 +11,12 @@ import org.osivia.portal.api.taskbar.TaskbarItem;
  *
 
  */
-public class WindowComparator implements Comparator<Window> {
+public class OrderWindowComparator implements Comparator<Window> {
 
     /**
      * Constructor.
      */
-    public WindowComparator() {
+    public OrderWindowComparator() {
         super();
     }
 

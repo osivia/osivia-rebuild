@@ -16,11 +16,14 @@ package org.osivia.portal.core.page;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -38,8 +41,18 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.cms.CMSController;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.cms.edition.CMSEditionService;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
 /**
@@ -47,11 +60,14 @@ import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
  *
  * @see ControllerInterceptor
  */
+@Service(  "osivia:service=Interceptor,type=Command,name=PageCustomizer" )
+
 public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
 
-
+    @Autowired
+    private CMSEditionService cmsEditionService;
 
 
     /**
@@ -151,7 +167,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             // Bootstrap panel style indicator
             String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");
             properties.setWindowProperty(windowId, "osivia.bootstrapPanelStyle", bootstrapPanelStyle);
-
+            
+            
+            cmsEditionService.prepareEdition(controllerContext, window);
         }  
 
 

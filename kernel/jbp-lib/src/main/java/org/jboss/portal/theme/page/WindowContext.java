@@ -66,6 +66,9 @@ public final class WindowContext implements Comparable, Serializable, WindowRend
 
    /** . */
    final WindowResult result;
+   
+   /** . */
+   private Boolean regionCms;   
 
    public WindowContext(String id, String regionName, String order, WindowResult result)
    {
@@ -135,6 +138,21 @@ public final class WindowContext implements Comparable, Serializable, WindowRend
       return result;
    }
 
+   /**
+    * @return the regionCms
+    */
+   public Boolean getRegionCms() {
+       return regionCms;
+   }
+
+   /**
+    * @param regionCms
+    *            the regionCms to set
+    */
+   public void setRegionCms(Boolean regionCms) {
+       this.regionCms = regionCms;
+   }
+   
    public int compareTo(Object o)
    {
       WindowContext that = (WindowContext)o;

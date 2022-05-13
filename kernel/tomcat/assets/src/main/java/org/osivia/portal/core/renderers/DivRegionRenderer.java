@@ -24,10 +24,12 @@ package org.osivia.portal.core.renderers;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
@@ -36,6 +38,8 @@ import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
+import org.osivia.portal.core.page.PageProperties;
+
 
 
 public class DivRegionRenderer extends AbstractObjectRenderer implements RegionRenderer {
@@ -78,7 +82,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
             markup.print(">");
         }
-
     }
 
 
@@ -111,6 +114,11 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
            if (!this.headerRegions.contains(rrc.getCSSId())) {
                markup.println("</div>");
            }
+           
+           
+           
+
+           
         }
 
 
@@ -127,6 +135,33 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         PrintWriter markup = rendererContext.getWriter();
 
         // Add footer decorator
+        PageProperties properties = PageProperties.getProperties();
+        
+        
+        String dropUrl = properties.getPagePropertiesMap().get("osivia.cms.edition.url");
+        if( dropUrl != null)    {
+            String sRegions = PageProperties.getProperties().getPagePropertiesMap().get("cms.regions");
+            
+            if( sRegions != null)    {
+                List<String> regions = Arrays.asList(sRegions.split(","));
+
+                if( regions.contains(rrc.getId()))   {
+                    dropUrl+= "&javax.portlet.action=drop&action=1&region="+rrc.getId();
+                    markup.print("<div class=\"cms-edition-droppable border border-primary m-2 clearfix\" data-drop-url=\""+dropUrl+"\">");
+                    
+                    String addPortletUrl = properties.getPagePropertiesMap().get("osivia.cms.edition.addPortletUrl."+rrc.getId());
+
+                    
+                    markup.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+addPortletUrl+"\" data-load-callback-function=\"tasksModalCallback\" data-title=\"Notifications\" data-footer=\"true\">\n"
+                    + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
+                    + "        <span class=\"d-md-none\">Notifications</span>\n"
+                    + "    </a>");
+                    
+                    
+                    markup.print("</div>");
+                }
+            }
+       }                 
 
         // End of Main DIV region (not shown in <head> tag)
         if (!this.headerRegions.contains(rrc.getCSSId())) {

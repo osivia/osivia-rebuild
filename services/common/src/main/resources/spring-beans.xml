@@ -42,9 +42,6 @@
 	</bean>
 	
 	
-	 <bean class="org.osivia.portal.core.page.PageCustomizerInterceptor"
-		id="osivia:service=Interceptor,type=Command,name=PageCustomizer">
-	</bean>
 	
 	<bean class="org.osivia.portal.core.login.LoginInterceptor"
 		id="osivia:service=Interceptor,type=Server,name=ServerLogin">
@@ -97,7 +94,9 @@
       <property name="DynamicLayoutService" ref="portal:service=DynamicLayoutService"/>
       <property name="RegionsThemingService" ref="osivia:service=RegionsThemingService"/>   
       <property name="CustomizationService" ref="osivia:service=CustomizationService"/>
-      <property name="PageHeaderResourceService" ref="osivia:service=PageHeaderResourceService"/>        
+      <property name="PageHeaderResourceService" ref="osivia:service=PageHeaderResourceService"/> 
+      <property name="PreviewModeService" ref="osivia:service=PreviewModeService"/>     
+      <property name="CMSEditionService" ref="osivia:service=CMSEditionService"/>  
    </bean>
     
     

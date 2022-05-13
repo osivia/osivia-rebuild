@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
@@ -213,6 +214,10 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             }
         }         
         
+        
+        if ((cachedEntry != null) && StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority"))) {
+                cachedEntry = null;
+        }
  
          //
         if ((cachedEntry != null) && (skipNavigationCheck == false)) {

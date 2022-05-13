@@ -23,15 +23,19 @@
 package org.osivia.portal.core.renderers;
 
 import java.io.PrintWriter;
+import java.util.Collection;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
+import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRenderer;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
@@ -65,6 +69,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Set current window identifier for decorators
         properties.setCurrentWindowId(wrc.getId());
         
+        
+        // Show CMS tools indicator
+        boolean showCMSTools = this.showCMSTools(wrc, properties);
+        
         // Bootstrap panel style indicator
         boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.bootstrapPanelStyle"));
 
@@ -92,11 +100,55 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
         out.print(">");
+        
+        
 
 
         out.print("<div class=\"dyna-window-content\">");
 
 
+        if (showCMSTools) {
+
+
+            String dropUrl = properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.url");
+            if( dropUrl == null)
+                dropUrl = "";
+            dropUrl+= "&javax.portlet.action=drop&action=1&targetWindow="+properties.getWindowProperty(wrc.getId(), "osivia.cms.edition.windowName");            
+            
+            out.print("<div class=\"cms-edition-droppable border border-primary m-2 clearfix\" data-drop-url=\""+dropUrl+"\">");            
+            
+            out.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-load-callback-function=\"tasksModalCallback\" data-title=\"Add!\" data-footer=\"true\">\n"
+            + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
+            + "        <span class=\"d-md-none\">Notifications</span>\n"
+            + "    </a>");
+            
+            
+            
+            // Portlet administration display command
+            Collection<ActionRendererContext> actions = wrc.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
+            for (ActionRendererContext action : actions) {
+                if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
+                    String displayAdminURL = action.getURL() + "&windowstate=maximized";
+                    
+                    out.print("<a href=\""+displayAdminURL+"\" class=\"btn\">\n"
+                            + "        <i class=\"glyphicons glyphicons-basic-square-empty-question \"></i>\n"
+                            + "        <span class=\"d-md-none\">Notifications</span>\n"
+                            + "    </a>");                    
+                    
+                    break;
+                }
+            }
+
+            
+            out.print("</div>");
+            
+            String windowName = properties.getWindowProperty(wrc.getId(), "osivia.cms.edition.windowName");
+            out.print("<div class=\"cms-edition-draggable  clearfix\" data-src-window=\""+windowName+"\" >");
+
+        }
+
+        
+        
         out.print("<section class=\"portlet-container " + styles + "\">");
 
 
@@ -137,12 +189,43 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         out.print("</section>");
         // Wizard edging
 
+        if (showCMSTools) {
+            out.print("</div>");
+            
+           
+        }
+        
         // Dyna window content
         out.print("</div>");
+        
+
 
 
         // End of DIV for osivia.windowID or no ajax link
         out.print("</div>");
+    }
+
+    /**
+     * Display CMS Tools if window is marked "CMS" (dynamic window) and if the tools are enabled in the session.
+     *
+     * @param wrc window context
+     * @return true if CMS tools must be shown
+     */
+    private boolean showCMSTools(WindowRendererContext wrc, PageProperties properties ) {
+        boolean showCmsTools = false;
+
+        if (wrc instanceof WindowContext) {
+            WindowContext wc = (WindowContext) wrc;
+            showCmsTools = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY));
+
+                
+//            if (BooleanUtils.isTrue(wc.getRegionCms()) && (wrc.getProperty("osivia.windowId") != null)) {
+//                showCmsTools = BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY));
+//                        && !BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
+            }
+//        }
+
+        return showCmsTools;
     }
 
 
