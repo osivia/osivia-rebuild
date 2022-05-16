@@ -1,52 +1,38 @@
 package org.osivia.portal.cms.portlets.edition.add.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Element;
-import org.dom4j.io.HTMLWriter;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.html.AccessibilityRoles;
-import org.osivia.portal.api.html.DOM4JUtils;
-import org.osivia.portal.api.locale.ILocaleService;
-import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.springframework.beans.BeansException;
@@ -54,15 +40,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.portlet.bind.PortletRequestDataBinder;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.nuxeo.api.NxControllerMock;
 import fr.toutatice.portail.cms.producers.test.TestRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
@@ -73,7 +57,8 @@ import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
  */
 @Controller
 @RequestMapping(value = "VIEW")
-public class AddController implements PortletContextAware, ApplicationContextAware {
+@SessionAttributes("form")
+public class AddController extends GenericPortlet implements PortletContextAware, ApplicationContextAware   {
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -89,6 +74,12 @@ public class AddController implements PortletContextAware, ApplicationContextAwa
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
+    @Autowired
+    IAppsService appServices;
+
+    /** Portlet config. */
+    @Autowired
+    private PortletConfig portletConfig;
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(AddController.class);
@@ -100,7 +91,17 @@ public class AddController implements PortletContextAware, ApplicationContextAwa
         super();
     }
 
-
+    /**
+     * Post-construct.
+     *
+     * @throws PortletException
+     */
+    @PostConstruct
+    public void postConstruct() throws PortletException {
+        super.init(this.portletConfig);
+    }
+    
+    
     /**
      * Default render mapping.
      *
@@ -130,7 +131,7 @@ public class AddController implements PortletContextAware, ApplicationContextAwa
             CMSController ctrl = new CMSController(portalControllerContext);
 
 
-            addPortlet(request, portalControllerContext, ctrl, "toutatice-portail-cms-nuxeo-keywordsSelectorPortletInstance");
+            addPortlet(request, portalControllerContext, ctrl, request.getParameter("appId"));
 
             String url = this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
             response.sendRedirect(url);
@@ -145,42 +146,55 @@ public class AddController implements PortletContextAware, ApplicationContextAwa
         String navigationId = getNavigationId(request);
         if (navigationId != null) {
 
-            int position;
 
             PortalWindow window = WindowFactory.getWindow(request);
+
+            UniversalID id = new UniversalID(navigationId);
+
+
+            CMSContext cmsContext = ctrl.getCMSContext();
+            Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
+
             String region = window.getProperty("osivia.cms.edition.region");
+
+            List<ModuleRef> modules;
+
+            if (document instanceof MemoryRepositoryPage) {
+                // Search src module
+                modules = ((MemoryRepositoryPage) document).getModuleRefs();
+            } else {
+                modules = new ArrayList<>();
+            }
+
+            int iInsertion = -1;
+
             if (region != null) {
-                position = TestRepository.POSITION_BEGIN;
+                int iInsertionRegion = 0;
+                for (ModuleRef module : modules) {
+                    if (StringUtils.equals(module.getRegion(), region)) {
+                        iInsertion = iInsertionRegion + 1;
+                    }
+                    iInsertionRegion++;
+                }
             } else {
                 // Search for window
                 String windowName = window.getProperty("osivia.cms.edition.targetWindow");
 
 
-                UniversalID id = new UniversalID(navigationId);
-
-
-                CMSContext cmsContext = ctrl.getCMSContext();
-                Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
-
-                position = TestRepository.POSITION_BEGIN;
-
-                if (document instanceof MemoryRepositoryPage) {
-                    // Search src module
-                    List<ModuleRef> modules = ((MemoryRepositoryPage) document).getModuleRefs();
-                    for (ModuleRef module : modules) {
-                        if (module.getWindowName().equals(windowName)) {
-                            region = module.getRegion();
-                            break;
-                        }
-                        position++;
+                for (ModuleRef module : modules) {
+                    if (module.getWindowName().equals(windowName)) {
+                        region = module.getRegion();
+                        iInsertion++;
+                        break;
                     }
+                    iInsertion++;
+
                 }
             }
-
-            UniversalID id = new UniversalID(navigationId);
-
-            CMSContext cmsContext = ctrl.getCMSContext();
-
+            
+            if( iInsertion == -1)
+                iInsertion = TestRepository.POSITION_END;
+            
 
             TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
@@ -189,7 +203,7 @@ public class AddController implements PortletContextAware, ApplicationContextAwa
             Map<String, String> editionProperties = new ConcurrentHashMap<>();
             editionProperties.put("osivia.hideTitle", "1");
 
-            ((TestRepository) repository).addWindow(windowID, windowID, portletName, region, position, id.getInternalID(), editionProperties);
+            ((TestRepository) repository).addWindow(windowID, windowID, portletName, region, iInsertion, id.getInternalID(), editionProperties);
 
         }
     }
@@ -228,6 +242,7 @@ public class AddController implements PortletContextAware, ApplicationContextAwa
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
 
         AddForm form = this.applicationContext.getBean(AddForm.class);
+        form.setApps(appServices.getApps(portalCtx));
 
 
         return form;

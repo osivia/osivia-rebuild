@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
@@ -36,6 +38,10 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
 import org.osivia.portal.core.page.PageProperties;
@@ -47,6 +53,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /** list of regions in head. */
     private final List<String> headerRegions;
+    /** Bundle factory. */
+    private final IBundleFactory bundleFactory;
+    
 
     
     /**
@@ -57,7 +66,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         
         this.headerRegions = new ArrayList<String>();
         this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
-
+        
+        IInternationalizationService internationalizationService = Locator.getService(IInternationalizationService.class);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -131,13 +142,19 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * {@inheritDoc}
      */
     public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
+        
+        PageProperties properties = PageProperties.getProperties();
+        
+        // Locale
+        Locale locale = LocaleUtils.toLocale(PageProperties.getProperties().getPagePropertiesMap().get( InternalConstants.LOCALE_PROPERTY));
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        Bundle bundle = this.bundleFactory.getBundle(locale);       
 
         PrintWriter markup = rendererContext.getWriter();
 
-        // Add footer decorator
-        PageProperties properties = PageProperties.getProperties();
-        
-        
+         
         String dropUrl = properties.getPagePropertiesMap().get("osivia.cms.edition.url");
         if( dropUrl != null)    {
             String sRegions = PageProperties.getProperties().getPagePropertiesMap().get("cms.regions");
@@ -152,9 +169,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                     String addPortletUrl = properties.getPagePropertiesMap().get("osivia.cms.edition.addPortletUrl."+rrc.getId());
 
                     
-                    markup.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+addPortletUrl+"\" data-load-callback-function=\"tasksModalCallback\" data-title=\"Notifications\" data-footer=\"true\">\n"
+                    markup.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+addPortletUrl+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_LIST")+"\">\n"
                     + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
-                    + "        <span class=\"d-md-none\">Notifications</span>\n"
+                    + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_LIST")+"</span>\n"
                     + "    </a>");
                     
                     

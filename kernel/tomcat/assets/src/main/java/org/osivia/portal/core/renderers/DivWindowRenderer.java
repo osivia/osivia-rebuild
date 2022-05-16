@@ -24,8 +24,10 @@ package org.osivia.portal.core.renderers;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.theme.page.WindowContext;
@@ -35,6 +37,10 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRenderer;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 
@@ -46,14 +52,17 @@ import org.osivia.portal.core.page.PageProperties;
  * @see org.jboss.portal.theme.render.renderer.WindowRenderer
  */
 public class DivWindowRenderer extends AbstractObjectRenderer implements WindowRenderer {
-
+    /** Bundle factory. */
+    private final IBundleFactory bundleFactory;
 
     /**
      * Constructor.
      */
     public DivWindowRenderer() {
         super();
-
+        
+        IInternationalizationService internationalizationService = Locator.getService(IInternationalizationService.class);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -68,6 +77,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         PageProperties properties = PageProperties.getProperties();
         // Set current window identifier for decorators
         properties.setCurrentWindowId(wrc.getId());
+        
+        // Locale
+        Locale locale = null;
+        String currentWindowId = PageProperties.getProperties().getCurrentWindowId();
+        if (currentWindowId != null) {
+            locale = LocaleUtils.toLocale(PageProperties.getProperties().getWindowProperty(currentWindowId, InternalConstants.LOCALE_PROPERTY));
+        }
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        Bundle bundle = this.bundleFactory.getBundle(locale);       
         
         
         // Show CMS tools indicator
@@ -117,9 +137,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             
             out.print("<div class=\"cms-edition-droppable border border-primary m-2 clearfix\" data-drop-url=\""+dropUrl+"\">");            
             
-            out.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-load-callback-function=\"tasksModalCallback\" data-title=\"Add!\" data-footer=\"true\">\n"
+            out.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_LIST")+"\">\n"
             + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
-            + "        <span class=\"d-md-none\">Notifications</span>\n"
+            + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_SYSTEM_PARAMETERS")+"</span>\n"
             + "    </a>");
             
             
@@ -132,7 +152,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                     
                     out.print("<a href=\""+displayAdminURL+"\" class=\"btn\">\n"
                             + "        <i class=\"glyphicons glyphicons-basic-square-empty-question \"></i>\n"
-                            + "        <span class=\"d-md-none\">Notifications</span>\n"
+                            + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_LIST")+"</span>\n"
                             + "    </a>");                    
                     
                     break;

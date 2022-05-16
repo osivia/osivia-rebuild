@@ -174,10 +174,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
                             break;
                         }
                     }
+  
                     
-                    // Remove src module
-                    modules.remove(srcModule);
-
                     
                     // compute region
                     if( region == null) {
@@ -190,25 +188,42 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     }
                     
                     
+                    // Remove src module
+                    modules.remove(srcModule);
+
+  
+                    
                     // re-insert src module
                     ModuleRef newModule = new ModuleRef(srcModule.getWindowName(), region, srcModule.getModuleId(), srcModule.getProperties());
                     
-                    int iInsertion = 0;
-                    for (ModuleRef module: modules) {
-                        // Search window
-                        if( targetWindow != null && StringUtils.equals(module.getWindowName(), targetWindow))  {
+                    int iInsertion = -1;
+                    
+                    if( targetWindow != null)   {
+                        iInsertion = -1;
+                        for (ModuleRef module: modules) {
+                            if( targetWindow != null && StringUtils.equals(module.getWindowName(), targetWindow))  {
+                                iInsertion++;
+                                break;
+                            }
                             iInsertion++;
-                            break;
                         }
-                        if( targetWindow == null & StringUtils.equals(module.getRegion(), region))  {
-                            break;
+                    } else  {
+                        if (region != null) {
+                            int iInsertionRegion=0;
+                            for (ModuleRef module: modules) {
+                                if( StringUtils.equals(module.getRegion(), region))  {
+                                    iInsertion = iInsertionRegion +1;
+                                }
+                                iInsertionRegion++;
+                            }
                         }
-                        iInsertion++;
                     }
                     
-                    
-                    
-                    modules.add(iInsertion, newModule);
+                    if( iInsertion != -1)
+                        modules.add(iInsertion, newModule);
+                    else
+                        modules.add(newModule);
+                       
 
                     TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                     if (repository instanceof TestRepository) {

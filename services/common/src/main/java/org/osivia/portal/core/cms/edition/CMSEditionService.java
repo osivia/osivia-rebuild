@@ -2,6 +2,7 @@ package org.osivia.portal.core.cms.edition;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,14 +61,20 @@ public class CMSEditionService {
     public void prepareEdition(ControllerContext controllerContext, Page page) {
         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
         PortalControllerContext portalControllerContext = new PortalControllerContext(request);
+        
+        PageProperties properties = PageProperties.getProperties();
+        
+        Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
+        properties.getPagePropertiesMap().put( InternalConstants.LOCALE_PROPERTY, locale.toString());
+        
         try {
 
             String cmsEditionUrl = (String) request.getAttribute("osivia.cms.edition.url");
             if (cmsEditionUrl != null) {
                 String sRegions = page.getProperties().get("cms.regions");
                 if (sRegions != null) {
-                    PageProperties.getProperties().getPagePropertiesMap().put("cms.regions", sRegions);
-                    PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.edition.url", cmsEditionUrl);
+                    properties.getPagePropertiesMap().put("cms.regions", sRegions);
+                    properties.getPagePropertiesMap().put("osivia.cms.edition.url", cmsEditionUrl);
 
                     List<String> regions = Arrays.asList(sRegions.split(","));
                     for (String region : regions) {
@@ -82,6 +89,8 @@ public class CMSEditionService {
 
                         addPortletUrl = this.portalUrlFActory.getStartPortletUrl(portalControllerContext, "EditionAddPortletInstance", props, PortalUrlType.MODAL);
                         PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.edition.addPortletUrl." + region, addPortletUrl);
+                        
+                        
 
                     }
                 }
@@ -113,6 +122,11 @@ public class CMSEditionService {
         PageProperties properties = PageProperties.getProperties();
         String contentId = window.getPage().getProperty("osivia.contentId");
         String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+        
+        
+
+        Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
+        properties.setWindowProperty(windowId, InternalConstants.LOCALE_PROPERTY, locale.toString());
 
         UniversalID id = new UniversalID(contentId);
 

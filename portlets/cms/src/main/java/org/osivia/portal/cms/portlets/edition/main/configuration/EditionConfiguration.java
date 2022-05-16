@@ -29,7 +29,7 @@ public class EditionConfiguration {
     }
 
 
-    /**
+    /**z
      * Get view resolver.
      *
      * @return view resolver
