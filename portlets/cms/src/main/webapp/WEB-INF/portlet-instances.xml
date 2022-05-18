@@ -52,7 +52,23 @@
          <instance-id>EditionAddPortletInstance</instance-id>
          <portlet-ref>EditionAddPortlet</portlet-ref>
       </instance>      
+   </deployment>   
+   <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS EditionModifyPortlet portlet</display-name>
+         <display-name xml:lang="fr">Portlet EditionModifyPortlet</display-name>
+         <instance-id>EditionModifyPortletInstance</instance-id>
+         <portlet-ref>EditionModifyPortlet</portlet-ref>
+      </instance>      
    </deployment>    
+   <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS EditionDeletePortlet portlet</display-name>
+         <display-name xml:lang="fr">Portlet EditionDeletePortlet</display-name>
+         <instance-id>EditionDeletePortletInstance</instance-id>
+         <portlet-ref>EditionDeletePortlet</portlet-ref>
+      </instance>      
+   </deployment>      
    <deployment>    
       <instance>
          <display-name xml:lang="en">CMS rename portlet</display-name>

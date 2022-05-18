@@ -28,8 +28,6 @@ public class AppsService implements IAppsService {
     @Autowired
     InstanceContainer instanceContainer;
 
-    /** Default icon location. */
-    private static final String DEFAULT_ICON_LOCATION = "/portal-core/images/portletIcon_Default1.gif";
     
     
     @Override

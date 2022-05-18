@@ -1,6 +1,7 @@
 package org.osivia.portal.core.cms.edition;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -144,7 +145,7 @@ public class CMSEditionService {
 
 
                         String addPortletUrl;
-                        Map<String, String> props = new HashedMap();
+                        Map<String, String> props = new HashMap<String, String>();
                         props.put("osivia.navigationId", page.getDeclaredProperty("osivia.navigationId"));
                         props.put("osivia.content.preview", page.getDeclaredProperty("osivia.content.preview"));
                         props.put("osivia.content.locale", page.getDeclaredProperty("osivia.content.locale"));
@@ -152,7 +153,14 @@ public class CMSEditionService {
 
                         addPortletUrl = this.portalUrlFActory.getStartPortletUrl(portalControllerContext, "EditionAddPortletInstance", props, PortalUrlType.MODAL);
                         properties.setWindowProperty(windowId,"osivia.cms.edition.addPortletUrl", addPortletUrl);
-
+                        
+                        String deletePortletUrl;                       
+                        deletePortletUrl = this.portalUrlFActory.getStartPortletUrl(portalControllerContext, "EditionDeletePortletInstance", props, PortalUrlType.MODAL);
+                        properties.setWindowProperty(windowId,"osivia.cms.edition.deletePortletUrl", deletePortletUrl);
+                        
+                        String editPortletUrl;                       
+                        editPortletUrl = this.portalUrlFActory.getStartPortletUrl(portalControllerContext, "EditionModifyPortletInstance", props, PortalUrlType.MODAL);
+                        properties.setWindowProperty(windowId,"osivia.cms.edition.modityPortletUrl", editPortletUrl);                    
                     }
                 }
             }

@@ -96,6 +96,12 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Bootstrap panel style indicator
         boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.bootstrapPanelStyle"));
 
+        // Hide portlet indicator
+        boolean hidePortlet = !showCMSTools && BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet"));
+        if (hidePortlet) {
+            out.println("<div class=\"dyna-window-content\" ></div>");
+            return;
+        }        
 
 
         // Window identifier
@@ -137,10 +143,27 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             
             out.print("<div class=\"cms-edition-droppable border border-primary m-2 clearfix\" data-drop-url=\""+dropUrl+"\">");            
             
-            out.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_LIST")+"\">\n"
+            // Add
+            
+            out.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_LIST")+"\">\n"
             + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
-            + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_SYSTEM_PARAMETERS")+"</span>\n"
+            + "        <span class=\"d-md-none\">"+bundle.getString("ADD")+"</span>\n"
             + "    </a>");
+            
+            // Delete
+            
+            out.print("<a class=\"btn\" href=\"javascript:\" title=\""+bundle.getString("DELETE")+"\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.deletePortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_DELETE")+"\" data-target=\"#osivia-modal\">\n"
+            + "      <i class=\"glyphicons glyphicons-basic-bin\"></i>\n"
+            + "    </a>");
+                            
+            
+            
+            // Edit
+            
+            out.print("<a class=\"btn\" href=\"javascript:\" title=\""+bundle.getString("EDIT")+"\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.modityPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_EDIT")+"\" data-target=\"#osivia-modal\">\n"
+            + "      <i class=\"glyphicons glyphicons-basic-square-edit\"></i>\n"
+            + "    </a>");
+                            
             
             
             

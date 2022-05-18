@@ -174,9 +174,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                             break;
                         }
                     }
-  
-                    
-                    
+                 
                     // compute region
                     if( region == null) {
                         for (ModuleRef module: modules) {
@@ -230,9 +228,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                             ((TestRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
                     }
 
-                    
-                    
-                    
+                     
                 }
                 
                 logger.info(document.getTitle());

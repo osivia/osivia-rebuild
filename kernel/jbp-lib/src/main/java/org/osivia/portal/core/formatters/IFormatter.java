@@ -34,7 +34,6 @@ public interface IFormatter {
 
     String formatDisplayLiveVersionList(CMSServiceCtx ctx, PortalObject po, String scopeName, String selectedVersion) throws Exception;
 
-    String formatContextualization(PortalObject po, String selectedScope) throws Exception;
 
     /**
      * Format portal object ID into HTML-safe identifier.
@@ -45,13 +44,6 @@ public interface IFormatter {
      */
     String formatHtmlSafeEncodingId(PortalObjectId id) throws IOException;
 
-    /**
-     * Format portlets list into HTML fancybox data.
-     *
-     * @param context controller context, which contains locales and URL generation data
-     * @return HTML fancybox data
-     * @throws IOException
-     */
-    String formatHtmlPortletsList(PortalControllerContext context) throws IOException;
+
 
 }

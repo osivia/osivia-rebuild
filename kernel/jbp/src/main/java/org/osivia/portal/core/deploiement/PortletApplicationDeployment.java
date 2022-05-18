@@ -71,7 +71,7 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
         this.injectStandardService(Constants.URL_SERVICE_NAME, IPortalUrlFactory.class, "osivia:service=UrlFactory");
         this.injectStandardService(Constants.WEBID_SERVICE_NAME, IWebIdService.class, IWebIdService.MBEAN_NAME);
         this.injectStandardService(Constants.FORMATTER_SERVICE_NAME, IFormatter.class,
-                "osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
+                "osivia:service=FormatterService");
         this.injectStandardService(Constants.NOTIFICATIONS_SERVICE_NAME, INotificationsService.class, INotificationsService.MBEAN_NAME);
         this.injectStandardService(Constants.INTERNATIONALIZATION_SERVICE_NAME, IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);

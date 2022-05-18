@@ -155,22 +155,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         }
 
-        if (cmd instanceof RenderWindowCommand) {
-
-            RenderWindowCommand rwc = (RenderWindowCommand) cmd;
-            Window window = rwc.getWindow();
-            String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
-
-
-            PageProperties properties = PageProperties.getProperties();
-            
-            // Bootstrap panel style indicator
-            String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");
-            properties.setWindowProperty(windowId, "osivia.bootstrapPanelStyle", bootstrapPanelStyle);
-            
-            
-            cmsEditionService.prepareEdition(controllerContext, window);
-        }  
+ 
 
 
         ControllerResponse resp;
@@ -186,6 +171,34 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
           
         }
 
+ 
+        if (cmd instanceof RenderWindowCommand) {
+
+            RenderWindowCommand rwc = (RenderWindowCommand) cmd;
+            Window window = rwc.getWindow();
+            String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+
+
+            PageProperties properties = PageProperties.getProperties();
+            
+            // Bootstrap panel style indicator
+            String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");
+            properties.setWindowProperty(windowId, "osivia.bootstrapPanelStyle", bootstrapPanelStyle);
+            
+            // Should we hide the portlet (empty response + hideEmptyPortlet positionned)
+            boolean hidePortlet = false;
+            String emptyResponse = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse." + windowId);
+            if ("1".equals(emptyResponse)) {
+                if ("1".equals(window.getDeclaredProperty("osivia.hideEmptyPortlet"))) {
+                    hidePortlet = true;
+                }
+            }
+            properties.setWindowProperty(windowId, "osivia.hidePortlet", Boolean.toString(hidePortlet));
+            
+            
+            cmsEditionService.prepareEdition(controllerContext, window);
+        }  
+        
         
         if ((cmd instanceof InvokePortletWindowActionCommand) || (cmd instanceof InvokePortletWindowRenderCommand)) {
             // Current window

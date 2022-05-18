@@ -52,7 +52,7 @@ public class RenameConfiguration {
     @Bean(name = "messageSource")
     public ResourceBundleMessageSource getMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("rename");
+        messageSource.setBasename("edition");
         return messageSource;
     }
 
