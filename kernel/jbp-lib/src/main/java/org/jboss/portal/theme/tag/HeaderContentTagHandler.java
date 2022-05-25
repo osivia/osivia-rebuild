@@ -118,6 +118,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       // Logout
       this.writeResource(out,  "<script src='/portal-assets/js/logout.js'></script>"); 
       
+      // Clipboard
+      this.writeResource(out,  "<script src='/portal-assets/components/clipboard/clipboard.min.js'></script>");
+      this.writeResource(out,  "<script src='/portal-assets/js/clipboard-integration.js'></script>");      
+      
       this.writeResource(out, "<!-- portlet resources -->");
       
       out.flush();

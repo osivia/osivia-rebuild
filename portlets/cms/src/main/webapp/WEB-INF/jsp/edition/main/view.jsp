@@ -26,7 +26,7 @@
 
 <portlet:actionURL name="submit" var="submitUrl" />
 
-<nav class="navbar navbar-expand-lg navbar-light bg-secondary p-1">
+<nav class="bg-secondary p-1">
 
 	<form:form action="${submitUrl}" method="post" modelAttribute="form"
 		class="row w-100">

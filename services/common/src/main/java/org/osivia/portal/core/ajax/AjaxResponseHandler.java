@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -99,7 +97,6 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -113,9 +110,7 @@ import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.theming.AbstractRegionBean;
 import org.osivia.portal.api.theming.IRegionsThemingService;
 import org.osivia.portal.api.theming.IRenderedRegions;
-import org.osivia.portal.api.theming.PortletsRegionBean;
 import org.osivia.portal.api.theming.RenderedRegionBean;
-import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.cms.edition.CMSEditionService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
@@ -126,13 +121,10 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
-import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.resources.ResourceHandler;
 import org.osivia.portal.core.theming.IPageHeaderResourceService;
 import org.osivia.portal.core.theming.RenderedRegions;
 import org.w3c.dom.Element;
-
-import com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer;
 
 /**
  * todo:
@@ -558,7 +550,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
 
                         // Windows
-                        Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
 
                         for (Object dirtyWindowId : dirtyWindowIds) {
                             PortalObjectId poid = (PortalObjectId) dirtyWindowId;
@@ -569,10 +560,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                             }
                         }
                     }
+                    
+                    
+                    
 
                     LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
-                    String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-                    PortalLayout layout = layoutService.getLayoutById(layoutId);
+                    PortalLayout layout = RenderPageCommand.getLayout( controllerContext,  layoutService,  page);
                     String layoutContextPath = layout.getLayoutInfo().getContextPath();
 
                     ThemeService themeService = controllerContext.getController().getPageService().getThemeService();
@@ -661,35 +654,56 @@ public class AjaxResponseHandler implements ResponseHandler {
                      * Constants.PORTLET_ATTR_PORTLET_PATH, null); }
                      */
 
+                    
+                    // Check if current page is a modal
+                    boolean modal = false;
+
+                    if (page instanceof DynamicTemplatePage) {
+                        PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
+                        if (templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
+                            modal = true;
+                    }
+                    
+                    
                     //
                     for (Window refreshedWindow : sortedWindows) {
                         try {
-                            RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
-                            WindowRendition rendition = rwc.render(controllerContext);
-
-                            //
-                            if (rendition != null) {
-                                ControllerResponse resp = rendition.getControllerResponse();
-
+                            
+                            boolean skipWindow = false;
+                            if( refreshedWindow.getName().equals("edition") )  {
+                                if( modal || !previewModeService.isEditionMode(portalControllerContext) )
+                                    skipWindow = true;
+                            }
+                            
+                            if( skipWindow == false)    {
+                            
+                                RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
+                                WindowRendition rendition = rwc.render(controllerContext);
+    
                                 //
-                                if (resp instanceof MarkupResponse) {
-                                    WindowContext wc = wcf.createWindowContext(refreshedWindow, rendition);
-
+                                if (rendition != null) {
+                                    ControllerResponse resp = rendition.getControllerResponse();
+    
                                     //
-                                    res.addWindowContext(wc);
-
-                                    this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wc);
-
+                                    if (resp instanceof MarkupResponse) {
+                                        WindowContext wc = wcf.createWindowContext(refreshedWindow, rendition);
+    
+                                        //
+                                        res.addWindowContext(wc);
+    
+                                        this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wc);
+    
+                                    } else {
+                                        // TODO:display error
+                                        // updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT),
+                                        // "An error occured during rendering");
+                                    }
                                 } else {
-                                    // TODO:display error
-                                    // updatePage.addFragment(refreshedWindow.getId().toString(PortalObjectPath.SAFEST_FORMAT),
-                                    // "An error occured during rendering");
+                                    // We'd better do a full refresh for now
+                                    // It could be handled as a portlet removal in the protocol between the client
+                                    // side and server side
+                                    fullRefresh = true;
                                 }
-                            } else {
-                                // We'd better do a full refresh for now
-                                // It could be handled as a portlet removal in the protocol between the client
-                                // side and server side
-                                fullRefresh = true;
                             }
                         } catch (Exception e) {
                             log.error("An error occured during the computation of window markup", e);
@@ -703,18 +717,15 @@ public class AjaxResponseHandler implements ResponseHandler {
                     }
 
                     updatePage.setResources(resources);
+                    
+                    
+                    RenderedRegions renderedRegions = null;
+                    
 
                     // Notifications & menubar refresh
                     if (!fullRefresh) {
                         try {
-                            // Check if current page is a modal
-                            boolean modal = false;
 
-                            if (page instanceof DynamicTemplatePage) {
-                                PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
-                                if (templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
-                                    modal = true;
-                            }
 
                             if (!modal) {
                                 // Notifications window context
@@ -742,7 +753,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 }
 
                                 // Rendered regions
-                                RenderedRegions renderedRegions = new RenderedRegions(page);
+                                renderedRegions = new RenderedRegions(page);
 
                                 Map<String, Object> customizerAttributes = new HashMap<String, Object>();
                                 customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_LAYOUT_CONTEXT_PATH, layoutContextPath);
@@ -777,8 +788,11 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                                             this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wCtx);
 
-                                            List<String> regionWindowsList = new ArrayList<String>();
-                                            regionWindowsList.add(renderedRegion.getName());
+                                            List<String> regionWindowsList = updatePage.getRegions().get(renderedRegion.getName());
+                                                    
+                                            if( regionWindowsList == null)
+                                                regionWindowsList = new ArrayList<String>();
+                                            regionWindowsList.add(wCtx.getId());
                                             updatePage.getRegions().put(renderedRegion.getName(), regionWindowsList);
 
                                         }
@@ -807,10 +821,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                         // Layout
                         if (refreshPageStructure) {
                             // Update layout
-                            getCMSEditionService().prepareEdition(controllerContext, page);
-                            
-                            String layoutCode = getDynamicLayoutService().getLayoutCode(controllerContext, page);
+                            getCMSEditionService().prepareEdition(controllerContext, page, renderedRegions,  layout.getLayoutInfo().getRegionNames());
 
+                            String layoutCode = getDynamicLayoutService().getLayoutCode(controllerContext, page);
                             updatePage.setLayout(layoutCode);
                         }
                         

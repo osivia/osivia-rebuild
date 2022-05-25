@@ -22,6 +22,9 @@
  ******************************************************************************/
 package org.jboss.portal.core.model.portal.command.render;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.portal.Mode;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -43,6 +46,8 @@ import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.content.WindowRendition;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.core.theme.WindowContextFactory;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
@@ -53,9 +58,11 @@ import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
 import org.jboss.portal.theme.PortalTheme;
+import org.jboss.portal.theme.ServerRegistrationID;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
 import org.jboss.portal.theme.page.PageResult;
+
 import org.jboss.portal.server.ServerInvocation;
 
 import javax.naming.InitialContext;
@@ -64,7 +71,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -149,7 +159,7 @@ public final class RenderPageCommand extends PageCommand
          LayoutService layoutService = pageService.getLayoutService();
 
          //
-         PortalLayout layout = getLayout(layoutService, page);
+         PortalLayout layout = getLayout(context, layoutService, page);
 
          // The theme for the page
          PortalTheme theme = null;
@@ -285,9 +295,33 @@ public final class RenderPageCommand extends PageCommand
     * @param page          the page that hosts the markup container to render (the page, region, window,...)
     * @return a <code>PortalLayout</code> for the defined layout name
     */
-   public static PortalLayout getLayout(LayoutService layoutService, Page page)
+   public static PortalLayout getLayout(ControllerContext context, LayoutService layoutService, Page page)
    {
       String layoutIdString = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
+      
+
+      
+   // Regions
+      Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+      
+
+         for (PortalObject window : windows) {
+
+          NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+          WindowNavigationalState windowNavState = (WindowNavigationalState) context.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+
+          if ((windowNavState != null) && Mode.ADMIN.equals(windowNavState.getMode())) {
+              PortalLayout layout = layoutService.getLayoutById(layoutIdString);
+               ServerRegistrationID originRegistrationID = layout.getLayoutInfo().getRegistrationId();
+               layoutIdString = originRegistrationID.getName(0)+".admin";
+
+              break;
+          }
+
+
+      }
+      
+      
       return layoutService.getLayoutById(layoutIdString);
    }
 }

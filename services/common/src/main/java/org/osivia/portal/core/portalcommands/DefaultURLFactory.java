@@ -31,6 +31,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.core.cms.edition.CMSEditionChangeModeCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
@@ -176,6 +177,20 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             return asu;
         }
 
+        // Change edition Mode
+        if (cmd instanceof CMSEditionChangeModeCommand) {
+
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, ("changeEditionMode"));
+
+           
+            return asu;
+        }
+        
+        
+        
 
         return null;
     }

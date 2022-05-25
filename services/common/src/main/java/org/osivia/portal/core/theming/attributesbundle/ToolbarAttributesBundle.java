@@ -76,6 +76,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.Satellite;
+import org.osivia.portal.core.cms.edition.CMSEditionChangeModeCommand;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.content.ViewContentCommand;
@@ -271,6 +272,8 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
         SignOutCommand signOutCommand = new SignOutCommand();
         PortalURL signOutPortalUrl = new PortalURLImpl(signOutCommand, controllerContext, false, null);
         attributes.put(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, signOutPortalUrl.toString());
+        
+
 
         // Administration content
         String administrationContent = this.formatHTMLAdministration(controllerContext, page);
@@ -450,6 +453,14 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
                 Element functionalhome = DOM4JUtils.generateLinkElement(customAdminPageURL, null, null, "nav-link", "", "glyphicons glyphicons-basic-cogwheel");
                 administration.add(functionalhome);
             }
+            
+            
+            // Logout
+            CMSEditionChangeModeCommand changeCmsEditionMode = new CMSEditionChangeModeCommand();
+            PortalURL changeCmsEditionModeUrl = new PortalURLImpl(changeCmsEditionMode, context, false, null);
+              
+            Element cmsEditionMode = DOM4JUtils.generateLinkElement(changeCmsEditionModeUrl.toString(), null, null, "nav-link", "", "glyphicons glyphicons-basic-square-edit");
+            administration.add(cmsEditionMode);
             
             // Configuration menu dropdown element
             Element configurationDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);

@@ -26,6 +26,7 @@ import org.jboss.portal.core.model.portal.metadata.PortalObjectMetaData;
 import org.jboss.portal.core.model.portal.metadata.WindowMetaData;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.SecurityConstants;
+import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
@@ -132,7 +133,8 @@ public class FileRepository extends UserRepositoryTestBase {
 
                for (Map.Entry<String,String> entry : windowMetaData.getProperties().entrySet())
                {
-                   moduleProperties.put(entry.getKey(), entry.getValue());
+                   if(!entry.getKey().equals(ThemeConstants.PORTAL_PROP_ORDER))
+                       moduleProperties.put(entry.getKey(), entry.getValue());
                }
                ModuleRef module = new ModuleRef(windowMetaData.getName() , windowMetaData.getRegion(), windowMetaData.getContent().getURI(), moduleProperties); 
                modules.add(module);  

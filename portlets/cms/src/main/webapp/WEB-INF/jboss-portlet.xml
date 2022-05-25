@@ -17,5 +17,12 @@
         <link rel="stylesheet" type="text/css" href="/css/cms.css" media="screen"/>
 		<script type="text/javascript" src="/js/cms.js"></script>	         
       </header-content>
-   </portlet>   
+   </portlet> 
+   <portlet>
+      <portlet-name>Edition</portlet-name>
+      <header-content>
+        <link rel="stylesheet" type="text/css" href="/css/cms.css" media="screen"/>
+		<script type="text/javascript" src="/js/cms.js"></script>	         
+      </header-content>
+   </portlet>  
 </portlet-app>

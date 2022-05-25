@@ -31,6 +31,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.core.cms.edition.CMSEditionChangeModeCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
@@ -239,7 +240,11 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
 
                     return new SaveResizableWidthCommand(linkedToTasks, width);
-                }                
+                }    
+                
+                if ("changeEditionMode".equals(action)) {
+                        return new CMSEditionChangeModeCommand();
+                }                   
 
             }
         } catch (Exception e) {

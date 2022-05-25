@@ -39,6 +39,7 @@ import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
@@ -130,7 +131,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
         UniversalID id = new UniversalID(contentId);
-        if (previewModeService.isPreviewing(portalControllerContext, id)) {
+        if (previewModeService.isEditionMode(portalControllerContext)) {
             HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
             PortletURL actionUrl = response.createActionURL();
             httpRequest.setAttribute("osivia.cms.edition.url", actionUrl.toString());
@@ -663,54 +664,59 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
                 status.setPreview(cmsContext.isPreview());
+                
+                NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
+                
+                if( userRepository instanceof TestRepository) {
 
-                TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                status.setSupportPreview(repository.supportPreview());
-
-                Map<String, String> locales = new HashMap<>();
-                for (Locale locale : repository.getLocales()) {
-                    locales.put(locale.toString(), locale.getDisplayLanguage());
-                }
-                status.setLocales(locales);
-
-                status.setPageEdition(repository.supportPageEdition());
-
-
-                Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
-
-
-                status.setSubtypes(personnalization.getSubTypes());
-                status.setManageable(personnalization.isManageable());
-                status.setModifiable(personnalization.isModifiable());
-
-                if (status.isModifiable()) {
-
-
-                    // Rename URL
-                    Map<String, String> properties = new HashMap<>();
-                    // properties.put("osivia.rename.path", path);
-                    // properties.put("osivia.rename.redirection-path", form.getPath());
-
-                    ctrl.addContentRefToProperties(properties, "osivia.rename.id", id);
-
-
-                    String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
-                    this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", "Rename", "glyphicons glyphicons-basic-square-edit");
-
-
-                }
-
-                status.setAcls(repository.getACL(id.getInternalID()));
-
-                if (cmsContext.isPreview()) {
-                    cmsContext.setPreview(false);
-                    try {
-                        cmsService.getCMSSession(cmsContext).getDocument(id);
-                        status.setHavingPublication(true);
-                    } catch (CMSException e) {
-                        // Not found
-                    } finally {
-                        cmsContext.setPreview(true);
+                    TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                    status.setSupportPreview(repository.supportPreview());
+    
+                    Map<String, String> locales = new HashMap<>();
+                    for (Locale locale : repository.getLocales()) {
+                        locales.put(locale.toString(), locale.getDisplayLanguage());
+                    }
+                    status.setLocales(locales);
+    
+                    status.setPageEdition(repository.supportPageEdition());
+    
+    
+                    Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
+    
+    
+                    status.setSubtypes(personnalization.getSubTypes());
+                    status.setManageable(personnalization.isManageable());
+                    status.setModifiable(personnalization.isModifiable());
+    
+                    if (status.isModifiable()) {
+    
+    
+                        // Rename URL
+                        Map<String, String> properties = new HashMap<>();
+                        // properties.put("osivia.rename.path", path);
+                        // properties.put("osivia.rename.redirection-path", form.getPath());
+    
+                        ctrl.addContentRefToProperties(properties, "osivia.rename.id", id);
+    
+    
+                        String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
+                        this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", "Rename", "glyphicons glyphicons-basic-square-edit");
+    
+    
+                    }
+    
+                    status.setAcls(repository.getACL(id.getInternalID()));
+    
+                    if (cmsContext.isPreview()) {
+                        cmsContext.setPreview(false);
+                        try {
+                            cmsService.getCMSSession(cmsContext).getDocument(id);
+                            status.setHavingPublication(true);
+                        } catch (CMSException e) {
+                            // Not found
+                        } finally {
+                            cmsContext.setPreview(true);
+                        }
                     }
                 }
             }

@@ -331,10 +331,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	    	popping = true;
 	   }
 	   
-	   
-
-	   
-	   
+		   
 	   var newPage = false;
 		
 	   var preventHistory = false;
@@ -626,7 +623,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 		  }
 	  }
 	
-	  
+	  synchronizeMetadatas();
 	  
 	}
 	else if (resp.type == "update_page")
@@ -769,6 +766,11 @@ function updateResources(newHeaderResources)	{
 			   var headers = head.children;
 			   var insert = true;
 			   
+			   //TODO HACK02
+	 		    if(  newHeader.href !== undefined && newHeader.href.includes("/index-cloud-ens-portal-file-browser/css/file-browser"))	{
+					removeFromHead("/index-cloud-ens-portal-file-browser/css/mutualized-file-browser");
+				}			   
+			   
 			   for( var i=0; i<  headers.length; i++)	{
 	    		   if( newHeader.tag == "LINK" && headers[i].tagName == "LINK")	{
 	     			   if(  location.origin+newHeader.href == headers[i].href)
@@ -788,6 +790,9 @@ function updateResources(newHeaderResources)	{
 	 		    if( newHeader.media != undefined)
 	 		       link.media = newHeader.media;
 	 		    head.appendChild(link);
+	 		    
+
+	 		    
 			   }
 			   
 			   if( insert && newHeader.tag == "SCRIPT")	{
@@ -829,7 +834,117 @@ function copyLayout( layout)
     }
 
 
+	/* Insert dynamic resources from theme */
+	
+	//TODO HACK01
+	
+	
+	// Check if new resources must be inserted
+	
+	var srcs = srcContainer.select("head");
+	let changes = false;
+	
+	if (srcs.length == 1)
+    {
+       var src = srcs[0];
 
+	    let checking = false;
+	    let child = src.firstChild;
+	    let next = null;
+	    // While we still have child elements to process...
+	    while (child && (changes == false)) {
+			let checkThis = checking;
+	        next = child.nextSibling;
+	        // Is this a comment node?
+	        if (child.nodeType === Node.COMMENT_NODE) {
+	            if (child.nodeValue.includes("scripts-begin")) {
+	                checking = true;
+	                checkThis = false;
+	            } else if (child.nodeValue.includes("scripts-end")) {
+	                checking = false;
+	                checkThis = false;
+	            }
+	        } 
+	        
+        	if (checkThis &&  (child.href !== undefined || child.src !== undefined))  {
+					let elementChange = true;
+					let parent = document.querySelector("head");
+					if (parent) {
+					    let headChild = parent.firstChild;
+					    let nextChild = null;
+					    // While we still have child elements to process...
+					    while (headChild) {
+					        nextChild = headChild.nextSibling;
+					       	if( child.href !== undefined &&  headChild.href == child.href)	{
+								elementChange = false;
+							}
+					       	if( child.src !== undefined && headChild.src == child.src)	{
+								elementChange = false;
+							}							
+					        // Move on to next child
+					        headChild = nextChild;
+					}	
+					
+					if( elementChange == true)	
+						changes = true;
+           		}
+           	}
+			
+	        // Move on to next child
+	        child = next;
+	    }
+    }
+	
+	
+	if( changes == true)	{
+	
+	
+		removeHeadElementsBetweenComments("scripts");
+	
+	
+		if (srcs.length == 1)
+	    {
+	        var src = srcs[0];
+	
+		    let inserting = false;
+		    let child = src.firstChild;
+		    let next = null;
+		    // While we still have child elements to process...
+		    while (child) {
+				let insertThis = inserting;
+		        next = child.nextSibling;
+		        // Is this a comment node?
+		        if (child.nodeType === Node.COMMENT_NODE) {
+		            if (child.nodeValue.includes("scripts-begin")) {
+		                // It's the node that tells us to start removing:
+		                // Turn on our flag and also remove this node
+		                inserting = true;
+		                insertThis = false;
+	
+		            } else if (child.nodeValue.includes("scripts-end")) {
+		                // It's the node that tells us to stop removing:
+		                // Turn off our flag, but do remove this node
+		                inserting = false;
+		                insertThis = false;
+	
+		            }
+		        } else	{
+		        	if (insertThis) {
+		           	 $JQry("head").contents().filter(function() {
+						    return this.nodeType == 8;
+						  }).each(function(i, e) {
+						    if ( $JQry.trim(e.nodeValue) == "scripts-end") {
+						      $JQry(child).insertBefore(e);
+						    }
+						  });
+					
+		        	}
+				}
+		        // Move on to next child
+		        child = next;
+		    }
+	    }
+    }
 }
 
 function copyInnerHTML(srcContainer, dstContainer, className)
@@ -910,6 +1025,103 @@ function observePortlet(refreshWindow)
       Event.observe(refreshWindow, "click", bilto);
 
 }
+
+
+
+
+function removeHeadElementsBetweenComments( name)	{
+	//
+	// remove head datas between meta-datas-begin and meta-datas-end
+	//
+	let parent = document.querySelector("head");
+	if (parent) {
+	    // Uncomment if you want to see nodes before the change
+	    // showNodes("before", parent);
+	    let removing = false;
+	    let child = parent.firstChild;
+	    let next = null;
+	    // While we still have child elements to process...
+	    while (child) {
+	        // If we're already removing, remember that
+	        let removeThis = removing;
+	        // Before we remove anything, identify the next child to visit
+	        next = child.nextSibling;
+	        // Is this a comment node?
+	        if (child.nodeType === Node.COMMENT_NODE) {
+	            if (child.nodeValue.includes(name+"-begin")) {
+	                // It's the node that tells us to start removing:
+	                // Turn on our flag and also remove this node
+	                removing = true;
+	                removeThis = false;
+	            } else if (child.nodeValue.includes(name+"-end")) {
+	                // It's the node that tells us to stop removing:
+	                // Turn off our flag, but do remove this node
+	                removing = false;
+	                removeThis = false;
+	            }
+	        }
+	        if (removeThis) {
+	            // This is either stuff in-between the two comment nodes
+	            // or one of the comment nodes; either way, remove it
+	            parent.removeChild(child);
+	        }
+	
+	        // Move on to next child
+	        child = next;
+	    }
+	}
+}
+
+function removeFromHead( href)	{
+
+	let parent = document.querySelector("head");
+	if (parent) {
+	    let child = parent.firstChild;
+	    let next = null;
+	    while (child) {
+	        next = child.nextSibling;
+	        if (child.href !== undefined &&  child.href.includes(href)) {
+	            parent.removeChild(child);
+	        }
+	        child = next;
+	    }
+	}
+}
+
+
+
+// HACK03
+function synchronizeMetadatas()
+{
+	removeHeadElementsBetweenComments("meta-datas");
+
+	//
+	// insert new elements
+	//
+
+	$JQry("dyna-window#header-metadata dyna-window-content:first-child").each(function(index, element) {
+		var $element = $JQry(element);
+		$element.children().each(function(headIndex, headElement) {
+			
+			 $JQry("head").contents().filter(function() {
+			    return this.nodeType == 8;
+			  }).each(function(i, e) {
+			    if ( $JQry.trim(e.nodeValue) == "meta-datas-end") {
+			      $JQry(headElement).insertBefore(e);
+			    }
+			  });
+			});
+		
+ 	});
+
+
+
+
+
+
+
+}
+
 
 
 function footer()

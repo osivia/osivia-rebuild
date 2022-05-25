@@ -126,6 +126,7 @@ public final class Constants {
     public static final String ATTR_TOOLBAR_LOGIN_URL = "osivia.toolbar.loginURL";
     /** Sign out URL attribute name. */
     public static final String ATTR_TOOLBAR_SIGN_OUT_URL = "osivia.toolbar.signOutURL";
+
     /** Principal alias */
     public static final String ATTR_TOOLBAR_PERSON = "osivia.toolbar.person";
     /** Principal attribute name. */

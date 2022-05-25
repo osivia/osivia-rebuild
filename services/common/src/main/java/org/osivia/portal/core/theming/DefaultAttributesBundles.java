@@ -19,6 +19,7 @@ import org.osivia.portal.core.theming.attributesbundle.PageSettingsAttributesBun
 import org.osivia.portal.core.theming.attributesbundle.ToolbarAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.TransversalAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.BreadcrumbAttributesBundle;
+import org.osivia.portal.core.theming.attributesbundle.HeaderMetadataAttributesBundle;
 
 /**
  * Default attributes bundles enumeration.
@@ -36,7 +37,7 @@ public enum DefaultAttributesBundles {
 //        /** Search attributes bundle. */
 //        SEARCH(SearchAttributesBundle.getInstance());
 //    /** Header metadata. */
-//    HEADER_METADATA(HeaderMetadataAttributesBundle.getInstance()),
+    HEADER_METADATA(HeaderMetadataAttributesBundle.getInstance()),
 //    /** Site map attributes bundle. */
 //    SITE_MAP(SiteMapAttributesBundle.getInstance()),
 //    /** Tabs attributes bundle. */

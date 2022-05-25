@@ -164,9 +164,19 @@ public  class  CMSPage extends PageImplBase {
             }
 		}
 
+		/* CMS Edition Window */
+		
+        Map<String, String> editionProperties = new ConcurrentHashMap<>();
+        editionProperties.put("osivia.hideTitle", "1");
+        editionProperties.put("osivia.sequence.priority", "1");
+        ModuleRef edition = new ModuleRef("edition", "toolbar", "EditionInstance", editionProperties);
+        this.addWindow(windows, edition, 0);
+		
+		
 		/* CMS Windows */
 
 		factory.createCMSWindows(this, windows);
+		
 
 		return windows;
 

@@ -24,5 +24,12 @@
             <region name="osivia-modal-region"/>
         </regions>
     </layout>
+    
+    <!-- admin mode -->
+    <layout>
+        <name>admin</name>
+        <uri>/layouts/admin/index.jsp</uri>
+        <uri state="maximized">/layouts/admin/maximized.jsp</uri>
+    </layout>    
 
 </layouts>

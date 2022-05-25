@@ -33,7 +33,8 @@
 	<table  width="100%">
 	   <tr>
 		<td width="100%" colspan="3" valign="top">    
-	  		<p:region regionName='top' regionID='top'/>
+	  		<p:region regionName='toolbar' regionID='toolbar'/>
+ 		
 	    </td>
 	  </tr>  		
 	  <tr>
@@ -41,15 +42,25 @@
 	   		<p:region regionName='logo' regionID='logo'/>
 	   		<p:region regionName='nav' regionID='nav'/>
 	    </td>   
-	    <td width="40%" valign="top">
-	      <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
-	      <%@include file="../includes/content-navbar.jsp" %>
-	      
-	      <p:region regionName='col-1' regionID='col-1'/>
-	    </td>
-	    <td width="40%" valign="top">
-	      <p:region regionName='col-2' regionID='col-2'/>
-	    </td>
+	     <td width="80%" valign="top">
+			<table  width="100%">
+			   <tr>
+				<td width="100%" colspan="3" valign="top">    
+
+					<%@include file="../includes/content-navbar.jsp" %>	  		
+			    </td>
+			  </tr>  			
+				<tr>	    	
+				    <td width="50%" valign="top">
+				      <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
+				      <p:region regionName='col-1' regionID='col-1'/>
+				    </td>
+				    <td width="50%" valign="top">
+				      <p:region regionName='col-2' regionID='col-2'/>
+				    </td>
+		 		</tr>
+			</table>	
+		</td>    
 	  </tr>
 	</table>
 </div>

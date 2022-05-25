@@ -180,18 +180,27 @@ public class RegionsThemingService implements IRegionsThemingService {
         }
         String markup = response.getContent();      
         
-        markup = "<dyna-window id=\""+renderedRegion.getName()+"\"><dyna-window-content>"+markup+"</dyna-window-content></dyna-window>";
+        String windowName = renderedRegion.getName();
+        
+        // Toolbar must accept edition portlet
+        // Doesn't work if window and region have the same name
+        if( "toolbar".equals(windowName))   {
+            windowName += "main-";
+        }
+        
+        markup = "<dyna-window id=\""+windowName+"\"><dyna-window-content>"+markup+"</dyna-window-content></dyna-window>";
       
 
         if (markup != null) {
+
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, EMPTY_RENDERER);
             windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, EMPTY_RENDERER);
             windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, EMPTY_RENDERER);
 
-            WindowResult windowResult = new WindowResult(renderedRegion.getName(), markup, MapUtils.EMPTY_MAP, windowProperties, null, WindowState.NORMAL,
+            WindowResult windowResult = new WindowResult(windowName, markup, MapUtils.EMPTY_MAP, windowProperties, null, WindowState.NORMAL,
                     Mode.VIEW);
-            WindowContext windowContext = new WindowContext(renderedRegion.getName(), renderedRegion.getName(), "0", windowResult);
+            WindowContext windowContext = new WindowContext(windowName, renderedRegion.getName(), "0", windowResult);
 
 
             //Region region = pageRendition.getPageResult().getRegion2(renderedRegion.getName());

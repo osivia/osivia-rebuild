@@ -25,20 +25,10 @@
 <table  width="100%">
    <tr>
 	<td width="100%" colspan="2" valign="top">    
-  		<p:region regionName='top' regionID='top'/>
-  		
+  		<p:region regionName='toolbar' regionID='toolbar'/>
+  		<p:region regionName='maximized' />
     </td>
   </tr> 
-  <tr>
-   <td width="20%" valign="top">
-   		<p:region regionName='logo' regionID='logo'/>   
-   		<p:region regionName='nav' regionID='nav'/>
-    </td>   
-    <td width="80%" valign="top">
-      <%@include file="../includes/content-navbar.jsp" %> 
-      <p:region regionName='maximized' />
-    </td>
-  </tr>
 </table>
 </div>
            

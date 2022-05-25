@@ -39,4 +39,8 @@ public interface IPreviewModeService {
      */
     void setPreview(PortalControllerContext portalCtx, UniversalID content, boolean preview) throws PortalException;
 
+    void switchPageEditionMode(PortalControllerContext portalCtx) throws PortalException;
+
+    boolean isEditionMode(PortalControllerContext portalCtx) throws PortalException;
+
 }

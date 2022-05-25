@@ -164,7 +164,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
                 if( regions.contains(rrc.getId()))   {
                     dropUrl+= "&javax.portlet.action=drop&action=1&region="+rrc.getId();
-                    markup.print("<div class=\"cms-edition-droppable border border-primary m-2 clearfix\" data-drop-url=\""+dropUrl+"\">");
+                    markup.print("<div class=\"cms-edition-droppable border border-primary mb-2 clearfix\" data-drop-url=\""+dropUrl+"\">");
                     
                     String addPortletUrl = properties.getPagePropertiesMap().get("osivia.cms.edition.addPortletUrl."+rrc.getId());
 

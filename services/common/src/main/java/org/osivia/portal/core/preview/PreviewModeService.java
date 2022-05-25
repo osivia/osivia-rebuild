@@ -2,7 +2,7 @@ package org.osivia.portal.core.preview;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.osivia.portal.api.Constants;
+import org.apache.commons.lang3.BooleanUtils;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -49,5 +49,26 @@ public class PreviewModeService implements IPreviewModeService {
             mainRequest.getSession().setAttribute(editionModeKey, "preview");
     }
  
+    @Override
+    public void switchPageEditionMode(PortalControllerContext portalCtx) throws PortalException {
+        HttpServletRequest mainRequest = (HttpServletRequest) portalCtx.getHttpServletRequest();
+        String pageEditionMode = "osivia.pageEditionMode";
+        if( BooleanUtils.isTrue((Boolean)mainRequest.getSession().getAttribute(pageEditionMode)))
+           mainRequest.getSession().removeAttribute(pageEditionMode);
+        else
+            mainRequest.getSession().setAttribute(pageEditionMode, Boolean.TRUE);
+        
+        mainRequest.setAttribute("osivia.refreshPageLayout", Boolean.TRUE);        
+    }
+    
+    @Override
+    public boolean isEditionMode(PortalControllerContext portalCtx) throws PortalException {
+        HttpServletRequest mainRequest = (HttpServletRequest) portalCtx.getHttpServletRequest();
+        String pageEditionMode = "osivia.pageEditionMode";
+        return BooleanUtils.isTrue((Boolean)mainRequest.getSession().getAttribute(pageEditionMode));
 
+
+    }
+    
+    
 }

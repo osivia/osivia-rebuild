@@ -24,6 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -196,7 +197,17 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             properties.setWindowProperty(windowId, "osivia.hidePortlet", Boolean.toString(hidePortlet));
             
             
-            cmsEditionService.prepareEdition(controllerContext, window);
+            // Hide edition bar int admin mode
+            Boolean adminMode = false;
+            NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+            WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+
+            if ((windowNavState != null) && Mode.ADMIN.equals(windowNavState.getMode())) {
+                adminMode = true;
+            }
+            
+            if( !adminMode)
+                cmsEditionService.prepareEdition(controllerContext, window);
         }  
         
         

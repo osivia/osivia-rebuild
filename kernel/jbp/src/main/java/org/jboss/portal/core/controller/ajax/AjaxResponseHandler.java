@@ -269,7 +269,7 @@ public class AjaxResponseHandler implements ResponseHandler
 
             // Obtain layout
             LayoutService layoutService = getPageService().getLayoutService();
-            PortalLayout layout = RenderPageCommand.getLayout(layoutService, page);
+            PortalLayout layout = RenderPageCommand.getLayout(controllerContext,  layoutService, page);
 
             //
             UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId());
