@@ -1,0 +1,35 @@
+.edition {
+  
+  background-color : $secondary;
+  
+  a { 
+  	color : $white !important;
+    :hover {
+	  		color : $white !important
+	  	}  	
+    :active {
+	  		color : $white !important
+	  	}
+    :visited {
+	  		color : $white !important
+	  	}	  		  	
+   	.glyphicons	{
+   		color : $white !important
+ 	
+   	}		  	
+  }
+  
+  .btn-group {
+  	a.btn-light	{
+	  	color : $black !important;
+	    :hover {
+		  		color : $black !important
+		} 	  	
+   	
+	}
+  }
+
+}
+
+
+

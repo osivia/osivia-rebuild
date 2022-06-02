@@ -132,27 +132,33 @@ public class EditionController implements PortletContextAware, ApplicationContex
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute("status") EditionStatus status) throws PortalException {
 
-        
+
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
         UniversalID id = new UniversalID(contentId);
         if (previewModeService.isEditionMode(portalControllerContext)) {
-            
+
             CMSController ctrl = new CMSController(portalControllerContext);
 
-            CMSContext cmsContext = ctrl.getCMSContext();                
+            CMSContext cmsContext = ctrl.getCMSContext();
             Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
-            
-            if( document instanceof MemoryRepositoryPage)   {      
-                
-                HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
-                PortletURL actionUrl = response.createActionURL();
-                httpRequest.setAttribute("osivia.cms.edition.url", actionUrl.toString());
+
+            NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
+
+            if (!userRepository.supportPreview() || cmsContext.isPreview()) {
+
+                if (document instanceof MemoryRepositoryPage) {
+
+                    // Display tools
+                    
+                    HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
+                    PortletURL actionUrl = response.createActionURL();
+                    httpRequest.setAttribute("osivia.cms.edition.url", actionUrl.toString());
+                }
             }
         }
         return "view";
     }
-
     
     
     /**
