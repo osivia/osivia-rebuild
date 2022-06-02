@@ -17,6 +17,8 @@ public interface UserStorage {
     void addDocument(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException;
 
     void updateDocument(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException;
+    
+    void deleteDocument(String internalID, boolean batchMode) throws CMSException;
 
     UserData getUserData(String internalID) throws CMSException;
     

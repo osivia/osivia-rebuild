@@ -2,6 +2,7 @@ package org.osivia.portal.services.cms.repository.test;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.locator.Locator;
@@ -64,7 +66,32 @@ public class FileRepository extends UserRepositoryTestBase {
 
 
 
+    @Override
+    public void addEmptyPage(String id, String name, String parentId) throws CMSException {
+        RepositoryDocument parent = getSharedDocument(parentId);
+        addPage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>(), null);
+    }
+    
+    /**
+     * Adds the space.
+     *
+     * @param id the id
+     * @param properties the properties
+     * @throws CMSException 
+     */
+    private void addPage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules, Map propMap) throws CMSException {
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        properties.put("dc:title", "Page " + id);
+        
+        if( propMap != null)    {
+            properties.putAll(propMap);
+        }
 
+        
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
+
+        addDocument(id, page);
+    }
     
     
     

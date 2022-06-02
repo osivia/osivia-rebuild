@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.main.controller;
+package org.osivia.portal.cms.portlets.edition.page.main.controller;
 
 import java.util.ArrayList;
 import java.util.List;

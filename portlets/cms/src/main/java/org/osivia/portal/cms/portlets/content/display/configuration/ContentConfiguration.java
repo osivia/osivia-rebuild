@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.content.configuration;
+package org.osivia.portal.cms.portlets.content.display.configuration;
 
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -16,7 +16,7 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Jean-Sébastien Steux
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.content")
+@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.content.display")
 public class ContentConfiguration {
 
     /**
@@ -37,7 +37,7 @@ public class ContentConfiguration {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setCache(true);
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/content/");
+        viewResolver.setPrefix("/WEB-INF/jsp/content/display");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }

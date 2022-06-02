@@ -16,7 +16,7 @@
 <portlet:actionURL name="switchMode" var="switchModeURL" />
 <portlet:actionURL name="home" var="homeURL" />
 <portlet:actionURL name="publish" var="publishURL" />
-<portlet:actionURL name="addPage" var="addPageURL" />
+
 <portlet:actionURL name="addPortlet" var="addPortletURL" />
 <portlet:actionURL name="addPortletNav" var="addPortletNavURL" />
 <portlet:actionURL name="addFolder" var="addFolderURL" />
@@ -26,17 +26,19 @@
 
 <portlet:actionURL name="submit" var="submitUrl" />
 
-<nav class="bg-secondary p-1">
+<nav class="edition p-1">
 
 	<form:form action="${submitUrl}" method="post" modelAttribute="form"
 		class="row w-100">
 
 
 
-		<div class="col-2  d-flex align-items-center">
-       		<a class ="text-white pr-2" href="${homeURL}">
+		<div class="col-3  d-flex align-items-center">
+       		<a class ="pr-2" href="${homeURL}">
 				<i class="glyphicons glyphicons-basic-home"></i>
 			</a>
+			
+
 			<c:if test="${status.supportPreview && status.modifiable}">
 				<c:if test="${status.preview}">
 					<div class="btn-group">
@@ -68,26 +70,10 @@
 		</div>
 		<div class="col-8  d-flex align-items-center">
 
-			<c:if test="${status.supportPreview && status.modifiable}">
-				<c:if test="${status.preview}">
-					<span> <a href="${publishURL}" class=" btn-sm btn-light m-1">
-							publier</a>
-					</span>
-				</c:if>
-			</c:if>
+			${status.toolbar}
+			
 
-			<c:if
-				test="${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
-				<span> <a href="${addPageURL}" class=" btn-sm btn-light m-1">
-						page</a>
-				</span>
-				<span> <a href="${addPortletURL}"
-					class=" btn-sm btn-light m-1"> portlet</a>
-				</span>
-				<span> <a href="${addPortletNavURL}"
-					class=" btn-sm btn-light m-1"> fragment</a>
-				</span>
-			</c:if>
+<!--
 
 			<c:if test="${not  status.supportPreview ||  status.preview}">
 				<c:if test="${fn:containsIgnoreCase(status.subtypes, 'folder')}">
@@ -117,14 +103,11 @@
 					</span>
 			</c:if>
 			
-			${status.toolbar}
+-->			
 			
-			<a class ="text-white" href="${setReloadURL}">
-					<i class="glyphicons glyphicons-basic-reload"></i>
-			</a>
-			
+
 		</div>
-		<div class="col-1  d-flex align-items-center">
+		<div class="col-1  d-flex align-items-center flex-row-reverse p-0">
 			<form:select path="locale" items="${status.locales}"
 				data-change-submit="${namespace}-update-locale" />
 
@@ -132,22 +115,7 @@
 				name="update-locale" class="d-none">
 		</div>
 		
-		<div class="col-1  d-flex align-items-center">
-			<c:if test="${not empty status.remoteUser}">
-				<span class="text-white"> ${status.remoteUser} </span>
-				 <a class ="text-white" href="/portal/signout">
-					<i class="glyphicons glyphicons-basic-log-out"></i>
-				</a>				
-			</c:if>	
-			<c:if test="${empty status.remoteUser}">
-				<span> <a href="/portal/auth"
-					class="text-white pr-2 no-ajax-link"> <i class="glyphicons glyphicons-basic-log-in"></i></a>
-				</span>
-
-				
-			</c:if>				
-		</div>		
-
+		
 	</form:form>
 
 </nav>

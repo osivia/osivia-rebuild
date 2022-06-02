@@ -24,7 +24,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.cms.portlets.edition.main.controller.EditionController;
+import org.osivia.portal.cms.portlets.edition.page.main.controller.EditionController;
 import org.osivia.portal.cms.portlets.menu.model.NavigationDisplayItem;
 import org.osivia.portal.cms.portlets.menu.service.IMenuService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -16,6 +16,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.ContainerContext;
@@ -38,18 +39,17 @@ public  class  CMSPage extends PageImplBase {
 	private CMSPageFactory factory;
 	private List<String> inheritedRegions;
 	
-	private String cmsID;
+	private PortalObjectId mainTemplateID;
 	
-	List<PortalObjectId> templatesId = null;
+	
+    public PortalObjectId getMainTemplateID() {
+        return mainTemplateID;
+    }
+
+    List<PortalObjectId> templatesId = null;
 
 	
-	public String getCmsID() {
-		return cmsID;
-	}
 
-	public void setCmsID(String cmsID) {
-		this.cmsID = cmsID;
-	}
 
     public PortalObjectPath getPagePath() {
         return pagePath;
@@ -93,9 +93,13 @@ public  class  CMSPage extends PageImplBase {
 		// children relations
 		pageNode.setChildren(computeWindows());
 
-		// TODO init form CMS
-		cmsID = "id_"+pageName;
 
+		List<PortalObjectId> templates = getTemplatesId();
+		if( templates.size() == 1)
+		    mainTemplateID = templates.get(0);
+		else
+		    mainTemplateID = null;
+		
 		for (String key : pageProperties.keySet()) {
 			setDeclaredProperty(key, pageProperties.get(key));
 		}

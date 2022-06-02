@@ -35,11 +35,104 @@ import fr.toutatice.portail.cms.producers.test.TestRepository;
 public abstract class UserRepositoryTestBase extends BaseUserRepository implements TestRepository
 
 {
+ 
+
     public UserRepositoryTestBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
         super(repositoryKey, publishRepository, userName, new TestUserStorage());
     }
     
 
+    @Override
+    public void publish( String id) throws CMSException {
+        try {
+        
+        RepositoryDocument doc = getSharedDocument(id);
+        RepositoryDocument existingPublishedDoc = null;
+        try {
+            existingPublishedDoc = publishRepository.getSharedDocument(id);
+        } catch(CMSException e)    {
+            // not found
+        }
+        
+        // Search for first published parent
+        RepositoryDocument publishedParent = null;
+        String parentId = doc.getParentInternalId();
+        
+        while(  publishedParent == null && parentId != null)   {
+            try {
+                publishedParent = publishRepository.getSharedDocument(parentId);
+            } catch(CMSException e)    {
+                // not found
+                RepositoryDocument parent = getSharedDocument(parentId);
+                parentId = parent.getParentInternalId();                
+            }
+        }
+        
+        
+        List<String> childToRemoveFromParent = new ArrayList<>();
+        
+        // Get parent
+        String publishedParentId;
+        if( publishedParent != null) {
+            publishedParentId = publishedParent.getInternalID();
+        }   else
+            publishedParentId = null;
+        
+        
+        
+        // Update hierarchy
+        List<String> childrenId;
+        if( existingPublishedDoc != null)   {
+            // replacement
+            childrenId = existingPublishedDoc.getChildrenId();
+        }
+        else    {
+            // new object : look for published children
+            childrenId = new ArrayList<>();
+            for(String childId: doc.getChildrenId())    {
+                RepositoryDocument publishedChild = null;
+                try {
+                    publishedChild = publishRepository.getSharedDocument(childId);
+                } catch(CMSException e)    {
+                    // not found
+                }    
+                if( publishedChild != null) {
+                    // Add to current node
+                    childrenId.add(childId);
+                    // Remove child from parent
+                    childToRemoveFromParent.add(childId);
+                    // reset child parent
+                    publishedChild.setParentInternalId( id);
+                    
+                    publishRepository.getUserStorage().updateDocument(publishedChild.getInternalID(), publishedChild, true);
+                }
+            }            
+        }
+        
+        
+        // Set parent children
+        if( publishedParent != null) {
+            if( ! publishedParent.getChildrenId().contains(id))
+                publishedParent.getChildrenId().add( id);
+            
+            for (String childId:childToRemoveFromParent)    {
+                publishedParent.getChildrenId().remove(childId);
+            }
+            
+            publishRepository.getUserStorage().updateDocument(publishedParent.getInternalID(), publishedParent, true);
+        }     
+        
+        
+        // create published object
+        RepositoryDocument publishedDoc = (RepositoryDocument) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
+        publishRepository.getUserStorage().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
+        
+        
+        } catch( Exception e)   {
+            throw new CMSException( e);
+        }
+     }
+    
     
     @Override
     public void reloadDatas() {
@@ -150,6 +243,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         
         return childrens;
     }
+    
     
 
     

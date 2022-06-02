@@ -13,6 +13,14 @@
          <portlet-ref>Content</portlet-ref>
       </instance>
    </deployment>  
+   <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS delete content portlet</display-name>
+         <display-name xml:lang="fr">Portlet suppression content</display-name>
+         <instance-id>DeleteContentPortletInstance</instance-id>
+         <portlet-ref>DeleteContentPortlet</portlet-ref>
+      </instance>      
+   </deployment>     
    <deployment>
       <instance>
          <display-name xml:lang="en">CMS fragment portlet</display-name>

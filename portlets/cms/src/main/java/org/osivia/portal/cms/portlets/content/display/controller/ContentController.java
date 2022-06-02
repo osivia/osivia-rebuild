@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.content.controller;
+package org.osivia.portal.cms.portlets.content.display.controller;
 
 import java.util.HashMap;
 import java.util.Hashtable;

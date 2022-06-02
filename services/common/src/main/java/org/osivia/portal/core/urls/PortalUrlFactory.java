@@ -487,6 +487,13 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         else
             return "/back";
     }
+    
+    
+    @Override
+    public String getBackURL(PortalControllerContext portalControllerContext) {
+        return getBackURL(portalControllerContext, false, true);
+    }
+
 
     @Override
     public String getRefreshPageUrl(PortalControllerContext portalControllerContext) {

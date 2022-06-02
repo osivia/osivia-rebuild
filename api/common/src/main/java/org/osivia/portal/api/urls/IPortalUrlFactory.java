@@ -218,6 +218,15 @@ public interface IPortalUrlFactory {
     String getBackURL(PortalControllerContext portalControllerContext, boolean mobile, boolean refresh);
     
     
+    
+    /**
+     * Get back url
+     * 
+     * @param portalControllerContext
+     * @return
+     */
+    String getBackURL(PortalControllerContext portalControllerContext);
+    
     /**
      * Get refresh page URL.
      *
@@ -238,4 +247,7 @@ public interface IPortalUrlFactory {
      * @return the view content url
      */
     String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id, boolean authentified, Map<String, String> pageParameters);
+
+
+
 }

@@ -16,7 +16,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.portal.cms.portlets.content.configuration.ContentConfiguration</value>
+            <value>org.osivia.portal.cms.portlets.content.display.configuration.ContentConfiguration</value>
         </init-param>
         
         <expiration-cache>180</expiration-cache>
@@ -30,6 +30,31 @@
             <title>CMS Content</title>
         </portlet-info>
     </portlet>
+    
+	  <portlet>
+	        <portlet-name>DeleteContentPortlet</portlet-name>
+	        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+	        
+	        <init-param>
+	            <name>contextClass</name>
+	            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+	        </init-param>
+	        <init-param>
+	            <name>contextConfigLocation</name>
+	            <value>org.osivia.portal.cms.portlets.content.delete.configuration.DeleteConfiguration</value>
+	        </init-param>
+	        
+	        <expiration-cache>180</expiration-cache>
+	        
+	        <supports>
+	            <mime-type>text/html</mime-type>
+	            <portlet-mode>view</portlet-mode>
+	        </supports>
+	        
+	        <portlet-info>
+	            <title>CMS Delete Content Portlet</title>
+	        </portlet-info>
+	    </portlet>  	
     
    <portlet>
         <portlet-name>Fragment</portlet-name>
@@ -116,7 +141,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.portal.cms.portlets.edition.main.configuration.EditionConfiguration</value>
+            <value>org.osivia.portal.cms.portlets.edition.page.main.configuration.EditionConfiguration</value>
         </init-param>
         
         <expiration-cache>180</expiration-cache>

@@ -1141,5 +1141,8 @@ function footer()
 
 }
 
-
+// Compatibility for admin mode
+function closeFancybox()	{
+	history.back();
+}
 

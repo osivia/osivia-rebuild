@@ -100,14 +100,37 @@ public class SharedRepository {
         if(!batchMode)  {
             
             List<Request> dirtyRequests = new ArrayList<>();
-            if(CollectionUtils.isEmpty(document.getSupportedSubTypes()))    {
-
+            if( CollectionUtils.isEmpty(document.getSupportedSubTypes()))    {
                 dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
             }
             
             notifyChanges( createCMSEvent( document.getSpaceId().getInternalID(), dirtyRequests));    
          }
     }
+    
+    
+    
+    public void removeDocumentFromCache(String internalID, boolean batchMode) throws CMSException {
+
+        RepositoryDocument document = cachedDocument.get(internalID);
+
+        if (document != null) {
+
+            cachedDocument.remove(internalID);
+            
+            if(!batchMode)  {
+
+                List<Request> dirtyRequests = new ArrayList<>();
+                dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName, document.getParentInternalId())));
+
+
+                notifyChanges(createCMSEvent(document.getSpaceId().getInternalID(), dirtyRequests));
+            }
+        }
+
+    }
+       
+    
     
     public void updateDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException {
         

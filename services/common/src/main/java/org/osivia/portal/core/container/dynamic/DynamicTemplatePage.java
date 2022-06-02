@@ -17,13 +17,15 @@ package org.osivia.portal.core.container.dynamic;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
+
 
 import org.jboss.portal.common.i18n.LocalizedString;
 
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.container.persistent.CMSPage;
 import org.osivia.portal.core.container.persistent.PageImplBase;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
@@ -45,7 +47,12 @@ public final class DynamicTemplatePage extends TemplatePage {
     private final Map<Locale, String> localDisplayName;
     
     private final PortalObjectId templateID;
+    private final PortalObjectId cmsTemplateID;
 
+    
+    public PortalObjectId getCmsTemplateID() {
+        return cmsTemplateID;
+    }
 
 
     /**
@@ -115,6 +122,11 @@ public final class DynamicTemplatePage extends TemplatePage {
         
         this.templateID  = template.getId();
         // TODO : analyser si on peut faire du lazy fetching sur les propriétés
+        
+        if(template instanceof CMSPage) {
+            cmsTemplateID = ((CMSPage) template).getMainTemplateID();
+        }   else
+            cmsTemplateID = null;
         
         setUpdateTs(template.getUpdateTs());
 

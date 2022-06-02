@@ -1,11 +1,14 @@
-package org.osivia.portal.cms.portlets.rename.configuration;
+package org.osivia.portal.cms.portlets.content.delete.configuration;
 
 import javax.portlet.PortletConfig;
 
+import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,28 +26,27 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Jean-Sébastien Steux
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.rename")
-public class RenameConfiguration implements PortletConfigAware {
+@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.content.delete")
+public class DeleteConfiguration implements PortletConfigAware {
 
     @Autowired
     private ApplicationContext applicationContext;
     
-    
     /**
      * Constructor.
      */
-    public RenameConfiguration() {
+    public DeleteConfiguration() {
         super();
     }
 
-    
+
     @Override
     public void setPortletConfig(PortletConfig portletConfig) {
             PortletAppUtils.registerApplication(portletConfig, applicationContext);            
 
     }
 
-
+    
     /**
      * Get view resolver.
      *
@@ -55,11 +57,10 @@ public class RenameConfiguration implements PortletConfigAware {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setCache(true);
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/rename/");
+        viewResolver.setPrefix("/WEB-INF/jsp/content/delete/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-
 
     /**
      * Get message source.
@@ -83,5 +84,8 @@ public class RenameConfiguration implements PortletConfigAware {
         return Locator.getService(IPortalUrlFactory.class);
     }
     
-
+   
+    
+    
+    
 }

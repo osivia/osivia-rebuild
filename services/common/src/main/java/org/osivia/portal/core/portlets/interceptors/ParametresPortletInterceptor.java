@@ -53,6 +53,8 @@ import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.edition.CMSEditionService;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
+import org.osivia.portal.core.container.dynamic.DynamicTemplateWindow;
 import org.osivia.portal.core.container.dynamic.DynamicWindow;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
@@ -104,7 +106,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
 
-                attributes.put("osivia.window", window);
+                 attributes.put("osivia.window", window);
                 
                 //unique window identifier
                 if (window instanceof DynamicWindow) {
@@ -115,6 +117,14 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                     }
                 }
 
+                if( window instanceof DynamicTemplateWindow)    {
+                    ((DynamicTemplateWindow) window).getURI().equals("EditionInstance");
+                    DynamicTemplatePage page = (DynamicTemplatePage) window.getPage();
+                    PortalObjectId templateId = page.getTemplateId();
+                    attributes.put("osivia.edition.templatePath", templateId.toString(PortalObjectPath.CANONICAL_FORMAT));
+                    if( page.getCmsTemplateID() != null)
+                        attributes.put("osivia.edition.cmsTemplatePath", page.getCmsTemplateID().toString(PortalObjectPath.CANONICAL_FORMAT));
+                }
                 
 
                 // Ajout du controleur

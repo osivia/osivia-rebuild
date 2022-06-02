@@ -1,20 +1,5 @@
-body {
-    font: 14px "Century Gothic", Futura, sans-serif;
-    margin: 20px;
-  }
 
-  .active {
-    font-weight: 600;
-  }
 
-  .inactive {
-    font-weight: normal;
-  }
-  
-  ol, ul {
-    padding-left: 30px;
-  }
-  
   .board-row:after {
     clear: both;
     content: "";

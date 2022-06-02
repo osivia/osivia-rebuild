@@ -28,7 +28,7 @@
         </button>
 
         <button type="submit" class="btn btn-primary">
-            <span><op:translate key="RENAME_ACTION" /></span>
+            <span><op:translate key="MODIFY_PAGE_RENAME_ACTION" /></span>
         </button>
     </div>
 </form:form>

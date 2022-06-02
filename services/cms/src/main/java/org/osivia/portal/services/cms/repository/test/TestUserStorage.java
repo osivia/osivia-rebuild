@@ -107,8 +107,17 @@ public class TestUserStorage extends BaseUserStorage {
 
     
     protected void updatePaths() {
-        // Set paths
-        for (RepositoryDocument doc : new ArrayList<RepositoryDocument>(getDocuments().values())) {
+
+        // remove paths
+         ArrayList<String> keys = new ArrayList<String>(getDocuments().keySet());
+         for(String key:keys) {
+             if( key.startsWith("/"))
+                 getDocuments().remove(key);
+         }
+        
+        // set paths
+        List<RepositoryDocument> documents = new ArrayList<RepositoryDocument>(getDocuments().values());
+        for (RepositoryDocument doc : documents) {
             try {
                 String path = "";
                 RepositoryDocument hDoc = doc;
@@ -133,6 +142,7 @@ public class TestUserStorage extends BaseUserStorage {
 
             }
         }
+
     }
     
     /* (non-Javadoc)
@@ -202,10 +212,55 @@ public class TestUserStorage extends BaseUserStorage {
     @Override
     public void beginBatch() {
         batchMode = true;
+     }
+
+
+
+    @Override
+    public void deleteDocument(String internalID, boolean batchMode) throws CMSException {
+      
+        deleteDocumentInternal(internalID);
         
+        if(!batchMode)  {
+            updatePaths();
+        }
+          
     }
 
-  
+    public void deleteDocumentInternal(String internalID) throws CMSException {
+        
+        RepositoryDocument document = getDocuments().get(internalID);
+        if (document == null)
+            throw new CMSException();
+        
+        List<String> children = new ArrayList<>();
+        children.addAll(document.getChildrenId());
+        
+        for(String childId: children)   {
+            deleteDocumentInternal(childId);
+        }
+        
+        getDocuments().remove(internalID);
+
+        
+        
+        // update parent
+        String parentID = document.getParentInternalId();
+        if( parentID != null)   {
+            RepositoryDocument parent = getDocuments().get(parentID);
+            if( parent != null) {
+                if( parent.getChildrenId().contains(internalID))  {
+                    parent.getChildrenId().remove(internalID);
+                    
+                }
+                getSharedRepository().updateDocumentToCache(parentID, parent, true);
+            }
+        }
+        
+       
+        getSharedRepository().removeDocumentFromCache(internalID, true);
+        
+    }
 
 
 }

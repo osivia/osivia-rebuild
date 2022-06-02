@@ -14,6 +14,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
@@ -35,6 +36,7 @@ import org.osivia.portal.api.theming.PortletsRegionBean;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.theming.RenderedRegions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,31 +80,43 @@ public class CMSEditionService {
 
             String cmsEditionUrl = (String) request.getAttribute("osivia.cms.edition.url");
             if (cmsEditionUrl != null) {
-                String sRegions = page.getProperties().get("cms.regions");
+                DynamicTemplatePage dynaPage = (DynamicTemplatePage) page;
+
                 
-                List<String> regions;
+                List<String> regions= new ArrayList<>();
                 
-                if (sRegions != null) {
-                    regions = Arrays.asList(sRegions.split(","));
-                } else  {
-                    regions = new ArrayList<>();
-                    for (String region:layoutRegions) {
-                            // Exclude non-portlet region
-                            boolean add = true;
-                            for (AbstractRegionBean nonPortletRegion : renderedRegions.getRenderedRegions()) {
-                                if( region.equals(nonPortletRegion.getName())) {
-                                    add = false;
-                                }
-                            }    
-                            if( add)
-                                regions.add(region);
-                    }
+                
+                List<String> cmsRegions;
+                String sCmsRegions =  page.getProperties().get("cms.regions");
+                 if( sCmsRegions != null)
+                    cmsRegions =   Arrays.asList(sCmsRegions.split(","));   
+                else
+                    cmsRegions= new ArrayList<>();
+
+                
+
+                regions = new ArrayList<>();
                     
-                    sRegions = String.join(",", regions);
+                for (String region:layoutRegions) {
+                        // Exclude non-portlet region
+                        boolean add = true;
+                        for (AbstractRegionBean nonPortletRegion : renderedRegions.getRenderedRegions()) {
+                            if( region.equals(nonPortletRegion.getName())) {
+                                add = false;
+                            }
+                        }    
+                        if( add)    {
+                            if( (dynaPage.getCmsTemplateID() != null && cmsRegions.contains(region))
+                               ||
+                               (dynaPage.getCmsTemplateID() == null && !cmsRegions.contains(region)))
+                            regions.add(region);
+                        }
                 }
+                    
+               
 
 
-                properties.getPagePropertiesMap().put("cms.regions", sRegions);
+                properties.getPagePropertiesMap().put("cms.regions", String.join(",", regions));
                 properties.getPagePropertiesMap().put("osivia.cms.edition.url", cmsEditionUrl);
 
 
@@ -154,16 +168,25 @@ public class CMSEditionService {
 
         try {
             if (cmsEditionUrl != null && !window.getName().equals("edition")) {
-                String sRegions = window.getParent().getProperties().get("cms.regions");
-
-                List<String> regions;
-                if (sRegions != null)
-                    regions = Arrays.asList(sRegions.split(","));
+                
+                List<String> cmsRegions;
+                String sCmsRegions =  page.getProperties().get("cms.regions");
+                 if( sCmsRegions != null)
+                    cmsRegions =   Arrays.asList(sCmsRegions.split(","));   
                 else
-                    regions = new ArrayList<>();
+                    cmsRegions= new ArrayList<>();
+
+
+                
+                DynamicTemplatePage dynaPage = (DynamicTemplatePage) window.getPage();
+                
+                
                 String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
 
-                if (regions.size() == 0 || regions.contains(region)) {
+
+                    if( (dynaPage.getCmsTemplateID() != null && cmsRegions.contains(region))
+                            ||
+                        (dynaPage.getCmsTemplateID() == null && !cmsRegions.contains(region))) {                    
                     properties.setWindowProperty(windowId, InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, String.valueOf(true));
                     properties.setWindowProperty(windowId, "osivia.cms.edition.url", (String) request.getAttribute("osivia.cms.edition.url"));
                     properties.setWindowProperty(windowId, "osivia.cms.edition.windowName", window.getName());

@@ -1,8 +1,7 @@
-package org.osivia.portal.cms.portlets.edition.main.controller;
+package org.osivia.portal.cms.portlets.edition.page.main.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +21,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,10 +41,11 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
-import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -100,6 +102,12 @@ public class EditionController implements PortletContextAware, ApplicationContex
     /** Locale property editor. */
     @Autowired
     private LocalePropertyEditor localPropertyEditor;
+    
+    /**
+     * Internationalization bundle factory.
+     */
+    @Autowired
+    private IBundleFactory bundleFactory;    
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(EditionController.class);
@@ -124,17 +132,23 @@ public class EditionController implements PortletContextAware, ApplicationContex
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute("status") EditionStatus status) throws PortalException {
 
-        PortalWindow window = WindowFactory.getWindow(request);
-        if( StringUtils.equals(window.getProperty("osivia.cms.edition.mode"), "addPortlet"))
-           return "addPortlet";        
         
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
         UniversalID id = new UniversalID(contentId);
         if (previewModeService.isEditionMode(portalControllerContext)) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
-            PortletURL actionUrl = response.createActionURL();
-            httpRequest.setAttribute("osivia.cms.edition.url", actionUrl.toString());
+            
+            CMSController ctrl = new CMSController(portalControllerContext);
+
+            CMSContext cmsContext = ctrl.getCMSContext();                
+            Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
+            
+            if( document instanceof MemoryRepositoryPage)   {      
+                
+                HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
+                PortletURL actionUrl = response.createActionURL();
+                httpRequest.setAttribute("osivia.cms.edition.url", actionUrl.toString());
+            }
         }
         return "view";
     }
@@ -607,7 +621,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
     protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
         // Base HTML classes
-        String baseHtmlClasses = "btn btn-primary btn-sm ml-1";
+        String baseHtmlClasses = "btn btn-sm ml-1";
 
         // Item
         Element item;
@@ -630,7 +644,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 target = null;
             }
 
-            item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses + " no-ajax-link", null, icon);
+            item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses , null, icon);
 
             // Title
             DOM4JUtils.addAttribute(item, "title", title);
@@ -652,6 +666,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
     protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status) throws PortletException {
         try {
 
+            // Internationalization bundle
+            Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+            
             String navigationId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
 
             // Toolbar
@@ -663,6 +680,45 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 UniversalID id = new UniversalID(navigationId);
 
                 CMSContext cmsContext = ctrl.getCMSContext();
+                
+                 
+                String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
+                String cmsTemplatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.cmsTemplatePath");
+                                
+                
+                if(templatePath != null)   {
+                    String templateTokens[] = templatePath.split( ":");
+                    
+
+                    UniversalID templateID;
+                    
+                    // Portal template
+                    UniversalID portalTemplateId = new UniversalID(templateTokens[0], templateTokens[1].substring(templateTokens[1].lastIndexOf("/") + 1));
+                    
+                    if (id.equals(portalTemplateId)) {
+                        if (cmsTemplatePath != null) {
+                            // CMS template
+                            String cmsTemplateTokens[] = cmsTemplatePath.split(":");
+                            templateID = new UniversalID(cmsTemplateTokens[0], cmsTemplateTokens[1].substring(cmsTemplateTokens[1].lastIndexOf("/") + 1));
+                        } else {
+                            templateID = null;
+                        }
+                    } else {
+                        templateID = portalTemplateId;
+                    }
+
+                    
+                    if( templateID != null) {
+                        
+                        CMSContext cmsTemplateContext = ctrl.getCMSContext();
+                        cmsTemplateContext.setPreview(false);
+                        
+                        String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext,templateID);
+                        this.addToolbarItem(toolbar, url, null, bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails");
+                    }
+                    
+                }
+                
                 status.setPreview(cmsContext.isPreview());
                 
                 NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
@@ -690,17 +746,38 @@ public class EditionController implements PortletContextAware, ApplicationContex
     
                     if (status.isModifiable()) {
     
-    
+                        //"${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
+                        boolean hasPageSubtype = false;
+                        for(String subType : personnalization.getSubTypes())    {
+                            if( StringUtils.equalsIgnoreCase(subType, "Page"))
+                                hasPageSubtype = true;
+                        }
+                        
+                        if( ( ! repository.supportPreview() || cmsContext.isPreview())  && hasPageSubtype )   {
+                            if( portalControllerContext.getResponse() instanceof RenderResponse)   {
+                                PortletURL createPageUrl = ((RenderResponse)portalControllerContext.getResponse()).createActionURL();
+                                createPageUrl.setParameter(ActionRequest.ACTION_NAME, "addPage");
+                                this.addToolbarItem(toolbar, createPageUrl.toString(), null, bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus");
+                            }
+                        }
+                        
+                        
                         // Rename URL
                         Map<String, String> properties = new HashMap<>();
-                        // properties.put("osivia.rename.path", path);
-                        // properties.put("osivia.rename.redirection-path", form.getPath());
-    
                         ctrl.addContentRefToProperties(properties, "osivia.rename.id", id);
     
     
                         String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
-                        this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", "Rename", "glyphicons glyphicons-basic-square-edit");
+                        this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-square-edit");
+                        
+                        
+                        
+                        String deleteContentUrl;
+                        properties = new HashMap<>();
+                        ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
+
+                        deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
+                        this.addToolbarItem(toolbar, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin");
     
     
                     }
@@ -712,21 +789,25 @@ public class EditionController implements PortletContextAware, ApplicationContex
                         try {
                             cmsService.getCMSSession(cmsContext).getDocument(id);
                             status.setHavingPublication(true);
-                        } catch (CMSException e) {
+                         } catch (CMSException e) {
                             // Not found
                         } finally {
                             cmsContext.setPreview(true);
                         }
                     }
+                    
+                    if( repository.supportPreview() && personnalization.isModifiable() && cmsContext.isPreview())   {
+                         if( portalControllerContext.getResponse() instanceof RenderResponse)   {
+                             PortletURL publishURL = ((RenderResponse)portalControllerContext.getResponse()).createActionURL();
+                             publishURL.setParameter(ActionRequest.ACTION_NAME, "publish");
+                             this.addToolbarItem(toolbar, publishURL.toString(), null, bundle.getString("MODIFY_PAGE_ACCESS_PUBLISH"), "glyphicons glyphicons-basic-globe");
+                         }
+                    }
+                    
                 }
             }
 
             status.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
-
-
-            // Toolbar
-            String popupUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "SampleInstance", new HashMap<String, String>(), PortalUrlType.MODAL);
-            this.addToolbarItem(toolbar, popupUrl, "#osivia-modal", "popup", "glyphicons glyphicons-basic-square-edit");
 
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();

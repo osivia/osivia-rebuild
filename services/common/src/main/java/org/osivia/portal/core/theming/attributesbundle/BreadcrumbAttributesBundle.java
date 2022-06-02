@@ -66,6 +66,7 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarContainer;
@@ -73,6 +74,7 @@ import org.osivia.portal.api.menubar.MenubarDropdown;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.path.PortletPathItem;
+import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.Breadcrumb;
@@ -163,6 +165,16 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
         return instance;
     }
 
+    private IPreviewModeService getPreviewModeService() {
+
+        return Locator.getService(IPreviewModeService.class);
+    }
+
+    private ILocaleService getLocaleService() {
+
+        return Locator.getService(ILocaleService.class);
+    }
+    
 
     /**
      * {@inheritDoc}
@@ -197,8 +209,7 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
         Map<?, ?> windowContextMap = new HashMap<>();
 
 
-        // CMS context
-        CMSContext cmsContext = new CMSContext(portalControllerContext);
+
 
 
         // Current page state
@@ -221,6 +232,7 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
             
         }   else    {
              try {
+                
                  
                  
                 // CMS Publication
@@ -229,6 +241,14 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
                     
                     // current document
                     UniversalID contentId = new UniversalID(sContentId);
+                    
+                    // CMS context
+                    CMSContext cmsContext = new CMSContext(portalControllerContext);
+                    
+                    cmsContext.setPreview(getPreviewModeService().isPreviewing(portalControllerContext, contentId));
+                    cmsContext.setLocale(getLocaleService().getLocale(portalControllerContext));
+                    
+
                     String title;
                     
                     // first navigation item
