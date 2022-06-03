@@ -49,11 +49,6 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Space." + id);
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
-        Map<String,String> editionProperties = new ConcurrentHashMap<>();
-        editionProperties.put("osivia.hideTitle", "1");
-        editionProperties.put("osivia.sequence.priority", "1");
-        ModuleRef edition = new ModuleRef("edition" , "top", "EditionInstance", editionProperties); 
-        modules.add(edition);  
         Map<String,String> navProperties = new ConcurrentHashMap<>(); 
         navProperties.put("osivia.hideTitle", "1");        
         ModuleRef nav = new ModuleRef("nav" , "nav",  "MenuInstance", navProperties); 

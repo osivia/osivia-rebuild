@@ -355,29 +355,6 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
     }
 
-    
-    /**
-     * Add page sample
-     */
-    @ActionMapping(name = "addPortlet2")
-    public void addPortlet2(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
-
-        try {
-            // Portal Controller context
-            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-            CMSController ctrl = new CMSController(portalControllerContext);
-
-
-            addPortletToRegion(request, portalControllerContext, ctrl, "toutatice-portail-cms-nuxeo-keywordsSelectorPortletInstance", "col-2", TestRepository.POSITION_END);
-            
-            String url= this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
-            response.sendRedirect(url);
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        } catch (IOException e) {
-            throw new PortletException(e);
-        }
-    }
 
     /**
      * Reload sample file repository
@@ -695,14 +672,24 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 
                 if(templatePath != null)   {
                     String templateTokens[] = templatePath.split( ":");
+                    String templatePathItems[] = templateTokens[1].split( "/");
                     
 
                     UniversalID templateID;
                     
                     // Portal template
-                    UniversalID portalTemplateId = new UniversalID(templateTokens[0], templateTokens[1].substring(templateTokens[1].lastIndexOf("/") + 1));
+                    UniversalID portalTemplateId = new UniversalID(templateTokens[0], templatePathItems[templatePathItems.length -1]);
                     
-                    if (id.equals(portalTemplateId)) {
+                    // Get real content (ignore root item)
+                    UniversalID templateExtractedContentId;
+                    if( portalTemplateId.getInternalID().equals("root")) {
+                        String extractedInternalId = templatePathItems[templatePathItems.length -2].split("__")[0];
+                        templateExtractedContentId = new UniversalID( templateTokens[0], extractedInternalId);
+                    }   else
+                        templateExtractedContentId = portalTemplateId;
+                    
+                    
+                    if (id.equals(templateExtractedContentId)) {
                         if (cmsTemplatePath != null) {
                             // CMS template
                             String cmsTemplateTokens[] = cmsTemplatePath.split(":");
