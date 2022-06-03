@@ -195,6 +195,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
             
+            
+            
             WrappedPortalWindow  portalWindow = (WrappedPortalWindow) invocation.getRequestAttributes().get("osivia.portal.window");
             if( portalWindow != null )  {
                 Map<String, String> localProperties = portalWindow.getLocalProperties();

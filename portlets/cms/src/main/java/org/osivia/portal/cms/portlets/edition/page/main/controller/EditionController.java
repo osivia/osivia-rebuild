@@ -36,6 +36,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
@@ -147,7 +148,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             if (!userRepository.supportPreview() || cmsContext.isPreview()) {
 
-                if (document instanceof MemoryRepositoryPage) {
+                if (document instanceof ModulesContainer) {
 
                     // Display tools
                     
@@ -183,12 +184,12 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();                
                 Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
                 
-                if( document instanceof MemoryRepositoryPage)   {
+                if( document instanceof ModulesContainer)   {
                     
                     ModuleRef srcModule = null;
                     
                     // Search src module
-                    List<ModuleRef> modules = ((MemoryRepositoryPage) document).getModuleRefs();
+                    List<ModuleRef> modules = ((ModulesContainer) document).getModuleRefs();
                     for (ModuleRef module: modules) {
                         if( module.getWindowName().equals(source))  {
                             srcModule = module;

@@ -24,6 +24,7 @@ import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
@@ -242,12 +243,12 @@ public class CMSEditionService {
 
             Document document = getCMSService().getCMSSession(cmsContext).getDocument(id);
 
-            if (document instanceof MemoryRepositoryPage) {
+            if (document instanceof ModulesContainer) {
 
 
                 // Search src module
                 ModuleRef srcModule = null;
-                List<ModuleRef> modules = ((MemoryRepositoryPage) document).getModuleRefs();
+                List<ModuleRef> modules = ((ModulesContainer) document).getModuleRefs();
                 for (ModuleRef module : modules) {
                     if (module.getWindowName().equals(window.getName())) {
                         srcModule = module;

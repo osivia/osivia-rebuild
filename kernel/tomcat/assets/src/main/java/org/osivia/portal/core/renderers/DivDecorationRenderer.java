@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
@@ -87,7 +88,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
     
             DOM4JUtils.addAttribute(titleContainer, HTMLConstants.CLASS, builder.toString());
     
-            Element titleText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, title);
+            Element titleText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, StringEscapeUtils.escapeHtml4(title));
             titleContainer.add(titleText);
     
          

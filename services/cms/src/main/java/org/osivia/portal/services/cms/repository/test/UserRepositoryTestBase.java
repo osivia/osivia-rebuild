@@ -11,6 +11,7 @@ import org.osivia.portal.api.cms.exception.CMSNotImplementedRequestException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.BaseUserStorage;
@@ -161,7 +162,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
 
     @Override  
     public void addWindow(String id, String name, String portletName, String region, int position, String pageId,  Map<String,String> properties) throws CMSException {
-        MemoryRepositoryPage page = (MemoryRepositoryPage) getSharedDocument(pageId);
+        ModulesContainer page = (ModulesContainer) getSharedDocument(pageId);
         ModuleRef module = new ModuleRef("winD-" + System.currentTimeMillis(), region,  portletName, properties);
         
         if( position == POSITION_END)
@@ -169,7 +170,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         else
             page.getModuleRefs().add(position, module);
         
-        updateDocument(pageId, page);
+        updateDocument(pageId, (RepositoryDocument) page);
     }
     
     

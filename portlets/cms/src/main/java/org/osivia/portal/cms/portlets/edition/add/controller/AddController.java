@@ -29,6 +29,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -159,9 +160,9 @@ public class AddController extends GenericPortlet implements PortletContextAware
 
             List<ModuleRef> modules;
 
-            if (document instanceof MemoryRepositoryPage) {
+            if (document instanceof ModulesContainer) {
                 // Search src module
-                modules = ((MemoryRepositoryPage) document).getModuleRefs();
+                modules = ((ModulesContainer) document).getModuleRefs();
             } else {
                 modules = new ArrayList<>();
             }

@@ -21,7 +21,7 @@
 
      <div class="form-group">
          <form:label path="title"><op:translate key="MODIFY_PORTLET_TITLE" /></form:label>
-         <form:input path="title" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
+         <form:input path="title" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" htmlEscape="true" />
          <form:errors path="title" cssClass="invalid-feedback" />
      </div>
      <div class="form-check">
