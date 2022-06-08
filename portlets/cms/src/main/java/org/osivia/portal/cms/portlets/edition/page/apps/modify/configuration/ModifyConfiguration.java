@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.modify.configuration;
+package org.osivia.portal.cms.portlets.edition.page.apps.modify.configuration;
 
 import javax.portlet.PortletConfig;
 
@@ -26,7 +26,7 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Jean-Sébastien Steux
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition.modify")
+@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition.page.apps.modify")
 public class ModifyConfiguration implements PortletConfigAware {
 
     @Autowired
@@ -57,7 +57,7 @@ public class ModifyConfiguration implements PortletConfigAware {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setCache(true);
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/edition/modify/");
+        viewResolver.setPrefix("/WEB-INF/jsp/edition/apps/modify/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }

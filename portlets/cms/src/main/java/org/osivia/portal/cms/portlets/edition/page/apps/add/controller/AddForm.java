@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.add.controller;
+package org.osivia.portal.cms.portlets.edition.page.apps.add.controller;
 
 import java.util.List;
 import java.util.Locale;

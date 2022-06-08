@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.delete.configuration;
+package org.osivia.portal.cms.portlets.edition.page.apps.add.configuration;
 
 import javax.portlet.PortletConfig;
 
@@ -26,8 +26,8 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Jean-Sébastien Steux
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition.delete")
-public class DeleteConfiguration implements PortletConfigAware {
+@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition.page.apps.add")
+public class AddConfiguration implements PortletConfigAware {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -35,7 +35,7 @@ public class DeleteConfiguration implements PortletConfigAware {
     /**
      * Constructor.
      */
-    public DeleteConfiguration() {
+    public AddConfiguration() {
         super();
     }
 
@@ -57,7 +57,7 @@ public class DeleteConfiguration implements PortletConfigAware {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setCache(true);
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/edition/delete/");
+        viewResolver.setPrefix("/WEB-INF/jsp/edition/apps/add/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }

@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.modify.controller;
+package org.osivia.portal.cms.portlets.edition.page.apps.modify.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;

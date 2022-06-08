@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.delete.controller;
+package org.osivia.portal.cms.portlets.edition.page.apps.add.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +31,6 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -53,14 +52,14 @@ import fr.toutatice.portail.cms.producers.test.TestRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
- * Delete portlet controller.
+ * Sample controller.
  *
  * @author Jean-Sébastien Steux
  */
 @Controller
 @RequestMapping(value = "VIEW")
-
-public class DeleteController extends GenericPortlet implements PortletContextAware, ApplicationContextAware {
+@SessionAttributes("form")
+public class AddController extends GenericPortlet implements PortletContextAware, ApplicationContextAware   {
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -84,12 +83,12 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
     private PortletConfig portletConfig;
 
     /** The logger. */
-    protected static Log logger = LogFactory.getLog(DeleteController.class);
+    protected static Log logger = LogFactory.getLog(AddController.class);
 
     /**
      * Constructor.
      */
-    public DeleteController() {
+    public AddController() {
         super();
     }
 
@@ -102,8 +101,8 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
     }
-
-
+    
+    
     /**
      * Default render mapping.
      *
@@ -115,15 +114,17 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws PortalException {
+
+
         return "view";
     }
 
 
     /**
-     * Delete portlet
+     * Add page sample
      */
-    @ActionMapping(name = "deletePortlet")
-    public void delete(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+    @ActionMapping(name = "addPortlet")
+    public void addPortlet(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
         try {
             // Portal Controller context
@@ -131,7 +132,7 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
             CMSController ctrl = new CMSController(portalControllerContext);
 
 
-            deletePortlet(request, portalControllerContext, ctrl);
+            addPortlet(request, portalControllerContext, ctrl, request.getParameter("appId"));
 
             String url = this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
             response.sendRedirect(url);
@@ -142,17 +143,20 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
         }
     }
 
-    protected void deletePortlet(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl) throws CMSException {
+    protected void addPortlet(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl, String portletName) throws CMSException {
         String navigationId = getNavigationId(request);
         if (navigationId != null) {
-            UniversalID id = new UniversalID(navigationId);
+
 
             PortalWindow window = WindowFactory.getWindow(request);
-            String windowName = window.getProperty("osivia.cms.edition.targetWindow");
-            
-            
+
+            UniversalID id = new UniversalID(navigationId);
+
+
             CMSContext cmsContext = ctrl.getCMSContext();
             Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
+
+            String region = window.getProperty("osivia.cms.edition.region");
 
             List<ModuleRef> modules;
 
@@ -163,25 +167,44 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
                 modules = new ArrayList<>();
             }
 
-            // Search src module
-            ModuleRef srcModule = null;
+            int iInsertion = -1;
+
+            if (region != null) {
+                int iInsertionRegion = 0;
+                for (ModuleRef module : modules) {
+                    if (StringUtils.equals(module.getRegion(), region)) {
+                        iInsertion = iInsertionRegion + 1;
+                    }
+                    iInsertionRegion++;
+                }
+            } else {
+                // Search for window
+                String windowName = window.getProperty("osivia.cms.edition.targetWindow");
 
 
-            for (ModuleRef module : modules) {
-                if (module.getWindowName().equals(windowName)) {
-                    srcModule = module;
-                    break;
+                for (ModuleRef module : modules) {
+                    if (module.getWindowName().equals(windowName)) {
+                        region = module.getRegion();
+                        iInsertion++;
+                        break;
+                    }
+                    iInsertion++;
+
                 }
             }
-
-            // Remove src module
-            modules.remove(srcModule);
-
+            
+            if( iInsertion == -1)
+                iInsertion = TestRepository.POSITION_END;
+            
 
             TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-            if (repository instanceof TestRepository) {
-                ((TestRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
-            }
+
+            String windowID = "" + System.currentTimeMillis();
+
+            Map<String, String> editionProperties = new ConcurrentHashMap<>();
+            editionProperties.put("osivia.hideTitle", "1");
+
+            ((TestRepository) repository).addWindow(windowID, windowID, portletName, region, iInsertion, id.getInternalID(), editionProperties);
 
         }
     }
@@ -205,6 +228,25 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    /**
+     * Get search filters form model attribute.
+     *
+     * @param request portlet request
+     * @param response portlet response
+     * @return form
+     */
+    @ModelAttribute("form")
+    public AddForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal Controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+
+        AddForm form = this.applicationContext.getBean(AddForm.class);
+        form.setApps(appServices.getApps(portalCtx));
+
+
+        return form;
     }
 
 
