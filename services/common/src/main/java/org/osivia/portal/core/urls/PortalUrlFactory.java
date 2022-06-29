@@ -336,13 +336,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 windowProperties.put("osivia.hideDecorators", "1");
             }
             if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
-                windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+                windowProperties.put("theme.dyna.partial_refresh_enabled", "true");
             }
 
             
             
             CMSContext cmsContext = new CMSContext(portalCtx);
             UniversalID spaceId =  getCMSService().getDefaultPortal(cmsContext);
+            
+            Portal portal = PortalObjectUtilsInternal.getPortal(controllerContext);
+            spaceId = new UniversalID(portal.getId().getNamespace(), portal.getId().getPath().getLastComponentName());
+
             
             
             

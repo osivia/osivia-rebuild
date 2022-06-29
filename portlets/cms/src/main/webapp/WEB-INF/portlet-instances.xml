@@ -76,7 +76,18 @@
          <instance-id>EditionDeletePortletInstance</instance-id>
          <portlet-ref>EditionDeletePortlet</portlet-ref>
       </instance>      
-   </deployment>      
+   </deployment>    
+   <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS EditionModifyPortal portlet</display-name>
+         <display-name xml:lang="fr">Portlet EditionModifyPortal</display-name>
+         <instance-id>EditionModifySpaceInstance</instance-id>
+         <portlet-ref>EditionModifySpace</portlet-ref>
+      </instance>      
+   </deployment>       
+   
+   
+     
    <deployment>    
       <instance>
          <display-name xml:lang="en">CMS rename portlet</display-name>

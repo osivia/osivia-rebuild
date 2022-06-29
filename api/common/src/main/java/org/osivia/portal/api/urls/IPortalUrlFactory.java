@@ -158,12 +158,32 @@ public interface IPortalUrlFactory {
      */
     String getBasePortalUrl(PortalControllerContext portalControllerContext);    
 
-    @Deprecated
-    String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance,
-            Map<String, String> windowProperties, Map<String, String> params) throws PortalException;
+    
+    /**
+     * Start the portlet in a new page
+     * 
+     * @param portalCtx
+     * @param pageName
+     * @param pageDisplayName
+     * @param portletInstance
+     * @param windowProperties
+     * @param params
+     * @return
+     * @throws PortalException
+     */
+    String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance, Map<String, String> windowProperties, Map<String, String> params) throws PortalException;
 
-    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties)
-            throws PortalException;
+    /**
+     * Start the portlet in current page
+     * 
+     * @param portalControllerContext
+     * @param portletInstance
+     * @param windowProperties
+     * @return
+     * @throws PortalException
+     */
+    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties) throws PortalException;
+    
     @Deprecated
     String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
             throws PortalException;

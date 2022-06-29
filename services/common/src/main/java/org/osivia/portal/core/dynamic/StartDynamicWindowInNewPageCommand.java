@@ -24,6 +24,7 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
@@ -33,6 +34,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
 
 import org.osivia.portal.core.content.IPublicationManager;
+import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -210,6 +212,19 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 
             // New page identifier
             PortalControllerContext portalCtx = new PortalControllerContext( this.context.getServerInvocation().getServerContext().getClientRequest());
+            
+            
+
+            PortalObject portal = PortalObjectUtilsInternal.getPortal(getControllerContext());
+            //TODO NPE ouverture modale
+            // Replace defaut template namespace
+            if( portal != null && "idx".equals(templateId.getRepositoryName()))   {
+                if( portal.getDeclaredProperty("templates.namespace") != null)   {
+                    templateId = new UniversalID(portal.getDeclaredProperty("templates.namespace"),  templateId.getInternalID());
+                }
+            }
+            
+            
             PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId, properties, null);
 
 

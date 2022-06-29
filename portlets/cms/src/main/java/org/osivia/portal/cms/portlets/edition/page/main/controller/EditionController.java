@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
+
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
@@ -39,6 +40,7 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
@@ -53,6 +55,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -148,8 +151,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             if (!userRepository.supportPreview() || cmsContext.isPreview()) {
 
-                if (document instanceof ModulesContainer) {
-
+                if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
+                
                     // Display tools
                     
                     HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
@@ -665,6 +668,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
                 
+
+                Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
+                
                  
                 String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
                 String cmsTemplatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.cmsTemplatePath");
@@ -739,13 +745,34 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     status.setModifiable(personnalization.isModifiable());
     
                     if (status.isModifiable()) {
-    
+                        
+                        // Space modification
+                        String modifySpaceUrl;
+
+                        String title = bundle.getString("MODIFY_SPACE_MODIFY_TITLE");
+
+                        // Window properties
+                        Map<String, String> spaceProperties = new HashMap<>();
+                        spaceProperties.put("osivia.title", title);
+                        spaceProperties.put("osivia.hideTitle", "1");
+                        spaceProperties.put("osivia.ajaxLink", "1");
+                        ctrl.addContentRefToProperties(spaceProperties, "osivia.space.id", document.getSpaceId());                        
+
+
+                        modifySpaceUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionModifySpaceInstance", title, "EditionModifySpaceInstance", spaceProperties,
+                                    new HashMap<>());
+
+                        
+
+                        this.addToolbarItem(toolbar, modifySpaceUrl,null, bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-square-edit");
+                        
                         //"${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
                         boolean hasPageSubtype = false;
                         for(String subType : personnalization.getSubTypes())    {
                             if( StringUtils.equalsIgnoreCase(subType, "Page"))
                                 hasPageSubtype = true;
                         }
+                        
                         
                         if( ( ! repository.supportPreview() || cmsContext.isPreview())  && hasPageSubtype )   {
                             if( portalControllerContext.getResponse() instanceof RenderResponse)   {

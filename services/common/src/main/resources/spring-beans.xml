@@ -86,6 +86,31 @@
         <property name="Factory" ref="portal:urlFactory=Delegating"/>        
 	</bean>
 	
+	
+   
+   
+   
+   
+   
+   	<bean class="org.osivia.portal.core.page.MonEspaceCommandFactoryService"
+		id="osivia:commandFactory=MonEspace" >
+	</bean>
+	
+    <bean class="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+		id="portal:commandFactory=Delegate,path=MonEspace">
+        <property name="Path" value="/MonEspace" />
+        <property name="DelegatingFactory" ref="portal:commandFactory=Delegating"/>
+        <property name="DelegateFactory" ref="osivia:commandFactory=MonEspace"/>        
+	</bean>  
+    
+    
+     <bean class="org.osivia.portal.core.page.MonEspaceURLFactory" id="osivia:urlFactory=MonEspace" >
+        <property name="Path" value="/MonEspace" />
+        <property name="Factory" ref="portal:urlFactory=Delegating"/>        
+	</bean>
+		
+	
+	
 	   <!-- The ajax response handler -->
    <bean class="org.osivia.portal.core.ajax.AjaxResponseHandler"
           id="portal:service=ResponseHandler,type=Ajax" >

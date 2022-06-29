@@ -26,13 +26,13 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
  * A factory for creating InMemory objects.
  */
 
-public class TestRepositoryFactory {
+public class DefaultRepositoryFactory {
 
     /** The super user repositories. */
     private Map<SharedRepositoryKey, BaseUserRepository> staticRepositories;
 
 
-    public TestRepositoryFactory() {
+    public DefaultRepositoryFactory() {
         super();
         staticRepositories = new ConcurrentHashMap<SharedRepositoryKey, BaseUserRepository>();
     }
@@ -42,7 +42,7 @@ public class TestRepositoryFactory {
         return new UniversalID("idx:DEFAULT");
     }
     
-    protected static final Log logger = LogFactory.getLog(TestRepositoryFactory.class);
+    protected static final Log logger = LogFactory.getLog(DefaultRepositoryFactory.class);
     
     /**
      * Creates a new InMemory object.
@@ -55,10 +55,18 @@ public class TestRepositoryFactory {
 
         BaseUserRepository userRepository = null;
 
+       
 
         String className = System.getProperty("osivia.cms.repository." + repositoryKey.getRepositoryName() + ".className");
         try {
+            
+            logger.debug("create repository" + userId + "className" + className);
+            
             userRepository = createDynamicUserRepository(repositoryKey, publishRepository, userId, className);
+            
+            logger.debug("userRepository" + userRepository);
+            
+            
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -224,6 +232,9 @@ public class TestRepositoryFactory {
      */
     public void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
 
+        logger.debug("addListener repositoryName" + repositoryName);
+        
+        
         UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
 
 

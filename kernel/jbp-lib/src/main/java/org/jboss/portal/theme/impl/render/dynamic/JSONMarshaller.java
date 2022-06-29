@@ -71,6 +71,11 @@ public class JSONMarshaller {
                     writer.key("full_state_url").value(umr.getFullStateUrl());
                 }
                 
+                
+                if (umr.getPortalRedirection() != null) {
+                    writer.key("portal_redirection").value(umr.getPortalRedirection());
+                }
+                
                 if (umr.getPageChanged() != null) {
                     writer.key("page_changed").value(umr.getPageChanged().toString());
                 }

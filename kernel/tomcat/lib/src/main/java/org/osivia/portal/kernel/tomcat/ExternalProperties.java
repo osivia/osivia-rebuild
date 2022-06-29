@@ -34,11 +34,13 @@ public class ExternalProperties implements PropertySource   {
             String fileNames[] = externalPropertiesFile.split(",");
             externalProperties = new Properties();
             for(int i=0; i< fileNames.length; i++)  {
-                FileInputStream fileInputStream = new FileInputStream(fileNames[i]);
+                String fileName = fileNames[i];
+                fileName = fileName.replaceAll("\\$\\{catalina.base\\}", catalinaBase);
+                FileInputStream fileInputStream = new FileInputStream(fileName);
                 externalProperties.load(fileInputStream);
                 
                 // Also add to System properties
-                FileInputStream systemInputStream = new FileInputStream(fileNames[i]);
+                FileInputStream systemInputStream = new FileInputStream(fileName);
                 Properties props = new Properties();
 
                 // load a properties file

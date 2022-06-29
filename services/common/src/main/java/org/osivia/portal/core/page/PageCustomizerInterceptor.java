@@ -197,16 +197,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             properties.setWindowProperty(windowId, "osivia.hidePortlet", Boolean.toString(hidePortlet));
             
             
-            // Hide edition bar int admin mode
-            Boolean adminMode = false;
+            // Hide edition bar in admin mode and MAXIMIZED state
+            Boolean hideEditionBar = false;
             NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
             WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
 
             if ((windowNavState != null) && Mode.ADMIN.equals(windowNavState.getMode())) {
-                adminMode = true;
+                hideEditionBar = true;
             }
             
-            if( !adminMode)
+            if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+                hideEditionBar = true;
+            }
+            
+            if( !hideEditionBar)
                 cmsEditionService.prepareEdition(controllerContext, window);
         }  
         

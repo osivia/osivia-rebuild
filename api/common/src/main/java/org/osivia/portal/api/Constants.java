@@ -64,6 +64,8 @@ public final class Constants {
     public static final String ATTR_USER_PORTAL = "osivia.userPortal";
     /** Current page identifier attribute name. */
     public static final String ATTR_PAGE_ID = "osivia.currentPageId";
+    /** Current portal  attribute name. */
+    public static final String ATTR_PORTAL = "osivia.currentPageId";    
     /** Current page name attribute name. */
     public static final String ATTR_PAGE_NAME = "osivia.currentPageName";
     /** First tab attribute name. */

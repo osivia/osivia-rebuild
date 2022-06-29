@@ -203,12 +203,6 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
                 controllerContext.getServerInvocation().getServerContext().getClientRequest());
         // State context
         NavigationalStateContext stateContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-        // Window context map
-        // TODO : window context map
-        // Map<?, ?> windowContextMap = pageRendition.getPageResult().getWindowContextMap();
-        Map<?, ?> windowContextMap = new HashMap<>();
-
-
 
 
 

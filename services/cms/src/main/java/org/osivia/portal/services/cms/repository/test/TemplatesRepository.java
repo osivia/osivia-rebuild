@@ -47,7 +47,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      */
     private void addTemplateSpace(String id, List<String> children) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Space." + id);
+        properties.put("dc:title", "Template space." + id);
+        properties.put("templates.namespace", "templates");
+        
         List<ModuleRef> modules = new ArrayList<ModuleRef>();
         Map<String,String> navProperties = new ConcurrentHashMap<>(); 
         navProperties.put("osivia.hideTitle", "1");        
@@ -67,7 +69,7 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
      */
     private void addTemplatePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules, Map propMap) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Space." + id);
+        properties.put("dc:title", "Template space." + id);
         
         if( propMap != null)    {
             properties.putAll(propMap);
@@ -196,6 +198,22 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         addTemplatePageWithoutMenu(id, name, parentId, spaceId, children, modules);
     }
     
+    
+    protected void publishPage(String id, String name, String parentId, String spaceId, List<String> children) throws CMSException {
+
+        List<ModuleRef> modules = new ArrayList<ModuleRef>();
+
+         
+        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+        properties.put("dc:title", "Publish." + id);
+        properties.put( ThemeConstants.PORTAL_PROP_LAYOUT, "/osivia-portal-themes-generic.admin");
+
+        
+        MemoryRepositoryPage page = new MemoryRepositoryPage(this,id, name, null, parentId, spaceId, children, properties, modules);
+
+        addDocument(id, page);
+    }
+    
 
     protected void createTemplateSpace() throws CMSException {
         // PortalA
@@ -203,11 +221,13 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         pageA1("ID_TEMPLATE_WORKSPACE", "workspace", "ID_PAGE_A", "portalA", new ArrayList<String>());
         pageB("ID_TEMPLATE_SITE", "site", "portalA", "portalA", new ArrayList<String>());
         pageC("ID_EMPTY", "empty", "portalA", "portalA", new ArrayList<String>());
+        publishPage("DEFAULT_TEMPLATES_PUBLISH", "publish", "portalA", "portalA", new ArrayList<String>());
         addTemplateNxSpace("ID_TEMPLATE_NX_WORKSPACE", "nxworkspace", "portalA", "portalA");
         List<String> portalChildren = new ArrayList<String>();
         portalChildren.add("ID_PAGE_A");
         portalChildren.add("ID_TEMPLATE_SITE");
         portalChildren.add("ID_EMPTY");
+        portalChildren.add("DEFAULT_TEMPLATES_PUBLISH");        
         portalChildren.add("ID_TEMPLATE_NX_WORKSPACE");
         addTemplateSpace("portalA", portalChildren);
         

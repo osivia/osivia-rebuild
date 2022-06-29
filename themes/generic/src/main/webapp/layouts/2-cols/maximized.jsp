@@ -24,7 +24,8 @@
 <div class="layout">
 <table  width="100%">
    <tr>
-	<td width="100%" colspan="2" valign="top">    
+	<td width="100%" colspan="2" valign="top">
+		<p:region regionName='toolbar' regionID='toolbar'/>    
   		<p:region regionName='top' regionID='top'/>
   		
     </td>

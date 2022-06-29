@@ -245,6 +245,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 if ("changeEditionMode".equals(action)) {
                         return new CMSEditionChangeModeCommand();
                 }                   
+                
+                
+
 
             }
         } catch (Exception e) {

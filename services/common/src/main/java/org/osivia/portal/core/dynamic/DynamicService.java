@@ -199,6 +199,9 @@ public class DynamicService implements IDynamicService {
         }
         nsContext.setPageNavigationalState(pageId.toString(), new PageNavigationalState(state));
         
+        
+        // Maj du breadcrumb
+        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", null);
 
         return pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
 

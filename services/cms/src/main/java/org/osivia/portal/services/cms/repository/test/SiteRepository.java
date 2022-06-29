@@ -46,7 +46,8 @@ public class SiteRepository extends UserRepositoryTestBase  {
     private void addSiteSpace(String id, List<String> children) throws CMSException {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", generateTitle("Site "+ id));
-
+        properties.put("templates.namespace", "templates");
+        
         List<ModuleRef> modules = new ArrayList<>();
         MemoryRepositorySpace space = new MemoryRepositorySpace(this, id, id, new UniversalID("templates", "ID_TEMPLATE_SITE"), children, properties, modules);
         addDocument(id, space);

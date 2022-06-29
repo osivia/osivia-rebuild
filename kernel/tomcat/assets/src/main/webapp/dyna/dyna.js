@@ -390,9 +390,39 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	
 	           new Insertion.Bottom(srcContainer, markup);
 	
-	           // Copy the region content
-	           copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
-	           copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
+
+	
+               // Regions modifications
+			   var regionsModifications = false;	
+	
+			   var $srcContainer = $JQry(srcContainer);
+	           $srcContainer.find('[data-ajax-region-modified]').each(function( index, src ) {
+	        		
+	        		console.log("ajax modification ");
+	        		
+	        		regionsModifications = true;
+	        		   
+	        		var $src = $JQry(src);
+					var ajaxRegion = $src.data("ajax-region-modified");
+	        		   
+	        		var $dstContainer = $JQry(dstContainer);
+	        		
+	        		$dstContainer.find('[data-ajax-region='+ajaxRegion+']').each(function( index, dst ) {   
+		
+						console.log("ajax modification dest region ");
+						copyNodes (src, dst);
+	        		   
+	        	   });		
+	        	   
+	           });		   
+	
+	
+	           if( regionsModifications == false)	{
+	              // Copy the region content
+	              copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
+	              copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
+	           }
+	           
 	           
 	           if( newPage == false)	{
 	        	   // StartDynamic window in normal mode
@@ -524,6 +554,14 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	  {
 		  session_check = resp.session_check;
 	  }
+	  
+	  // update portal_redirection
+	  if (resp.portal_redirection != null)
+	  {
+		  portal_redirection = resp.portal_redirection;
+	  }	else	{
+			portal_redirection = null;
+	 }
 	  
 	  // Save components state in history
 	  
@@ -961,7 +999,22 @@ function copyInnerHTML(srcContainer, dstContainer, className)
       {
          var dst = dsts[0];
 
-         // Remove existing non attribute children in destination
+         copyNodes(src, dst);
+      }
+      else
+      {
+         // Should log that somewhere but
+      }
+   }
+   else
+   {
+      // Should log that somewhere
+   }
+}
+
+
+function copyNodes(src, dst)	{
+	 // Remove existing non attribute children in destination
          var dstChildren = dst.childNodes;
          var copy = new Array();
          for (var i = 0; i < dstChildren.length; i++)
@@ -990,17 +1043,8 @@ function copyInnerHTML(srcContainer, dstContainer, className)
                src.removeChild(srcChild);
             }
          }
-      }
-      else
-      {
-         // Should log that somewhere but
-      }
-   }
-   else
-   {
-      // Should log that somewhere
-   }
 }
+
 
 
 function observePortlets()

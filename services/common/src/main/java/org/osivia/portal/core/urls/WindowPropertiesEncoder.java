@@ -20,6 +20,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WindowPropertiesEncoder {
+    
+    /*
+    public static void main(String args[])  {
+        String callckackurl="/portal/auth/sites/ID_SITE_A/_dyn_c3BhY2VfcG9ydGFsQV9fY3R4X19sb2NhbGVfZnI%3D.Y29udGVudDp0ZW1wbGF0ZXM6REVGQVVMVF9URU1QTEFURVNfUFVCTElTSA%3D%3D.b3NpdmlhLmNvbnRlbnRJZCUzRHRlbXBsYXRlcyUzQURFRkFVTFRfVEVNUExBVEVTX1BVQkxJU0glMjZvc2l2aWEuY29udGVudC5wcmV2aWV3JTNEZmFsc2UlMjZvc2l2aWEucGFnZVR5cGUlM0R0ZW1wbGF0ZSUyNm9zaXZpYS5pbml0aWFsV2luZG93UmVnaW9uJTNEY29sLTElMjZvc2l2aWEuaW5pdGlhbFdpbmRvd1Byb3BzJTNEb3NpdmlhLmNvbnRlbnQucHJldmlldyUyNTNEdHJ1ZSUyNTI2b3NpdmlhLmFqYXhMaW5rJTI1M0QxJTI1MjZvc2l2aWEuc3BhY2UuaWQlMjUzRHNpdGVzJTI1M0FJRF9TSVRFX0ElMjUyNm9zaXZpYS5oaWRlVGl0bGUlMjUzRDElMjUyNm9zaXZpYS5oaWRlRGVjb3JhdG9ycyUyNTNEMSUyNTI2dGhlbWUuZHluYS5wYXJ0aWFsX3JlZnJlc2hfZW5hYmxlZCUyNTNEdHJ1ZSUyNTI2b3NpdmlhLmNvbnRlbnQubG9jYWxlJTI1M0RmciUyNTI2b3NpdmlhLnRpdGxlJTI1M0RQcm9wcmklMjVDMyUyNUE5dCUyNUMzJTI1QTlzJTJCZGUlMkJsJTI1Mjdlc3BhY2UlMjZvc2l2aWEubmF2aWdhdGlvbklkJTNEdGVtcGxhdGVzJTNBREVGQVVMVF9URU1QTEFURVNfUFVCTElTSCUyNm9zaXZpYS5jb250ZW50LmxvY2FsZSUzRGZyJTI2b3NpdmlhLmluaXRpYWxXaW5kb3dJbnN0YW5jZSUzREVkaXRpb25Nb2RpZnlTcGFjZUluc3RhbmNlJTI2b3NpdmlhLnNwYWNlSWQlM0R0ZW1wbGF0ZXMlM0Fwb3J0YWxB.X19OX18%3D.ZnIlM0RUZW1wbGF0ZStzcGFjZS5wb3J0YWxB/content?javax.portlet.action=addProfile&action=1";
+        
+        Map<String, String> params = new HashMap<>();
+        params.put("url", callckackurl);
+        
+        String encoded = encodeProperties(params);
+        Map<String, String> result = decodeProperties(encoded);
+        
+        String res = result.get("url");
+        if( !res.equals(callckackurl)) 
+            System.out.println("ko");
+       
+        
+    }*/
 
 	public static String encodeProperties(Map<String, String> props) {
 
@@ -29,8 +46,8 @@ public class WindowPropertiesEncoder {
 			for (String name : props.keySet()) {
 				if (props.get(name) != null) {
 					if (url.length() > 0)
-						url += "&&";
-					url += encodeValue(name) + "==" + encodeValue(props.get(name));
+						url += "&&&";
+					url += encodeValue(name) + "===" + encodeValue(props.get(name));
 				}
 			}
 
@@ -50,10 +67,10 @@ public class WindowPropertiesEncoder {
 
 			String decodedParam = URLDecoder.decode(urlParams, "UTF-8");
 
-			String[] tabParams = decodedParam.split("&&");
+			String[] tabParams = decodedParam.split("&&&");
 
 			for (int i = 0; i < tabParams.length; i++) {
-				String[] valParams = tabParams[i].split("==");
+				String[] valParams = tabParams[i].split("===");
 				
 				if (valParams.length != 1 && valParams.length != 2)
 					throw new IllegalArgumentException("Bad parameter format");
@@ -62,6 +79,7 @@ public class WindowPropertiesEncoder {
 				
 				if( valParams.length == 2)
 					value = valParams[1];
+				
 
 				params.put(valParams[0], value);
 			}
@@ -76,10 +94,10 @@ public class WindowPropertiesEncoder {
 
 	private static String encodeValue(String origValue) {
 
-		if (origValue.contains("=="))
+		if (origValue.contains("==="))
 			throw new RuntimeException("Bad parameter format");
 		
-		if (origValue.contains("&&"))
+		if (origValue.contains("&&&"))
 			throw new RuntimeException("Bad parameter format");
 
 		return origValue;

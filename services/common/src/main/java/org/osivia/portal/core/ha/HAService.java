@@ -34,8 +34,9 @@ public class HAService implements IHAService{
     
     @PostConstruct
     private void init()  {
+        String jgroupsCfgPath = System.getProperty("catalina.base")+"/conf/jgroups.xml";
          try {
-             msgChannel = new JChannel();
+             msgChannel = new JChannel(jgroupsCfgPath);
             
              msgChannel.setReceiver(new ReceiverAdapter() {
                 public void receive(Message msg) {
@@ -56,7 +57,7 @@ public class HAService implements IHAService{
             msgChannel.connect("osivia-msg");     
             
             
-            mapChannel = new JChannel();
+            mapChannel = new JChannel(jgroupsCfgPath);
             
             // Add 1 to map channel
             ProtocolStack stack = mapChannel.getProtocolStack();

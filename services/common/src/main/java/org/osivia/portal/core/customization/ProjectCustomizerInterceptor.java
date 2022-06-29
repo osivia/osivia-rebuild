@@ -127,30 +127,32 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
 				
 				if (StringUtils.isEmpty(redirectionURL)) {
 					String sNavId = page.getProperties().get("osivia.navigationId");
+					if( StringUtils.startsWith(sNavId, "nx:")) {
 					String sSpaceId = page.getProperties().get("osivia.spaceId");
 					if (StringUtils.equals(sNavId, sSpaceId)) {
-						String activeId = taskbarService.getActiveId(portalControllerContext);
-						if (StringUtils.equals(ITaskbarService.HOME_TASK_ID, activeId)) {
-							CMSServiceCtx cmsContext = new CMSServiceCtx();
-							cmsContext.setPortalControllerContext(portalControllerContext);
-							ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-							String basePath = cmsService.getPathFromUniversalID(cmsContext, new UniversalID(sSpaceId));
-							if (basePath.startsWith("/default-domain/UserWorkspace")) {
-								String redirectionPath = basePath + "/documents";
-
-								redirectionURL = portalUrlFactory.getViewContentUrl(portalControllerContext,
-										cmsService.getUniversalIDFromPath(cmsContext, redirectionPath));
-
-								// we need to propagate actual public parameters (e: subject when trash is
-								// activated)
-								// new view state ignored in ajax redirection mode
-
-								String initialViewSTate = (String) controllerContext.getServerInvocation()
-										.getServerContext().getClientRequest().getAttribute("initial.view.state");
-								if (initialViewSTate != null)
-									PageMarkerUtils.savePageState(controllerContext, initialViewSTate);
-							}
-						}
+    						String activeId = taskbarService.getActiveId(portalControllerContext);
+    						if (StringUtils.equals(ITaskbarService.HOME_TASK_ID, activeId)) {
+    							CMSServiceCtx cmsContext = new CMSServiceCtx();
+    							cmsContext.setPortalControllerContext(portalControllerContext);
+    							ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+    							String basePath = cmsService.getPathFromUniversalID(cmsContext, new UniversalID(sSpaceId));
+    							if (basePath.startsWith("/default-domain/UserWorkspace")) {
+    								String redirectionPath = basePath + "/documents";
+    
+    								redirectionURL = portalUrlFactory.getViewContentUrl(portalControllerContext,
+    										cmsService.getUniversalIDFromPath(cmsContext, redirectionPath));
+    
+    								// we need to propagate actual public parameters (e: subject when trash is
+    								// activated)
+    								// new view state ignored in ajax redirection mode
+    
+    								String initialViewSTate = (String) controllerContext.getServerInvocation()
+    										.getServerContext().getClientRequest().getAttribute("initial.view.state");
+    								if (initialViewSTate != null)
+    									PageMarkerUtils.savePageState(controllerContext, initialViewSTate);
+    							}
+    						}
+    					}
 					}
 				}
 			}
@@ -174,8 +176,9 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
 	 * Update properties from nuxeo
 	 * 
 	 * @param portalControllerContext
+	 * @throws Exception 
 	 */
-	private void updatePortalProperties(PortalControllerContext portalControllerContext) {
+	private void updatePortalProperties(PortalControllerContext portalControllerContext) throws Exception {
 
 		String propertiesPath = System.getProperty("config.properties.path");
 
@@ -188,6 +191,7 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
 
 				cmsContext.setPortalControllerContext(portalControllerContext);
 				cmsContext.setForcePublicationInfosScope("superuser_no_cache");
+				cmsContext.setScope("superuser_no_cache");
 				cmsContext.setStreamingSupport(false);
 
 				// CMS service
@@ -204,9 +208,7 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
 					
 					portalPropertiesReloaded = System.currentTimeMillis();
 
-				} catch (Exception e) {
-					log.error("Canot load portal properties from Nuxeo :" + e.getMessage());
-				} finally {
+				}  finally {
 					try {
 						if (streamC != null)
 							streamC.close();

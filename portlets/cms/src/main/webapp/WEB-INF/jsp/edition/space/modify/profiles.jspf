@@ -1,0 +1,111 @@
+<c:set var="deleteConfirmationModalId" value="${namespace}-delete-profile_confirmation"/>
+
+<portlet:actionURL name="modifyProfile" var="modifyProfileUrl"/>
+
+
+<div data-ajax-region="portal-properties-administration-profile-region">
+
+<div class="portal-properties-administration-profile card">
+
+	<div class="card-body">
+
+		<div class="card-title h6">
+			<span><op:translate key="MODIFY_SPACE_PROFILES"/></span>
+		</div>
+	
+		<form:form action="${url}" method="post" modelAttribute="form">
+		<ul class="list-unstyled">
+		<c:forEach var="profile" items="${form.profiles}" varStatus="status">
+				<li>
+					<div class="card mb-2">
+		                <div class="card-body p-2">
+		                    <div class="d-flex align-items-center">
+		                        <div class="">
+		                            <a href="javascript:"
+		                               class="d-block p-2 text-secondary no-ajax-link portal-properties-administration-sortable-handle">
+		                                <i class="glyphicons glyphicons-basic-sort"></i>
+		                                <span class="sr-only"><op:translate
+		                                        key="MODIFY_SPACE_MOVE_PROFILE"/></span>
+		                            </a>
+		                        </div>
+		
+		                        <div class="flex-grow-1 my-1 mx-2">
+		                            <h5 class="card-title mb-1">${profile.name}</h5>
+		                            <div class="ml-n3">
+		                                 <%--Modify--%>
+		                                <a href="javascript:" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link" data-toggle="modal"
+		                                   data-target="#osivia-modal" 
+		                                   data-load-url="${urls.modifyProfileUrls[status.index]}">
+		                                                    <i class="glyphicons glyphicons-basic-square-edit"></i>
+		                                                    <strong class="d-none d-md-inline"><op:translate key="MODIFY_PROFILE_MODIF_LABEL"/></strong>
+		                                </a>
+		                                
+		
+	                                    <%--Delete--%>
+	                                    <portlet:actionURL name="deleteProfile" var="deleteProfileUrl">
+	                                    	<portlet:param name="index" value="${status.index}" />
+	                                    </portlet:actionURL>
+		                                    
+		                                <a href="${deleteProfileUrl}" class="btn btn-link btn-sm mb-1 ml-1 ">
+	                                         <i class="glyphicons glyphicons-basic-bin"></i>
+	                                         <strong class="d-none d-md-inline"><op:translate
+	                                                 key="MODIFY_PROFILE_DELETE_LABEL"/></strong>
+		                                </a>
+		
+		                                
+		                            </div>
+		                        </div>
+		
+		                        <div class="align-self-stretch">
+		                            <div class="d-flex flex-column justify-content-between h-100">
+		                                <div>
+		                                    <c:if test="${not status.first}">
+		                                        <portlet:actionURL name="move" var="moveUpUrl">
+		                                            <portlet:param name="id" value="${savedSearch.id}"/>
+		                                            <portlet:param name="direction" value="up"/>
+		                                        </portlet:actionURL>
+		                                        <a href="${moveUpUrl}" class="btn btn-link btn-sm">
+		                                            <i class="glyphicons glyphicons-basic-arrow-up"></i>
+		                                            <span class="sr-only"><op:translate
+		                                                    key="USER_SAVED_SEARCHES_ADMINISTRATION_MOVE_UP"/></span>
+		                                        </a>
+		                                    </c:if>
+		                                </div>
+		
+		                                <div>
+		                                    <c:if test="${not status.last}">
+		                                        <portlet:actionURL name="move" var="moveDownUrl">
+		                                            <portlet:param name="id" value="${savedSearch.id}"/>
+		                                            <portlet:param name="direction" value="down"/>
+		                                        </portlet:actionURL>
+		                                        <a href="${moveDownUrl}" class="btn btn-link btn-sm">
+		                                            <i class="glyphicons glyphicons-basic-arrow-down"></i>
+		                                            <span class="sr-only"><op:translate
+		                                                    key="USER_SAVED_SEARCHES_ADMINISTRATION_MOVE_DOWN"/></span>
+		                                        </a>
+		                                    </c:if>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>	
+				</li>
+			</c:forEach>
+		</ul>
+	     <%--Buttons--%>
+	    <div class="text-right">
+            <a href="javascript:" class="btn btn-sm btn-sm btn-outline-primary" data-toggle="modal"
+               data-target="#osivia-modal" 
+               data-load-url="${urls.addProfileUrl}">
+                                <i class="glyphicons glyphicons-basic-plus"></i>
+                                <strong class="d-none d-md-inline"><op:translate key="MODIFY_PROFILE_ADD_LABEL"/></strong>
+            </a>
+	    </div>   
+	     		
+		</form:form>
+
+
+    	</div>
+    </div>
+</div>    

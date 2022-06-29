@@ -74,8 +74,13 @@ public class DynamicPortal extends PortalImplBase {
         if (dynamicChilds == null) {
 
             dynamicChilds = new HashMap<String, DynamicPage>();
+            
+            
+            List<DynamicPageBean> pages = dynamicContainer.getDynamicPages();
+            
+            log.info("getDynamicChilds("+getId()+") ->" + pages.size());
 
-            for (DynamicPageBean dynamicPage : dynamicContainer.getDynamicPages()) {
+            for (DynamicPageBean dynamicPage : pages) {
                 if (dynamicPage.getParentId().equals(getId())) {
 
                     try {
@@ -85,8 +90,12 @@ public class DynamicPortal extends PortalImplBase {
 
 
                         dynamicChilds.put(child.getName(), child);
+                        
+                        log.info("child.getId()"+child.getId());
 
                     } catch (Exception e) {
+                        log.info(e.getMessage());
+                        
                         // At this level, (during the mapping phase) do not throw exception
                         // The template may have been moved or deleted...
                         // If necessay the page wil be restored in PortalCommandFactory

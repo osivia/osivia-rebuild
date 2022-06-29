@@ -39,9 +39,12 @@
         <Logger name="PORTAL_STATUS" level="info" additivity="false">
             <AppenderRef ref="StatusFile"/>
         </Logger> 
+       <Logger name="org.osivia" level="debug" additivity="false">
+            <AppenderRef ref="PortalFile"/>
+        </Logger>        
         <Root level="info">
-            <AppenderRef ref="ServerFile"/>
-            <AppenderRef ref="LogToConsole"/>
+            <AppenderRef ref="ServerFile" />
+            <AppenderRef ref="LogToConsole" />
         </Root>
     </Loggers>
 </Configuration>

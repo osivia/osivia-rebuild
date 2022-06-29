@@ -63,7 +63,6 @@ public class PortalObjectUtilsInternal {
 
         if (controllerContext != null) {
             // Page identifier
-            //TODO : navigation scope
             pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_PAGE_ID);
         }
 
@@ -142,7 +141,7 @@ public class PortalObjectUtilsInternal {
      */
     public static final Portal getPortal(ControllerContext controllerContext) {
         Portal portal = null;
-
+/*
         // Portal name
         String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
         if ((controllerContext != null) && (portalName != null)) {
@@ -153,7 +152,16 @@ public class PortalObjectUtilsInternal {
                 portal = (Portal) portalObject;
             }
         }
+*/
+  
+        
 
+        Page page = getPage(controllerContext);
+        
+        //TODO NPE ouverture modale
+        
+        if( page != null)
+            portal = page.getPortal();
         return portal;
     }
 

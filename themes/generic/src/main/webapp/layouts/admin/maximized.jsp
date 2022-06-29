@@ -26,6 +26,7 @@
    <tr>
 	<td width="100%" colspan="2" valign="top">    
   		<p:region regionName='toolbar' regionID='toolbar'/>
+		<%@include file="../includes/content-navbar.jsp" %>	  		
   		<p:region regionName='maximized' />
     </td>
   </tr> 

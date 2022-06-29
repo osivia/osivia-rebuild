@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -576,15 +578,20 @@ public class AjaxResponseHandler implements ResponseHandler {
                     Integer viewId = PageMarkerUtils.generateViewState(controllerContext);
                     PageMarkerUtils.setViewState(controllerContext, viewId);
 
+                    
+                    HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
                     //
                     UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId());
-                    updatePage.setSessionCheck((String) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute(InternalConstants.SESSION_CHECK));
+                    updatePage.setSessionCheck((String) request.getSession().getAttribute(InternalConstants.SESSION_CHECK));
 
                     RestorePageCommand restoreCmd = new RestorePageCommand();
                     updatePage.setRestoreUrl(controllerContext.renderURL(restoreCmd, null, null));
 
                     ViewPageCommand vpc = new ViewPageCommand(pageId);
                     updatePage.setFullStateUrl(controllerContext.renderURL(vpc, null, null));
+                    
+                    String redirection =  request.getParameter("redirection");
+                    updatePage.setPortalRedirection(redirection);
 
                     // Regions
                     Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);

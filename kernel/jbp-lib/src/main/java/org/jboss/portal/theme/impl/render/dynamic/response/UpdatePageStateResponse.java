@@ -48,12 +48,26 @@ public class UpdatePageStateResponse extends DynaResponse {
     private String layout;
     private String restoreUrl;
     private String fullStateUrl;
+    private String portalRedirection=null;
+    
+
+
+
     private String sessionCheck;
     private Set<PageResource> resources;
     private Boolean pageChanged = false;
     private Boolean pushHistory = false;    
     
     
+    
+    public String getPortalRedirection() {
+        return portalRedirection;
+    }
+
+    
+    public void setPortalRedirection(String portalRedirection) {
+        this.portalRedirection = portalRedirection;
+    }
     
     public Boolean getPushHistory() {
         return pushHistory;

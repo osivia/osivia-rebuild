@@ -181,7 +181,9 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
             markup.print("session_check = null;");
          }
 
-
+         markup.print("portal_redirection = null;");
+         
+         
          //
          markup.print("</script>\n");
       }

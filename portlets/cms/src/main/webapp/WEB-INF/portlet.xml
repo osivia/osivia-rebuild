@@ -229,7 +229,31 @@
         <portlet-info>
             <title>CMS ModifyPortlet</title>
         </portlet-info>
-    </portlet>    
+    </portlet> 
+   <portlet>
+        <portlet-name>EditionModifySpace</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.portal.cms.portlets.edition.space.modify.configuration.ModifyConfiguration</value>
+        </init-param>
+        
+        <expiration-cache>180</expiration-cache>
+        
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        
+        <portlet-info>
+            <title>CMS ModifyPortlet</title>
+        </portlet-info>
+    </portlet>        
     <portlet>
         <portlet-name>Rename</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
