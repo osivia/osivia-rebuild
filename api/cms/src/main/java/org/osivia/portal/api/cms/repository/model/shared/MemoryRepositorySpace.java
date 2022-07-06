@@ -16,6 +16,10 @@ public class MemoryRepositorySpace extends MemoryRepositoryDocument implements S
     private List<ModuleRef> moduleRefs;
     private UniversalID templateId;
     private List<Profile> profiles;
+    private List<String> styles;
+
+    
+
 
     public MemoryRepositorySpace(BaseUserRepository repository, String id, String name, UniversalID templateId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
         super(repository, id, name,null, id,childrenId, properties);
@@ -23,6 +27,7 @@ public class MemoryRepositorySpace extends MemoryRepositoryDocument implements S
         this.moduleRefs = moduleRefs;
         supportedSubTypes = Arrays.asList(new String[]{ "page"});
         this.profiles = new ArrayList<>();
+        this.styles = new ArrayList<>();
     }
 
 
@@ -44,4 +49,19 @@ public class MemoryRepositorySpace extends MemoryRepositoryDocument implements S
         return profiles;
     }
     
+    
+    public void setProfiles(List<Profile> profiles)   {
+        this.profiles = profiles;
+    }
+
+    public List<String> getStyles() {
+        return styles;
+    }
+
+
+    
+    public void setStyles(List<String> styles) {
+        this.styles = styles;
+    }
+
 }

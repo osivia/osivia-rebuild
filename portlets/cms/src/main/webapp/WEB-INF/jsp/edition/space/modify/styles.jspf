@@ -1,18 +1,17 @@
 
 
+<div data-ajax-region="portal-properties-administration-style-region">
 
-<div data-ajax-region="portal-properties-administration-profile-region">
-
-<div class="portal-properties-administration-profile portal-properties-administration-list card">
+<div class="portal-properties-administration-style card portal-properties-administration-list">
 
 	<div class="card-body">
 
 		<div class="card-title h6">
-			<span><op:translate key="MODIFY_SPACE_PROFILES"/></span>
+			<span><op:translate key="MODIFY_SPACE_STYLES"/></span>
 		</div>
 				
-		<ul class="list-unstyled portal-properties-administration-list-sortable" data-action="sortProfile">
-		<c:forEach var="profile" items="${form.profiles}" varStatus="status">
+		<ul class="list-unstyled portal-properties-administration-list-sortable" data-action="sortStyle">
+		<c:forEach var="style" items="${form.styles}" varStatus="status">
 				<li>
 					<div class="card mb-2">
 		                <div class="card-body p-2">
@@ -22,31 +21,31 @@
 		                               class="d-block p-2 text-secondary no-ajax-link portal-properties-administration-list-sortable-handle">
 		                                <i class="glyphicons glyphicons-basic-sort"></i>
 		                                <span class="sr-only"><op:translate
-		                                        key="MODIFY_SPACE_MOVE_PROFILE"/></span>
+		                                        key="MODIFY_SPACE_MOVE_STYLE"/></span>
 		                            </a>
 		                        </div>
 		
 		                        <div class="flex-grow-1 my-1 mx-2">
-		                            <h5 class="card-title mb-1">${profile.name}</h5>
+		                            <h5 class="card-title mb-1">${style}</h5>
 		                            <div class="ml-n3">
 		                                 <%--Modify--%>
 		                                <a href="javascript:" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link" data-toggle="modal"
 		                                   data-target="#osivia-modal" 
-		                                   data-load-url="${urls.modifyProfileUrls[status.index]}">
+		                                   data-load-url="${urls.modifyStylesUrls[status.index]}">
 		                                                    <i class="glyphicons glyphicons-basic-square-edit"></i>
-		                                                    <strong class="d-none d-md-inline"><op:translate key="MODIFY_PROFILE_MODIF_LABEL"/></strong>
+		                                                    <strong class="d-none d-md-inline"><op:translate key="MODIFY_STYLE_MODIF_LABEL"/></strong>
 		                                </a>
 		                                
 		
 	                                    <%--Delete--%>
-	                                    <portlet:actionURL name="deleteProfile" var="deleteProfileUrl">
+	                                    <portlet:actionURL name="deleteStyle" var="deleteStyleUrl">
 	                                    	<portlet:param name="index" value="${status.index}" />
 	                                    </portlet:actionURL>
 		                                    
-		                                <a href="${deleteProfileUrl}" class="btn btn-link btn-sm mb-1 ml-1 ">
+		                                <a href="${deleteStyleUrl}" class="btn btn-link btn-sm mb-1 ml-1 ">
 	                                         <i class="glyphicons glyphicons-basic-bin"></i>
 	                                         <strong class="d-none d-md-inline"><op:translate
-	                                                 key="MODIFY_PROFILE_DELETE_LABEL"/></strong>
+	                                                 key="MODIFY_STYLE_DELETE_LABEL"/></strong>
 		                                </a>
 		
 		                                
@@ -57,28 +56,28 @@
 		                            <div class="d-flex flex-column justify-content-between h-100">
 		                                <div>
 		                                    <c:if test="${not status.first}">
-		                                        <portlet:actionURL name="moveProfile" var="moveUpUrl">
+		                                        <portlet:actionURL name="moveStyle" var="moveUpUrl">
 		                                            <portlet:param name="index" value="${status.index}"/>
 		                                            <portlet:param name="direction" value="up"/>
 		                                        </portlet:actionURL>
 		                                        <a href="${moveUpUrl}" class="btn btn-link btn-sm">
 		                                            <i class="glyphicons glyphicons-basic-arrow-up"></i>
 		                                            <span class="sr-only"><op:translate
-		                                                    key="MODIFY_PROFILE_MOVE_UP"/></span>
+		                                                    key="MODIFY_STYLE_MOVE_UP"/></span>
 		                                        </a>
 		                                    </c:if>
 		                                </div>
 		
 		                                <div>
 		                                    <c:if test="${not status.last}">
-		                                        <portlet:actionURL name="moveProfile" var="moveDownUrl">
+		                                        <portlet:actionURL name="moveStyle" var="moveDownUrl">
 		                                            <portlet:param name="index" value="${status.index}"/>
 		                                            <portlet:param name="direction" value="down"/>
 		                                        </portlet:actionURL>
 		                                        <a href="${moveDownUrl}" class="btn btn-link btn-sm">
 		                                            <i class="glyphicons glyphicons-basic-arrow-down"></i>
 		                                            <span class="sr-only"><op:translate
-		                                                    key="MODIFY_PROFILE_MOVE_DOWN"/></span>
+		                                                    key="MODIFY_STYLE_MOVE_DOWN"/></span>
 		                                        </a>
 		                                    </c:if>
 		                                </div>
@@ -94,13 +93,11 @@
 	    <div class="text-right">
             <a href="javascript:" class="btn btn-sm btn-sm btn-outline-primary" data-toggle="modal"
                data-target="#osivia-modal" 
-               data-load-url="${urls.addProfileUrl}">
+               data-load-url="${urls.addStyleUrl}">
                                 <i class="glyphicons glyphicons-basic-plus"></i>
-                                <strong class="d-none d-md-inline"><op:translate key="MODIFY_PROFILE_ADD_LABEL"/></strong>
+                                <strong class="d-none d-md-inline"><op:translate key="MODIFY_STYLE_ADD_LABEL"/></strong>
             </a>
 	    </div>   
-	    
-
 	     		
  
     	</div>

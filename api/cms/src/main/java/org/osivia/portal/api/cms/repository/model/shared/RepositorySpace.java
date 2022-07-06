@@ -20,12 +20,14 @@ public class RepositorySpace extends RepositoryDocument implements Space {
     
     private UniversalID templateID;
     private List<Profile> profiles;
+    private List<String> styles;
     
     public RepositorySpace(BaseUserRepository userRepository, EcmDocument nativeItem, String internalID, String name, String parentId, String spaceId,
             List<String> childrenId, Map<String, Object> properties, UniversalID templateID) {
         super(userRepository, nativeItem, internalID, name, parentId, spaceId, childrenId, properties);
         this.templateID = templateID;
         this.profiles = new ArrayList<>();
+        this.styles = new ArrayList<>();
     }
 
     @Override
@@ -41,6 +43,11 @@ public class RepositorySpace extends RepositoryDocument implements Space {
     @Override
     public List<Profile> getProfiles() {
         return profiles;
+    }
+
+    @Override
+    public List<String> getStyles() {
+        return styles;
     }
 
 }

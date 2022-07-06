@@ -112,6 +112,7 @@ public final class HeaderMetadataAttributesBundle implements IInternalAttributes
         String applicationName = InternationalizationUtils.getApplicationName(portal, locale);
         attributes.put(Constants.ATTR_HEADER_APPLICATION_NAME, applicationName);
 
+        
 
         attributes.put(Constants.ATTR_HEADER_TITLE, title);
 

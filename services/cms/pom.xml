@@ -16,6 +16,10 @@
     <name>OSIVIA Portal - Services - CMS</name>
     <description>OSIVIA Portal services CMS.</description>
 
+	<properties>
+        <xstream.version>1.4.7</xstream.version>
+    </properties>
+
 
     <dependencies>
     
@@ -59,6 +63,13 @@
 	    	<version>1.2.5</version>
 	    	<scope>provided</scope>
 		</dependency>
+		
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>${xstream.version}</version>
+            <scope>compile</scope>
+        </dependency>		
 		
     </dependencies>
     

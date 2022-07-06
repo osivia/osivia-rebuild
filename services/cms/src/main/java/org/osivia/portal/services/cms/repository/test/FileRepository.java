@@ -30,6 +30,7 @@ import org.jboss.portal.security.SecurityConstants;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
@@ -37,6 +38,8 @@ import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.services.cms.repository.test.imports.ProfilBean;
+import org.osivia.portal.services.cms.repository.test.imports.XMLSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
@@ -249,6 +252,30 @@ public class FileRepository extends UserRepositoryTestBase {
         
         MemoryRepositorySpace space = new MemoryRepositorySpace(this, getPortalName(portalMetaData), getPortalName(portalMetaData), null, portalChildren, portalProperties,
                 new ArrayList<ModuleRef>());
+        
+        // profiles
+        XMLSerializer serializer = new XMLSerializer();
+
+        String encodedList = portalMetaData.getProperties().get("osivia.profils");
+        List<ProfilBean> profils = serializer.decodeAll(encodedList);
+        if (profils == null) {
+            profils = new ArrayList<ProfilBean>();
+        }
+        
+        for( ProfilBean profile: profils)   {
+            Profile importProfile = new Profile(profile.getName(), profile.getRoleName(), profile.getDefaultPageName(), profile.getNuxeoVirtualUser());
+            space.getProfiles().add(importProfile);
+        }
+
+        // styles
+        String encodedStyles = portalMetaData.getProperties().get("osivia.liste_styles");
+        if( StringUtils.isNotEmpty(encodedStyles))  {
+            for (String style: Arrays.asList(encodedStyles.split(","))) {
+                space.getStyles().add(style);
+            }
+        }
+        
+        
         addDocument(getPortalName(portalMetaData), space);       
     }
 

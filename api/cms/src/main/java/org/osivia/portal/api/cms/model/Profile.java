@@ -1,14 +1,20 @@
 package org.osivia.portal.api.cms.model;
 
+import java.io.Serializable;
 
 /**
  * User applicative profile
  * 
  * @author jsste
  */
-public class Profile {
+public class Profile implements Serializable{
     
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7371083091180151926L;
+    
     /** Profile name. */
     private String name;
     /** Profile role. */

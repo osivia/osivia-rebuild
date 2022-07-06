@@ -57,6 +57,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
@@ -122,7 +123,7 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
         request.setAttribute( "urls", getUrls(request, response, form));
-        
+
         if (portalControllerContext.getHttpServletRequest().getAttribute("ajax") != null)
             return "ajax";
 
@@ -141,6 +142,19 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
     }
 
+    
+    @ActionMapping(name = "addStyle")
+    public void addStyle(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
+
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        String profile = request.getParameter("style");
+
+        form.getStyles().add( new ObjectMapper().readValue(URLDecoder.decode(profile, "UTF-8"), String.class));
+ 
+        portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
+    }
+    
 
     @ActionMapping(name = "modifyProfile")
     public void modifyProfile(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
@@ -152,6 +166,21 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         form.getProfiles().remove(index);
 
         form.getProfiles().add(index, new ObjectMapper().readValue(URLDecoder.decode(profile, "UTF-8"), Profile.class));
+ 
+        portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
+    }
+    
+    
+    @ActionMapping(name = "modifyStyle")
+    public void modifyStyle(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
+
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        String style = request.getParameter("style");
+        int index = Integer.parseInt(request.getParameter("index"));
+        form.getStyles().remove(index);
+
+        form.getStyles().add(index, new ObjectMapper().readValue(URLDecoder.decode(style, "UTF-8"), String.class));
  
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
     }
@@ -167,7 +196,122 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
        }
+    
+    @ActionMapping(name = "deleteStyle")
+    public void deleteStyle(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
 
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        int index = Integer.parseInt(request.getParameter("index"));
+        form.getStyles().remove(index);
+
+        portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
+       }
+    
+
+    @ActionMapping(name = "moveProfile")
+    public void moveProfile(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
+
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        int index = Integer.parseInt(request.getParameter("index"));
+        String direction = request.getParameter("direction");
+        
+        Profile profile = form.getProfiles().get(index);
+        form.getProfiles().remove(index);
+        
+        if("up".equals(direction))  {
+            form.getProfiles().add(index -1, profile);
+        }   else    {
+            form.getProfiles().add(index + 1, profile);
+        }
+        
+
+        portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
+       }
+    
+    @ActionMapping(name = "moveStyle")
+    public void moveStyle(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
+
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        int index = Integer.parseInt(request.getParameter("index"));
+        String direction = request.getParameter("direction");
+        
+        String style  = form.getStyles().get(index);
+        form.getStyles().remove(index);
+        
+        if("up".equals(direction))  {
+            form.getStyles().add(index -1, style);
+        }   else    {
+            form.getStyles().add(index + 1, style);
+        }
+        
+
+        portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
+       }    
+   
+    @ActionMapping(name = "modifyPortal", params = "formAction=sortProfile")
+    public void sortProfile(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form, @RequestParam String sortSrc,  @RequestParam String sortTarget) throws PortletException, CMSException, IOException {
+        
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        int src = Integer.parseInt(sortSrc);
+        
+        Profile srcprofile = form.getProfiles().get(src);
+        form.getProfiles().remove(src);
+        
+        
+        int target = Integer.parseInt(sortTarget);
+        
+        
+        form.getProfiles().add(target,srcprofile);
+        portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);        
+   }
+    
+    
+    @ActionMapping(name = "modifyPortal", params = "formAction=sortStyle")
+    public void sortStyle(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form, @RequestParam String sortSrc,  @RequestParam String sortTarget) throws PortletException, CMSException, IOException {
+        
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        int src = Integer.parseInt(sortSrc);
+        
+        String srcStyle = form.getStyles().get(src);
+        form.getStyles().remove(src);
+        
+        
+        int target = Integer.parseInt(sortTarget);
+        
+        
+        form.getStyles().add(target,srcStyle);
+        portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);        
+   }
+    
+    @ActionMapping(name = "modifyPortal")
+    public void modifyPortal(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
+        
+        // Portal Controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+
+        
+        CMSController ctrl = new CMSController(portalCtx); 
+        
+        PortalWindow window = WindowFactory.getWindow(portalCtx.getRequest());
+        String spaceId = window.getProperty("osivia.space.id");
+        UniversalID id = new UniversalID(spaceId);
+
+        TestRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), id.getRepositoryName());
+
+        if( repository instanceof TestRepository) {
+
+            ((TestRepository) repository).setProfiles(id.getInternalID(), form.getProfiles());
+            ((TestRepository) repository).setStyles(id.getInternalID(), form.getStyles());
+        }
+
+
+   }
+    
     
     
     
@@ -213,16 +357,14 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
         Space space = (Space) getDocument(portalCtx);
 
-        space.getProfiles().add(new Profile("X", "XX", "XXX", "XXXX"));
-        space.getProfiles().add(new Profile("Y", "YY", "YYY", "YYYY"));
         ModifyForm form = this.applicationContext.getBean(ModifyForm.class);
 
         form.setProfiles(new ArrayList<>(space.getProfiles()));
+        form.setStyles(new ArrayList<>(space.getStyles()));
 
 
         return form;
     }
-
 
 
     public ModifyUrls getUrls(PortletRequest request, PortletResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, IOException, PortalException {
@@ -236,6 +378,8 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         List<String> urls = new ArrayList<>();
 
         int index = 0;
+        
+        /* Get Profiles urls */
         for (Profile profile : form.getProfiles()) {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -265,7 +409,6 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         
         modifyUrls.setModifyProfileUrls(urls);
         
-        
         // add profile
         if (response instanceof RenderResponse) {
             
@@ -286,12 +429,63 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
             String url = portalUrlFactory.getStartPortletUrl(portalCtx, "EditionModifySpaceInstance", properties, params, PortalUrlType.MODAL);
             modifyUrls.setAddProfileUrl(url);
+          } 
+        
+        /* Get Styles Urls */
+        urls = new ArrayList<>();        
+        index = 0;
+        for (String style : form.getStyles()) {
+
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String serStyle = ow.writeValueAsString(style);
+
+
+            Map<String, String> properties = new HashMap<>();
+            properties.put("style", serStyle);
+
+
+            if (response instanceof RenderResponse) {
+                PortletURL saveStyleUrl = ((RenderResponse) response).createActionURL();
+                saveStyleUrl.setParameter(ActionRequest.ACTION_NAME, "modifyStyle");
+                saveStyleUrl.setParameter("index", Integer.toString(index++));
+                String callbackUrl = saveStyleUrl.toString();
+                properties.put("callbackUrl", callbackUrl);
+            }
+
+
+            Map<String, String> params = new HashMap<>();
+            params.put("view", "modifyStyle");
+
+            String url = portalUrlFactory.getStartPortletUrl(portalCtx, "EditionModifySpaceInstance", properties, params, PortalUrlType.MODAL);
+
+            urls.add(url);
+        }
+        
+        modifyUrls.setModifyStylesUrls(urls);
+        
+        
+        
+        // add profile
+        if (response instanceof RenderResponse) {
             
+            Map<String, String> properties = new HashMap<>();
             
-            
-            
-            
-        }        
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String serStyle = ow.writeValueAsString(new String());
+            properties.put("style", serStyle);
+
+
+            PortletURL saveStyleUrl = ((RenderResponse) response).createActionURL();
+            saveStyleUrl.setParameter(ActionRequest.ACTION_NAME, "addStyle");
+
+            String callbackUrl = saveStyleUrl.toString();
+            properties.put("callbackUrl", callbackUrl);
+            Map<String, String> params = new HashMap<>();
+            params.put("view", "modifyStyle");
+
+            String url = portalUrlFactory.getStartPortletUrl(portalCtx, "EditionModifySpaceInstance", properties, params, PortalUrlType.MODAL);
+            modifyUrls.setAddStyleUrl(url);
+          }        
         
         
         

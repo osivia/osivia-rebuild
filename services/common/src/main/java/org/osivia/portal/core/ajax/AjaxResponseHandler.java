@@ -319,6 +319,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 // Whether we need a full refresh or not
                 boolean fullRefresh = false;
+                // Whether we redirect to error page
+                boolean errorPage = true;
                 // Prevent menubar refresh indicator
                 boolean preventMenubarRefresh = false;
 
@@ -528,6 +530,19 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // Commit changes
                 ctx.applyChanges();
 
+                
+                LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
+                PortalLayout layout = RenderPageCommand.getLayout( controllerContext,  layoutService,  page);
+                String layoutContextPath = layout.getLayoutInfo().getContextPath();
+
+                ThemeService themeService = controllerContext.getController().getPageService().getThemeService();
+                String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
+                PortalTheme theme = themeService.getThemeById(themeId);
+                String themeContextPath = theme.getThemeInfo().getContextPath();
+
+                Integer viewId = PageMarkerUtils.generateViewState(controllerContext);
+                PageMarkerUtils.setViewState(controllerContext, viewId);
+                
                 //
                 if (!fullRefresh) {
                     ArrayList<PortalObject> refreshedWindows = new ArrayList<PortalObject>();
@@ -566,17 +581,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                     
                     
 
-                    LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
-                    PortalLayout layout = RenderPageCommand.getLayout( controllerContext,  layoutService,  page);
-                    String layoutContextPath = layout.getLayoutInfo().getContextPath();
 
-                    ThemeService themeService = controllerContext.getController().getPageService().getThemeService();
-                    String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
-                    PortalTheme theme = themeService.getThemeById(themeId);
-                    String themeContextPath = theme.getThemeInfo().getContextPath();
-
-                    Integer viewId = PageMarkerUtils.generateViewState(controllerContext);
-                    PageMarkerUtils.setViewState(controllerContext, viewId);
 
                     
                     HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
@@ -717,6 +722,7 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                             //
                             fullRefresh = true;
+                            
                         }
 
                         if (fullRefresh)
@@ -814,10 +820,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                             }
 
                         } catch (Exception e) {
-                            log.error("An error occured during the computation of window markup", e);
+                            log.error("An error occured during the computation of region", e);
 
                             //
                             fullRefresh = true;
+                            
+                            errorPage = true;
                         }
                     }
 
@@ -839,18 +847,24 @@ public class AjaxResponseHandler implements ResponseHandler {
                     }
                 }
 
-                // We perform a full refresh
-                ViewPageCommand rpc;
-                if (parameters == null) {
-                    rpc = new ViewPageCommand(page.getId());
-                } else {
-                    // if we have parameters from a PNS, feed them to ViewPageCommand (this is rather hackish)
-                    rpc = new ViewPageCommand(page.getId(), parameters);
+                if( errorPage == false) {
+                     // We perform a full refresh
+                    ViewPageCommand rpc;
+                    if (parameters == null) {
+                        rpc = new ViewPageCommand(page.getId());
+                    } else {
+                        // if we have parameters from a PNS, feed them to ViewPageCommand (this is rather hackish)
+                        rpc = new ViewPageCommand(page.getId(), parameters);
+                    }
+    
+                    String url = controllerContext.renderURL(rpc, null, null);
+                    UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
+                    return new AjaxResponse(dresp);
+                }   else    {
+   
+                    UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(theme.getThemeInfo().getContextPath()+"/error/errorPage.jsp");
+                    return new AjaxResponse(dresp);                    
                 }
-
-                String url = controllerContext.renderURL(rpc, null, null);
-                UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
-                return new AjaxResponse(dresp);
             } else if (controllerResponse instanceof RedirectionResponse) {
 
                 String location = ((RedirectionResponse) controllerResponse).getLocation();

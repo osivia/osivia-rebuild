@@ -68,6 +68,11 @@ public class LoggerMessage {
     public String getMsg() {
         return msg;
     }
+
+    @Override
+    public String toString() {
+        return msg;
+    }
     
 
 

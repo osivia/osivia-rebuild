@@ -83,12 +83,12 @@ $JQry(function () {
 });
 
 $JQry(function() {
-    $JQry(".portal-properties-administration-profile").each(function(index, element) {
+    $JQry(".portal-properties-administration-list").each(function(index, element) {
         var $element = $JQry(element);
 
         if (!$element.data("loaded")) {
             var $modals = $element.find(".modal");
-            var $sortable = $element.find("ul.portal-properties-administration-profile-sortable");
+            var $sortable = $element.find("ul.portal-properties-administration-list-sortable");
 
             // Update modal content
             $modals.on("show.bs.modal", function(event) {
@@ -114,23 +114,28 @@ $JQry(function() {
             // Sortable
             $sortable.sortable({
                 forcePlaceholderSize : true,
-                handle: ".portal-properties-administration-sortable-handle",
+                handle: ".portal-properties-administration-list-sortable-handle",
                 items: "li",
                 tolerance : "pointer",
 
+			    start: function(e, ui) {
+			        // creates a temporary attribute on the element with the old index
+			        $JQry(this).attr('data-previndex', ui.item.index());
+			    },
+
                 update : function(event, ui) {
                     var $item = $JQry(ui.item);
-                    var $list = $item.closest("ul.portal-properties-administration-profile-sortable");
+                    var $list = $item.closest("ul.portal-properties-administration-list-sortable");
                     var $form = $list.closest("form");
-
-                    // Update order
-                    $list.children("li").each(function(index, element) {
-                        var $element = $JQry(element);
-                        var $input = $element.find("input[type=hidden][name$=order]");
-
-                        $input.val(index);
-                    });
-
+                    
+                    $form.find("input[type=hidden][name=sortTarget]"). val(ui.item.index());
+                    $form.find("input[type=hidden][name=sortSrc]"). val($JQry(this).attr('data-previndex'));
+                    $JQry(this).removeAttr('data-previndex');
+                    
+                    var action =  $sortable.data("action");
+                    
+                    $form.find("input[type=hidden][name=formAction]"). val( action);
+ 
                     // Submit form
                     $form.find("input[type=submit]").click();
                 }
@@ -146,7 +151,7 @@ $JQry(function() {
 
 
 $JQry(function() {
-    $JQry(".portal-properties-administration-profile-detail").each(function(index, element) {
+    $JQry(".portal-properties-administration-detail-modal").each(function(index, element) {
         var $element = $JQry(element);
 
         if (!$element.data("loaded")) {
@@ -170,11 +175,20 @@ $JQry(function() {
                     var callerId = null;
 				// Restore state
                 view_state = $modal.data("saved_state");                    
-                    directAjaxCall(container, options, url, eventToStop, callerId);
+                directAjaxCall(container, options, url, eventToStop, callerId);
             });
 
             $element.data("loaded", true);
         }
     });
 });
+
+
+
+
+
+
+
+
+
 

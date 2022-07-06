@@ -13,6 +13,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.BaseUserStorage;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
@@ -20,6 +21,7 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryDocumen
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryFolder;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
+import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.service.Documents;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.Request;
@@ -209,6 +211,34 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         
         updateDocument(id, doc);
      }
+
+
+    @Override
+    public void setProfiles(String id, List<Profile> profiles) throws CMSException {
+        
+        MemoryRepositorySpace space = (MemoryRepositorySpace) getSharedDocument(id);
+        
+        space.setProfiles(profiles);
+        
+        updateDocument(id, space);
+    }
+    
+    @Override
+    public void setStyles(String id, List<String> styles) throws CMSException {
+        
+        MemoryRepositorySpace space = (MemoryRepositorySpace) getSharedDocument(id);
+        
+        space.setStyles(styles);
+        
+        updateDocument(id, space);
+    }
+
+
+    @Override
+    protected void initDocuments() {
+        // TODO Auto-generated method stub
+        
+    }
 
 
     @Override

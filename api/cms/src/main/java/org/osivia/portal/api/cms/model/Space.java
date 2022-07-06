@@ -5,5 +5,6 @@ import java.util.List;
 public interface Space extends Document, Templateable, ModulesContainer {
     public List<ModuleRef> getModuleRefs();
     public List<Profile> getProfiles();
+    public List<String> getStyles();
 
 }

@@ -13,6 +13,19 @@ public class ModifyForm {
     
     private List<Profile> profiles;
 
+    private List<String> styles;
+
+
+    
+    public List<String> getStyles() {
+        return styles;
+    }
+
+
+    
+    public void setStyles(List<String> styles) {
+        this.styles = styles;
+    }
 
 
     public List<Profile> getProfiles() {

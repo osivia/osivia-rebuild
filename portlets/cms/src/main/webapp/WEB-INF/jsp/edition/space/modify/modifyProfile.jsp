@@ -8,7 +8,7 @@
 
 
 
-<div class="portal-properties-administration-profile-detail">
+<div class="portal-properties-administration-profile-detail portal-properties-administration-detail-modal">
 
 <portlet:defineObjects />
 <portlet:actionURL name="save" var="url" copyCurrentRenderParameters="true" />
@@ -55,7 +55,7 @@
         </button>
 
         <button type="submit" class="btn btn-primary">
-            <span><op:translate key="MODIFY_PROFILE_MODIF_LABEL" /></span>
+            <span><op:translate key="MODIFY_PROFILE_VALIDATE_DETAIL_LABEL" /></span>
         </button>
     </div>
 

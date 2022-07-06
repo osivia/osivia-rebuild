@@ -12,28 +12,39 @@
 	<portlet:namespace />
 </c:set>
 
-
-
 <portlet:actionURL name="modifyPortal" var="url" />
 
-<div class="portal-properties-administration">
-	
+<form:form action="${url}" method="post" modelAttribute="form">
 
-	<row>
-		<div class="col-md-12"> 	
-		     <div class="form-group">
-		         <label for="${namespace}-display-name"><op:translate
-		                 key="USER_SAVED_SEARCHES_ADMINISTRATION_RENAME_DISPLAY_NAME"/></label>
-		         <input id="${namespace}-display-name" type="text" name="displayName" class="form-control">
-		     </div>
-		</div>		     
-    </row> 
-    <row>
+
+
+<div class="portal-properties-administration">
+
+
+	<div class="d-flex flex-row-reverse mb-2">
+	
+	 	<button type="submit" class="btn btn-primary">
+            <span><op:translate key="MODIFY_SPACE_SAVE_LABEL" /></span>
+        </button>
+	
+	</div>
+	
+   <div data-ajax-region="portal-properties-administration-vars-region">
+ 	    <input type="hidden" name="sortSrc"/>
+		<input type="hidden" name="sortTarget"/>
+		<input type="hidden" name="formAction"/>  
+   </div>
+    
+    <div class="row">
 	     <div class="col-md-6">                    
 	   		<%@ include file="profiles.jspf" %>	
 		</div>
 		 <div class="col-md-6">
+		 	<%@ include file="styles.jspf" %>	
 		</div>
-	</row>
+	</div>
 	
 </div>
+
+		<input type="submit" class="d-none">	
+</form:form>
