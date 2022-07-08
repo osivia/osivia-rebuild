@@ -12,6 +12,7 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.core.content.ViewContentCommand;
 
@@ -71,7 +72,9 @@ public class RestorablePageUtils {
             Boolean isPreviewing = BooleanUtils.toBooleanObject(props.get("osivia.content.preview"));            
             Locale locale = new Locale(props.get("osivia.content.locale"));
             
-            restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing, props, params);
+            
+            UniversalID parentId = new UniversalID(portalId.getNamespace() , portalId.getPath().getName(0));
+            restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing, props, params, parentId, completeName);
           }        
 
 
@@ -83,7 +86,7 @@ public class RestorablePageUtils {
         }
     }
 
-    public static String createRestorableName(ControllerContext controllerContext, String businessName, String templateId, String contentId, Map displayNames,
+    public static String createRestorableName(ControllerContext controllerContext, String businessName,  String contentId, Map displayNames,
             Map<String, String> props, Map<String, String> params) {
 
         
@@ -100,12 +103,8 @@ public class RestorablePageUtils {
         String names[] = new String[5];
         names[0] = encodePath(businessName);
 
-
         String pageType = null;
-        if (templateId != null)
-            pageType = TEMPLATE_ID + templateId;
-        if (contentId != null)
-            pageType = CONTENT_PATH + contentId;
+        pageType = CONTENT_PATH + contentId;
          
 
         names[1] = encodePath(pageType);

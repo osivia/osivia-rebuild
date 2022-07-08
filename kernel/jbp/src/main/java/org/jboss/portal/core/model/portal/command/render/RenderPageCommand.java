@@ -273,6 +273,25 @@ public final class RenderPageCommand extends PageCommand
          
          */
        
+         
+         // Search maximized window
+         boolean maximized = false;
+         Collection<PortalObject> children = page.getChildren(PortalObject.WINDOW_MASK);
+         for (PortalObject child : children) {
+             Window window = (Window) child;
+             NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+             WindowNavigationalState windowNavState = (WindowNavigationalState) getControllerContext()
+                     .getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+
+             if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+                 maximized = true;
+                 break;
+             }
+         }
+         
+         if( maximized)
+             pageResult.setLayoutState("maximized");
+         
 
          //
          return new PageRendition(layout, theme, pageResult, pageService);

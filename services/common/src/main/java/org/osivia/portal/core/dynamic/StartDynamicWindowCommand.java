@@ -184,7 +184,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                 // New page identifier
                 UniversalID spaceId = new UniversalID(page.getProperty("osivia.spaceId"));
                 PortalControllerContext portalCtx = new PortalControllerContext( this.context.getServerInvocation().getServerContext().getClientRequest());
-                PortalObjectId pageId = publicationManager.getPageId(portalCtx, null, spaceId, pageProperties, null);
+                PortalObjectId pageId = publicationManager.getPageId(portalCtx, null, spaceId, pageProperties, null, null);
 
 
                 

@@ -225,7 +225,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             }
             
             
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId, properties, null);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId, properties, null, null);
 
 
             

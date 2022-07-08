@@ -268,7 +268,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         Locale locale = cmsContext.getlocale();
         Boolean preview = cmsContext.isPreview();
         
-        final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview, null, pageParameters);
+        final ViewContentCommand cmd = new ViewContentCommand(id.toString(), locale, preview, null, pageParameters, null, null);
         final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), wantAuthentification, null);
 
         String url = portalURL.toString();

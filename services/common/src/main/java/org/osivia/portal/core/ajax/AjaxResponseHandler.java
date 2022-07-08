@@ -486,6 +486,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                  */
                 
              // Windows
+/*                
                  try {
                      String contentId = page.getProperty("osivia.contentId");
     
@@ -511,7 +512,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                      fullRefresh = true;
                  }
 
-
+*/
                                 
 
                 if (!fullRefresh) {

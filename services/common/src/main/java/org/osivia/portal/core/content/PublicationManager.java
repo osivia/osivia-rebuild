@@ -166,7 +166,7 @@ public class PublicationManager implements IPublicationManager {
 
 
     @Override
-    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String,String> pageProps, Map<String,String> pageParams) throws ControllerException {
+    public PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String,String> pageProps, Map<String,String> pageParams, String restorableName) throws ControllerException {
 
 
         PortalObjectId pageId = null;
@@ -360,7 +360,20 @@ public class PublicationManager implements IPublicationManager {
                     }
                 }
                 
-    
+                if((pageProps != null)&&(StringUtils.equals(pageProps.get("osivia.pageType"), "template") ))    {
+                    if( parentID != null)  {
+                        properties.put("osivia.navigationId", parentID.toString());
+                        properties.put("osivia.spaceId", parentID.toString());
+                        properties.put("osivia.contentId", parentID.toString());
+                        properties.put("osivia.content.preview",BooleanUtils.toStringTrueFalse(getPreviewModeService().isPreviewing(portalCtx, parentID)));            
+                        properties.put("osivia.content.locale", getLocaleService().getLocale(portalCtx).toString());   
+                        properties.put("osivia.templateId", docId.toString());
+
+                    }   else    {
+                        throw new RuntimeException("No Parent Id for template instanciation");
+                    }
+                    
+                }   else    {
                 properties.put("osivia.contentId", docId.toString());
                 if( virtualTaskId != null)    {
                     properties.put("osivia.navigationId", virtualTaskId.toString());
@@ -375,6 +388,7 @@ public class PublicationManager implements IPublicationManager {
 
                 properties.put("osivia.content.preview", BooleanUtils.toStringTrueFalse(doc.isPreview()));            
                 properties.put("osivia.content.locale", doc.getLocale().toString()); 
+                }
                 
   
     
@@ -401,7 +415,7 @@ public class PublicationManager implements IPublicationManager {
                 }
                 
                  pagePath = getDynamicService().startDynamicPage(portalCtx, parentID.getRepositoryName()+":/"+parentID.getInternalID(), pageDynamicID,
-                        displayNames, templatePath, properties, pageParams, null);
+                        displayNames, templatePath, properties, pageParams, restorableName);
                  
                  if(  "nx".equals(doc.getId().getRepositoryName())) {
                      if( navigation.getDocumentId().equals(doc.getId()))

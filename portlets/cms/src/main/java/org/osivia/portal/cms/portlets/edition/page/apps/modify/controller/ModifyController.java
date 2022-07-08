@@ -2,6 +2,8 @@ package org.osivia.portal.cms.portlets.edition.page.apps.modify.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +33,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
@@ -141,6 +144,7 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         else
             srcModule.getProperties().remove("osivia.hideEmptyPortlet");
       
+        srcModule.getProperties().put("osivia.style", String.join(",", form.getStyles()));
 
         updateDocument(portalControllerContext, document);
         
@@ -185,6 +189,17 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         return document;
     }
 
+    private Space getSpace(PortalControllerContext portalCtx) throws CMSException {
+
+        Document document = getDocument(portalCtx);
+        document.getSpaceId();
+        
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+        Space space = (Space) cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
+        return space;
+    }
+    
 
     private void updateDocument(PortalControllerContext portalCtx, Document document) throws CMSException {
 
@@ -238,9 +253,19 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         form.setDisplayTitle(!StringUtils.equals(srcModule.getProperties().get("osivia.hideTitle"), "1"));
         form.setDisplayPanel(BooleanUtils.toBoolean(srcModule.getProperties().get("osivia.bootstrapPanelStyle")));        
         form.setHideIfEmpty(StringUtils.equals(srcModule.getProperties().get("osivia.hideEmptyPortlet"), "1"));
+        
+        String sStyles = StringUtils.defaultString(srcModule.getProperties().get("osivia.style"));
+        form.setStyles(Arrays.asList(sStyles.split(",")));
 
         return form;
     }
 
+    
+    
+    @ModelAttribute("stylesList")
+    protected List<String> getStyles(PortletRequest request, PortletResponse response) throws Exception {
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        return getSpace(portalCtx).getStyles();
+    }
 
 }

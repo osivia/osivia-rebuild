@@ -25,7 +25,7 @@ public interface IPublicationManager {
      * @return the page id
      * @throws ControllerException the controller exception
      */
-    PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String, String> pageProps, Map<String,String> pageParams)
+    PortalObjectId getPageId(PortalControllerContext portalCtx, UniversalID parentID, UniversalID docId, Map<String, String> pageProps, Map<String,String> pageParams, String restorableName)
             throws ControllerException;    
     
     /** The Constant PAGEID_PREFIX. */

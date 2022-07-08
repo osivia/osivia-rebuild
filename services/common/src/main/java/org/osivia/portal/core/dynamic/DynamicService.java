@@ -159,11 +159,15 @@ public class DynamicService implements IDynamicService {
         
         
         // Base path
-        String basePath = properties.get("osivia.contentId");
+        String contentPath;
+        
+        if( StringUtils.equals(properties.get("osivia.pageType"), "template"))
+            contentPath = properties.get("osivia.templateId");
+        else
+            contentPath = properties.get("osivia.contentId");    
         
         if( StringUtils.isEmpty(pageRestorableName))
-            pageRestorableName = RestorablePageUtils.createRestorableName(ctx, pageName, potemplateid.toString(PortalObjectPath.SAFEST_FORMAT), basePath, displayNames,
-                properties, parameters);
+            pageRestorableName = RestorablePageUtils.createRestorableName(ctx, pageName, contentPath, displayNames, properties, parameters);
         
 
         DynamicPageBean pageBean = new DynamicPageBean(parent, pageRestorableName, pageName, displayNames, potemplateid, properties);

@@ -36,7 +36,20 @@
      <div class="form-check">
          <form:checkbox path="hideIfEmpty" cssClass="form-check-input" />
          <form:label path="hideIfEmpty" cssClass="form-check-label" ><op:translate key="MODIFY_PORTLET_DISPLAY_HIDE_IF_EMPTY" /></form:label>
-      </div>              
+      </div>      
+      
+	<div class="form-group mt-2">
+        <form:label path="styles"><op:translate key="MODIFY_PORTLET_STYLES" /></form:label>
+		<div class="form-group">
+			<c:forEach var="style" items="${stylesList}">
+				<div class="form-check form-check-inline">
+			    	<form:checkbox path="styles" value="${style}" cssClass="form-check-input"/>
+			    	<form:label path="styles" cssClass="form-check-label" >${style}</form:label>
+			   </div>
+			</c:forEach>
+		</div>
+	</div>									
+              
     <%--Buttons--%>
     <div class="text-right">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">

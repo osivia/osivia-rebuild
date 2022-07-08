@@ -81,15 +81,19 @@ public class ViewContentCommand extends ControllerCommand {
     
     private Map<String,String> pageParams;
 
+    private UniversalID parentId;   
     
+    private String restorableName;
 
 
-    public ViewContentCommand(String contentId, Locale locale, boolean preview, Map<String,String> pageProps, Map<String,String> pageParams) {
+    public ViewContentCommand(String contentId, Locale locale, boolean preview, Map<String,String> pageProps, Map<String,String> pageParams, UniversalID parentId, String restorableName) {
         this.contentId = contentId;
         this.locale = locale;
         this.preview = preview;
         this.pageProps = pageProps;
         this.pageParams = pageParams;
+        this.parentId = parentId;
+        this.restorableName = restorableName;
     }
 
     public Locale getLocale() {
@@ -154,7 +158,7 @@ public class ViewContentCommand extends ControllerCommand {
             getPreviewModeService().setPreview(portalCtx, contentUID, preview);
 
 
-            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, null, contentUID, pageProps, pageParams);
+            PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, contentUID, pageProps, pageParams, restorableName);
 
             return new UpdatePageResponse(pageId);
 

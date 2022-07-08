@@ -1,5 +1,8 @@
 package org.osivia.portal.cms.portlets.edition.page.apps.modify.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -12,10 +15,26 @@ public class ModifyForm {
     private boolean displayTitle;
     private boolean displayPanel;
     private boolean hideIfEmpty;   
+    public List<String> styles;
 
    
     
     
+    
+    public List<String> getStyles() {
+        return styles;
+    }
+
+
+    
+    public void setStyles(List<String> styles) {
+        this.styles = styles;
+    }
+
+
+
+
+
     public boolean isHideIfEmpty() {
         return hideIfEmpty;
     }
@@ -64,6 +83,6 @@ public class ModifyForm {
         this.title = title;
     }
 
-
+    
 
 }
