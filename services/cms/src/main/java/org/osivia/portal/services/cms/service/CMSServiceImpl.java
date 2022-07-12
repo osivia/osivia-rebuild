@@ -3,6 +3,8 @@ package org.osivia.portal.services.cms.service;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -40,6 +42,13 @@ public class CMSServiceImpl implements CMSService {
     @Autowired
     private RuntimeBeanBuilder builder;
 
+    
+    /**
+     * Logger.
+     */
+    private static final Log log = LogFactory.getLog(CMSServiceImpl.class);
+    
+    
     /**
      * Constructor.
      */
@@ -62,6 +71,22 @@ public class CMSServiceImpl implements CMSService {
 
     @Override
     public NativeRepository getUserRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
+        
+        /*
+        if( log.isDebugEnabled())   {
+            if( cmsContext.getPortalControllerContext() != null)
+                log.debug("getUserRepository request "+ cmsContext.getPortalControllerContext().getHttpServletRequest());
+            else
+                log.debug("getUserRepository portalControllerContext = null ");
+            
+            StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+            
+            for(int i=8; i< Math.min(stack.length, 15); i++) {
+                log.debug("-"+stack[i].getClassName()+"."+stack[i].getMethodName());
+            }
+        }
+        */
+        
         return repositoryFactory.getUserRepository(cmsContext, repositoryName);
     }
 
@@ -82,6 +107,15 @@ public class CMSServiceImpl implements CMSService {
             proxy = (CMSSessionRecycle) Proxy.newProxyInstance(classLoader, new Class[]{CMSSession.class, CMSSessionRecycle.class}, invocationHandler);
             proxy.setCMSContext(cmsContext);
             sessionStorage.storeSession(proxy);
+            
+            /*
+            if( log.isDebugEnabled())   {
+                if( cmsContext.getPortalControllerContext() != null)
+                    log.debug("getCMSSession request "+ cmsContext.getPortalControllerContext().getHttpServletRequest());
+                else
+                    log.debug("getCMSSession portalControllerContext = null ");
+            }
+            */
             
          }
 

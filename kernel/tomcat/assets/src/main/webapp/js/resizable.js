@@ -14,7 +14,6 @@ $JQry(function() {
 
 				create : function(event, ui) {
 					var $target = $JQry(event.target);
-					console.log("resizable")
 					
 					$target.addClass("loaded");
 				},

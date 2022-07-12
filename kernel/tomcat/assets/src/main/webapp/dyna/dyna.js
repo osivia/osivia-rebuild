@@ -398,7 +398,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 			   var $srcContainer = $JQry(srcContainer);
 	           $srcContainer.find('[data-ajax-region-modified]').each(function( index, src ) {
 	        		
-	        		console.log("ajax modification ");
+
 	        		
 	        		regionsModifications = true;
 	        		   
@@ -409,7 +409,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	        		
 	        		$dstContainer.find('[data-ajax-region='+ajaxRegion+']').each(function( index, dst ) {   
 		
-						console.log("ajax modification dest region ");
+
 						copyNodes (src, dst);
 	        		   
 	        	   });		

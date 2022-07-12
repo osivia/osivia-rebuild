@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jgroups.Address;
@@ -34,10 +35,18 @@ public class HAService implements IHAService{
     
     @PostConstruct
     private void init()  {
-        String jgroupsCfgPath = System.getProperty("catalina.base")+"/conf/jgroups.xml";
+        
+        IChannelFactory channelFactory;
+        
+        if( StringUtils.equalsIgnoreCase(System.getProperty("osivia.portal.cluster.protocol"), "tcp"))   {
+            channelFactory =  new TCPChannelFactory();
+        }
+        else    {
+            channelFactory = new UDPChannelFactory();
+        }
+        
          try {
-             msgChannel = new JChannel(jgroupsCfgPath);
-            
+             msgChannel = channelFactory.getMsgChannel();
              msgChannel.setReceiver(new ReceiverAdapter() {
                 public void receive(Message msg) {
                     String s = new String( msg.getBuffer());
@@ -54,23 +63,9 @@ public class HAService implements IHAService{
             });
             
               
-            msgChannel.connect("osivia-msg");     
+               
+           mapChannel = channelFactory.getMapChannel();
             
-            
-            mapChannel = new JChannel(jgroupsCfgPath);
-            
-            // Add 1 to map channel
-            ProtocolStack stack = mapChannel.getProtocolStack();
-            Protocol transport = stack.getTransport();
-            if (transport instanceof UDP) {
-                int mcast_port = ((UDP) transport).getMulticastPort();
-                ((UDP) transport).setMulticastPort(mcast_port+ 1);
-            }
-            
-            mapChannel.connect("osivia-map");
-            
-
-
             
             rmh=new ReplicatedHashMap<>(mapChannel);
             rmh.setBlockingUpdates(true);

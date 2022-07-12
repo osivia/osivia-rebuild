@@ -20,6 +20,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.TransactionManager;
 
 /**
@@ -79,6 +80,19 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
             session = (CMSSession) sessions.get(getKey(cmsContext));
             if( session != null)    {
                 // resynchronize request (dirty ThreadLocal)
+                /*
+                if( cmsContext.getPortalControllerContext() != null)
+                    log.debug("resynchronize request "+ cmsContext.getPortalControllerContext().getHttpServletRequest());
+                else
+                    log.debug("resynchronize portalControllerContext = null ");
+                
+                StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+                
+                for(int i=8; i< Math.min(stack.length, 15); i++) {
+                    log.debug("-"+stack[i].getClassName()+"."+stack[i].getMethodName());
+                }
+                */
+                
                 ((CMSSessionRecycle) session).setCMSContext(cmsContext);
             }
         }
@@ -94,6 +108,23 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
                 
                 
                 sessionrecyle.setCMSContext(cmsContext);
+                
+                /*
+                
+                if( cmsContext.getPortalControllerContext() != null)
+                    log.debug("recycle request "+ cmsContext.getPortalControllerContext().getHttpServletRequest());
+                else
+                    log.debug("recycle portalControllerContext = null ");
+                
+                StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+                
+                for(int i=8; i< Math.min(stack.length, 15); i++) {
+                    log.debug("-"+stack[i].getClassName()+"."+stack[i].getMethodName());
+                }
+                */
+                
+                
+                
                 session = (CMSSession) sessionrecyle;
                 
                 storeSession( sessionrecyle);
@@ -108,6 +139,11 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
         String locale = "";
         if(  cmsContext.getlocale() !=null)
             locale = cmsContext.getlocale().toString();
-        return locale + "." + cmsContext.isPreview() + "." + cmsContext.isSuperUserMode();
+        
+
+        
+        return locale + "." + cmsContext.isPreview() + "." + cmsContext.isSuperUserMode() + "." + (cmsContext.getPortalControllerContext().getHttpServletRequest() != null);
+        
+        
     }
 }
