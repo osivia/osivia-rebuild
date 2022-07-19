@@ -124,8 +124,10 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         
         request.setAttribute( "urls", getUrls(request, response, form));
 
-        if (portalControllerContext.getHttpServletRequest().getAttribute("ajax") != null)
-            return "ajax";
+        if (portalControllerContext.getHttpServletRequest().getAttribute("ajax") != null)   {
+            if(BooleanUtils.isNotTrue((Boolean)portalControllerContext.getHttpServletRequest().getAttribute("osivia.portal.refreshPage")))
+                return "ajax";
+        }
 
         return "view";
     }

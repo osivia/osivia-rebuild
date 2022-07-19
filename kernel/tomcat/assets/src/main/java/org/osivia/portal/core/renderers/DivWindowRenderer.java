@@ -141,7 +141,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 dropUrl = "";
             dropUrl+= "&javax.portlet.action=drop&action=1&targetWindow="+properties.getWindowProperty(wrc.getId(), "osivia.cms.edition.windowName");            
             
-            out.print("<div class=\"cms-edition-droppable border border-primary mb-2 clearfix d-flex\" data-drop-url=\""+dropUrl+"\">");            
+            out.print("<div class=\"cms-edition-droppable border border-primary my-2 clearfix d-flex\" data-drop-url=\""+dropUrl+"\">");            
             
             // Add
             out.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_LIST")+"\">\n"

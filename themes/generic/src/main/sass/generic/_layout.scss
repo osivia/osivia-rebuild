@@ -1,5 +1,21 @@
-.edition {
   
+#toolbar	{
+  	.portlet-container	{
+  		margin: 0;
+  }
+}
+
+.portlet-container	{
+	 margin: map_get($spacers, 3);
+	 &.gris	{
+	 	background-color : $secondary;
+	 }
+}
+
+
+
+.edition {
+
   background-color : $secondary;
   
   a { 

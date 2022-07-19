@@ -21,22 +21,23 @@
 <body>
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 
-<div class="layout">
-<table  width="100%">
-   <tr>
-	<td width="100%" colspan="2" valign="top">    
-  		<p:region regionName='toolbar' regionID='toolbar'/>
-		<%@include file="../includes/content-navbar.jsp" %>	  		
-  		<p:region regionName='maximized' />
-    </td>
-  </tr> 
-</table>
-</div>
-           
+	<div class="layout">
+		<div class="row">
+		   <div class="col">
+		  		<p:region regionName='toolbar' regionID='toolbar'/>
+		    </div>
+		 </div>  
+		<div class="row">
+		   <div class="col">
+		  		<%@include file="../includes/content-navbar.jsp" %>
+		    </div>
+		 </div>  		 		
+		 <div class="row">
+		   <div class="col">
+		   		<p:region regionName='maximized'/>
+
+			</div>    
+		  </div>
+
+	</div>
 <%@include file="../includes/footer.jsp" %>
-
-
-<p:region regionName='AJAXFooter' regionID='AJAXFooter'/>
-
-</body>
-</html>

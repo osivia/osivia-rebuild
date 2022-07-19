@@ -26,7 +26,7 @@
 		                        </div>
 		
 		                        <div class="flex-grow-1 my-1 mx-2">
-		                            <h5 class="card-title mb-1">${style}</h5>
+		                            <h5 class="card-title mb-1"><c:out value="${style}" /></h5>
 		                            <div class="ml-n3">
 		                                 <%--Modify--%>
 		                                <a href="javascript:" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link" data-toggle="modal"

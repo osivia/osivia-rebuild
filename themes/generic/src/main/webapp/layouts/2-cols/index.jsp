@@ -26,46 +26,40 @@
 
 <!--<op:translate key="CUSTOMIZER_MSG_1" />-->
 
-<body>
+<body class="fullheight overflow-hidden d-flex flex-column">
 
+	<div class="layout">
+		<div class="row">
+		   <div class="col">
+		  		<p:region regionName='toolbar' regionID='toolbar'/>
+		    </div>
+		 </div>  
+		<div class="row">
+		   <div class="col">
+		  		<%@include file="../includes/content-navbar.jsp" %>
+		    </div>
+		 </div>  		 		
+		 <div class="row">
+		   <div class="col-md-4">
+		   		<p:region regionName='nav' regionID='nav'/>
+		   </div>
+		   <div class="col-md-8">
+			
+				 <div class="row">
+				   <div class="col-md-6">
+				   		<p:region regionName='col-1' regionID='col-1'/>
+				   </div>
+				   <div class="col-md-6">
+				   		<p:region regionName='col-2' regionID='col-2'/>
+				   </div>				   
+				</div>	
+			</div>    
+		  </div>
 
-<div class="layout">
-	<table  width="100%">
-	   <tr>
-		<td width="100%" colspan="3" valign="top">    
-	  		<p:region regionName='toolbar' regionID='toolbar'/>
- 		
-	    </td>
-	  </tr>  		
-	  <tr>
-	   <td width="20%" valign="top">
-	   		<p:region regionName='logo' regionID='logo'/>
-	   		<p:region regionName='nav' regionID='nav'/>
-	    </td>   
-	     <td width="80%" valign="top">
-			<table  width="100%">
-			   <tr>
-				<td width="100%" colspan="3" valign="top">    
+	</div>
+	           
+	<%@include file="../includes/footer.jsp" %>
 
-					<%@include file="../includes/content-navbar.jsp" %>	  		
-			    </td>
-			  </tr>  			
-				<tr>	    	
-				    <td width="50%" valign="top">
-				      <!-- insert the content of the 'center' region of the page, and assign the css selector id 'regionB' -->
-				      <p:region regionName='col-1' regionID='col-1'/>
-				    </td>
-				    <td width="50%" valign="top">
-				      <p:region regionName='col-2' regionID='col-2'/>
-				    </td>
-		 		</tr>
-			</table>	
-		</td>    
-	  </tr>
-	</table>
-</div>
-           
-<%@include file="../includes/footer.jsp" %>
 
 <p:region regionName='AJAXFooter' regionID='AJAXFooter'/>
 

@@ -33,6 +33,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
+import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
@@ -189,7 +190,7 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         return document;
     }
 
-    private Space getSpace(PortalControllerContext portalCtx) throws CMSException {
+    private Space getTemplateSpace(PortalControllerContext portalCtx) throws CMSException {
 
         Document document = getDocument(portalCtx);
         document.getSpaceId();
@@ -197,6 +198,13 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         CMSController ctrl = new CMSController(portalCtx);
         CMSContext cmsContext = ctrl.getCMSContext();
         Space space = (Space) cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
+        UniversalID templateId = space.getTemplateId();
+        if( templateId != null) {
+            CMSContext cmsTemplateContext = ctrl.getCMSContext();
+            cmsTemplateContext.setPreview(false);
+            Page page = (Page) cmsService.getCMSSession(cmsTemplateContext).getDocument(templateId);
+            space = (Space) cmsService.getCMSSession(cmsTemplateContext).getDocument(page.getSpaceId());
+        }
         return space;
     }
     
@@ -265,7 +273,7 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     @ModelAttribute("stylesList")
     protected List<String> getStyles(PortletRequest request, PortletResponse response) throws Exception {
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-        return getSpace(portalCtx).getStyles();
+        return getTemplateSpace(portalCtx).getStyles();
     }
 
 }

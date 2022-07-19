@@ -525,6 +525,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }
 
                 if (refreshPageStructure) {
+                    controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.portal.refreshPage", Boolean.TRUE);
+                    
                     log.debug("refresh page structure");
                 }
 
