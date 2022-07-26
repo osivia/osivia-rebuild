@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.osivia.portal.portlets</groupId>
         <artifactId>osivia-portal-portlets-parent</artifactId>
-        <version>5.0</version>
+        <version>5.2-SNAPSHOT</version>
     </parent>
     
     <artifactId>osivia-portal-portlets-cms</artifactId>
