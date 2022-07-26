@@ -28,6 +28,7 @@ import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.api.urls.Link;
 
+import javax.portlet.PortletContext;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
@@ -748,6 +749,10 @@ public interface ICMSService {
      */
     String getPathFromUniversalID(CMSServiceCtx cmsContext, UniversalID id) throws CMSException;
     
-
+    /**
+     * @return
+     * @throws CMSException
+     */
+    PortletContext getPortletContext() throws CMSException; 
 
 }

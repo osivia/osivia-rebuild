@@ -26,12 +26,10 @@ import org.apache.logging.log4j.core.LogEvent;
  *
  * @author Jean-Sébastien Steux
  */
-public abstract class IPortalLogger {
+public interface IPortalLoggerService {
     
 
-    /** Use this logger */
-    
-    public static Log logger = LogFactory.getLog("PORTAL_SUPERVISOR");
+
     
     
     /**

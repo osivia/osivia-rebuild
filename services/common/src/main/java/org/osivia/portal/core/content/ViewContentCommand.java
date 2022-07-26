@@ -152,8 +152,10 @@ public class ViewContentCommand extends ControllerCommand {
         UniversalID contentUID = new UniversalID(getContentId().replaceAll("/", ":"));
 
         try {
-            
-
+/*            
+            if( contentUID.getInternalID().equals("ID_EMPTY"))
+                throw new NullPointerException();
+*/             
             getLocaleService().setLocale(portalCtx, locale);
             getPreviewModeService().setPreview(portalCtx, contentUID, preview);
 
@@ -182,9 +184,8 @@ public class ViewContentCommand extends ControllerCommand {
                 
             }
             else throw e;
-        } catch (PortalException e) {
+        } catch (Exception e) {
             throw new ControllerException(e);
-            
         }
     }
 }

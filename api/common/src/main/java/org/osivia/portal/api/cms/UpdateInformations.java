@@ -1,6 +1,6 @@
-package org.osivia.portal.api.cms.service;
+package org.osivia.portal.api.cms;
 
-import org.osivia.portal.api.cms.UniversalID;
+
 
 /**
  * The Class UpdateInformations.
@@ -17,10 +17,6 @@ public class UpdateInformations {
     private final UpdateScope scope;
 
     
-
-
-
-
     /** Is the update action asynchronous */
     private boolean async = false;
     

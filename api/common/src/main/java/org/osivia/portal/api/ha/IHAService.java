@@ -3,6 +3,8 @@ package org.osivia.portal.api.ha;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.UpdateInformations;
+
 /**
  * The Interface IHAService.
  */
@@ -53,4 +55,16 @@ public interface IHAService {
      * @return the object
      */
     ClusterMap getSharedMap(String objectId);
-}
+    
+    
+    
+    /**
+     * Notify a modification in cms system
+     * 
+     * @param updateInfos
+     */
+    void notifyCMSEvent( UpdateInformations updateInfos); 
+    
+
+
+} 

@@ -37,7 +37,7 @@ public class GlobalErrorHandler {
     private static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
     private static final String TIME_FORMAT = "HH:mm:ss";
     
-    protected static final Log logger = LogFactory.getLog("PORTAL_ERROR");
+    protected static Log logger = LogFactory.getLog("PORTAL_ERROR");
 
     private static GlobalErrorHandler s_instance = null;
 

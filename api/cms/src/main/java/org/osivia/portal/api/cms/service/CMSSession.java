@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -90,6 +91,13 @@ public interface CMSSession {
      * @throws CMSException the CMS exception
      */
     void reload(UniversalID id) throws CMSException;
+
+
+    /**
+     * @param infos
+     * @throws CMSException
+     */
+    void handleUpdate(UpdateInformations infos) throws CMSException;
 
 
 

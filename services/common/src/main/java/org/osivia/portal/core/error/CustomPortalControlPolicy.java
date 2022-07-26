@@ -54,6 +54,9 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 	public CustomPortalControlPolicy() {
 		super();
         this.defaultLog = LogFactory.getLog(this.getClass());
+        
+        // Needed to support hot deploy
+        IPortalLogger.logger = LogFactory.getLog("PORTAL_SUPERVISOR");
 	}
 
 	public PortalObjectContainer getPortalObjectContainer() {

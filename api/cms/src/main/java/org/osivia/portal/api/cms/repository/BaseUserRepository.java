@@ -12,7 +12,7 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
-
+import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
@@ -29,7 +29,6 @@ import org.osivia.portal.api.cms.service.CMSEvent;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
-import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.GroupService;
@@ -310,12 +309,9 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     }
 
     
-   
-    
-    
+     
 
     public void deleteDocument(String id) throws CMSException {
-
         getUserStorage().deleteDocument(id, batchMode);
 
        
@@ -332,6 +328,11 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         getSharedRepository().notifyUpdate(getUserStorage(), infos);
     }
     
+    
+    @Override
+    public void handleUpdate(UpdateInformations infos) throws CMSException {
+        getSharedRepository().handleUpdate(getUserStorage(), infos);
+    }
     
     /**
      * Clear local and shared caches.

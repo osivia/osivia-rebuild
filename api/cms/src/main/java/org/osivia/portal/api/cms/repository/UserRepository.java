@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -12,7 +13,6 @@ import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
-import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 
@@ -120,4 +120,9 @@ public interface UserRepository {
      */
     public void reload(String internalId) throws CMSException;
 
+    /**
+     * @param infos
+     * @throws CMSException
+     */
+    void handleUpdate(UpdateInformations infos) throws CMSException; 
 }

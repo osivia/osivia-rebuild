@@ -78,7 +78,9 @@ public class DynamicPortal extends PortalImplBase {
             
             List<DynamicPageBean> pages = dynamicContainer.getDynamicPages();
             
-            log.info("getDynamicChilds("+getId()+") ->" + pages.size());
+            if( log.isDebugEnabled())   {
+                log.debug("getDynamicChilds("+getId()+") ->" + pages.size());
+            }
 
             for (DynamicPageBean dynamicPage : pages) {
                 if (dynamicPage.getParentId().equals(getId())) {
@@ -91,7 +93,9 @@ public class DynamicPortal extends PortalImplBase {
 
                         dynamicChilds.put(child.getName(), child);
                         
-                        log.info("child.getId()"+child.getId());
+                        if( log.isDebugEnabled())   {                        
+                            log.debug("child.getId()"+child.getId());
+                        }
 
                     } catch (Exception e) {
                         log.info(e.getMessage());

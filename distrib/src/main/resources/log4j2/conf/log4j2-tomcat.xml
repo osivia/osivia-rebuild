@@ -1,22 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
-    <Appenders>
-         <Console name="LogToConsole">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-        </Console>  
-        <File name="PortalFile" fileName="/var/log/portal/portal.log">
-            <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
-            </PatternLayout>
-        </File>
-        <File name="StatusFile" fileName="/var/log/portal/portal_status.log">
-            <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
-            </PatternLayout>
-	     </File>
+<Configuration status="INFO" packages="org.osivia.portal.core.error" name="PORTAL_ERROR">
+	<Appenders>
+		<Console name="LogToConsole">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<RollingFile name="PortalFile"
+			fileName="/var/log/portal/portal.log"
+			filePattern="/var/log/portal/portal.%d{yy-MM-dd}.log.gz"
+			ignoreExceptions="false">
+			<PatternLayout>
+				<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+			</PatternLayout>			
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
+
+		<RollingFile name="StatusFile"
+			fileName="/var/log/portal/portal_status.log"
+			filePattern="/var/log/portal/portal_status.%d{yy-MM-dd}.log.gz"
+			ignoreExceptions="false">
+			<PatternLayout>
+				<Pattern>%d %p [%t] %m%n</Pattern>
+			</PatternLayout>					
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
+		<RollingFile name="UserErrorFile"
+			fileName="/var/log/portal/portal_user_error.log"
+			filePattern="/var/log/portal/portal_user_error.%d{yy-MM-dd}.log.gz"
+			ignoreExceptions="false">
+			<PatternLayout>
+				<Pattern>[%t] %m%n</Pattern>
+			</PatternLayout>			
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>				
+		<RollingFile name="SupervisorFile"
+			fileName="/var/log/portal/supervisor.log"
+			filePattern="/var/log/portal/supervisor.%d{yy-MM-dd}.log.gz"
+			ignoreExceptions="false">
+			<PortalLayout pattern="%d{MM-dd-yyyy HH:mm:ss,SSS} - %msg%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
+		<RollingFile name="PortalMaintenanceFile"
+			fileName="/var/log/portal/portal_maintenance.log"
+			filePattern="/var/log/portal/portal_maintenance.%d{yy-MM-dd}.log.gz"
+			ignoreExceptions="false">
+			<PatternLayout>
+				<Pattern>%d %-5p %m%n</Pattern>
+			</PatternLayout>			
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>	
+		<RollingFile name="PortalConversionFile"
+			fileName="/var/log/portal/portal_conversion.log"
+			filePattern="/var/log/portal/portal_conversion.%d{yy-MM-dd}.log.gz"
+			ignoreExceptions="false">
+			<PatternLayout>
+				<Pattern>%m%n</Pattern>
+			</PatternLayout>			
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>			
 		<RollingFile name="ServerFile"
 			fileName="/var/log/portal/server.log"
-			filePattern="/var/log/portal/server.%d{dd-MMM}.log.gz"
+			filePattern="/var/log/portal/server.%d{yy-MM-dd}.log.gz"
 			ignoreExceptions="false">
 			<PatternLayout>
 				<Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
@@ -25,26 +87,35 @@
 				<TimeBasedTriggeringPolicy interval="1" />
 			</Policies>
 			<DefaultRolloverStrategy max="5" />
-		</RollingFile>               
-    </Appenders>
-    <Loggers>
-    <!-- 
-        <Logger name="org.osivia.portal.core.ajax" level="debug" additivity="false">
-            <AppenderRef ref="PortalFile"/>
-        </Logger>
-        -->
-        <Logger name="PORTAL_PROFILER" level="info" additivity="false">
-            <AppenderRef ref="LogToConsole"/>
-        </Logger> 
-        <Logger name="PORTAL_STATUS" level="info" additivity="false">
-            <AppenderRef ref="StatusFile"/>
-        </Logger> 
-       <Logger name="org.osivia" level="debug">
-            <AppenderRef ref="PortalFile"/>
-        </Logger>        
-        <Root level="info">
-            <AppenderRef ref="ServerFile" level="info"/>
-            <AppenderRef ref="LogToConsole" level="info"/>
-        </Root>
-    </Loggers>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="PORTAL_PROFILER" level="info" additivity="false">
+			<AppenderRef ref="LogToConsole" />
+		</Logger>
+		<Logger name="PORTAL_SUPERVISOR" level="debug" additivity="false">
+			<AppenderRef ref="SupervisorFile" />
+		</Logger>
+		<Logger name="PORTAL_STATUS" level="info" additivity="false">
+			<AppenderRef ref="StatusFile" />
+		</Logger>
+		<Logger name="PORTAL_USER_ERROR" level="error" additivity="false">
+			<AppenderRef ref="UserErrorFile" />
+		</Logger>
+		<Logger name="PORTAL_MAINTENANCE" level="info" additivity="false">
+			<AppenderRef ref="PortalMaintenanceFile" />
+		</Logger>	
+		<Logger name="PORTAL_CONVERSION" level="info" additivity="false">
+			<AppenderRef ref="PortalConversionFile" />
+		</Logger>								
+		<!-- 
+			<Logger name="org.osivia" level="debug"> 
+				<AppenderRef ref="PortalFile"/> 
+			</Logger> 
+		-->
+		<Root level="info">
+			<AppenderRef ref="ServerFile" level="info" />
+			<AppenderRef ref="LogToConsole" level="info" />
+		</Root>
+	</Loggers>
 </Configuration>

@@ -14,24 +14,44 @@ import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
 import org.jgroups.blocks.ReplicatedHashMap;
-import org.jgroups.protocols.UDP;
-import org.jgroups.stack.Protocol;
-import org.jgroups.stack.ProtocolStack;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.UpdateInformations;
+import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.CMSSession;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ha.ClusterMap;
 import org.osivia.portal.api.ha.IHAService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Service(IHAService.MBEAN_NAME)
 public class HAService implements IHAService{
 
-    private static final String INIT_PARAMETERS = "init-parameters";
+    private static final String INIT_PARAMETERS = "init-parameters/";
+    private static final String CMS_NOTIFICATION = "cms-notification/";
+    
+    
+    
     JChannel msgChannel = null ;
     JChannel mapChannel = null ;
     Long portalParametersTs = 0L;
     ReplicatedHashMap<String, ClusterMap> rmh = null;
     
     
+    @Autowired
+    private ICMSServiceLocator cmsServiceLocator;
+    
+    @Autowired
+    private CMSService cmsService;
+    
     protected static final Log logger = LogFactory.getLog(HAService.class);
+    
+    
+    
     
     @PostConstruct
     private void init()  {
@@ -50,12 +70,40 @@ public class HAService implements IHAService{
              msgChannel.setReceiver(new ReceiverAdapter() {
                 public void receive(Message msg) {
                     String s = new String( msg.getBuffer());
+                    
+                    
                     if( !msg.getSrc().equals(msgChannel.getAddress()))  {
-                        if( s.equals(INIT_PARAMETERS))  {
-                            logger.info("receive init parameters");
+                        if( s.startsWith(INIT_PARAMETERS))  {
+                            if( logger.isDebugEnabled())    {
+                                logger.debug("receive init parameters");
+                            }
                             portalParametersTs = System.currentTimeMillis();
                         }
+                        
+                        if( s.startsWith(CMS_NOTIFICATION))  {
+                            if( logger.isDebugEnabled())    {
+                                logger.debug("receive cms notification");
+                            }
+                            try {
+                                CMSEventBean cmsEventInfos = new ObjectMapper().readValue(s.substring(CMS_NOTIFICATION.length()), CMSEventBean.class);
+                                UpdateInformations informations = cmsEventInfos.toUpdate();
+                                
+                                PortalControllerContext portalCtx = new PortalControllerContext(cmsServiceLocator.getCMSService().getPortletContext());
+                                CMSContext cmsContext = new CMSContext(portalCtx);    
+                                cmsContext.setSuperUserMode(true);
+                                
+                                CMSSession session = cmsService.getCMSSession(cmsContext);
+                                session.handleUpdate(informations);
+                                
+                                
+                            } catch (Exception e) {
+                                logger.error(s, e);
+                            }
+                            
+                        }
                     }
+                    
+                    
                 }
                 public void viewAccepted(View view) {
                     
@@ -84,15 +132,20 @@ public class HAService implements IHAService{
             mapChannel.close();
     }
   
-    private void sendMsg( String sInfos)  {
+    private void sendMsg( String name, String value)  {
         Message msg = new Message();
-        msg.setBuffer(sInfos.getBytes());
+        String buf = name;
+        if( value != null)
+            buf = buf+value;
+        
+        msg.setBuffer(buf.getBytes());
         
         try {
             msgChannel.send(msg);
         } catch (Exception e) {
             throw new RuntimeException( e);
         }
+        
         
     }
     
@@ -108,12 +161,13 @@ public class HAService implements IHAService{
     }
 
     @Override
-    //TODO REIMPLEMENT
     public void initPortalParameters() {
         portalParametersTs = System.currentTimeMillis();
         logger.info("Send init parameters");
-        sendMsg(INIT_PARAMETERS);
-     }
+        sendMsg(INIT_PARAMETERS, null);
+    }
+    
+    
 
     @Override
     public boolean checkIfPortalParametersReloaded(long savedTS) {
@@ -138,6 +192,21 @@ public class HAService implements IHAService{
     public ClusterMap getSharedMap(String objectId) {
         ClusterMap res = rmh.get(objectId);
         return res;
+    }
+
+    @Override
+    public void notifyCMSEvent(UpdateInformations updateInfos) {
+        try {
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String value = ow.writeValueAsString(CMSEventBean.fromUpdate(updateInfos) );
+        
+        sendMsg(CMS_NOTIFICATION, value);
+        
+        
+        } catch (Exception e) {
+            throw new RuntimeException( e);
+        }
+        
     }
 
 

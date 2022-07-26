@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +52,7 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.handler.AjaxResponse;
 import org.jboss.portal.core.controller.handler.CommandForward;
@@ -106,6 +108,7 @@ import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.error.Debug;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.preview.IPreviewModeService;
@@ -117,6 +120,7 @@ import org.osivia.portal.core.cms.edition.CMSEditionService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -233,6 +237,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                     return null;
                 }
             } else if (controllerResponse instanceof UpdatePageResponse) {
+                
+                long beginAjaxRequest = System.currentTimeMillis();
+                
                 UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
 
                 // Portal controller context
@@ -741,8 +748,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                     // Notifications & menubar refresh
                     if (!fullRefresh) {
                         try {
-
-
                             if (!modal) {
                                 // Notifications window context
 
@@ -846,6 +851,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                         
                         PageMarkerUtils.savePageState(controllerContext, updatePage.getViewState());
+                        
+                        long endAjaxRequest = System.currentTimeMillis();
+                        IPortalLogger.logger.info(endAjaxRequest - beginAjaxRequest);
+                        
                         return new AjaxResponse(updatePage);
                     }
                 }
@@ -864,9 +873,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                     UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
                     return new AjaxResponse(dresp);
                 }   else    {
-   
-                    UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(theme.getThemeInfo().getContextPath()+"/error/errorPage.jsp");
-                    return new AjaxResponse(dresp);                    
+                    return handleAjaxError(controllerContext, controllerResponse);                   
                 }
             } else if (controllerResponse instanceof RedirectionResponse) {
 
@@ -901,7 +908,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());
                 return new AjaxResponse(dresp);
 
-            }
+            }  else if (controllerResponse instanceof ErrorResponse) {
+                return handleAjaxError(controllerContext, controllerResponse);  
+             }
+            
 
             else {
                 return null;
@@ -909,6 +919,19 @@ public class AjaxResponseHandler implements ResponseHandler {
         } catch (ControllerException e) {
             throw new ResponseHandlerException(e);
         }
+    }
+
+
+    private HandlerResponse handleAjaxError(ControllerContext controllerContext, ControllerResponse controllerResponse) {
+        
+        log.error(Debug.stackTraceToString( ((ErrorResponse) controllerResponse).getCause() ));
+        
+        String themeId = getPortalObjectContainer().getContext().getDefaultPortal().getProperty(ThemeConstants.PORTAL_PROP_THEME);
+        PageService pageService = controllerContext.getController().getPageService();
+        ThemeService themeService = pageService.getThemeService();
+        PortalTheme theme = themeService.getThemeById(themeId);                
+        UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(theme.getThemeInfo().getContextPath()+"/error/errorPage.jsp");
+        return new AjaxResponse(dresp);
     }
 
     private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, Set<PageResource> resources, PageResult res, WindowContext wc) throws Exception {

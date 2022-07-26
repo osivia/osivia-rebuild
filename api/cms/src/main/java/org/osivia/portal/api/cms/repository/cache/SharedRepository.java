@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.UpdateInformations;
+import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.CMSNotImplementedRequestException;
 import org.osivia.portal.api.cms.model.Document;
@@ -19,9 +21,10 @@ import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
-import org.osivia.portal.api.cms.service.UpdateInformations;
-import org.osivia.portal.api.cms.service.UpdateScope;
-
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.service.GroupService;
+import org.osivia.portal.api.ha.IHAService;
+import org.osivia.portal.api.locator.Locator;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -42,7 +45,21 @@ public class SharedRepository {
     private final UserStorage defaultStorage;
     
     public static ThreadLocal<Set<String>> requestDocs = new ThreadLocal<>();
-
+    
+    /** Reload timeout .10 minutes  */
+    public static long DOCUMENT_RELOAD_TIMEOUT = 10*60*1000; 
+    
+    
+    
+    /** The group service */
+    private IHAService HAService;
+    
+    public IHAService getHAService() {
+        if( HAService == null)
+            HAService = Locator.getService(IHAService.class);
+        return HAService;
+    }
+    
 
     public SharedRepository(String repositoryName, UserStorage storageRepository) {
         super();
@@ -149,17 +166,24 @@ public class SharedRepository {
             boolean reload = false;
 
             if (doc != null) {
-                if (doc.getSpaceId() != null) {
-                    SpaceCacheBean spaceTs = getSpaceCacheInformations(doc.getSpaceId().getInternalID());
-                    if (spaceTs.getLastSpaceModification() != null) {
-                        // Avoid multiple calls in same request for one item during asynchronous delay
-                       if( !getRequestUpdates().contains(internalID))    {
-                            if (doc.getTimestamp() < spaceTs.getLastSpaceModification())    {
-                                reload = true;
+                  // Avoid multiple calls in same request for one item during asynchronous delay
+                if( !getRequestUpdates().contains(internalID))    {                
+                    if (doc.getSpaceId() != null) {
+                        SpaceCacheBean spaceTs = getSpaceCacheInformations(doc.getSpaceId().getInternalID());
+                        if (spaceTs.getLastSpaceModification() != null) {
+                                 if (doc.getTimestamp() < spaceTs.getLastSpaceModification())    {
+                                    reload = true;
+                                }   
                             }
+                        }
+                
+                    if( reload == false) {
+                        if( doc.getTimestamp()  + DOCUMENT_RELOAD_TIMEOUT < System.currentTimeMillis())   {
+                            reload = true;
                         }
                     }
                 }
+                
             } else
                 reload = true;
 
@@ -188,8 +212,20 @@ public class SharedRepository {
             cachedDocument.put(internalID, doc);
     }
     
-    
     public void notifyUpdate(UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
+        applyUpdateOnNode( storageRepository,  updateInformation);
+        
+        // Notify others Node
+        getHAService().notifyCMSEvent(updateInformation);
+        
+    }
+ 
+    public void handleUpdate(UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
+        applyUpdateOnNode( storageRepository,  updateInformation);
+    }
+    
+    
+    private void applyUpdateOnNode(UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
         
          Document space = null;
          

@@ -203,7 +203,8 @@ public class FileRepository extends UserRepositoryTestBase {
     
     protected void createSpace(PortalMetaData portalMetaData) throws CMSException {
         
-        log.info("create space " + getPortalName(portalMetaData)); 
+        if( log.isDebugEnabled())
+            log.debug("create space " + getPortalName(portalMetaData)); 
         
         
 

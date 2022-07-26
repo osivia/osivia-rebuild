@@ -2,6 +2,7 @@ package org.osivia.portal.services.cms.session;
 
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
@@ -11,7 +12,6 @@ import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
-import org.osivia.portal.api.cms.service.UpdateInformations;
 import org.osivia.portal.core.sessions.CMSSessionRecycle;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 
@@ -55,7 +55,13 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
     @Override
     public void notifyUpdate(UpdateInformations infos) throws CMSException {
         ((UserRepository) cmsService.getUserRepository(cmsContext, infos.getSpaceID().getRepositoryName())).notifyUpdate(infos);
-     }
+    }
+    
+    
+    @Override
+    public void handleUpdate(UpdateInformations infos) throws CMSException {
+        ((UserRepository) cmsService.getUserRepository(cmsContext, infos.getSpaceID().getRepositoryName())).handleUpdate(infos);
+    }
     
     @Override
     public void reload(UniversalID id) throws CMSException {
