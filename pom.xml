@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 
 	<groupId>org.osivia.portal</groupId>
 	<artifactId>osivia-portal-parent</artifactId>
-	<version>5.0-SNAPSHOT</version>
+	<version>5.0.1</version>
 	<packaging>pom</packaging>
 
 
@@ -830,9 +829,7 @@
 							</goals>
 							<configuration>
 								<tasks>
-									<copy
-										file="${project.basedir}/target/${project.build.finalName}.jar"
-										todir="${lib.path}" />
+									<copy file="${project.basedir}/target/${project.build.finalName}.jar" todir="${lib.path}" />
 								</tasks>
 							</configuration>
 						</execution>
@@ -846,9 +843,7 @@
 							</goals>
 							<configuration>
 								<tasks>
-									<copy
-										file="${project.basedir}/target/${project.build.finalName}.war"
-										tofile="${web.path}/${project.artifactId}.war" />
+									<copy file="${project.basedir}/target/${project.build.finalName}.war" tofile="${web.path}/${project.artifactId}.war" />
 								</tasks>
 							</configuration>
 						</execution>
