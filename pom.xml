@@ -865,6 +865,18 @@
 						<downloadSources>true</downloadSources>
 					</configuration>
 				</plugin>
+				
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <additionalOptions>
+                            <!-- Disable strict javadoc checking since java8 -->
+                            <additionalOption>-Xdoclint:none</additionalOption>
+                        </additionalOptions>
+                    </configuration>
+                </plugin>				
 
 			</plugins>
 		</pluginManagement>
