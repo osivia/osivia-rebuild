@@ -30,7 +30,7 @@
             <groupId>org.osivia.portal.kernel</groupId>
             <artifactId>osivia-portal-kernel-jbp-lib</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
         
 

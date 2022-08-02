@@ -766,6 +766,17 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                         this.addToolbarItem(toolbar, modifySpaceUrl,null, bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-square-edit");
                         
+                        
+                        
+                        
+                        if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
+                            Map<String, String> properties = new HashMap<>();
+                            ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());                            
+                            
+                            String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
+                            this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-square-edit");
+                        }
+                        
                         //"${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
                         boolean hasPageSubtype = false;
                         for(String subType : personnalization.getSubTypes())    {
