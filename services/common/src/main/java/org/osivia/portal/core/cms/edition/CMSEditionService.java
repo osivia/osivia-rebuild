@@ -43,7 +43,7 @@ import org.osivia.portal.core.theming.RenderedRegions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 @Service("osivia:service=CMSEditionService")
@@ -268,9 +268,9 @@ public class CMSEditionService {
 
                     /* Update document */
 
-                    TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                    if (repository instanceof TestRepository) {
-                        ((TestRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
+                    AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                    if (repository instanceof AdvancedRepository) {
+                        ((AdvancedRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
                     }
                 }
 

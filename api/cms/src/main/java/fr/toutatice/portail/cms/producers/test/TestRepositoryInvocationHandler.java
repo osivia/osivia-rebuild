@@ -9,10 +9,10 @@ import org.springframework.context.ApplicationContext;
 
 public class TestRepositoryInvocationHandler implements InvocationHandler {
 
-    TestRepository templatesRepository;
+    AdvancedRepository templatesRepository;
     
 
-    public TestRepositoryInvocationHandler(TestRepository templatesRepository) {
+    public TestRepositoryInvocationHandler(AdvancedRepository templatesRepository) {
         super();
         this.templatesRepository = templatesRepository;
     }

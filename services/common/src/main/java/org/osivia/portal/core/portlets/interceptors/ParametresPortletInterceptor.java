@@ -60,7 +60,7 @@ import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 

@@ -44,7 +44,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
@@ -180,10 +180,10 @@ public class RenameController implements PortletContextAware {
             
             CMSController ctrl = new CMSController(portalControllerContext); 
 
-            TestRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), contentId.getRepositoryName());
-            if( repository instanceof TestRepository) {
+            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), contentId.getRepositoryName());
+            if( repository instanceof AdvancedRepository) {
 
-                ((TestRepository) repository).renameDocument(contentId.getInternalID(), newTitle);
+                ((AdvancedRepository) repository).renameDocument(contentId.getInternalID(), newTitle);
             }
 
             // Nuxeo document link

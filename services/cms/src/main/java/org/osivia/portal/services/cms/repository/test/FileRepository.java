@@ -264,6 +264,11 @@ public class FileRepository extends UserRepositoryTestBase {
         }
         
         for( ProfilBean profile: profils)   {
+            String roleName = profile.getRoleName();
+            if( SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(roleName))  {
+                roleName = "members";
+            }
+            
             Profile importProfile = new Profile(profile.getName(), profile.getRoleName(), profile.getDefaultPageName(), profile.getNuxeoVirtualUser());
             space.getProfiles().add(importProfile);
         }

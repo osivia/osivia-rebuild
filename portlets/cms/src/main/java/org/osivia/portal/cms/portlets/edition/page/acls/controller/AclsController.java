@@ -1,7 +1,8 @@
-package org.osivia.portal.cms.portlets.edition.page.properties.controller;
+package org.osivia.portal.cms.portlets.edition.page.acls.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,10 +42,15 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
+import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.model.Profile;
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
@@ -73,7 +79,10 @@ import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 @Controller
 @RequestMapping(value = "VIEW")
 @SessionAttributes("form")
-public class PropertiesController extends GenericPortlet implements PortletContextAware, ApplicationContextAware   {
+public class AclsController extends GenericPortlet implements PortletContextAware, ApplicationContextAware {
+
+    private static final String GROUP_PREFIX = "group:";
+
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -88,27 +97,22 @@ public class PropertiesController extends GenericPortlet implements PortletConte
 
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
-    
-    @Autowired
-    private LayoutService layoutService;
-    
-    @Autowired
-    private ThemeService themeService;
 
     /** Portlet config. */
     @Autowired
     private PortletConfig portletConfig;
 
     @Autowired
-    private IBundleFactory bundleFactory;    
+    private IBundleFactory bundleFactory;
     
+
     /** The logger. */
-    protected static Log logger = LogFactory.getLog(PropertiesController.class);
+    protected static Log logger = LogFactory.getLog(AclsController.class);
 
     /**
      * Constructor.
      */
-    public PropertiesController() {
+    public AclsController() {
         super();
     }
 
@@ -121,8 +125,8 @@ public class PropertiesController extends GenericPortlet implements PortletConte
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
     }
-    
-    
+
+
     /**
      * Default render mapping.
      *
@@ -142,7 +146,7 @@ public class PropertiesController extends GenericPortlet implements PortletConte
      * Submit action
      */
     @ActionMapping(name = "submit")
-    public void updateProperties(ActionRequest request, ActionResponse response, PropertiesForm form) throws PortletException {
+    public void updateProperties(ActionRequest request, ActionResponse response, AclsForm form) throws PortletException {
 
         try {
             // Portal Controller context
@@ -157,43 +161,79 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             document = getDocument(portalControllerContext);
 
 
-            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, document.getId().getRepositoryName());
+            NativeRepository userRepository = cmsService.getUserRepository(cmsContext, document.getId().getRepositoryName());
 
-            if( StringUtils.isNotEmpty(form.getLayoutId()))
-                document.getProperties().put(ThemeConstants.PORTAL_PROP_LAYOUT, form.getLayoutId());
-            else
-                document.getProperties().remove(ThemeConstants.PORTAL_PROP_LAYOUT);
+            if (userRepository instanceof AdvancedRepository) {
+                
+                List<Profile> profiles = getTemplateSpace(portalControllerContext).getProfiles();        
+                List<String> acls = new ArrayList<>();
+                
+                for( String formProfile: form.getProfiles())    {
+                    for( Profile profile: profiles)    {
+                        if( formProfile.equals(profile.getName()))  {
+                            acls.add(GROUP_PREFIX+profile.getRole());
+                        }
+                        
+                    }
+                    
+                }
+                
+                ((AdvancedRepository) userRepository).setACL(document.getId().getInternalID(), acls);
+            }
             
-            if( StringUtils.isNotEmpty(form.getThemeId()))
-                document.getProperties().put(ThemeConstants.PORTAL_PROP_THEME, form.getThemeId());
-            else
-                document.getProperties().remove(ThemeConstants.PORTAL_PROP_THEME);            
-
-            ((AdvancedRepository) repository).updateDocument(document.getId().getInternalID(), document);
-
+              
+            
             String url = this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
             response.sendRedirect(url);
 
         } catch (CMSException | IOException e) {
-           throw new PortletException( e);
+            throw new PortletException(e);
         }
     }
 
-   
+
+    private Space getTemplateSpace(PortalControllerContext portalCtx) throws CMSException {
+
+        Document document = getDocument(portalCtx);
+        document.getSpaceId();
+
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+        Space space = (Space) cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
+        UniversalID templateId = space.getTemplateId();
+        if (templateId != null) {
+            CMSContext cmsTemplateContext = ctrl.getCMSContext();
+            cmsTemplateContext.setPreview(false);
+            Page page = (Page) cmsService.getCMSSession(cmsTemplateContext).getDocument(templateId);
+            space = (Space) cmsService.getCMSSession(cmsTemplateContext).getDocument(page.getSpaceId());
+        }
+        return space;
+    }
+
+
+    @ModelAttribute("profilesList")
+    protected List<Profile> getStyles(PortletRequest request, PortletResponse response) throws Exception {
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        
+        List<Profile> profiles = getTemplateSpace(portalCtx).getProfiles();
+        profiles.removeIf( profile -> StringUtils.isEmpty(profile.getRole()));
+        
+        return profiles;
+    }
 
 
     private RepositoryDocument getDocument(PortalControllerContext portalControllerContext) throws CMSException {
-        
+
         // Portal controller context
         CMSController ctrl = new CMSController(portalControllerContext);
 
-        
+
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
-        String navigationId = window.getProperty("osivia.properties.id");
-        
-        
+        String navigationId = window.getProperty("osivia.acls.id");
+
+
         CMSContext cmsContext = ctrl.getCMSContext();
-        
+
 
         RepositoryDocument document = (RepositoryDocument) cmsService.getCMSSession(cmsContext).getDocument(new UniversalID(navigationId));
         return document;
@@ -219,71 +259,48 @@ public class PropertiesController extends GenericPortlet implements PortletConte
      * @return form
      */
     @ModelAttribute("form")
-    public PropertiesForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+    public AclsForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
 
         try {
 
             // Portal Controller context
-            PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-            
-            PropertiesForm form = this.applicationContext.getBean(PropertiesForm.class);
-            
-            //Layouts
-            form.setLayoutId((String) getDocument(portalCtx).getProperties().get(ThemeConstants.PORTAL_PROP_LAYOUT));
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-            Map<String, String> formLayouts = new LinkedHashMap<String, String>();
+            RepositoryDocument document = getDocument(portalControllerContext);
 
-            formLayouts.put("", bundleFactory.getBundle(portalCtx.getHttpServletRequest().getLocale()).getString("MODIFY_PAGE_PROPERTIES_DEFAULT_ITEM"));
-            
-            @SuppressWarnings("unchecked")
-            ArrayList<PortalLayout> layouts = new ArrayList<>((Collection<PortalLayout>) layoutService.getLayouts());
-          
-            Collections.sort(layouts, new Comparator<PortalLayout>() {
-                @Override
-                public int compare(PortalLayout o1, PortalLayout o2) {
-                    return o1.getLayoutInfo().getName().compareTo( o2.getLayoutInfo().getName());
+
+            CMSController ctrl = new CMSController(portalControllerContext);
+            CMSContext cmsContext = ctrl.getCMSContext();
+
+            AclsForm form = this.applicationContext.getBean(AclsForm.class);
+
+            NativeRepository userRepository = cmsService.getUserRepository(cmsContext, document.getId().getRepositoryName());
+
+            if (userRepository instanceof AdvancedRepository) {
+                List<String> formProfiles = new ArrayList<>();
+                
+                List<String> acls = ((AdvancedRepository) userRepository).getACL(document.getId().getInternalID());
+                
+                List<Profile> profiles = getTemplateSpace(portalControllerContext).getProfiles();                
+                for(String acl: acls) {
+                    if( acl.startsWith(GROUP_PREFIX)) {
+                        String group = acl.substring(GROUP_PREFIX.length());
+                        for(Profile profile: profiles)  {
+                            if(StringUtils.equals(group, profile.getRole())) {
+                                formProfiles.add(profile.getName());
+                            }
+                        }
+                    }
                 }
-            });
-            
+                
 
-             for (PortalLayout layout : layouts) {
-                formLayouts.put(layout.getLayoutInfo().getName(), layout.getLayoutInfo().getName());
+                
+                form.setProfiles(formProfiles);
             }
-             
-             
-
-            form.setLayouts(formLayouts);
-            
-            // Themes
-            
-            form.setThemeId((String) getDocument(portalCtx).getProperties().get(ThemeConstants.PORTAL_PROP_THEME));
-
-            Map<String, String> formThemes = new LinkedHashMap<String, String>();
-
-            formThemes.put("", bundleFactory.getBundle(portalCtx.getHttpServletRequest().getLocale()).getString("MODIFY_PAGE_PROPERTIES_DEFAULT_ITEM"));
-
-            @SuppressWarnings("unchecked")
-            ArrayList<PortalTheme> themes = new ArrayList<>((Collection<PortalTheme>) themeService.getThemes());
-          
-            Collections.sort(themes, new Comparator<PortalTheme>() {
-                @Override
-                public int compare(PortalTheme o1, PortalTheme o2) {
-                    return o1.getThemeInfo().getName().compareTo( o2.getThemeInfo().getName());
-                }
-            });
-            
-
-            for (PortalTheme theme : themes) {
-                formThemes.put(theme.getThemeInfo().getName(), theme.getThemeInfo().getName());
-            }
-
-            form.setThemes(formThemes);
 
             return form;
 
-        } catch (
-
-        PortalException e) {
+        } catch (Exception e) {
             throw new PortletException(e);
         }
     }

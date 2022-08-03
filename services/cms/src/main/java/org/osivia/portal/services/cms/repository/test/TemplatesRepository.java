@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 
 
 public class TemplatesRepository extends UserRepositoryTestBase  {

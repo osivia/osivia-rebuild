@@ -49,7 +49,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
@@ -134,9 +134,9 @@ public class DeleteController {
     protected void deleteContent(ActionRequest request, PortalControllerContext portalControllerContext, CMSController ctrl, UniversalID id ) throws CMSException {
 
 
-        TestRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), id.getRepositoryName());
-        if (repository instanceof TestRepository) {
-             ((TestRepository) repository).deleteDocument(id.getInternalID());
+        AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), id.getRepositoryName());
+        if (repository instanceof AdvancedRepository) {
+             ((AdvancedRepository) repository).deleteDocument(id.getInternalID());
         }
 
     }

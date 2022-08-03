@@ -28,14 +28,14 @@ import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 
 /**
  * The Class NativeMemoryRepository contains additionnal test functions
  * (publishing, add content, ...)
  */
 
-public abstract class UserRepositoryTestBase extends BaseUserRepository implements TestRepository
+public abstract class UserRepositoryTestBase extends BaseUserRepository implements AdvancedRepository
 
 {
  

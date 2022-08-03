@@ -88,22 +88,9 @@
 				</c:if>
 			</c:if>
 
-			<c:if test="${status.manageable}">
-			
-					<c:if test="${not empty status.acls}">
-						<c:set var="aclBg">btn-danger</c:set>
-					</c:if>
-					
-					<c:if test="${ empty status.acls}">
-						<c:set var="aclBg">btn-light</c:set>
-					</c:if>					
-					
-					<span> <a href="${setACLURL}"
-						class=" btn-sm m-1 ${aclBg}"> ACL</a>
-					</span>
-			</c:if>
-			
--->			
+
+-->	
+
 			
 
 		</div>

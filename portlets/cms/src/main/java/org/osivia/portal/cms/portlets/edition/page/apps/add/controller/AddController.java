@@ -48,7 +48,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
@@ -194,17 +194,17 @@ public class AddController extends GenericPortlet implements PortletContextAware
             }
             
             if( iInsertion == -1)
-                iInsertion = TestRepository.POSITION_END;
+                iInsertion = AdvancedRepository.POSITION_END;
             
 
-            TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
             String windowID = "" + System.currentTimeMillis();
 
             Map<String, String> editionProperties = new ConcurrentHashMap<>();
             editionProperties.put("osivia.hideTitle", "1");
 
-            ((TestRepository) repository).addWindow(windowID, windowID, portletName, region, iInsertion, id.getInternalID(), editionProperties);
+            ((AdvancedRepository) repository).addWindow(windowID, windowID, portletName, region, iInsertion, id.getInternalID(), editionProperties);
 
         }
     }

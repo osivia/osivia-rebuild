@@ -56,7 +56,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
@@ -221,9 +221,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         CMSController ctrl = new CMSController(portalCtx);
         CMSContext cmsContext = ctrl.getCMSContext();
 
-        TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-        if (repository instanceof TestRepository) {
-            ((TestRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
+        AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+        if (repository instanceof AdvancedRepository) {
+            ((AdvancedRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
         }
     }
 

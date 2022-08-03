@@ -66,7 +66,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
@@ -303,12 +303,12 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         String spaceId = window.getProperty("osivia.space.id");
         UniversalID id = new UniversalID(spaceId);
 
-        TestRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), id.getRepositoryName());
+        AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), id.getRepositoryName());
 
-        if( repository instanceof TestRepository) {
+        if( repository instanceof AdvancedRepository) {
 
-            ((TestRepository) repository).setProfiles(id.getInternalID(), form.getProfiles());
-            ((TestRepository) repository).setStyles(id.getInternalID(), form.getStyles());
+            ((AdvancedRepository) repository).setProfiles(id.getInternalID(), form.getProfiles());
+            ((AdvancedRepository) repository).setStyles(id.getInternalID(), form.getStyles());
         }
 
 

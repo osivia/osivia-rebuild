@@ -13,13 +13,13 @@ public class TestRepositoryLocator {
 
 
     @SuppressWarnings("unchecked")
-    public static TestRepository getTemplateRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
+    public static AdvancedRepository getTemplateRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
         CMSService cms = Locator.getApplicationContext().getBean(CMSService.class);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        TestRepository repository =  (TestRepository) cms.getUserRepository(cmsContext, repositoryName);
+        AdvancedRepository repository =  (AdvancedRepository) cms.getUserRepository(cmsContext, repositoryName);
         InvocationHandler invocationHandler = new TestRepositoryInvocationHandler(repository);
-        Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{TestRepository.class}, invocationHandler);
-        return (TestRepository) proxy;
+        Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{AdvancedRepository.class}, invocationHandler);
+        return (AdvancedRepository) proxy;
     }
 
 }

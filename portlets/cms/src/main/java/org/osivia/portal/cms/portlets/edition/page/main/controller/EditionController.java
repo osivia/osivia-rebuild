@@ -70,7 +70,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.NxControllerMock;
-import fr.toutatice.portail.cms.producers.test.TestRepository;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
 /**
@@ -248,9 +248,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
                         modules.add(newModule);
                        
 
-                    TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                    if (repository instanceof TestRepository) {
-                            ((TestRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
+                    AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                    if (repository instanceof AdvancedRepository) {
+                            ((AdvancedRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
                     }
 
                      
@@ -286,11 +286,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 CMSContext cmsContext = ctrl.getCMSContext();
 
 
-                TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
                 String newID = "" + System.currentTimeMillis();
 
-                ((TestRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
+                ((AdvancedRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
 
 
                 String url = portalUrlFactory.getViewContentUrl(portalControllerContext, ctrl.getCMSContext(), new UniversalID(id.getRepositoryName(), newID));
@@ -324,11 +324,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                 if (repository.getACL(id.getInternalID()).isEmpty())
-                    ((TestRepository) repository).setACL(id.getInternalID(), Arrays.asList("group:members"));
+                    ((AdvancedRepository) repository).setACL(id.getInternalID(), Arrays.asList("group:members"));
                 else
-                    ((TestRepository) repository).setACL(id.getInternalID(), new ArrayList<String>());
+                    ((AdvancedRepository) repository).setACL(id.getInternalID(), new ArrayList<String>());
 
                 refreshStatus(portalControllerContext, ctrl, status);
 
@@ -352,7 +352,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSController ctrl = new CMSController(portalControllerContext);
 
 
-            addPortletToRegion(request, portalControllerContext, ctrl, "SampleInstance", "col-2", TestRepository.POSITION_END);
+            addPortletToRegion(request, portalControllerContext, ctrl, "SampleInstance", "col-2", AdvancedRepository.POSITION_END);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -373,9 +373,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSContext cmsContext = ctrl.getCMSContext();
 
 
-            TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, "idx");
+            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, "idx");
 
-            ((TestRepository) repository).reloadDatas();
+            ((AdvancedRepository) repository).reloadDatas();
 
 
         } catch (PortalException e) {
@@ -454,7 +454,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
             CMSController ctrl = new CMSController(portalControllerContext);
 
-            addPortletToRegion(request, portalControllerContext, ctrl, "FragmentInstance", "nav", TestRepository.POSITION_BEGIN);
+            addPortletToRegion(request, portalControllerContext, ctrl, "FragmentInstance", "nav", AdvancedRepository.POSITION_BEGIN);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -471,14 +471,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSContext cmsContext = ctrl.getCMSContext();
 
 
-            TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
             String windowID = "" + System.currentTimeMillis();
 
             Map<String, String> editionProperties = new ConcurrentHashMap<>();
             editionProperties.put("osivia.hideTitle", "1");
 
-            ((TestRepository) repository).addWindow(windowID, windowID, portletName, region, position, id.getInternalID(), editionProperties);
+            ((AdvancedRepository) repository).addWindow(windowID, windowID, portletName, region, position, id.getInternalID(), editionProperties);
 
         }
     }
@@ -510,9 +510,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if (repository instanceof TestRepository) {
-                    ((TestRepository) repository).publish(id.getInternalID());
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if (repository instanceof AdvancedRepository) {
+                    ((AdvancedRepository) repository).publish(id.getInternalID());
                 }
 
 
@@ -544,11 +544,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if (repository instanceof TestRepository) {
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if (repository instanceof AdvancedRepository) {
                     String newID = "" + System.currentTimeMillis();
 
-                    ((TestRepository) repository).addFolder(newID, newID, id.getInternalID());
+                    ((AdvancedRepository) repository).addFolder(newID, newID, id.getInternalID());
                 }
 
 
@@ -576,11 +576,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-                TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                if (repository instanceof TestRepository) {
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if (repository instanceof AdvancedRepository) {
                     String newID = "" + System.currentTimeMillis();
 
-                    ((TestRepository) repository).addDocument(newID, newID, id.getInternalID());
+                    ((AdvancedRepository) repository).addDocument(newID, newID, id.getInternalID());
                 }
 
 
@@ -723,9 +723,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 
                 NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
                 
-                if( userRepository instanceof TestRepository) {
+                if( userRepository instanceof AdvancedRepository) {
 
-                    TestRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                    AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                     status.setSupportPreview(repository.supportPreview());
     
                     Map<String, String> locales = new HashMap<>();
@@ -810,6 +810,20 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                         deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
                         this.addToolbarItem(toolbar, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin");
+                        
+                        
+                        
+                        if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
+                            if( status.isManageable())  {
+                                Map<String, String> aclsProperties = new HashMap<>();
+                                ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());                            
+                                
+                                String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
+                                this.addToolbarItem(toolbar, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-square-edit");
+                            }
+                        }
+                                               
+                        
     
     
                     }

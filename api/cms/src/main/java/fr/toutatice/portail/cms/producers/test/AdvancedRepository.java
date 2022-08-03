@@ -10,7 +10,13 @@ import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.NativeRepository;
 
-public interface TestRepository extends NativeRepository {
+/**
+ * 
+ * This API offers advanced repository fonctionnalities
+ * 
+ * @author jsste
+ */
+public interface AdvancedRepository extends NativeRepository {
     
     public final static int POSITION_BEGIN = 0;
     public final static int POSITION_END = -1;
@@ -40,8 +46,7 @@ public interface TestRepository extends NativeRepository {
     
     void renameDocument(String id, String title) throws CMSException;
     
-
-    
+   
     void reloadDatas();
     
     public void addDocument(String internalID, RepositoryDocument document) throws CMSException  ;

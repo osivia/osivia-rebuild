@@ -60,7 +60,15 @@
          <instance-id>EditionPagePropertiesPortletInstance</instance-id>
          <portlet-ref>EditionPagePropertiesPortlet</portlet-ref>
       </instance>      
-   </deployment>     
+   </deployment> 
+   <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS edition page acls portlet</display-name>
+         <display-name xml:lang="fr">Portlet edition acls page</display-name>
+         <instance-id>EditionPageAclsPortletInstance</instance-id>
+         <portlet-ref>EditionPageAclsPortlet</portlet-ref>
+      </instance>      
+   </deployment>    
    <deployment>    
       <instance>
          <display-name xml:lang="en">CMS EditionAddPortlet portlet</display-name>
