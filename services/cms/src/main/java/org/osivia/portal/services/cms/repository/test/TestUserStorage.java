@@ -121,18 +121,37 @@ public class TestUserStorage extends BaseUserStorage {
             try {
                 String path = "";
                 RepositoryDocument hDoc = doc;
+                
+                List<String> computedACL = new ArrayList<>();
+                
+                if (doc instanceof MemoryRepositoryDocument) {
+                    MemoryRepositoryDocument mDoc = (MemoryRepositoryDocument) doc;
+                    computedACL.addAll(mDoc.getACL());
+                }
 
                 path = "/" + hDoc.getName() + path;
 
                 while (!(hDoc instanceof MemoryRepositorySpace)) {
                     hDoc = reloadDocument(hDoc.getParentInternalId());
                     path = "/" + hDoc.getName() + path;
+                    
+                    if (computedACL.isEmpty() && hDoc instanceof MemoryRepositoryDocument) {
+                        MemoryRepositoryDocument pmDoc = (MemoryRepositoryDocument) hDoc;
+                        computedACL.addAll(pmDoc.getACL());
+                    }
+                   
                 }
 
                 path = "/" + getSharedRepository().getRepositoryName() + path;
 
                 // add path to document
                 doc.setPath(path);
+                
+                if (doc instanceof MemoryRepositoryDocument) {
+                    MemoryRepositoryDocument mDoc = (MemoryRepositoryDocument) doc;
+                    mDoc.setComputedAcls(computedACL);
+                }               
+                
 
                 // add path entry
                 getDocuments().put(path, doc);
@@ -142,6 +161,11 @@ public class TestUserStorage extends BaseUserStorage {
 
             }
         }
+        
+        
+        
+        
+        
 
     }
     
@@ -177,18 +201,18 @@ public class TestUserStorage extends BaseUserStorage {
             if (doc instanceof MemoryRepositoryDocument) {
 
                 MemoryRepositoryDocument mDoc = (MemoryRepositoryDocument) doc;
-                List<String> acls = mDoc.getACL();
-                if (acls.size() > 0) {
-
-                    if (userRepository.getUserName() != null && acls.contains("group:members"))
-                        aclControl = true;
-                    
-                    if (userRepository.isAdministrator())
-                        aclControl = true;
-                    
-                    
-                } else
+                List<String> acls = mDoc.getComputedAcls();
+                
+ 
+                if (userRepository.getUserName() != null && acls.contains("group:members"))
                     aclControl = true;
+                
+                if (userRepository.isAdministrator())
+                    aclControl = true;
+                
+                if (acls.contains("_anonymous_"))
+                    aclControl = true;
+
             }
             
             if (aclControl == false)

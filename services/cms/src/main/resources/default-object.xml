@@ -544,6 +544,7 @@ return nuxeoRequest.toString();</value>
                 <properties />
                 <security-constraint />
                 
+                
 				<window>
                     <window-name>menu-instance</window-name>
                     <instance-ref>MenuInstance</instance-ref>

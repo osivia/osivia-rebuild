@@ -3,12 +3,14 @@ package org.osivia.portal.services.cms.repository.test;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.SpringLayout.Constraints;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ import org.jboss.portal.core.model.portal.metadata.WindowMetaData;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.SecurityConstants;
 import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.util.collection.CollectionsUtil;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Profile;
@@ -40,6 +43,7 @@ import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.services.cms.repository.test.imports.ProfilBean;
 import org.osivia.portal.services.cms.repository.test.imports.XMLSerializer;
+import org.springframework.security.acls.model.Acl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
@@ -103,18 +107,19 @@ public class FileRepository extends UserRepositoryTestBase {
        try  {
         
            
-           List<String> acls = new ArrayList<>( inheritedAcls);
+        List<String> acls = new ArrayList<>( );
            
-
+           
         if( pageMetaData.getSecurityConstraints() != null) {
             Set<RoleSecurityBinding> pageConstraints = (Set<RoleSecurityBinding>) pageMetaData.getSecurityConstraints().getConstraints();
             for(RoleSecurityBinding  constraint: pageConstraints)  {
                 for(Object action : constraint.getActions())    {
                     if( "view".equals(action))   {
                         //Authenticated,unchecked
-                        if( SecurityConstants.UNCHECKED_ROLE_NAME.equals(constraint.getRoleName()))
-                            acls.clear();
-                        else if( SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(constraint.getRoleName()))
+                        if( SecurityConstants.UNCHECKED_ROLE_NAME.equals(constraint.getRoleName())) {
+                            acls.add( "_anonymous_");
+                            break;
+                        } else if( SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(constraint.getRoleName()))
                             acls.add( "group:members");
                         else
                             acls.add( "group:" + constraint.getRoleName());
@@ -124,6 +129,11 @@ public class FileRepository extends UserRepositoryTestBase {
         }
 
 
+        if( acls.isEmpty())
+           acls = inheritedAcls;
+
+        
+        inheritedAcls= new ArrayList<>();
        
         
         String pageName = getPageName(pageMetaData, parentHierarchy);
@@ -178,7 +188,7 @@ public class FileRepository extends UserRepositoryTestBase {
                
                
                // Add page as a child of container
-               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, children, portalProperties, acls);
+               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, children, portalProperties,  new ArrayList<>( ));
                
            }
         }
@@ -226,6 +236,7 @@ public class FileRepository extends UserRepositoryTestBase {
 
         @SuppressWarnings("unchecked")
         List<String> acls = new ArrayList<>();
+        List<String> inheritedAcls = new ArrayList<>();        
         if (portalMetaData.getSecurityConstraints() != null) {
             Set<RoleSecurityBinding> portalConstraints = (Set<RoleSecurityBinding>) portalMetaData.getSecurityConstraints().getConstraints();
 
@@ -233,16 +244,28 @@ public class FileRepository extends UserRepositoryTestBase {
                 for (Object action : constraint.getActions()) {
                     if ("viewrecursive".equals(action)) {
                         acls.add("group:" + constraint.getRoleName());
+                        inheritedAcls.add("group:" + constraint.getRoleName());
                     }
+                    
+                    if( "view".equals(action))   {
+                        //Authenticated,unchecked
+                        if( SecurityConstants.UNCHECKED_ROLE_NAME.equals(constraint.getRoleName())) {
+                            acls.add( "_anonymous_");
+                            break;
+                        } else if( SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(constraint.getRoleName()))
+                            acls.add( "group:members");
+                        else
+                            acls.add( "group:" + constraint.getRoleName());
+                    }                    
                 }
-            }
+             }
         }
         
         
         for (PortalObjectMetaData portalObjectMD : children.values())
         {
            if( portalObjectMD instanceof PageMetaData)  {
-               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, portalChildren,portalProperties, acls);
+               createPage(portalMetaData, pageHierarchy,(PageMetaData) portalObjectMD, portalChildren,portalProperties, inheritedAcls);
            }
         }
 
@@ -269,7 +292,7 @@ public class FileRepository extends UserRepositoryTestBase {
                 roleName = "members";
             }
             
-            Profile importProfile = new Profile(profile.getName(), profile.getRoleName(), profile.getDefaultPageName(), profile.getNuxeoVirtualUser());
+            Profile importProfile = new Profile(profile.getName(), roleName, profile.getDefaultPageName(), profile.getNuxeoVirtualUser());
             space.getProfiles().add(importProfile);
         }
 
@@ -283,6 +306,9 @@ public class FileRepository extends UserRepositoryTestBase {
         
         
         addDocument(getPortalName(portalMetaData), space);       
+        
+        setACL(getPortalName(portalMetaData), acls);
+        
     }
 
 

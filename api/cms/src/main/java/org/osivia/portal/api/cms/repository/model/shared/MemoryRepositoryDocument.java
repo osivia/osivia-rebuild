@@ -20,6 +20,9 @@ import org.osivia.portal.api.cms.repository.BaseUserRepository;
 public class MemoryRepositoryDocument extends RepositoryDocument implements org.osivia.portal.api.cms.model.Document, Serializable {
 
     private List<String> acls = new ArrayList<>();
+    private List<String> computedAcls = new ArrayList<>();
+
+
 
 
     /**
@@ -75,5 +78,15 @@ public class MemoryRepositoryDocument extends RepositoryDocument implements org.
     }
 
 
+    
+    public List<String> getComputedAcls() {
+        return computedAcls;
+    }
+
+
+    
+    public void setComputedAcls(List<String> computedAcls) {
+        this.computedAcls = computedAcls;
+    }
 
 }

@@ -81,6 +81,9 @@ import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 @SessionAttributes("form")
 public class AclsController extends GenericPortlet implements PortletContextAware, ApplicationContextAware {
 
+    private static final String _ANONYMOUS = "_anonymous_";
+
+
     private static final String GROUP_PREFIX = "group:";
 
 
@@ -104,7 +107,7 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
 
     @Autowired
     private IBundleFactory bundleFactory;
-    
+
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(AclsController.class);
@@ -164,25 +167,27 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
             NativeRepository userRepository = cmsService.getUserRepository(cmsContext, document.getId().getRepositoryName());
 
             if (userRepository instanceof AdvancedRepository) {
-                
-                List<Profile> profiles = getTemplateSpace(portalControllerContext).getProfiles();        
+
+                List<Profile> profiles = getSpaceProfiles(portalControllerContext);
                 List<String> acls = new ArrayList<>();
-                
-                for( String formProfile: form.getProfiles())    {
-                    for( Profile profile: profiles)    {
-                        if( formProfile.equals(profile.getName()))  {
-                            acls.add(GROUP_PREFIX+profile.getRole());
+
+                for (String formProfile : form.getProfiles()) {
+                    for (Profile profile : profiles) {
+                        if (formProfile.equals(profile.getName())) {
+                            if( ! profile.getRole().equals(_ANONYMOUS))
+                                acls.add(GROUP_PREFIX + profile.getRole());
+                            else
+                                acls.add( profile.getRole());
                         }
-                        
+
                     }
-                    
+
                 }
-                
+
                 ((AdvancedRepository) userRepository).setACL(document.getId().getInternalID(), acls);
             }
-            
-              
-            
+
+
             String url = this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
             response.sendRedirect(url);
 
@@ -192,7 +197,7 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
     }
 
 
-    private Space getTemplateSpace(PortalControllerContext portalCtx) throws CMSException {
+    private List<Profile> getSpaceProfiles(PortalControllerContext portalCtx) throws CMSException {
 
         Document document = getDocument(portalCtx);
         document.getSpaceId();
@@ -207,17 +212,21 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
             Page page = (Page) cmsService.getCMSSession(cmsTemplateContext).getDocument(templateId);
             space = (Space) cmsService.getCMSSession(cmsTemplateContext).getDocument(page.getSpaceId());
         }
-        return space;
+
+        List<Profile> profiles = space.getProfiles();
+        profiles.add(new Profile(bundleFactory.getBundle(portalCtx.getHttpServletRequest().getLocale()).getString("MODIFY_PAGE_ACLS_ANONYMOUS_LABEL"), _ANONYMOUS, "", ""));
+        return profiles;
     }
 
 
     @ModelAttribute("profilesList")
-    protected List<Profile> getStyles(PortletRequest request, PortletResponse response) throws Exception {
+    protected List<Profile> getProfilesList(PortletRequest request, PortletResponse response) throws Exception {
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-        
-        List<Profile> profiles = getTemplateSpace(portalCtx).getProfiles();
-        profiles.removeIf( profile -> StringUtils.isEmpty(profile.getRole()));
-        
+
+        List<Profile> profiles = getSpaceProfiles(portalCtx);
+        profiles.removeIf(profile -> StringUtils.isEmpty(profile.getRole()));
+
+
         return profiles;
     }
 
@@ -278,23 +287,28 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
 
             if (userRepository instanceof AdvancedRepository) {
                 List<String> formProfiles = new ArrayList<>();
-                
+
                 List<String> acls = ((AdvancedRepository) userRepository).getACL(document.getId().getInternalID());
-                
-                List<Profile> profiles = getTemplateSpace(portalControllerContext).getProfiles();                
-                for(String acl: acls) {
-                    if( acl.startsWith(GROUP_PREFIX)) {
-                        String group = acl.substring(GROUP_PREFIX.length());
-                        for(Profile profile: profiles)  {
-                            if(StringUtils.equals(group, profile.getRole())) {
-                                formProfiles.add(profile.getName());
-                            }
+
+                List<Profile> profiles = getSpaceProfiles(portalControllerContext);
+                for (String acl : acls) {
+
+                    String role;
+                    if (acl.startsWith(GROUP_PREFIX)) {
+                        role = acl.substring(GROUP_PREFIX.length());
+                    } else {
+                        role = acl;
+                    }
+
+
+                    for (Profile profile : profiles) {
+                        if (StringUtils.equals(role, profile.getRole())) {
+                            formProfiles.add(profile.getName());
                         }
                     }
-                }
-                
+               }
 
-                
+
                 form.setProfiles(formProfiles);
             }
 
