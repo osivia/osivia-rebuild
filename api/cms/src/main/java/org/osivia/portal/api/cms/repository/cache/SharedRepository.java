@@ -14,6 +14,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.CMSNotImplementedRequestException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.repository.UserStorage;
+import org.osivia.portal.api.cms.repository.model.RepositoryContentEvent;
 import org.osivia.portal.api.cms.repository.model.RepositoryEvent;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSEvent;
@@ -96,6 +97,9 @@ public class SharedRepository {
     
     public void endBatch(UserStorage storageRepository)  {
         storageRepository.endBatch();
+        
+        notifyChanges( new RepositoryEvent()); 
+        
     }
     
     public void beginBatch(UserStorage storageRepository)  {
@@ -107,7 +111,7 @@ public class SharedRepository {
          
         Document space = getDocument(defaultStorage, spaceInternalId);
         
-        return new RepositoryEvent( space, dirtyRequests);
+        return new RepositoryContentEvent( space, dirtyRequests);
     }
     
     public void addDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException  {

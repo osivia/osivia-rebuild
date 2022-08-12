@@ -26,6 +26,8 @@ public interface UserStorage {
 
     void beginBatch();
     
-    void endBatch();
+    void endBatch( );
+    
+    void handleError( );
 
 }

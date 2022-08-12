@@ -22,12 +22,13 @@ public class MemoryRepositorySpace extends MemoryRepositoryDocument implements S
 
 
     public MemoryRepositorySpace(BaseUserRepository repository, String id, String name, UniversalID templateId, List<String> childrenId, Map<String, Object> properties, List<ModuleRef> moduleRefs) {
-        super(repository, id, name,null, id,childrenId, properties);
+        super(repository, "space", id, name,null, id,childrenId, properties);
         this.templateId = templateId    ;
         this.moduleRefs = moduleRefs;
         supportedSubTypes = Arrays.asList(new String[]{ "page"});
         this.profiles = new ArrayList<>();
         this.styles = new ArrayList<>();
+        
     }
 
 

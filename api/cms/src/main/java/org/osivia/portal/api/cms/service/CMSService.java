@@ -1,5 +1,7 @@
 package org.osivia.portal.api.cms.service;
 
+import java.util.List;
+
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -52,7 +54,18 @@ public interface CMSService {
      * @throws CMSException the CMS exception
      */
     UniversalID getDefaultPortal(CMSContext cmsContext) throws CMSException;
-   
+
+
+
+    /**
+     * Get the user repositories
+     * 
+     * @param cmsContext
+     * @param repositoryName
+     * @return
+     * @throws CMSException
+     */
+    List<NativeRepository> getUserRepositories(CMSContext cmsContext) throws CMSException; 
 
    
 }

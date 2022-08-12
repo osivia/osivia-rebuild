@@ -31,8 +31,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class RuntimeBeanBuilder {
 
-    private static final String OSIVIA_CMS_REPOSITORY_SUFFIX = ".className";
-    private static final String OSIVIA_CMS_REPOSITORY_PREFIX = "osivia.cms.repository.";
+    public static final String OSIVIA_CMS_REPOSITORY_SUFFIX = ".className";
+    public static final String OSIVIA_CMS_REPOSITORY_PREFIX = "osivia.cms.repository.";
 
     private static final String OSIVIA_CMS_SERVICE_INTEGRATION_PREFIX = "osivia.cms.integration.";
     private static final String OSIVIA_CMS_SERVICE_INTEGRATION_BEAN_NAME_SUFFIX = ".beanName";

@@ -13,14 +13,17 @@ public class ModuleRef implements Serializable {
      */
     private static final long serialVersionUID = -4305768690906614507L;
 
-    private final String windowName;
-
-    private final String region;
-
-    private final String moduleId;
-    private final Map<String,String> properties;
+    private  String windowName;
+    private  String region;
+    private  String moduleId;
+    private  Map<String,String> properties;
 
     
+
+
+    public ModuleRef() {
+        super();
+    }
 
 
     public ModuleRef(String windowName, String region,String moduleId, Map<String,String> properties) {

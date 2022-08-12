@@ -2,6 +2,7 @@ package org.osivia.portal.services.cms.service;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,6 +92,10 @@ public class CMSServiceImpl implements CMSService {
     }
 
 
+    @Override
+    public List<NativeRepository> getUserRepositories(CMSContext cmsContext) throws CMSException {
+       return repositoryFactory.getRepositories(cmsContext);
+    }
 
 
     @Override

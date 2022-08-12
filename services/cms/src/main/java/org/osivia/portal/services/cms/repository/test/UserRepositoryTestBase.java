@@ -197,7 +197,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         properties.put("dc:title", "Document." + id);
         
         RepositoryDocument parent = getSharedDocument(parentId);
-        RepositoryDocument doc = new MemoryRepositoryDocument(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
+        RepositoryDocument doc = new MemoryRepositoryDocument(this, null, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
         
         addDocument(id, doc);
      }

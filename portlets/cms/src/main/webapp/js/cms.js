@@ -184,6 +184,29 @@ $JQry(function() {
 });
 
 
+$JQry(function() {
+	
+	$JQry("input[data-import-submit-id]").each(function(index, element) {
+		var $element = $JQry(element);
+
+		if (!$element.data("loaded")) {
+			$element.change(function(event) {
+				var $target = $JQry(event.target);
+				
+				var $repositoryName= $JQry("#" + $target.data("import-repository-name-id"));
+				$repositoryName.val( $target.data("repository-name"));
+				
+				var $submit = $JQry("#" + $target.data("import-submit-id"));
+				
+				
+				$submit.click();
+			});
+			
+			$element.data("loaded", true);
+		}
+	});
+	
+});
 
 
 

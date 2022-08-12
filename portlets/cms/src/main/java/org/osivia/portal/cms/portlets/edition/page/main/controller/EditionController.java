@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +56,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-
+import org.osivia.portal.core.constants.InternalConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -671,6 +672,19 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                 Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
                 
+                
+                
+                
+                Boolean isAdministrator = (Boolean) portalControllerContext.getRequest().getAttribute(InternalConstants.ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME);
+                if( BooleanUtils.isTrue(isAdministrator))   {
+                    Map<String, String> properties = new HashMap<>();
+
+                    String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryPortletInstance", bundle.getString("MODIFY_REPOSITORY_ACTION"), "EditionRepositoryPortletInstance", properties,
+                            new HashMap<>());                    
+                    this.addToolbarItem(toolbar, manageRepositoriesUrl, null, bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server");
+                }
+
+                
                  
                 String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
                 String cmsTemplatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.cmsTemplatePath");
@@ -744,6 +758,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     status.setManageable(personnalization.isManageable());
                     status.setModifiable(personnalization.isModifiable());
     
+                    
+                    
                     if (status.isModifiable()) {
                         
                         // Space modification
@@ -764,7 +780,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                         
 
-                        this.addToolbarItem(toolbar, modifySpaceUrl,null, bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-square-edit");
+                        this.addToolbarItem(toolbar, modifySpaceUrl,null, bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-folder-cogwheel");
                         
                         
                         
@@ -774,7 +790,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                             ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());                            
                             
                             String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
-                            this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-square-edit");
+                            this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-monitor");
                         }
                         
                         //"${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
@@ -800,7 +816,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     
     
                         String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
-                        this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-square-edit");
+                        this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text");
                         
                         
                         
@@ -819,7 +835,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                                 ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());                            
                                 
                                 String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
-                                this.addToolbarItem(toolbar, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-square-edit");
+                                this.addToolbarItem(toolbar, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock");
                             }
                         }
                                                

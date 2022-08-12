@@ -34,8 +34,15 @@ import org.osivia.portal.api.cms.EcmDocument;
  */
 public class NxDocumentMock implements EcmDocument, Serializable {
 
+    /** The title. */
+    private String type;
     
     
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
     public void setName(String name) {
         this.name = name;
     }
@@ -92,7 +99,10 @@ public class NxDocumentMock implements EcmDocument, Serializable {
 
     @Override
     public String getType() {
-        return "document";
+        if( type != null)
+            return type;
+        else
+            return "document";
     }
 
 

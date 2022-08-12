@@ -38,7 +38,7 @@ public class UserWorkspacesRepository extends UserRepositoryTestBase {
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
         properties.put("dc:title", "Document." + id);
 
-        RepositoryDocument doc = new MemoryRepositoryDocument(this, id, name, parentId, spaceId, new ArrayList<String>(), properties);
+        RepositoryDocument doc = new MemoryRepositoryDocument(this, null, id, name, parentId, spaceId, new ArrayList<String>(), properties);
         addDocument(id, doc);
     }
 

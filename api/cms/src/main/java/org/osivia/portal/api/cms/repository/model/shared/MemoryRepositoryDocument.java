@@ -24,30 +24,27 @@ public class MemoryRepositoryDocument extends RepositoryDocument implements org.
 
 
 
-
     /**
      * Instantiates a new document impl.
      *
      * @param id the id
      * @param properties the properties
      */
-    public MemoryRepositoryDocument(BaseUserRepository userRepository, String internalID, String name, String parentId, String spaceId, List<String> childrenId,
+    public MemoryRepositoryDocument(BaseUserRepository userRepository, String type, String internalID, String name, String parentId, String spaceId, List<String> childrenId,
             Map<String, Object> properties) {
 
 
-        super(userRepository, buildNativeItem(name, properties), internalID, name, parentId, spaceId, childrenId, properties);
-
+        super(userRepository, buildNativeItem(type, name, properties), internalID, name, parentId, spaceId, childrenId, properties);
     }
 
 
-    private static NxDocumentMock buildNativeItem(String name, Map<String, Object> properties) {
+    private static NxDocumentMock buildNativeItem(String type, String name, Map<String, Object> properties) {
         NxDocumentMock nativeItem = new NxDocumentMock();
         nativeItem.setName(name);
         nativeItem.setTitle(properties.get("dc:title").toString());
+        nativeItem.setType( type);
         return nativeItem;
     }
-
-   
    
 
     public MemoryRepositoryDocument duplicateForPublication(String parentInternalId, List<String> childrenId, BaseUserRepository userRepository)

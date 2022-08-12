@@ -7,8 +7,7 @@ import org.osivia.portal.api.cms.model.Document;
 /**
  * The Interface CMSEvent.
  */
-public interface CMSEvent {
+public interface CMSRepositoryEvent extends CMSEvent {
     
-
 
 }

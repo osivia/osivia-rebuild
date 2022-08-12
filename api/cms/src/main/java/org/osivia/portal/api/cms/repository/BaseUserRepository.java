@@ -21,7 +21,7 @@ import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.repository.cache.SharedRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.RepositoryEvent;
+import org.osivia.portal.api.cms.repository.model.RepositoryContentEvent;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.user.NavigationItemImpl;
@@ -187,13 +187,18 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
         batchMode = true;
         getSharedRepository().beginBatch(userStorage);
-        
+
         try {
             initDocuments();
-        } finally    {
+            
+        }   catch(Exception e)  {
+            userStorage.handleError();
+            throw e;
+        }   finally    {
+            getSharedRepository().endBatch(userStorage);
             batchMode = false;
         }
-        getSharedRepository().endBatch(userStorage);
+       
     }
 
 

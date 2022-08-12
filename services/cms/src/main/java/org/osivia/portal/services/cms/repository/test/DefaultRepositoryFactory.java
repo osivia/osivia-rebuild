@@ -2,8 +2,11 @@ package org.osivia.portal.services.cms.repository.test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +22,7 @@ import org.osivia.portal.api.cms.repository.UserRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.services.cms.service.RuntimeBeanBuilder;
 
 
 
@@ -31,6 +35,8 @@ public class DefaultRepositoryFactory {
     /** The super user repositories. */
     private Map<SharedRepositoryKey, BaseUserRepository> staticRepositories;
 
+    
+    
 
     public DefaultRepositoryFactory() {
         super();
@@ -75,7 +81,28 @@ public class DefaultRepositoryFactory {
         return userRepository;
     }
 
+    public List<NativeRepository> getRepositories( CMSContext cmsContext)  {
 
+        List<NativeRepository> repositories =new ArrayList<>();
+        
+        Properties properties = System.getProperties();
+        for (Object propertyName : properties.keySet()) {
+            if (propertyName instanceof String) {
+                String sPropertyName = (String) propertyName;
+                if (sPropertyName.startsWith(RuntimeBeanBuilder.OSIVIA_CMS_REPOSITORY_PREFIX) && sPropertyName.endsWith(RuntimeBeanBuilder.OSIVIA_CMS_REPOSITORY_SUFFIX)) {
+                    String repositoryName = sPropertyName.substring(RuntimeBeanBuilder.OSIVIA_CMS_REPOSITORY_PREFIX.length(), sPropertyName.indexOf(RuntimeBeanBuilder.OSIVIA_CMS_REPOSITORY_SUFFIX));
+
+                    repositories.add(getUserRepository( cmsContext,  repositoryName));
+                }
+            }
+        }
+
+        return repositories;
+        
+        
+    }
+    
+    
     /**
      * Creates a new TestRepository object.
      *

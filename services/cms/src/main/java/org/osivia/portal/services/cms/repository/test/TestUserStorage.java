@@ -21,6 +21,8 @@ public class TestUserStorage extends BaseUserStorage {
      
 
     private static boolean batchMode = false;
+    private static boolean error = false;
+    private static Map<String,RepositoryDocument> savedDocuments;;    
     
     private static Map<SharedRepositoryKey, Map<String,RepositoryDocument>> allDocuments = new Hashtable<SharedRepositoryKey, Map<String,RepositoryDocument>>();
 
@@ -41,6 +43,12 @@ public class TestUserStorage extends BaseUserStorage {
         }
         return documents;
         
+    }
+    
+    
+    protected void initDocuments()   {
+        getDocuments().clear();
+       
     }
     
   
@@ -174,8 +182,12 @@ public class TestUserStorage extends BaseUserStorage {
      */
     @Override
     public void endBatch()  {
+        if( error)
+            allDocuments.put(getUserRepository().getRepositoryKey(), savedDocuments);            
+        
         updatePaths();
         batchMode = false;
+        error = false;
     }
 
     
@@ -236,6 +248,9 @@ public class TestUserStorage extends BaseUserStorage {
     @Override
     public void beginBatch() {
         batchMode = true;
+        error = false;
+        savedDocuments = new Hashtable<String,RepositoryDocument>();
+        savedDocuments.putAll(getDocuments());
      }
 
 
@@ -283,6 +298,13 @@ public class TestUserStorage extends BaseUserStorage {
         
        
         getSharedRepository().removeDocumentFromCache(internalID, true);
+        
+    }
+
+
+    @Override
+    public void handleError() {
+        error = true;
         
     }
 

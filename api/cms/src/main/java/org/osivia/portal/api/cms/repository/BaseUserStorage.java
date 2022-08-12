@@ -38,8 +38,6 @@ public abstract class BaseUserStorage implements UserStorage  {
     }
     
 
-  
-
     @Override
     public abstract UserData getUserData(String internalID) throws CMSException ;
 
