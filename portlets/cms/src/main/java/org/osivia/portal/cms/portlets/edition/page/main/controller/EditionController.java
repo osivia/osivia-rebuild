@@ -606,10 +606,17 @@ public class EditionController implements PortletContextAware, ApplicationContex
         return status;
     }
 
-
+    
     protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
+        addToolbarItem(toolbar, url, target, title, icon, false);
+    }
+
+    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon, boolean menu) {
         // Base HTML classes
         String baseHtmlClasses = "btn btn-sm ml-1";
+        
+        if (menu)
+            baseHtmlClasses = "btn btn-sm";
 
         // Item
         Element item;
@@ -618,6 +625,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         } else {
             // Data attributes
             Map<String, String> data = new HashMap<>();
+            String onClick = null;
 
             if ("#osivia-modal".equals(target)) {
                 data.put("target", "#osivia-modal");
@@ -630,9 +638,15 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 data.put("toggle", "modal");
 
                 target = null;
+            } else if ("dropdown-link".equals(target))   {
+                // HACKISH : link are not supported be dropdowns !
+                onClick="bilto(event)";
+                target = null;
             }
+            
+            
 
-            item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses , null, icon);
+            item = DOM4JUtils.generateLinkElement(url, target, onClick, baseHtmlClasses , null, icon);
 
             // Title
             DOM4JUtils.addAttribute(item, "title", title);
@@ -649,6 +663,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
         toolbar.add(item);
     }
+    
+    
+    
+
+    
 
 
     protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status) throws PortletException {
@@ -785,13 +804,41 @@ public class EditionController implements PortletContextAware, ApplicationContex
                         
                         
                         
-                        if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
-                            Map<String, String> properties = new HashMap<>();
-                            ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());                            
-                            
-                            String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
-                            this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-monitor");
-                        }
+                        /*
+  <div class="dropdown show">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Dropdown link
+  </a>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a>
+  </div>
+</div>
+                         * 
+                         * 
+                         */
+                        
+                        
+                        
+                        
+                        // Text
+                        Element menu = DOM4JUtils.generateDivElement("dropdown");
+                        Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-sm dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-monitor");
+                        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", "Page");
+                        menuTitle.add(text);
+                        
+                        DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+                        
+                        menu.add(menuTitle);
+                        
+                        Element list = DOM4JUtils.generateDivElement("dropdown-menu");
+                        menu.add(list);
+                        
+                        toolbar.add(menu);
+                        
+                       
                         
                         //"${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
                         boolean hasPageSubtype = false;
@@ -805,10 +852,18 @@ public class EditionController implements PortletContextAware, ApplicationContex
                             if( portalControllerContext.getResponse() instanceof RenderResponse)   {
                                 PortletURL createPageUrl = ((RenderResponse)portalControllerContext.getResponse()).createActionURL();
                                 createPageUrl.setParameter(ActionRequest.ACTION_NAME, "addPage");
-                                this.addToolbarItem(toolbar, createPageUrl.toString(), null, bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus");
+                                this.addToolbarItem(list, createPageUrl.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
                             }
                         }
                         
+                        
+                        if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
+                            Map<String, String> properties = new HashMap<>();
+                            ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());                            
+                            
+                            String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
+                            this.addToolbarItem(list, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
+                        }
                         
                         // Rename URL
                         Map<String, String> properties = new HashMap<>();
@@ -816,7 +871,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     
     
                         String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
-                        this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text");
+                        this.addToolbarItem(list, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text", true);
                         
                         
                         
@@ -825,7 +880,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                         ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
 
                         deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
-                        this.addToolbarItem(toolbar, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin");
+                        this.addToolbarItem(list, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin", true);
                         
                         
                         
@@ -835,7 +890,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                                 ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());                            
                                 
                                 String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
-                                this.addToolbarItem(toolbar, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock");
+                                this.addToolbarItem(list, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock", true);
                             }
                         }
                                                

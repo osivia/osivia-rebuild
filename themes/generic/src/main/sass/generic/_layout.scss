@@ -32,8 +32,10 @@
    	.glyphicons	{
    		color : $white !important
  	
-   	}		  	
-  }
+   	}	
+   }
+  
+  
   
   .btn-group {
   	a.btn-light	{
@@ -43,6 +45,10 @@
 		} 	  	
    	
 	}
+  }
+  
+  .dropdown-menu	{
+	background-color : $secondary !important;
   }
 
 }
