@@ -1,7 +1,9 @@
 package org.osivia.portal.core.container.persistent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -95,6 +97,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
 
 
+        try {
         Map<PortalObjectId, PortalObject> contextNodes = getContextNodes();
 
 
@@ -119,28 +122,75 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
          }
         
 
-        if (res == null) {
+         if (res == null) {
 
-            String portalName = id.getPath().getName(0);
+             String portalName = id.getPath().getName(0);
 
-            PortalObjectPath portalPath = new PortalObjectPath("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
-            PortalObjectId portalID = new PortalObjectId(id.getNamespace(), portalPath);
+             PortalObjectPath portalPath = new PortalObjectPath("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
+             PortalObjectId portalID = new PortalObjectId(id.getNamespace(), portalPath);
 
-            
-            PortalObjectImplBase curPortalObject = (PortalObjectImplBase) contextNodes.get(portalID);
-            
-           
-            if (curPortalObject == null ) {
-                // Create portal
 
-                createPortal(contextNodes, portalID);
-                                
-            }
+             PortalObjectImplBase curPortalObject = (PortalObjectImplBase) contextNodes.get(portalID);
 
-            res = contextNodes.get(id);
-        }
 
+             if (curPortalObject == null) {
+                 // Create portal
+                 createPortal(contextNodes, portalID);
+             }
+
+             if (id.getPath().getLength() > 2) {
+                 
+                 // Create page
+
+                 PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
+                 CMSContext cmsContext = new CMSContext(portalCtx);
+
+                 buildCMSContext(portalName, cmsContext);
+
+
+                 // Loop on parent pages until page is found
+                 
+                 List<NavigationItem> pageList = new ArrayList<>();
+                 String pageId = id.getPath().getLastComponentName();
+
+                 NavigationItem pageNavigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(new UniversalID(portalID.getNamespace(), pageId));
+                 PortalObjectPath pagePath = id.getPath();
+
+                 while ((!pageNavigation.isRoot())) {
+
+                     if (contextNodes.get(new PortalObjectId(id.getNamespace(), pagePath)) != null) {
+                         break;
+                     }
+
+                     pageList.add(0, pageNavigation);
+
+                     pageNavigation = pageNavigation.getParent();
+                     pagePath = pagePath.getParent();
+
+                 }
+
+                 // Create parents on descendant order
+                 
+                 for (NavigationItem curPage : pageList) {
+                    PortalObjectImplBase parent = (PortalObjectImplBase) contextNodes.get(new PortalObjectId(id.getNamespace(), pagePath));
+                     DefaultCMSPageFactory.createCMSPage(this, containerContext, parent, getCMSService(), cmsContext, curPage);
+                     pagePath = new PortalObjectPath(pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + curPage.getDocumentId().getInternalID(), PortalObjectPath.CANONICAL_FORMAT);
+                 }
+
+             }
+
+
+             res = contextNodes.get(id);
+
+
+         }
         return res;
+        
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        
+
 
     }
 
@@ -304,28 +354,11 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
             try {
                 PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
-                ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalCtx);                
-                
+
                 
                 String portalCMSName = portalName;
                 CMSContext cmsContext = new CMSContext(portalCtx);
-                int iCtx = portalCMSName.indexOf(IPublicationManager.PAGEID_CTX);
-                if( iCtx != -1) {
-
-                    String portalCMSCtx = portalCMSName.substring(iCtx + IPublicationManager.PAGEID_CTX.length());
-                    portalCMSName = portalCMSName.substring(0, iCtx);                    
-                    String items[] = portalCMSCtx.split(IPublicationManager.PAGEID_ITEM_SEPARATOR);
-                    
-                    for(int i= 0; i<items.length; i+=1)    {
-                        String values[] = items[i].split(IPublicationManager.PAGEID_VALUE_SEPARATOR);
-                         if( values[0].equals(IPublicationManager.PAGEID_PREVIEW))    {
-                            cmsContext.setPreview(BooleanUtils.toBoolean(values[1]));
-                        }
-                         if( values[0].equals(IPublicationManager.PAGEID_LOCALE))    {
-                             cmsContext.setLocale(new Locale(values[1]));
-                         }
-                    }
-                }
+                portalCMSName = buildCMSContext(portalCMSName, cmsContext);
                     
                 Document document = getCMSService().getCMSSession(cmsContext).getDocument(new UniversalID(portalID.getNamespace(), portalCMSName));
                 
@@ -373,6 +406,27 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
             }
 
 
+    }
+
+    private String buildCMSContext(String portalCMSName, CMSContext cmsContext) {
+        int iCtx = portalCMSName.indexOf(IPublicationManager.PAGEID_CTX);
+        if( iCtx != -1) {
+
+            String portalCMSCtx = portalCMSName.substring(iCtx + IPublicationManager.PAGEID_CTX.length());
+            portalCMSName = portalCMSName.substring(0, iCtx);                    
+            String items[] = portalCMSCtx.split(IPublicationManager.PAGEID_ITEM_SEPARATOR);
+            
+            for(int i= 0; i<items.length; i+=1)    {
+                String values[] = items[i].split(IPublicationManager.PAGEID_VALUE_SEPARATOR);
+                 if( values[0].equals(IPublicationManager.PAGEID_PREVIEW))    {
+                    cmsContext.setPreview(BooleanUtils.toBoolean(values[1]));
+                }
+                 if( values[0].equals(IPublicationManager.PAGEID_LOCALE))    {
+                     cmsContext.setLocale(new Locale(values[1]));
+                 }
+            }
+        }
+        return portalCMSName;
     }
 
     @Override

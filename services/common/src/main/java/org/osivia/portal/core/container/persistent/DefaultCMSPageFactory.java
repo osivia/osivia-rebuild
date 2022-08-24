@@ -54,7 +54,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         this.cmsContext = cmsContext;
         this.navItem = navItem;
         
-        log.debug("create CMSPage " +navItem.getDocumentId() + " " +cmsContext.isPreview());
+        log.info("create CMSPage " +navItem.getDocumentId() + " " +cmsContext.isPreview());
         
         doc = cmsService.getCMSSession(cmsContext).getDocument( navItem.getDocumentId());
 
@@ -97,13 +97,13 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
             
         }
             
-
+/*
         for (NavigationItem child : navItem.getChildren()) {
             org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);
             DefaultCMSPageFactory.createCMSPage(container, containerContext, page, cmsService, cmsContext, child);
 
         }
-
+*/
     }
 
 
