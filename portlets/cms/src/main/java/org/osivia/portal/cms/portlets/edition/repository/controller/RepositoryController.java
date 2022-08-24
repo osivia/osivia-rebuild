@@ -175,83 +175,9 @@ public class RepositoryController extends GenericPortlet implements PortletConte
 
     }
 
-    /**
-     * Save file action mapping.
-     * 
-     */
-    @ActionMapping(name = "save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,  @RequestParam("repositoryName") String repositoryName)
-            throws PortletException, IOException {
-        // Portal controller context
-        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-
-        
-        // Portal controller context
-        CMSController ctrl = new CMSController(portalCtx);
-
-        CMSContext cmsContext = ctrl.getCMSContext();
-        cmsContext.setSuperUserMode(true);
-        
-        FileOutputStream output = null;
-        
-        try {
-            StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, repositoryName);
-            File f = new File(System.getProperty("portal.configuration.path") + "configuration-" + repositoryName+".json");
-            output = new FileOutputStream(f);
-            repository.saveTo(output);
-            
-            Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
-            String message = bundle.getString("MODIFY_REPOSITORY_SAVE_SUCCESS");        
-            notificationService.addSimpleNotification(portalCtx, message, NotificationsType.SUCCESS);
-            
-        } catch (CMSException e) {
-            throw new PortletException(e);
-        } finally {
-            if( output != null)
-                output.close();
-        }
-
-    }
+     
     
-    
-    
-    /**
-     * Restore file action mapping.
-     * 
-     */
-    @ActionMapping(name = "restore")
-    public void restore(ActionRequest request, ActionResponse response, @RequestParam("repositoryName") String repositoryName)
-            throws PortletException, IOException {
-        // Portal controller context
-        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-
-        
-        // Portal controller context
-        CMSController ctrl = new CMSController(portalCtx);
-
-        CMSContext cmsContext = ctrl.getCMSContext();
-        cmsContext.setSuperUserMode(true);
-        
-        FileOutputStream output = null;
-        
-        try {
-            StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, repositoryName);
-            repository.restore();
-            
-            Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
-            String message = bundle.getString("MODIFY_REPOSITORY_RESTORE_SUCCESS");        
-            notificationService.addSimpleNotification(portalCtx, message, NotificationsType.SUCCESS);
-            
-        } catch (CMSException e) {
-            throw new PortletException(e);
-        } finally {
-            if( output != null)
-                output.close();
-        }
-
-    }
-    
-    
+     
     /**
      * Load page resource mapping.
      *

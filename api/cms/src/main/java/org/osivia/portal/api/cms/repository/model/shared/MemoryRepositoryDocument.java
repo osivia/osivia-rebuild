@@ -66,6 +66,16 @@ public class MemoryRepositoryDocument extends RepositoryDocument implements org.
     }
 
 
+    public String getTitle() {
+        return (String) getProperties().get("dc:title");
+
+    }
+
+    public void setTitle( String title)  {
+        getProperties().put("dc:title", title);
+    }
+    
+    
     public void setACL(List<String> acls) {
         this.acls = acls;
     }

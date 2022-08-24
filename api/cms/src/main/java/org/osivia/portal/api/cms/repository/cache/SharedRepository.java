@@ -13,6 +13,7 @@ import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.CMSNotImplementedRequestException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.UserStorage;
 import org.osivia.portal.api.cms.repository.model.RepositoryContentEvent;
 import org.osivia.portal.api.cms.repository.model.RepositoryEvent;
@@ -22,6 +23,7 @@ import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.SpaceCacheBean;
+import org.osivia.portal.api.cms.service.StreamableRepository;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.GroupService;
 import org.osivia.portal.api.ha.IHAService;
@@ -97,10 +99,7 @@ public class SharedRepository {
     
     public void endBatch(UserStorage storageRepository)  {
         storageRepository.endBatch();
-        
-        notifyChanges( new RepositoryEvent()); 
-        
-    }
+     }
     
     public void beginBatch(UserStorage storageRepository)  {
         storageRepository.beginBatch();
@@ -115,38 +114,16 @@ public class SharedRepository {
     }
     
     public void addDocumentToCache(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException  {
-        
-        cachedDocument.put(internalID, document);
-       
-        if(!batchMode)  {
-            
-            List<Request> dirtyRequests = new ArrayList<>();
-            if( CollectionUtils.isEmpty(document.getSupportedSubTypes()))    {
-                dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName,document.getParentInternalId())));
-            }
-            
-            notifyChanges( createCMSEvent( document.getSpaceId().getInternalID(), dirtyRequests));    
-         }
+         cachedDocument.put(internalID, document);
     }
     
     
     
     public void removeDocumentFromCache(String internalID, boolean batchMode) throws CMSException {
-
-        RepositoryDocument document = cachedDocument.get(internalID);
+       RepositoryDocument document = cachedDocument.get(internalID);
 
         if (document != null) {
-
-            cachedDocument.remove(internalID);
-            
-            if(!batchMode)  {
-
-                List<Request> dirtyRequests = new ArrayList<>();
-                dirtyRequests.add(new GetChildrenRequest(new UniversalID(repositoryName, document.getParentInternalId())));
-
-
-                notifyChanges(createCMSEvent(document.getSpaceId().getInternalID(), dirtyRequests));
-            }
+           cachedDocument.remove(internalID);
         }
 
     }
@@ -157,9 +134,6 @@ public class SharedRepository {
         
         cachedDocument.put(internalID, document);
         
-        if(!batchMode)  {
-            notifyChanges( createCMSEvent( document.getSpaceId().getInternalID(), new ArrayList<>()));    
-        }
     } 
     
     
@@ -217,6 +191,8 @@ public class SharedRepository {
     }
     
     public void notifyUpdate(UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
+        
+        
         applyUpdateOnNode( storageRepository,  updateInformation);
         
         // Notify others Node
@@ -224,8 +200,14 @@ public class SharedRepository {
         
     }
  
-    public void handleUpdate(UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
-        applyUpdateOnNode( storageRepository,  updateInformation);
+    public void handleUpdate(BaseUserRepository repository, UserStorage storageRepository, UpdateInformations updateInformation) throws CMSException {
+        
+
+        if( repository instanceof StreamableRepository  ) {
+            ((StreamableRepository) repository).checkAndReload();
+        }   else    {
+             applyUpdateOnNode( storageRepository,  updateInformation);
+        }
     }
     
     
@@ -279,6 +261,10 @@ public class SharedRepository {
              
              notifyChanges(  createCMSEvent(space.getId().getInternalID(), dirtyRequests));    
          }
+         
+         if( updateInformation.getScope().equals(UpdateScope.SCOPE_REPOSITORY) )  {
+              notifyChanges( new RepositoryEvent());    
+         }
     }
 
    
@@ -297,7 +283,7 @@ public class SharedRepository {
     
     
  
-    public void notifyChanges( CMSEvent e) {
+    private void notifyChanges( CMSEvent e) {
         
         List<RepositoryListener> obsoleteListeners = new ArrayList<>();
         

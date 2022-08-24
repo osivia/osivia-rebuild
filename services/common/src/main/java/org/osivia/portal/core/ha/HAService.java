@@ -88,6 +88,10 @@ public class HAService implements IHAService{
                                 CMSEventBean cmsEventInfos = new ObjectMapper().readValue(s.substring(CMS_NOTIFICATION.length()), CMSEventBean.class);
                                 UpdateInformations informations = cmsEventInfos.toUpdate();
                                 
+                                // CMS Service not yet deployed
+                                if( cmsServiceLocator.getCMSService() == null)
+                                    return;
+                                
                                 PortalControllerContext portalCtx = new PortalControllerContext(cmsServiceLocator.getCMSService().getPortletContext());
                                 CMSContext cmsContext = new CMSContext(portalCtx);    
                                 cmsContext.setSuperUserMode(true);

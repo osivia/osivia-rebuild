@@ -35,6 +35,9 @@ import org.jboss.portal.core.model.portal.metadata.WindowMetaData;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.SecurityConstants;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.UpdateInformations;
+import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
@@ -85,22 +88,59 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
 
     public File inputFile = null;
 
-    
+
     public FileUtils fileUtils;
-    
+
     public static String checksum = null;
-    
+
 
     public FileRepository(SharedRepositoryKey repositoryKey, String userName) {
         super(repositoryKey, null, userName);
         fileUtils = new FileUtils(this);
     }
 
-    
-    public Map<String,RepositoryDocument> getDocuments()   {
-        return ((TestUserStorage) getUserStorage()).getDocuments();
+
+    @Override
+    public void addDocument(String internalID, RepositoryDocument document) throws CMSException {
+        getUserStorage().addDocument(internalID, document, batchMode);
+
+        if (!batchMode) {
+            save();
+            UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), internalID), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
+            notifyUpdate( infos);
+        }
+    }
+
+    @Override
+    public void updateDocument(String internalID, RepositoryDocument document) throws CMSException {
+        getUserStorage().updateDocument(internalID, document, batchMode);
+
+        if (!batchMode) {
+            save();
+            UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), internalID), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
+            notifyUpdate( infos);
+        }
     }
     
+    @Override    
+    public void deleteDocument(String id) throws CMSException {
+        
+        org.osivia.portal.api.cms.model.Document document = getDocument(id);
+          
+        getUserStorage().deleteDocument(id, batchMode);
+          
+         if(!batchMode)  { 
+             save();
+             UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), id), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
+             getSharedRepository().notifyUpdate( getUserStorage(), infos);
+          }
+      }
+
+
+    public Map<String, RepositoryDocument> getDocuments() {
+        return ((TestUserStorage) getUserStorage()).getDocuments();
+    }
+
 
     @Override
     public void addEmptyPage(String id, String name, String parentId) throws CMSException {
@@ -407,10 +447,11 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
         ((TestUserStorage) getUserStorage()).initDocuments();
 
         if (inputFile != null) {
+            checksum = fileUtils.getCheckSum(inputFile);
             importFile(inputFile);
             inputFile = null;
         } else {
-            File file = new File(System.getProperty("portal.configuration.path") + "configuration-" + getRepositoryName() + ".json");
+            File file = getConfigurationFile();
             if (file.exists()) {
                 checksum = fileUtils.getCheckSum(file);
                 fileUtils.importFile(file);
@@ -420,20 +461,20 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
     }
 
     private void importFile(File importFile) {
-      fileUtils.importFile(importFile);
+        fileUtils.importFile(importFile);
     }
 
     public void checkAndReload() {
-        File file = new File(System.getProperty("portal.configuration.path") + "configuration-" + getRepositoryName() + ".json");
-        if( file.exists())  {
+        File file = getConfigurationFile();
+        if (file.exists()) {
             String newChecksum = fileUtils.getCheckSum(file);
-            
-            if( ! StringUtils.equals(newChecksum, checksum))   {
+
+            if (!StringUtils.equals(newChecksum, checksum)) {
                 startInitBatch();
             }
         }
-      }
-   
+    }
+
 
     private void importDefaultObject() {
         try {
@@ -537,24 +578,54 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
     }
 
 
-
-
     @Override
     public void saveTo(OutputStream out) {
-       fileUtils.saveTo(out);
+        fileUtils.saveTo(out);
     }
 
+    public void save() {
 
+        File mainFile = getConfigurationFile();
+        FileOutputStream outStream = null;
+        try {
+            outStream = new FileOutputStream(mainFile);
+            fileUtils.saveTo(outStream);
+        } catch (FileNotFoundException e) {
+
+        } finally {
+            if (outStream != null)
+                try {
+                    outStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException();
+                }
+        }
+
+        File file = getConfigurationFile();
+        if (file.exists()) {
+            checksum = fileUtils.getCheckSum(file);
+        }
+
+
+    }
 
     @Override
     public void readFrom(InputStream in) {
         try {
-            File targetFile = File.createTempFile("configuration", "json");
-            FileOutputStream outStream = new FileOutputStream(targetFile);
+            File newConfigurationFile = File.createTempFile("configuration", "json");
+            FileOutputStream outStream = new FileOutputStream(newConfigurationFile);
             FileCopyUtils.copy(in, outStream);
 
-            inputFile = targetFile;
+            inputFile = newConfigurationFile;
             startInitBatch();
+
+            // Update configuration
+            File mainFile = getConfigurationFile();
+            FileCopyUtils.copy(newConfigurationFile, mainFile);
+
+            // Delete input file
+            newConfigurationFile.delete();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -562,9 +633,8 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
     }
 
 
-    @Override
-    public void restore() {
-        startInitBatch();
+    private File getConfigurationFile() {
+        return new File(System.getProperty("portal.configuration.path") + "configuration-" + getRepositoryName() + ".json");
     }
 
 

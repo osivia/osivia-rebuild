@@ -5,6 +5,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.UpdateInformations;
+import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
@@ -22,7 +25,7 @@ public class TestUserStorage extends BaseUserStorage {
 
     private static boolean batchMode = false;
     private static boolean error = false;
-    private static Map<String,RepositoryDocument> savedDocuments;;    
+    private static Map<String,RepositoryDocument> savedDocuments;
     
     private static Map<SharedRepositoryKey, Map<String,RepositoryDocument>> allDocuments = new Hashtable<SharedRepositoryKey, Map<String,RepositoryDocument>>();
 
@@ -78,7 +81,12 @@ public class TestUserStorage extends BaseUserStorage {
              updatePaths();
         }
         
+            
         getSharedRepository().addDocumentToCache(internalID, document, batchMode);
+        
+
+               
+        
     }
     
     /* (non-Javadoc)
@@ -94,6 +102,8 @@ public class TestUserStorage extends BaseUserStorage {
         }
         
         getSharedRepository().updateDocumentToCache(internalID, document, batchMode);
+        
+      
     } 
     
     
@@ -188,7 +198,7 @@ public class TestUserStorage extends BaseUserStorage {
         updatePaths();
         batchMode = false;
         error = false;
-    }
+     }
 
     
     public void clearDocuments()  {
@@ -258,11 +268,14 @@ public class TestUserStorage extends BaseUserStorage {
     @Override
     public void deleteDocument(String internalID, boolean batchMode) throws CMSException {
       
+        
         deleteDocumentInternal(internalID);
         
         if(!batchMode)  {
             updatePaths();
         }
+        
+
           
     }
 
@@ -298,6 +311,9 @@ public class TestUserStorage extends BaseUserStorage {
         
        
         getSharedRepository().removeDocumentFromCache(internalID, true);
+        
+        
+        
         
     }
 

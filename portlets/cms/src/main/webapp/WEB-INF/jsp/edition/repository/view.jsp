@@ -30,36 +30,7 @@
 	                            <h5 class="card-title mb-1"><c:out value="${repository.name}" /></h5>
 		                            <div class="row">
 
-		                                <div class="col-sm-2 d-flex">
-		                                	<c:if test="${repository.streamable}">
-		                            
-		                                        <portlet:actionURL name="save" var="saveUrl">
-		                                            <portlet:param name="repositoryName" value="${repository.name}"/>
-			                                     </portlet:actionURL>		   										
-		   											                                	
-				                                <a href="${saveUrl}" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link text-truncate">
-				                                  
-				                                                    <i class="glyphicons glyphicons-basic-save"></i>
-				                                                    <strong class="d-inline"><op:translate key="MODIFY_REPOSITORY_SAVE_LABEL"/></strong>
-				                                </a>
-			                                </c:if>
-		                                </div>
-		                                
-										<div class="col-sm-2 d-flex">
-		                                	<c:if test="${repository.streamable}">
-		                            
-		                                        <portlet:actionURL name="restore" var="restoreUrl">
-		                                            <portlet:param name="repositoryName" value="${repository.name}"/>
-			                                     </portlet:actionURL>		   										
-		   											                                	
-				                                <a href="${restoreUrl}" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link text-truncate">
-				                                  
-				                                                    <i class="glyphicons glyphicons-basic-open"></i>
-				                                                    <strong class="d-inline"><op:translate key="MODIFY_REPOSITORY_RESTORE_LABEL"/></strong>
-				                                </a>
-			                                </c:if>
-		                                </div>		                                
-
+ 
 		                                <div class="col-sm-2 d-flex">
 		                                	<c:if test="${repository.streamable}">
 		                            

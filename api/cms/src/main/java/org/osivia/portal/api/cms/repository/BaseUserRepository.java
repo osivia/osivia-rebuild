@@ -12,7 +12,9 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.UpdateInformations;
+import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
@@ -187,15 +189,27 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         
         batchMode = true;
         getSharedRepository().beginBatch(userStorage);
+        boolean error = false;
 
         try {
             initDocuments();
             
         }   catch(Exception e)  {
             userStorage.handleError();
+            error = true;
             throw e;
         }   finally    {
             getSharedRepository().endBatch(userStorage);
+            
+            if( error == false)  {
+                UpdateInformations infos = new UpdateInformations(getRepositoryName());
+                try {
+                    getSharedRepository().notifyUpdate( getUserStorage(), infos);
+                } catch (CMSException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            
             batchMode = false;
         }
        
@@ -314,14 +328,6 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     }
 
     
-     
-
-    public void deleteDocument(String id) throws CMSException {
-        getUserStorage().deleteDocument(id, batchMode);
-
-       
-    }
-    
     
     public UserStorage getUserStorage()  {
         return userStorage;
@@ -336,7 +342,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     @Override
     public void handleUpdate(UpdateInformations infos) throws CMSException {
-        getSharedRepository().handleUpdate(getUserStorage(), infos);
+        getSharedRepository().handleUpdate(this, getUserStorage(), infos);
     }
     
     /**

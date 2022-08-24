@@ -15,8 +15,13 @@ public class UpdateInformations {
  
     /** The scope. */
     private final UpdateScope scope;
+    
+    /** the repository **/
+    private final String repository;
 
     
+    
+
     /** Is the update action asynchronous */
     private boolean async = false;
     
@@ -25,11 +30,15 @@ public class UpdateInformations {
      * Instantiates a new update informations.
      */
     public UpdateInformations( UniversalID documentID, UniversalID spaceID) {
-
-
-        this( documentID, spaceID, UpdateScope.SCOPE_SPACE, false);
-
+       this( documentID, spaceID, UpdateScope.SCOPE_SPACE, false);
+       
     }
+    
+    public UpdateInformations( String repository) {
+        this( null, null, UpdateScope.SCOPE_REPOSITORY, false, repository);
+        
+    }
+    
     
     /**
      * Instantiates a new update informations.
@@ -38,11 +47,17 @@ public class UpdateInformations {
      * @param async the async
      */
     public UpdateInformations(UniversalID documentID, UniversalID spaceID, UpdateScope scope, boolean async) {
+        this(documentID, spaceID, scope, async, spaceID.getRepositoryName());
+    }
+    
+    
+    public UpdateInformations(UniversalID documentID, UniversalID spaceID, UpdateScope scope, boolean async, String repository) {
         super();
         this.documentID = documentID;
         this.spaceID = spaceID;
         this.async = async;
         this.scope = scope;
+        this.repository = repository;
     }
 
     /**
@@ -74,10 +89,7 @@ public class UpdateInformations {
         return spaceID;
     }
 
-    
-
-
-    
+      
     /**
      * Gets the scope.
      *
@@ -87,6 +99,14 @@ public class UpdateInformations {
         return scope;
     }
 
- 
+    /**
+     * Gets the repository
+     * 
+     * @return
+     */
+    public String getRepository() {
+        return repository;
+    }
+
 
 }

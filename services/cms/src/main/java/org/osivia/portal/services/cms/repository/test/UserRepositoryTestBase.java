@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.UpdateInformations;
+import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.CMSNotImplementedRequestException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
@@ -27,6 +28,7 @@ import org.osivia.portal.api.cms.service.Documents;
 import org.osivia.portal.api.cms.service.GetChildrenRequest;
 import org.osivia.portal.api.cms.service.Request;
 import org.osivia.portal.api.cms.service.Result;
+import org.osivia.portal.api.cms.service.StreamableRepository;
 
 import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 
@@ -148,13 +150,37 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
     @Override
     public void addDocument(String internalID, RepositoryDocument document) throws CMSException {
         getUserStorage().addDocument(internalID, document, batchMode);
+        
+        if(!batchMode)  {   
+            if(this instanceof StreamableRepository)    {
+                UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), internalID), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
+                getSharedRepository().notifyUpdate( getUserStorage(), infos);
+            }
+        }
      }
 
     @Override
     public void updateDocument(String internalID, RepositoryDocument document) throws CMSException {
         getUserStorage().updateDocument(internalID, document, batchMode);
+        
+        if(!batchMode)  {        
+            UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), internalID), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
+            getSharedRepository().notifyUpdate( getUserStorage(), infos);
+        }        
     }
 
+    @Override    
+    public void deleteDocument(String id) throws CMSException {
+        
+        Document document = getDocument(id);
+          
+        getUserStorage().deleteDocument(id, batchMode);
+          
+         if(!batchMode)  {        
+              UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), id), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
+              getSharedRepository().notifyUpdate( getUserStorage(), infos);
+          }
+      }
 
 
     @Override
@@ -208,6 +234,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
         
         RepositoryDocument doc = getSharedDocument(id);
         doc.setTitle(title);
+        
         
         updateDocument(id, doc);
      }

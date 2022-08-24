@@ -10,6 +10,9 @@ public enum UpdateScope {
     SCOPE_SPACE,
     
     /** Modifications only impact the content. */
-    SCOPE_CONTENT
+    SCOPE_CONTENT,
+    
+    /** Modifications may impact the repository. */
+    SCOPE_REPOSITORY
 
 }

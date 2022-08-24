@@ -11,7 +11,8 @@ import org.osivia.portal.api.cms.UpdateScope;
  * @author jsste
  */
 public class CMSEventBean { 
-    private String documentId = null;
+    private String repository = null;
+     private String documentId = null;
     private String spaceId = null;
     private String scope = null;
     private boolean async;
@@ -52,6 +53,16 @@ public class CMSEventBean {
         this.async = async;
     }
    
+    
+    public void setRepository(String repository) {
+        this.repository = repository;
+    }
+    
+    public String getRepository() {
+        return repository;
+    }
+
+
     /**
      * build the bean from update informations
      * 
@@ -60,6 +71,8 @@ public class CMSEventBean {
      */
     public static CMSEventBean fromUpdate( UpdateInformations update)  {
         CMSEventBean cmsEvent = new CMSEventBean();
+        if( update.getRepository() != null)
+            cmsEvent.setRepository(update.getRepository());
         if( update.getSpaceID() != null)
             cmsEvent.setSpaceId( update.getSpaceID().toString());
         if( update.getDocumentID() != null)
@@ -78,7 +91,7 @@ public class CMSEventBean {
      * @return
      */
     public UpdateInformations toUpdate( )  {
-        return new UpdateInformations(getDocumentId()!=null? new UniversalID(getDocumentId()) : null, getSpaceId()!=null? new UniversalID(getSpaceId()) : null, getScope() != null ? UpdateScope.valueOf(getScope()) : null, getAsync());
+        return new UpdateInformations(getDocumentId()!=null? new UniversalID(getDocumentId()) : null, getSpaceId()!=null? new UniversalID(getSpaceId()) : null, getScope() != null ? UpdateScope.valueOf(getScope()) : null, getAsync(), getRepository());
     
     }
             

@@ -5,7 +5,7 @@ import java.io.OutputStream;
 
 public interface StreamableRepository {
     
-    void restore();
+    public void checkAndReload();
     
     void saveTo(OutputStream out);
     
