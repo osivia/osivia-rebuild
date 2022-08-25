@@ -239,7 +239,18 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
                     Map<String, String> moduleProperties = new ConcurrentHashMap<>();
 
                     for (Map.Entry<String, String> entry : windowMetaData.getProperties().entrySet()) {
-                        if (!entry.getKey().equals(ThemeConstants.PORTAL_PROP_ORDER))
+                        
+                        boolean skip = false;
+                        
+                        String key = entry.getKey();
+                        if(StringUtils.equals(key, "theme.dyna.partial_refresh_enabled"))
+                            skip = true;
+                        if(StringUtils.equals(key, "osivia.ajaxLink"))
+                            skip = true;
+                        if(StringUtils.equals(key, ThemeConstants.PORTAL_PROP_ORDER))
+                            skip = true;                           
+                        
+                        if (!skip)
                             moduleProperties.put(entry.getKey(), entry.getValue());
                     }
                     ModuleRef module = new ModuleRef(windowMetaData.getName(), windowMetaData.getRegion(), windowMetaData.getContent().getURI(), moduleProperties);
@@ -411,7 +422,11 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
 
         if (title == null)
             title = metaData.getName();
+        
         portalProperties.put("dc:title", title);
+        
+
+        
         return portalProperties;
     }
 
@@ -548,6 +563,7 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
                 }
             }
 
+            save();
 
         } catch (Exception e) {
             log.error(e);

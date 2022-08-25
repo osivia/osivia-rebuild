@@ -790,7 +790,6 @@ public class EditionController implements PortletContextAware, ApplicationContex
                         Map<String, String> spaceProperties = new HashMap<>();
                         spaceProperties.put("osivia.title", title);
                         spaceProperties.put("osivia.hideTitle", "1");
-                        spaceProperties.put("osivia.ajaxLink", "1");
                         ctrl.addContentRefToProperties(spaceProperties, "osivia.space.id", document.getSpaceId());                        
 
 

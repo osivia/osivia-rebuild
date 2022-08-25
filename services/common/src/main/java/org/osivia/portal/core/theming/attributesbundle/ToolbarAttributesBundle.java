@@ -252,8 +252,7 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
             Map<String, String> properties = new HashMap<>();
             properties.put(InternalConstants.PROP_WINDOW_TITLE, title);
             properties.put("osivia.hideTitle", "1");
-            properties.put("osivia.ajaxLink", "1");
-            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
+
 
             try {
                 userSettingsUrl = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "user-settings", title, userSettingsInstance, properties,
