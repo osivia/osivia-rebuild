@@ -103,6 +103,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       // Table
       this.writeResource(out,  "<script src='/portal-assets/js/table.js'></script>");  
       
+      // Tasks
+      this.writeResource(out,  "<script src='/portal-assets/js/tasks.js'></script>");  
+      
       // Filler
       this.writeResource(out,  "<script src='/portal-assets/js/portlet-filler.js'></script>");      
       

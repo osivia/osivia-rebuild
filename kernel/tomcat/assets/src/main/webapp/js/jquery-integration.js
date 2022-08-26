@@ -22,16 +22,3 @@ var $JQry = jQuery.noConflict();
 })(jQuery);
 
 
-$JQry(document).ajaxStart(function() {
-	var $ajaxWaiter = $JQry(".ajax-waiter");
-	
-	$ajaxWaiter.delay(200).addClass("in");
-});
-
-
-$JQry(document).ajaxStop(function() {
-	var $ajaxWaiter = $JQry(".ajax-waiter");
-	
-	$ajaxWaiter.clearQueue();
-	$ajaxWaiter.removeClass("in");
-});

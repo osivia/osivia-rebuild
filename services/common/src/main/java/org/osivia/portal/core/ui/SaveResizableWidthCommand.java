@@ -5,6 +5,7 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.controller.command.response.EmptyResponse;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
@@ -90,7 +91,7 @@ public class SaveResizableWidthCommand extends ControllerCommand {
             throw new ControllerException(e);
         }
 
-        return null;
+        return new EmptyResponse();
     }
 
 

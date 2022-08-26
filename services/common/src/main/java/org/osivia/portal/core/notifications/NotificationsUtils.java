@@ -172,23 +172,6 @@ public class NotificationsUtils {
         // Container
         Element container = DOM4JUtils.generateDivElement("notifications-container");
 
-        // Ajax waiter container
-        Element ajaxWaiterContainer = DOM4JUtils.generateDivElement("notification-container ajax-waiter");
-        container.add(ajaxWaiterContainer);
-
-        // Ajax waiter alert
-        Element ajaxWaiterAlert = DOM4JUtils.generateDivElement("alert alert-info text-nowrap");
-        ajaxWaiterContainer.add(ajaxWaiterAlert);
-
-        // Ajax waiter spinner
-        Element ajaxWaiterSpinner = DOM4JUtils.generateDivElement("spinner-border align-middle mr-2");
-        ajaxWaiterAlert.add(ajaxWaiterSpinner);
-        
-        // Ajax waiter label
-        Element ajaxWaiterLabel = DOM4JUtils.generateElement("span", null, internationalizationService.getString("AJAX_REFRESH", locale));
-        ajaxWaiterAlert.add(ajaxWaiterLabel);
-
-
         // Dyna window
         Element dynaWindow = DOM4JUtils.generateDivElement("dyna-window");
         container.add(dynaWindow);

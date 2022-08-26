@@ -150,7 +150,7 @@ function bilto(event)
             options.method = "get"
 
             // We don't block
-            options.asynchronous = false;
+            options.asynchronous = true;
          }
       }
       else if ((source.nodeName == "INPUT" || source.nodeName == "BUTTON") && (source.type == "submit" || source.type == "image"))
@@ -663,6 +663,11 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	
 	  synchronizeMetadatas();
 	  
+	  
+	  $JQry(".notification-container").delay(10000).fadeOut(2000);
+	  
+	  
+	  
 	}
 	else if (resp.type == "update_page")
 	{
@@ -734,8 +739,6 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
 		headers.ajax_context = ajaxContext;
 	}
 	
-	$ajaxWaiter = $JQry(".ajax-waiter");
-
 	
 	// Save current scroll position
 	currentScroll = 0;
@@ -753,15 +756,10 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
     // Complete the ajax request options
     options.requestHeaders = headers;
     
-    
-    // Waiter
-    $ajaxWaiter.delay(200).addClass("in");
+
     
     options.onSuccess = function(t)
     {
-
-    	$ajaxWaiter.clearQueue();
-    	$ajaxWaiter.removeClass("in");	
     	
     	onAjaxSuccess(t, callerId, null, popState, eventToStop, url);
     };

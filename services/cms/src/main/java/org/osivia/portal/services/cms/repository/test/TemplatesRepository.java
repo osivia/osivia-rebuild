@@ -256,6 +256,9 @@ public class TemplatesRepository extends UserRepositoryTestBase  {
         portalProperties.put("dc:title", "Utils" );
   
         MemoryRepositorySpace space = new MemoryRepositorySpace(this,"OSIVIA_PORTAL_UTILS", "OSIVIA_PORTAL_UTILS",null,portalChildren, portalProperties, new ArrayList<ModuleRef>());
+        List<String> acls = new ArrayList<>();
+        acls.add("_anonymous_");
+        space.setACL(acls);
         addDocument("OSIVIA_PORTAL_UTILS", space);
      }
 
