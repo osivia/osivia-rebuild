@@ -102,6 +102,9 @@ public class ThemeTagHandler extends org.jboss.portal.theme.tag.ThemeTagHandler 
        //
        if (theme != null)
        {
+           out.println("<!-- theme-"+resourceType+"-begin -->");
+           
+           
             for (Iterator i = theme.getElements().iterator(); i.hasNext();) {
                 ThemeElement el = (ThemeElement) i.next();
 
@@ -128,6 +131,10 @@ public class ThemeTagHandler extends org.jboss.portal.theme.tag.ThemeTagHandler 
                 // out.println(el.getElement());
 
             }
+            
+            out.println("<!-- theme-"+resourceType+"-end -->");
+                        
+            
        }
     }
     

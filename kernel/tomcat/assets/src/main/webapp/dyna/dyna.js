@@ -361,7 +361,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	   
 	   /* Update resources */
 	
-	   updateResources(resp.resources)
+	   updateResources(resp.resources, layout);
 	   
 	   
 	   
@@ -791,9 +791,88 @@ window.onpopstate = function (event) {
 
 
 
-function updateResources(newHeaderResources)	{
+function updateResources(newHeaderResources, layout)	{
 
 	if( newHeaderResources != null){
+		
+			// Ensure comments
+			
+
+
+
+					
+			// Remove unused scripts
+		
+			if( layout != null)	{
+				
+				var section = false;
+				
+				let parent = document.querySelector("head");
+				if (parent) {
+
+				    let removing = false;
+				    let child = parent.firstChild;
+				    let next = null;
+				    // While we still have child elements to process...
+				    while (child) {
+				        // If we're already removing, remember that
+				        let removeThis = removing;
+				        // Before we remove anything, identify the next child to visit
+				        next = child.nextSibling;
+				        // Is this a comment node?
+				        if (child.nodeType === Node.COMMENT_NODE) {
+				            if (child.nodeValue.includes("portlets-begin")) {
+				                // It's the node that tells us to start removing:
+				                // Turn on our flag and also remove this node
+				                removing = true;
+				                removeThis = false;
+				                section = true;
+				            } else if (child.nodeValue.includes("portlets-end")) {
+				                // It's the node that tells us to stop removing:
+				                // Turn off our flag, but do remove this node
+				                removing = false;
+				                removeThis = false;
+				            }
+				        }
+				        if (removeThis) {
+							var remove = true;
+							for( var iNewHeader=0; iNewHeader< newHeaderResources.length; iNewHeader++)	{
+								var newHeader = newHeaderResources[iNewHeader];
+											
+								if( newHeader.tag == "LINK" && child.nodeName == "LINK")	{
+				     			   if(  location.origin+newHeader.href == child.href)
+				     				   remove = false;
+				    		   }
+				     		   if( newHeader.tag == "SCRIPT" && child.nodeName == "SCRIPT")	{
+				 			   	if(  location.origin+newHeader.src == child.src )
+				 				   remove = false;
+				    		   }
+							}
+	
+							if(remove)
+				            		parent.removeChild(child);
+				        }
+				
+				        // Move on to next child
+				        child = next;
+				    }
+				}
+				
+				if( section == false)	{
+					// Create portlet section
+					
+					var commentBegin = document.createComment("portlets-begin");
+					parent.appendChild(commentBegin);
+					var commentEnd = document.createComment("portlets-end");
+					parent.appendChild(commentEnd);					
+				}
+				
+				
+			}		
+		
+		
+		
+		
 		   for( var iNewHeader=0; iNewHeader< newHeaderResources.length; iNewHeader++)	{
 			   
 			   var newHeader = newHeaderResources[iNewHeader];
@@ -802,11 +881,7 @@ function updateResources(newHeaderResources)	{
 			   var headers = head.children;
 			   var insert = true;
 			   
-			   //TODO HACK02
-	 		    if(  newHeader.href !== undefined && newHeader.href.includes("/index-cloud-ens-portal-file-browser/css/file-browser"))	{
-					removeFromHead("/index-cloud-ens-portal-file-browser/css/mutualized-file-browser");
-				}			   
-			   
+
 			   for( var i=0; i<  headers.length; i++)	{
 	    		   if( newHeader.tag == "LINK" && headers[i].tagName == "LINK")	{
 	     			   if(  location.origin+newHeader.href == headers[i].href)
@@ -817,29 +892,40 @@ function updateResources(newHeaderResources)	{
 	 				   insert = false;
 	    		   }
 	    	   }        		   
+	    	   
+	    	   var tagToInsert;
 			   
 			   if( insert && newHeader.tag == "LINK")	{
-	 		    var link  = document.createElement('LINK');
-	 		    link.rel  =  newHeader.rel;
-	 		    link.type =  newHeader.type;
-	 		    link.href =  newHeader.href;
+	 		    tagToInsert  = document.createElement('LINK');
+	 		    tagToInsert.rel  =  newHeader.rel;
+	 		    tagToInsert.type =  newHeader.type;
+	 		    tagToInsert.href =  newHeader.href;
 	 		    if( newHeader.media != undefined)
-	 		       link.media = newHeader.media;
-	 		    head.appendChild(link);
-	 		    
-
-	 		    
+	 		       tagToInsert.media = newHeader.media;
 			   }
 			   
 			   if( insert && newHeader.tag == "SCRIPT")	{
-	 		    var script  = document.createElement('SCRIPT');
-	 		    script.type  =  newHeader.type;
-	 		    script.src  =  newHeader.src;	
+	 		    tagToInsert  = document.createElement('SCRIPT');
+	 		    tagToInsert.type  =  newHeader.type;
+	 		    tagToInsert.src  =  newHeader.src;	
 	 		    // Important to preserve order
-	 		    script.async = false;
-	 		    head.appendChild(script);
+	 		    tagToInsert.async = false;
 			   }
+			   
+			   if( tagToInsert)	{
+	   		       $JQry("head").contents().filter(function() {
+					    return this.nodeType == 8;
+					 	}).each(function(i, e) {
+					    	if ( $JQry.trim(e.nodeValue) == "portlets-end") {
+					      	$JQry(e).before(tagToInsert);
+					    	}
+					  	});
+				  	}
 		   }
+		   
+		   
+		   
+		   
 	}
 }
 
@@ -872,9 +958,13 @@ function copyLayout( layout)
 
 	/* Insert dynamic resources from theme */
 	
-	//TODO HACK01
-	
-	
+	insertPortalResources("theme-link");
+	insertPortalResources("theme-script");
+
+}
+
+function insertPortalResources(section)	{
+
 	// Check if new resources must be inserted
 	
 	var srcs = srcContainer.select("head");
@@ -893,10 +983,10 @@ function copyLayout( layout)
 	        next = child.nextSibling;
 	        // Is this a comment node?
 	        if (child.nodeType === Node.COMMENT_NODE) {
-	            if (child.nodeValue.includes("scripts-begin")) {
+	            if (child.nodeValue.includes(section+"-begin")) {
 	                checking = true;
 	                checkThis = false;
-	            } else if (child.nodeValue.includes("scripts-end")) {
+	            } else if (child.nodeValue.includes(section+"-end")) {
 	                checking = false;
 	                checkThis = false;
 	            }
@@ -951,13 +1041,13 @@ function copyLayout( layout)
 		        next = child.nextSibling;
 		        // Is this a comment node?
 		        if (child.nodeType === Node.COMMENT_NODE) {
-		            if (child.nodeValue.includes("scripts-begin")) {
+		            if (child.nodeValue.includes(section+"-begin")) {
 		                // It's the node that tells us to start removing:
 		                // Turn on our flag and also remove this node
 		                inserting = true;
 		                insertThis = false;
 	
-		            } else if (child.nodeValue.includes("scripts-end")) {
+		            } else if (child.nodeValue.includes(section+"-end")) {
 		                // It's the node that tells us to stop removing:
 		                // Turn off our flag, but do remove this node
 		                inserting = false;
@@ -969,7 +1059,7 @@ function copyLayout( layout)
 		           	 $JQry("head").contents().filter(function() {
 						    return this.nodeType == 8;
 						  }).each(function(i, e) {
-						    if ( $JQry.trim(e.nodeValue) == "scripts-end") {
+						    if ( $JQry.trim(e.nodeValue) == section+"-end") {
 						      $JQry(child).insertBefore(e);
 						    }
 						  });
@@ -981,7 +1071,7 @@ function copyLayout( layout)
 		    }
 	    }
     }
-}
+ }
 
 function copyInnerHTML(srcContainer, dstContainer, className)
 {

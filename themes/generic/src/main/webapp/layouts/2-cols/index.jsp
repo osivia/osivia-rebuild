@@ -13,15 +13,13 @@
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />   
-   <!-- to correct the unsightly Flash of Unstyled Content. -->
-   <script type="text/javascript"></script>
 
-   
+
+    <p:theme themeName="renewal" resourceType="link"/>
 	<p:headerContent />
-	
-    <p:theme themeName="renewal"/>
+    <p:theme themeName="renewal" resourceType="script"/>
 
-<p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
+    <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 </head>
 
 <!--<op:translate key="CUSTOMIZER_MSG_1" />-->
