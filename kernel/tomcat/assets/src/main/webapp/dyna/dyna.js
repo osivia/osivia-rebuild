@@ -359,11 +359,13 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 		   	}
 	   }	   
 	   
-	   /* Update resources */
+	   /* Update portlets resources */
 	
-	   updateResources(resp.resources, layout);
-	   
-	   
+	  if( modale == false)
+	   	updateResources(resp.resources, layout);
+	  else
+	   	updateResources(resp.resources, null);
+	  	   
 	   
 
 	  
@@ -795,12 +797,7 @@ function updateResources(newHeaderResources, layout)	{
 
 	if( newHeaderResources != null){
 		
-			// Ensure comments
-			
-
-
-
-					
+				
 			// Remove unused scripts
 		
 			if( layout != null)	{
@@ -958,12 +955,12 @@ function copyLayout( layout)
 
 	/* Insert dynamic resources from theme */
 	
-	insertPortalResources("theme-link");
-	insertPortalResources("theme-script");
+	insertPortalResources(srcContainer, "theme-link");
+	insertPortalResources(srcContainer, "theme-script");
 
 }
 
-function insertPortalResources(section)	{
+function insertPortalResources(srcContainer, section)	{
 
 	// Check if new resources must be inserted
 	
@@ -1025,7 +1022,7 @@ function insertPortalResources(section)	{
 	if( changes == true)	{
 	
 	
-		removeHeadElementsBetweenComments("scripts");
+		removeHeadElementsBetweenComments(section);
 	
 	
 		if (srcs.length == 1)
