@@ -1,25 +1,17 @@
 <%@ page import="org.jboss.portal.server.PortalConstants" %>
-<%@page import="java.util.ResourceBundle"%>
+<%@ page import="java.util.ResourceBundle"%>
 <%@ taglib uri="portal-layout" prefix="p" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
 
 <% ResourceBundle rb = ResourceBundle.getBundle("Resource", request.getLocale()); %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-    <title><p:title default="<%= PortalConstants.VERSION.toString() %>"/></title>
-    <meta http-equiv="Content-Type" content="text/html;"/>
-	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-	<meta http-equiv="Pragma" content="no-cache" />
-	<meta http-equiv="Expires" content="0" />   
 
-
-    <p:theme themeName="renewal" resourceType="link"/>
+    <p:theme themeName="generic" resourceType="link"/>
 	<p:headerContent />
-    <p:theme themeName="renewal" resourceType="script"/>
+    <p:theme themeName="generic" resourceType="script"/>
 
-    <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 </head>
 
 <!--<op:translate key="CUSTOMIZER_MSG_1" />-->
@@ -58,8 +50,6 @@
 	           
 	<%@include file="../includes/footer.jsp" %>
 
-
-<p:region regionName='AJAXFooter' regionID='AJAXFooter'/>
 
 </body>
 </html>

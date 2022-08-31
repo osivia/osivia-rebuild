@@ -1219,9 +1219,64 @@ function removeFromHead( href)	{
 
 
 
-// HACK03
+
 function synchronizeMetadatas()
 {
+	
+	// create meta-datas section if doesn't exist
+	var section = false;
+				
+	let parent = document.querySelector("head");
+	if (parent) {
+
+	    let insertBefore = null;
+	    let child = parent.firstChild;
+	    let next = null;
+	    // While we still have child elements to process...
+	    while (child) {
+	        // Before we remove anything, identify the next child to visit
+	        next = child.nextSibling;
+	        // Is this a comment node?
+	        if (child.nodeType === Node.COMMENT_NODE) {
+	            if (child.nodeValue.includes("meta-datas-begin")) {
+	                // It's the node that tells us to start removing:
+	                // Turn on our flag and also remove this node
+	                section = true;
+	            } 
+	            
+	        }
+	        
+            if (child.nodeName == "META") {
+                insertBefore = child.nextSibling;
+            } 	 
+	
+	        // Move on to next child
+	        child = next;
+	    }
+	    
+		if( section == false)	{
+			// Create meta section
+	
+			var commentBegin = document.createComment("meta-datas-begin");
+			var commentEnd = document.createComment("meta-datas-end");
+	
+			if( insertBefore != null)	{
+				parent.insertBefore(commentBegin,insertBefore);
+				parent.insertBefore(commentEnd,insertBefore);						
+			}	else	{
+				parent.insertBefore(commentEnd, parent.firstChild);	
+				parent.insertBefore(commentBegin, parent.firstChild);
+			}
+		}
+	    
+	}
+	
+	
+	
+	
+	
+	
+	
 	removeHeadElementsBetweenComments("meta-datas");
 
 	//
@@ -1242,11 +1297,6 @@ function synchronizeMetadatas()
 			});
 		
  	});
-
-
-
-
-
 
 
 }

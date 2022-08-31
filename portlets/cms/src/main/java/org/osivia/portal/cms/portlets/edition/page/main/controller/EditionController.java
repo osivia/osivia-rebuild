@@ -135,7 +135,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
      * @throws PortalException 
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("status") EditionStatus status) throws PortalException {
+    public String view(RenderRequest request, RenderResponse response) throws PortalException {
 
 
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
@@ -159,9 +159,18 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
                     PortletURL actionUrl = response.createActionURL();
                     httpRequest.setAttribute("osivia.cms.edition.url", actionUrl.toString());
+                    
+
                 }
             }
         }
+        
+        try {
+            request.setAttribute("status",getStatus(request, response));
+        } catch (PortletException e) {
+            throw new PortalException(e);
+        }
+        
         return "view";
     }
     
@@ -309,7 +318,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
      * Add page sample
      */
     @ActionMapping(name = "setACL")
-    public void setACL(ActionRequest request, ActionResponse response, @ModelAttribute("status") EditionStatus status) throws PortletException, CMSException {
+    public void setACL(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
         try {
             // Portal Controller context
@@ -331,7 +340,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 else
                     ((AdvancedRepository) repository).setACL(id.getInternalID(), new ArrayList<String>());
 
-                refreshStatus(portalControllerContext, ctrl, status);
+
 
             }
         } catch (PortalException e) {
@@ -498,7 +507,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
      * publish sample
      */
     @ActionMapping(name = "publish")
-    public void publish(ActionRequest request, ActionResponse response, @ModelAttribute("status") EditionStatus status) throws PortletException, CMSException {
+    public void publish(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
         // Portal Controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         CMSController ctrl = new CMSController(portalControllerContext);
@@ -523,7 +532,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
 
 
-        refreshStatus(portalControllerContext, ctrl, status);
+
 
     }
 
@@ -592,7 +601,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
     }
 
-    @ModelAttribute("status")
+
     public EditionStatus getStatus(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
