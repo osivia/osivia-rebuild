@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.services.cms.repository.memory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -45,7 +45,7 @@ public class DefaultRepositoryFactory {
 
     
     public UniversalID getDefaultPortal() {
-        return new UniversalID("idx:DEFAULT");
+        return new UniversalID(System.getProperty("osivia.portal.default"));
     }
     
     protected static final Log logger = LogFactory.getLog(DefaultRepositoryFactory.class);
@@ -219,13 +219,19 @@ public class DefaultRepositoryFactory {
         // for previewed respositories, ensure online repository has been loaded
         // just for synchronicity of the 2 shared repositories initialisation
 
+        CMSContext adaptedContext = new CMSContext(cmsContext.getPortalControllerContext());
+        adaptedContext.setLocale(cmsContext.getlocale());
+        adaptedContext.setPreview(cmsContext.isPreview());
+        adaptedContext.setSuperUserMode(cmsContext.isSuperUserMode());
+        
         if (supportsPreview(repositoryName)) {
-            boolean savedPreview = cmsContext.isPreview();
-            cmsContext.setPreview(false);
-            BaseUserRepository publishRespository = getOrCreateUserRepository(cmsContext, repositoryName, null);
-            cmsContext.setPreview(true);
-            getOrCreateUserRepository(cmsContext, repositoryName, publishRespository);
-            cmsContext.setPreview(savedPreview);
+
+            adaptedContext.setPreview(false);
+            BaseUserRepository publishRespository = getOrCreateUserRepository(adaptedContext, repositoryName, null);
+            adaptedContext.setPreview(true);
+            getOrCreateUserRepository(adaptedContext, repositoryName, publishRespository);
+        }   else    {
+            adaptedContext.setPreview(false);
         }
 
         NativeRepository repository = (NativeRepository) getOrCreateUserRepository(cmsContext, repositoryName, null);

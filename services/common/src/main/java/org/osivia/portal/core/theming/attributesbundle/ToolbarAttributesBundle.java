@@ -445,7 +445,7 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
                     pageInternalID += token.toUpperCase();
                 }
                
-                UniversalID myAccountDocumentId = new UniversalID( "idx", pageInternalID);
+                UniversalID myAccountDocumentId = new UniversalID( System.getProperty("osivia.repository.default"), pageInternalID);
                 String customAdminPageURL = urlFactory.getViewContentUrl(new PortalControllerContext(context.getServerInvocation().getServerContext().getClientRequest()), myAccountDocumentId);
                 
                 

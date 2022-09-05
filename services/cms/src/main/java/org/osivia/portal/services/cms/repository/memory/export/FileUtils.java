@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test.export;
+package org.osivia.portal.services.cms.repository.memory.export;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +22,7 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryFolder;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.services.cms.repository.test.FileRepository;
+import org.osivia.portal.services.cms.repository.memory.FileRepository;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

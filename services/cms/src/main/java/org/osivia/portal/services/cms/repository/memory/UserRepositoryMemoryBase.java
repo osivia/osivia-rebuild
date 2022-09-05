@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.services.cms.repository.memory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +37,13 @@ import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
  * (publishing, add content, ...)
  */
 
-public abstract class UserRepositoryTestBase extends BaseUserRepository implements AdvancedRepository
+public abstract class UserRepositoryMemoryBase extends BaseUserRepository implements AdvancedRepository
 
 {
  
 
-    public UserRepositoryTestBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
-        super(repositoryKey, publishRepository, userName, new TestUserStorage());
+    public UserRepositoryMemoryBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
+        super(repositoryKey, publishRepository, userName, new MemoryUserStorage());
     }
     
 
@@ -141,7 +141,7 @@ public abstract class UserRepositoryTestBase extends BaseUserRepository implemen
     
     @Override
     public void reloadDatas() {
-        ((TestUserStorage) getUserStorage()).clearDocuments();
+        ((MemoryUserStorage) getUserStorage()).clearDocuments();
         startInitBatch();
       }
 

@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.services.cms.repository.memory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 
 
-public class TemplatesRepository extends UserRepositoryTestBase  {
+public class TemplatesRepository extends UserRepositoryMemoryBase  {
 
       
       public TemplatesRepository(SharedRepositoryKey repositoryKey, String userName) {

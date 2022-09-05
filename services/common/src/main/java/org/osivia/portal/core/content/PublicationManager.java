@@ -23,6 +23,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
@@ -54,8 +55,10 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.container.persistent.DefaultCMSPageFactory;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
+import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -261,7 +264,7 @@ public class PublicationManager implements IPublicationManager {
             //System.out.println("*** PUBMANAGER " + docId );
             
             NavigationItem navigation;
-            String pagePath = null;
+            String pagePath;
             if (spaceId != null) {
 
                     try {
@@ -310,24 +313,11 @@ public class PublicationManager implements IPublicationManager {
                     
                      UniversalID templateId = navigation.getCustomizedTemplateId();
                      
-                     /*
-                     // TODO :  Apply template adapters
                      List<TemplateAdapter> templateAdapters = getCmsServiceLocator().getCMSService().getTemplateAdapters(cmsReadItemContext);
                      for (TemplateAdapter adapter : templateAdapters) {
-                         String adaptedTemplate = adapter.adapt(this.basePublishPath, pathToCheck, spaceTemplate, template);
-                         if (adaptedTemplate != null) {
-                             template = adaptedTemplate;
-                             break;
-                         }
+                         templateId = adapter.adapt(templateId);
                      }
-                     */
-                     
-                     if( templateId.getRepositoryName().equals("idx"))  {
-                         if( templateId.getInternalID().equals("DEFAULT_TEMPLATES_WORKSPACE"))  {
-                             templateId = new UniversalID("idx", "DEFAULT_TEMPLATES_USER-WORKSPACE");
-                         }
-                     }
-                         
+                    
                     
                      Document template = getCMSService().getCMSSession(cmsContext).getDocument( templateId);
                      
@@ -459,36 +449,11 @@ public class PublicationManager implements IPublicationManager {
                  
                 
             }   else    {
-                
-                if( nxNativeItem != null )   {
-                    pageId = PortalObjectUtilsInternal.getPageId(ControllerContextAdapter.getControllerContext(portalCtx));
-                    if( pageId != null)
-                        pagePath = pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
-                    else    {
-                        // Procedure from mail
-                        // Empty page
-                        Map<Locale, String> displayNames = new HashMap<Locale, String>();
-                        String displayName = "content";
-                        if (StringUtils.isNotEmpty(displayName)) {
-                            displayNames.put(Locale.FRENCH, displayName);
-                        }                        
-                        pagePath = getDynamicService().startDynamicPage(portalCtx, "idx:/DEFAULT", "content",
-                                displayNames, "idx:/DEFAULT/root/DEFAULT_TEMPLATES/DEFAULT_TEMPLATES_PUBLISH", new HashMap<>(), new HashMap<>(), null);                        
-                    }
-                    
-                }   else    {
-                    // Empty page
-                    Map<Locale, String> displayNames = new HashMap<Locale, String>();
-                    String displayName = "content";
-                    if (StringUtils.isNotEmpty(displayName)) {
-                        displayNames.put(Locale.FRENCH, displayName);
-                    }
-                    pagePath = getDynamicService().startDynamicPage(portalCtx, "templates:/portalA", "content",
-                            displayNames, "templates:/portalA__ctx__locale_fr/root/ID_EMPTY", new HashMap<>(), new HashMap<>(), null);
-                }
-              
+                pagePath = null;
             }
             
+            
+              
 
 
             if ( (( doc == null && notSupportedCMSItem != null ) || ( doc != null && !(doc instanceof Templateable))) && pageDisplay == false) {
@@ -508,28 +473,24 @@ public class PublicationManager implements IPublicationManager {
                 
     
                 
-                if( nxNativeItem != null)   {
-                    ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
-                     
-                    CMSServiceCtx  handlerCtx = new CMSServiceCtx();
-                    handlerCtx.setPortalControllerContext(portalCtx);
-                    handlerCtx.setDoc(nxNativeItem);
-                    handlerCtx.setServletRequest(controllerContext.getServerInvocation().getServerContext().getClientRequest());
-                    
-                    
-                    Player contentProperties = getCmsServiceLocator().getCMSService().getItemHandler(handlerCtx);
-                    instance = contentProperties.getPortletInstance();
-                    
-                    windowProperties.putAll(contentProperties.getWindowProperties());
-                }   else    {
-                    if( "folder".equals(doc.getType())) {
-                        instance = "BrowserInstance";
-                        windowProperties.put(Constants.WINDOW_PROP_CACHE_PARENT_URI, doc.getId().toString());
-                    }
-                    else
-                        instance = "ContentInstance";
-                }
+
+                ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
+
+                CMSServiceCtx handlerCtx = new CMSServiceCtx();
+                handlerCtx.setPortalControllerContext(portalCtx);
+                handlerCtx.setDoc((nxNativeItem != null) ? nxNativeItem : doc);
+                handlerCtx.setServletRequest(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+
+                Player contentProperties;
+                if( nxNativeItem != null)
+                    contentProperties = getCmsServiceLocator().getCMSService().getItemHandler(handlerCtx);
+                else
+                    contentProperties = getCmsServiceLocator().getCMSService( doc.getId().getRepositoryName()).getItemHandler(handlerCtx);
                 
+                instance = contentProperties.getPortletInstance();
+
+                windowProperties.putAll(contentProperties.getWindowProperties());
+               
 
                 windowProperties.put("osivia.hideTitle", "1");
                 
@@ -537,20 +498,31 @@ public class PublicationManager implements IPublicationManager {
                     windowProperties.put("osivia.cms.contextualization", "1");
                     
                 
+                if( pagePath != null)   {
+                    getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", instance, windowProperties, windowParams);
+                }
+                else    {
+                    // Empty page (ex: link to procedure from mail, uncontextualized content, ...)
+                    Map<Locale, String> displayNames = new HashMap<Locale, String>();
+                    String displayName = "content";
+                    if (StringUtils.isNotEmpty(displayName)) {
+                        displayNames.put(Locale.FRENCH, displayName);
+                    }                
+                    
+                    StartDynamicWindowInNewPageCommand cmd = new StartDynamicWindowInNewPageCommand(new UniversalID(System.getProperty("osivia.portal.default")), null,"content", instance,
+                            windowProperties, new HashMap<>(), null);
+                    UpdatePageResponse resp = (UpdatePageResponse) controllerContext.execute(cmd);
+                    
+                    return resp.getPageId();
+                }
                 
-                getDynamicService().startDynamicWindow(portalCtx, pagePath, "content", "virtual", instance, windowProperties, windowParams);
+                
 
             }
             
             
             // Initial window 
             if( pageProps != null && pageProps.get("osivia.initialWindowInstance") != null) {
-
-                // Nuxeo command
-//                StartDynamicWindowCommand windowCommand = this.applicationContext.getBean(StartDynamicWindowCommand.class, pageId.toString(PortalObjectPath.SAFEST_FORMAT), templateRegion,
-//                        this.instanceId, "virtual", windowProps, this.params);
-                
-
 
                 
                 String instanceName = pageProps.get("osivia.initialWindowInstance");

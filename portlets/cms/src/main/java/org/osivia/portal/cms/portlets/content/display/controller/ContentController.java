@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -20,8 +22,11 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -77,12 +82,7 @@ public class ContentController implements PortletContextAware {
         if( contentId != null)  {
             UniversalID id = new UniversalID(contentId);
             Document doc = cmsService.getCMSSession(ctrl.getCMSContext()).getDocument( id);
-/*
-            final String uri = "http://localhost:8080/osivia-portal-ws-5.0-SNAPSHOT/rest/Drive.content?repository="+id.getRepositoryName()+"&id="+id.getInternalID();
-            RestTemplate restTemplate = new RestTemplate();
-             
-            Hashtable doc = restTemplate.getForObject(uri, Hashtable.class);
-*/            
+        
             request.setAttribute("document", doc);
         }
         
@@ -98,4 +98,14 @@ public class ContentController implements PortletContextAware {
         this.portletContext = portletContext;
     }
 
+
+    @PostConstruct
+    public void postConstruct() throws PortletException {
+        ICMSService integrationService =  new SampleCMSService();
+        ICMSServiceLocator cmsLocator = Locator.getService( "osivia:service=CmsServiceLocator", ICMSServiceLocator.class);
+        cmsLocator.register("myspace", integrationService);
+        }
+
+
+    
 }

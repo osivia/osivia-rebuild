@@ -383,7 +383,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             CMSContext cmsContext = ctrl.getCMSContext();
 
 
-            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, "idx");
+            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, System.getProperty("osivia.repository.default"));
 
             ((AdvancedRepository) repository).reloadDatas();
 

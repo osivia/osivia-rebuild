@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test.export;
+package org.osivia.portal.services.cms.repository.memory.export;
 
 
 

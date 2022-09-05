@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.services.cms.repository.memory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,11 +51,11 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.StreamableRepository;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.services.cms.repository.test.export.ExportRepositoryBean;
-import org.osivia.portal.services.cms.repository.test.export.ExportRepositoryDocument;
-import org.osivia.portal.services.cms.repository.test.export.FileUtils;
-import org.osivia.portal.services.cms.repository.test.imports.ProfilBean;
-import org.osivia.portal.services.cms.repository.test.imports.XMLSerializer;
+import org.osivia.portal.services.cms.repository.memory.export.ExportRepositoryBean;
+import org.osivia.portal.services.cms.repository.memory.export.ExportRepositoryDocument;
+import org.osivia.portal.services.cms.repository.memory.export.FileUtils;
+import org.osivia.portal.services.cms.repository.memory.imports.ProfilBean;
+import org.osivia.portal.services.cms.repository.memory.imports.XMLSerializer;
 import org.springframework.util.FileCopyUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -75,7 +75,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 /**
  * @author Jean-Sébastien
  */
-public class FileRepository extends UserRepositoryTestBase implements StreamableRepository {
+public class FileRepository extends UserRepositoryMemoryBase implements StreamableRepository {
 
     protected static final Log log = LogFactory.getLog(FileRepository.class);
 
@@ -89,14 +89,20 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
     public File inputFile = null;
 
 
-    public FileUtils fileUtils;
+    private FileUtils fileUtils = null;
 
     public static String checksum = null;
 
 
     public FileRepository(SharedRepositoryKey repositoryKey, String userName) {
         super(repositoryKey, null, userName);
-        fileUtils = new FileUtils(this);
+    }
+    
+    private FileUtils getFilesUtils()   {
+        if( fileUtils == null)
+            fileUtils = new FileUtils(this);
+        return fileUtils;
+        
     }
 
 
@@ -138,7 +144,7 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
 
 
     public Map<String, RepositoryDocument> getDocuments() {
-        return ((TestUserStorage) getUserStorage()).getDocuments();
+        return ((MemoryUserStorage) getUserStorage()).getDocuments();
     }
 
 
@@ -459,30 +465,30 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
 
     protected void initDocuments() {
 
-        ((TestUserStorage) getUserStorage()).initDocuments();
+        ((MemoryUserStorage) getUserStorage()).initDocuments();
 
         if (inputFile != null) {
-            checksum = fileUtils.getCheckSum(inputFile);
+            checksum = getFilesUtils().getCheckSum(inputFile);
             importFile(inputFile);
             inputFile = null;
         } else {
             File file = getConfigurationFile();
             if (file.exists()) {
-                checksum = fileUtils.getCheckSum(file);
-                fileUtils.importFile(file);
+                checksum = getFilesUtils().getCheckSum(file);
+                getFilesUtils().importFile(file);
             } else
                 importDefaultObject();
         }
     }
 
     private void importFile(File importFile) {
-        fileUtils.importFile(importFile);
+        getFilesUtils().importFile(importFile);
     }
 
     public void checkAndReload() {
         File file = getConfigurationFile();
         if (file.exists()) {
-            String newChecksum = fileUtils.getCheckSum(file);
+            String newChecksum = getFilesUtils().getCheckSum(file);
 
             if (!StringUtils.equals(newChecksum, checksum)) {
                 startInitBatch();
@@ -596,7 +602,7 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
 
     @Override
     public void saveTo(OutputStream out) {
-        fileUtils.saveTo(out);
+        getFilesUtils().saveTo(out);
     }
 
     public void save() {
@@ -605,7 +611,7 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
         FileOutputStream outStream = null;
         try {
             outStream = new FileOutputStream(mainFile);
-            fileUtils.saveTo(outStream);
+            getFilesUtils().saveTo(outStream);
         } catch (FileNotFoundException e) {
 
         } finally {
@@ -619,7 +625,7 @@ public class FileRepository extends UserRepositoryTestBase implements Streamable
 
         File file = getConfigurationFile();
         if (file.exists()) {
-            checksum = fileUtils.getCheckSum(file);
+            checksum = getFilesUtils().getCheckSum(file);
         }
 
 

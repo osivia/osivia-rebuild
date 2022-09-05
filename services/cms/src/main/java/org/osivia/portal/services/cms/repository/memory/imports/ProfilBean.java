@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.services.cms.repository.test.imports;
+package org.osivia.portal.services.cms.repository.memory.imports;
 
 import java.io.Serializable;
 

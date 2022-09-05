@@ -21,5 +21,9 @@ public interface ICMSServiceLocator {
 	void register(ICMSService service);
 	
 	ICMSService getCMSService();
+	
+	void register(String repositoryName, ICMSService service);
+	    
+	ICMSService getCMSService(String repositoryName) ;
 
 }

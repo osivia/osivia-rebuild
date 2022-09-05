@@ -139,7 +139,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
                     if (genericTemplateId == null) {
                         throw new ControllerException("template.generic.id undefined. Cannot instantiate this page");
                     } else
-                        templateId = new  UniversalID("idx",  genericTemplateId);
+                        templateId = new  UniversalID(System.getProperty("osivia.repository.default"),  genericTemplateId);
                 }   else    {
                     templateId = new  UniversalID("templates",  sTemplateId);
                 }
@@ -218,7 +218,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             PortalObject portal = PortalObjectUtilsInternal.getPortal(getControllerContext());
             //TODO NPE ouverture modale
             // Replace defaut template namespace
-            if( portal != null && "idx".equals(templateId.getRepositoryName()))   {
+            if( portal != null && System.getProperty("osivia.repository.default").equals(templateId.getRepositoryName()))   {
                 if( portal.getDeclaredProperty("templates.namespace") != null)   {
                     templateId = new UniversalID(portal.getDeclaredProperty("templates.namespace"),  templateId.getInternalID());
                 }

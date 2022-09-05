@@ -22,7 +22,7 @@ import org.osivia.portal.api.cms.service.Result;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.sessions.CMSSessionRecycle;
 import org.osivia.portal.core.sessions.ICMSSessionStorage;
-import org.osivia.portal.services.cms.repository.test.DefaultRepositoryFactory;
+import org.osivia.portal.services.cms.repository.memory.DefaultRepositoryFactory;
 import org.osivia.portal.services.cms.session.CMSSessionImpl;
 import org.osivia.portal.services.cms.session.CMSSessionInvocationHandler;
 import org.springframework.beans.factory.annotation.Autowired;

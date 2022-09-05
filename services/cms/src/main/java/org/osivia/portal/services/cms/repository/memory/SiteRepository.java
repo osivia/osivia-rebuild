@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.services.cms.repository.memory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 
 
 
-public class SiteRepository extends UserRepositoryTestBase  {
+public class SiteRepository extends UserRepositoryMemoryBase  {
 
     public SiteRepository(SharedRepositoryKey repositoryKey,  BaseUserRepository publishRepository, String userName) {
         super(repositoryKey, publishRepository, userName);

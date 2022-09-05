@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test.export;
+package org.osivia.portal.services.cms.repository.memory.export;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.services.cms.repository.test.FileRepository;
-import org.osivia.portal.services.cms.repository.test.IConfigurationImportManager;
+import org.osivia.portal.services.cms.repository.memory.FileRepository;
+import org.osivia.portal.services.cms.repository.memory.IConfigurationImportManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;

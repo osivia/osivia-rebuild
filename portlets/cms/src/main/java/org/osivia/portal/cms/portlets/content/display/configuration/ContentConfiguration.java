@@ -37,7 +37,7 @@ public class ContentConfiguration {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setCache(true);
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/content/display");
+        viewResolver.setPrefix("/WEB-INF/jsp/content/display/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }

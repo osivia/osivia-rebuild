@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,21 +14,39 @@
  */
 package org.osivia.portal.core.cms;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 /**
  * registry for CMS Service
  *
  */
-public class CMSServiceLocator implements ICMSServiceLocator{
-	
-	ICMSService service;
+public class CMSServiceLocator implements ICMSServiceLocator {
 
-	public void register(ICMSService service) {
-		this.service = service;
-		
-	}
+    ICMSService service;
 
-	public ICMSService getCMSService() {
-		return service;
-	}
+    Map<String, ICMSService> cmsServices = new Hashtable<>();
 
+    public void register(ICMSService service) {
+        this.service = service;
+        cmsServices.put("nx", service);
+    }
+
+
+    public void register(String repositoryName, ICMSService service) {
+        this.service = service;
+        cmsServices.put(repositoryName, service);
+    }
+
+    public ICMSService getCMSService() {
+        return cmsServices.get("nx");
+    }
+
+
+    public ICMSService getCMSService(String repositoryName) {
+        if (!"nx".equals(repositoryName))
+            return cmsServices.get(repositoryName);
+        else
+            return getCMSService();
+    }
 }

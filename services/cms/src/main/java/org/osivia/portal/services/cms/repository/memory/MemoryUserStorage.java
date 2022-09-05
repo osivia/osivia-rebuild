@@ -1,4 +1,4 @@
-package org.osivia.portal.services.cms.repository.test;
+package org.osivia.portal.services.cms.repository.memory;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -19,7 +19,7 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.user.UserDatasImpl;
 
-public class TestUserStorage extends BaseUserStorage {
+public class MemoryUserStorage extends BaseUserStorage {
     
      
 
