@@ -34,6 +34,8 @@ public interface AdvancedRepository extends NativeRepository {
     
     void publish(String id) throws CMSException;
     
+    void unpublish(String id) throws CMSException;
+    
     boolean supportPageEdition();
     
     List<Document> getChildren(String id) throws CMSException;
@@ -46,6 +48,7 @@ public interface AdvancedRepository extends NativeRepository {
     
     void renameDocument(String id, String title) throws CMSException;
     
+    void moveDocument(String srcId, String beforedestId, boolean endOfList) throws CMSException;
    
     void reloadDatas();
     

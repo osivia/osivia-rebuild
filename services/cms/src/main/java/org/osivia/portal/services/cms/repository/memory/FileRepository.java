@@ -143,9 +143,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
       }
 
 
-    public Map<String, RepositoryDocument> getDocuments() {
-        return ((MemoryUserStorage) getUserStorage()).getDocuments();
-    }
+
 
 
     @Override

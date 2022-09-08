@@ -42,26 +42,60 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
 {
  
 
+
+
     public UserRepositoryMemoryBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
         super(repositoryKey, publishRepository, userName, new MemoryUserStorage());
     }
     
+    
+    public Map<String, RepositoryDocument> getDocuments() {
+        return ((MemoryUserStorage) getUserStorage()).getDocuments();
+    }
 
     @Override
     public void publish( String id) throws CMSException {
+        publish(id, false);
+    }
+    
+    
+    @Override
+    public void unpublish(String id) throws CMSException {
+        
+        try {
+            
+            ((MemoryUserStorage) publishRepository.getUserStorage()).deleteDocumentInternal(id, false);
+        
+            
+            
+        
+        } catch( Exception e)   {
+            throw new CMSException( e);
+        }
+        
+    }
+    
+    
+    
+    public void publish( String id, boolean update) throws CMSException {
         try {
         
-        RepositoryDocument doc = getSharedDocument(id);
+            
+        RepositoryDocument liveDoc = getSharedDocument(id);
+        
+        
+        RepositoryDocument existingPublishedParent = null;
         RepositoryDocument existingPublishedDoc = null;
         try {
             existingPublishedDoc = publishRepository.getSharedDocument(id);
+            existingPublishedParent = publishRepository.getSharedDocument(existingPublishedDoc.getParentInternalId());
         } catch(CMSException e)    {
             // not found
         }
         
         // Search for first published parent
         RepositoryDocument publishedParent = null;
-        String parentId = doc.getParentInternalId();
+        String parentId = liveDoc.getParentInternalId();
         
         while(  publishedParent == null && parentId != null)   {
             try {
@@ -85,37 +119,41 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         
         
         
-        // Update hierarchy
+        // Update old hierarchy
         List<String> childrenId;
-        if( existingPublishedDoc != null)   {
-            // replacement
-            childrenId = existingPublishedDoc.getChildrenId();
+        if( existingPublishedParent != null)   {
+            existingPublishedParent.getChildrenId().remove(id);
+            publishRepository.getUserStorage().updateDocument(existingPublishedParent.getInternalID(), existingPublishedParent, true);
         }
-        else    {
-            // new object : look for published children
-            childrenId = new ArrayList<>();
-            for(String childId: doc.getChildrenId())    {
-                RepositoryDocument publishedChild = null;
-                try {
-                    publishedChild = publishRepository.getSharedDocument(childId);
-                } catch(CMSException e)    {
-                    // not found
-                }    
-                if( publishedChild != null) {
-                    // Add to current node
-                    childrenId.add(childId);
-                    // Remove child from parent
-                    childToRemoveFromParent.add(childId);
-                    // reset child parent
-                    publishedChild.setParentInternalId( id);
-                    
-                    publishRepository.getUserStorage().updateDocument(publishedChild.getInternalID(), publishedChild, true);
-                }
-            }            
-        }
+        
+        
+        // look for already published children
+         
+        childrenId = new ArrayList<>();
+        for(String childId: liveDoc.getChildrenId())    {
+            RepositoryDocument publishedChild = null;
+            try {
+                publishedChild = publishRepository.getSharedDocument(childId);
+            } catch(CMSException e)    {
+                // not found
+            }    
+            if( publishedChild != null) {
+                // Add to current node
+                childrenId.add(childId);
+                // Remove child from parent
+                childToRemoveFromParent.add(childId);
+                // reset child parent
+                publishedChild.setParentInternalId( id);
+                
+                publishRepository.getUserStorage().updateDocument(publishedChild.getInternalID(), publishedChild, true);
+            }
+        }            
+        
+        
         
         
         // Set parent children
+        
         if( publishedParent != null) {
             if( ! publishedParent.getChildrenId().contains(id))
                 publishedParent.getChildrenId().add( id);
@@ -123,13 +161,40 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
             for (String childId:childToRemoveFromParent)    {
                 publishedParent.getChildrenId().remove(childId);
             }
+        
+            // Reorder parent children (move effects)
+           
+            List<String> liveParentChildrenId = getSharedDocument(liveDoc.getParentInternalId()).getChildrenId();
+
+            List<String> parentChildren = new ArrayList<>();
+            
+            for(String parentChildId : liveParentChildrenId)    {
+               if( publishedParent.getChildrenId().contains(parentChildId))
+                   parentChildren.add(parentChildId);
+            }
+            
+            for(String parentChildId : publishedParent.getChildrenId())    {
+                if( !parentChildren.contains(parentChildId))
+                    parentChildren.add(parentChildId);
+             }
+            
+            publishedParent.getChildrenId().clear();
+            publishedParent.getChildrenId().addAll(parentChildren);
+            
             
             publishRepository.getUserStorage().updateDocument(publishedParent.getInternalID(), publishedParent, true);
         }     
         
         
         // create published object
-        RepositoryDocument publishedDoc = (RepositoryDocument) doc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
+        RepositoryDocument publishedDoc;
+        if( update == false || existingPublishedDoc == null)
+            publishedDoc = (RepositoryDocument) liveDoc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
+        else    {
+            publishedDoc = (RepositoryDocument) existingPublishedDoc.duplicateForPublication(publishedParentId, childrenId, publishRepository);
+        }
+        
+        
         publishRepository.getUserStorage().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
         
         
@@ -137,7 +202,6 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
             throw new CMSException( e);
         }
      }
-    
     
     @Override
     public void reloadDatas() {
@@ -173,12 +237,33 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
     public void deleteDocument(String id) throws CMSException {
         
         Document document = getDocument(id);
+        
+      
+        if( publishRepository != null)  {
+            try {
+                publishRepository.getSharedDocument(id);
+                publishRepository.getUserStorage().deleteDocument(id, false);
+                
+                if(!batchMode)  {        
+                    UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), id), document.getSpaceId(), UpdateScope.SCOPE_SPACE, true);
+                    publishRepository.getSharedRepository().notifyUpdate( getUserStorage(), infos);
+               }
+
+                
+                
+            } catch(CMSException e)    {
+                // not found
+            }
+         }
+        
           
-        getUserStorage().deleteDocument(id, batchMode);
+        getUserStorage().deleteDocument(id, false);
           
          if(!batchMode)  {        
               UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), id), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
               getSharedRepository().notifyUpdate( getUserStorage(), infos);
+              
+              
           }
       }
 
@@ -319,4 +404,50 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         updateDocument(id, memDoc);
      }
     
+    
+    @Override
+    public void moveDocument(String srcId, String beforedestId, boolean endOfList) throws CMSException {
+        
+        MemoryRepositoryDocument targetParent; 
+        MemoryRepositoryDocument srcDoc; 
+        MemoryRepositoryDocument srcParent; 
+        
+        targetParent = (MemoryRepositoryDocument) getSharedDocument(beforedestId);
+        if( !endOfList)
+            targetParent = (MemoryRepositoryDocument) getSharedDocument(targetParent.getParentInternalId());
+        
+        
+        srcDoc = (MemoryRepositoryDocument) getSharedDocument(srcId);
+        srcParent = (MemoryRepositoryDocument) getSharedDocument(srcDoc.getParentInternalId());
+        
+        
+        srcParent.getChildrenId().remove(srcId);
+        
+        // Search for place to insert
+        int i=0;
+        for(String childId : targetParent.getChildrenId()) {
+            if( childId.equals(beforedestId))
+                break;
+            else
+                i++;
+                
+        }
+        
+        targetParent.getChildrenId().add(i,srcId);
+        
+        
+        srcDoc.setParentInternalId(targetParent.getId().getInternalID());
+        
+        
+        getUserStorage().updateDocument(srcDoc.getInternalID(), srcDoc, true);
+        getUserStorage().updateDocument(srcParent.getInternalID(), srcParent, true);
+        getUserStorage().updateDocument(targetParent.getInternalID(), targetParent, false);
+        
+        if( supportPreview())   {
+            publish(srcDoc.getInternalID(), true);
+        }
+        
+        
+    }
+
 }

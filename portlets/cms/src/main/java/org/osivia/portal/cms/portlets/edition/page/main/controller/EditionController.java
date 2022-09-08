@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.dom4j.QName;
 import org.dom4j.io.HTMLWriter;
 
 import org.osivia.portal.api.Constants;
@@ -107,12 +108,12 @@ public class EditionController implements PortletContextAware, ApplicationContex
     /** Locale property editor. */
     @Autowired
     private LocalePropertyEditor localPropertyEditor;
-    
+
     /**
      * Internationalization bundle factory.
      */
     @Autowired
-    private IBundleFactory bundleFactory;    
+    private IBundleFactory bundleFactory;
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(EditionController.class);
@@ -132,7 +133,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
      * @param response render response
      * @param count count request parameter.
      * @return render view path
-     * @throws PortalException 
+     * @throws PortalException
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws PortalException {
@@ -152,124 +153,121 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             if (!userRepository.supportPreview() || cmsContext.isPreview()) {
 
-                if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
-                
+                if (document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace) {
+
                     // Display tools
-                    
+
                     HttpServletRequest httpRequest = (HttpServletRequest) request.getAttribute(Constants.PORTLET_ATTR_HTTP_REQUEST);
                     PortletURL actionUrl = response.createActionURL();
                     httpRequest.setAttribute("osivia.cms.edition.url", actionUrl.toString());
-                    
+
 
                 }
             }
         }
-        
+
         try {
-            request.setAttribute("status",getStatus(request, response));
+            request.setAttribute("status", getStatus(request, response));
         } catch (PortletException e) {
             throw new PortalException(e);
         }
-        
+
         return "view";
     }
-    
-    
+
+
     /**
      * Add page sample
      */
     @ActionMapping(name = "drop")
     public void drop(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
 
-            // Portal Controller context
-            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        
-            String region = request.getParameter("region");
-            String source = request.getParameter("source");
-            String targetWindow = request.getParameter("targetWindow");
-            
-            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
-            if (contentId != null) {
+        // Portal Controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-                UniversalID id = new UniversalID(contentId);
-                CMSController ctrl = new CMSController(portalControllerContext);
+        String region = request.getParameter("region");
+        String source = request.getParameter("source");
+        String targetWindow = request.getParameter("targetWindow");
 
-                CMSContext cmsContext = ctrl.getCMSContext();                
-                Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
-                
-                if( document instanceof ModulesContainer)   {
-                    
-                    ModuleRef srcModule = null;
-                    
-                    // Search src module
-                    List<ModuleRef> modules = ((ModulesContainer) document).getModuleRefs();
-                    for (ModuleRef module: modules) {
-                        if( module.getWindowName().equals(source))  {
-                            srcModule = module;
+        String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
+        if (contentId != null) {
+
+            UniversalID id = new UniversalID(contentId);
+            CMSController ctrl = new CMSController(portalControllerContext);
+
+            CMSContext cmsContext = ctrl.getCMSContext();
+            Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
+
+            if (document instanceof ModulesContainer) {
+
+                ModuleRef srcModule = null;
+
+                // Search src module
+                List<ModuleRef> modules = ((ModulesContainer) document).getModuleRefs();
+                for (ModuleRef module : modules) {
+                    if (module.getWindowName().equals(source)) {
+                        srcModule = module;
+                        break;
+                    }
+                }
+
+                // compute region
+                if (region == null) {
+                    for (ModuleRef module : modules) {
+                        if (module.getWindowName().equals(targetWindow)) {
+                            region = module.getRegion();
                             break;
                         }
                     }
-                 
-                    // compute region
-                    if( region == null) {
-                        for (ModuleRef module: modules) {
-                            if( module.getWindowName().equals(targetWindow))  {
-                                region = module.getRegion();
-                                break;
-                            }
-                        }
-                    }
-                    
-                    
-                    // Remove src module
-                    modules.remove(srcModule);
-
-  
-                    
-                    // re-insert src module
-                    ModuleRef newModule = new ModuleRef(srcModule.getWindowName(), region, srcModule.getModuleId(), srcModule.getProperties());
-                    
-                    int iInsertion = -1;
-                    
-                    if( targetWindow != null)   {
-                        iInsertion = -1;
-                        for (ModuleRef module: modules) {
-                            if( targetWindow != null && StringUtils.equals(module.getWindowName(), targetWindow))  {
-                                iInsertion++;
-                                break;
-                            }
-                            iInsertion++;
-                        }
-                    } else  {
-                        if (region != null) {
-                            int iInsertionRegion=0;
-                            for (ModuleRef module: modules) {
-                                if( StringUtils.equals(module.getRegion(), region))  {
-                                    iInsertion = iInsertionRegion +1;
-                                }
-                                iInsertionRegion++;
-                            }
-                        }
-                    }
-                    
-                    if( iInsertion != -1)
-                        modules.add(iInsertion, newModule);
-                    else
-                        modules.add(newModule);
-                       
-
-                    AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
-                    if (repository instanceof AdvancedRepository) {
-                            ((AdvancedRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
-                    }
-
-                     
                 }
-                
-                logger.info(document.getTitle());
+
+
+                // Remove src module
+                modules.remove(srcModule);
+
+
+                // re-insert src module
+                ModuleRef newModule = new ModuleRef(srcModule.getWindowName(), region, srcModule.getModuleId(), srcModule.getProperties());
+
+                int iInsertion = -1;
+
+                if (targetWindow != null) {
+                    iInsertion = -1;
+                    for (ModuleRef module : modules) {
+                        if (targetWindow != null && StringUtils.equals(module.getWindowName(), targetWindow)) {
+                            iInsertion++;
+                            break;
+                        }
+                        iInsertion++;
+                    }
+                } else {
+                    if (region != null) {
+                        int iInsertionRegion = 0;
+                        for (ModuleRef module : modules) {
+                            if (StringUtils.equals(module.getRegion(), region)) {
+                                iInsertion = iInsertionRegion + 1;
+                            }
+                            iInsertionRegion++;
+                        }
+                    }
+                }
+
+                if (iInsertion != -1)
+                    modules.add(iInsertion, newModule);
+                else
+                    modules.add(newModule);
+
+
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if (repository instanceof AdvancedRepository) {
+                    ((AdvancedRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
+                }
+
+
             }
-            
-            
+
+            logger.info(document.getTitle());
+        }
 
 
     }
@@ -339,7 +337,6 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     ((AdvancedRepository) repository).setACL(id.getInternalID(), Arrays.asList("group:members"));
                 else
                     ((AdvancedRepository) repository).setACL(id.getInternalID(), new ArrayList<String>());
-
 
 
             }
@@ -497,8 +494,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
     private String getNavigationId(ActionRequest request) {
         PortalWindow window = WindowFactory.getWindow(request);
         String navigationId = window.getProperty("osivia.navigationId");
-        if( navigationId == null)
-            navigationId=  WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+        if (navigationId == null)
+            navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
         return navigationId;
     }
 
@@ -532,6 +529,36 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
 
 
+    }
+    
+    
+    /**
+     * unpublish sample
+     */
+    @ActionMapping(name = "unpublish")
+    public void unpublish(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+        // Portal Controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        CMSController ctrl = new CMSController(portalControllerContext);
+
+        try {
+            String contentId = WindowFactory.getWindow(request).getPageProperty("osivia.contentId");
+            if (contentId != null) {
+
+                UniversalID id = new UniversalID(contentId);
+
+                CMSContext cmsContext = ctrl.getCMSContext();
+
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+                if (repository instanceof AdvancedRepository) {
+                    ((AdvancedRepository) repository).unpublish(id.getInternalID());
+                }
+
+
+            }
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
 
 
     }
@@ -615,17 +642,17 @@ public class EditionController implements PortletContextAware, ApplicationContex
         return status;
     }
 
-    
+
     protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
         addToolbarItem(toolbar, url, target, title, icon, false);
     }
 
     protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon, boolean menu) {
         // Base HTML classes
-        String baseHtmlClasses = "btn btn-sm ml-1";
-        
+        String baseHtmlClasses = "btn";
+
         if (menu)
-            baseHtmlClasses = "btn btn-sm";
+            baseHtmlClasses = "dropdown-item";
 
         // Item
         Element item;
@@ -647,15 +674,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 data.put("toggle", "modal");
 
                 target = null;
-            } else if ("dropdown-link".equals(target))   {
+            } else if ("dropdown-link".equals(target)) {
                 // HACKISH : link are not supported be dropdowns !
-                onClick="bilto(event)";
+                onClick = "bilto(event)";
                 target = null;
             }
-            
-            
 
-            item = DOM4JUtils.generateLinkElement(url, target, onClick, baseHtmlClasses , null, icon);
+
+            item = DOM4JUtils.generateLinkElement(url, target, onClick, baseHtmlClasses, null, icon);
 
             // Title
             DOM4JUtils.addAttribute(item, "title", title);
@@ -672,11 +698,6 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
         toolbar.add(item);
     }
-    
-    
-    
-
-    
 
 
     protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status) throws PortletException {
@@ -684,7 +705,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             // Internationalization bundle
             Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-            
+
             String navigationId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
 
             // Toolbar
@@ -696,239 +717,61 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 UniversalID id = new UniversalID(navigationId);
 
                 CMSContext cmsContext = ctrl.getCMSContext();
-                
+
 
                 Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
-                
-                
-                
-                
+
+
                 Boolean isAdministrator = (Boolean) portalControllerContext.getRequest().getAttribute(InternalConstants.ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME);
-                if( BooleanUtils.isTrue(isAdministrator))   {
-                    Map<String, String> properties = new HashMap<>();
 
-                    String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryPortletInstance", bundle.getString("MODIFY_REPOSITORY_ACTION"), "EditionRepositoryPortletInstance", properties,
-                            new HashMap<>());                    
-                    this.addToolbarItem(toolbar, manageRepositoriesUrl, null, bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server");
-                }
 
-                
-                 
+                Element configurationList = null;
+
+
                 String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
                 String cmsTemplatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.cmsTemplatePath");
-                                
-                
-                if(templatePath != null)   {
-                    String templateTokens[] = templatePath.split( ":");
-                    String templatePathItems[] = templateTokens[1].split( "/");
-                    
 
-                    UniversalID templateID;
-                    
-                    // Portal template
-                    UniversalID portalTemplateId = new UniversalID(templateTokens[0], templatePathItems[templatePathItems.length -1]);
-                    
-                    // Get real content (ignore root item)
-                    UniversalID templateExtractedContentId;
-                    if( portalTemplateId.getInternalID().equals("root")) {
-                        String extractedInternalId = templatePathItems[templatePathItems.length -2].split("__")[0];
-                        templateExtractedContentId = new UniversalID( templateTokens[0], extractedInternalId);
-                    }   else
-                        templateExtractedContentId = portalTemplateId;
-                    
-                    
-                    if (id.equals(templateExtractedContentId)) {
-                        if (cmsTemplatePath != null) {
-                            // CMS template
-                            String cmsTemplateTokens[] = cmsTemplatePath.split(":");
-                            templateID = new UniversalID(cmsTemplateTokens[0], cmsTemplateTokens[1].substring(cmsTemplateTokens[1].lastIndexOf("/") + 1));
-                        } else {
-                            templateID = null;
-                        }
-                    } else {
-                        templateID = portalTemplateId;
-                    }
 
-                    
-                    if( templateID != null) {
-                        
-                        CMSContext cmsTemplateContext = ctrl.getCMSContext();
-                        cmsTemplateContext.setPreview(false);
-                        
-                        String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext,templateID);
-                        this.addToolbarItem(toolbar, url, null, bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails");
-                    }
-                    
-                }
-                
+                getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, id, isAdministrator, templatePath, cmsTemplatePath);
+
+
                 status.setPreview(cmsContext.isPreview());
-                
+
                 NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
-                
-                if( userRepository instanceof AdvancedRepository) {
+
+                if (userRepository instanceof AdvancedRepository) {
 
                     AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                     status.setSupportPreview(repository.supportPreview());
-    
+
                     Map<String, String> locales = new HashMap<>();
                     for (Locale locale : repository.getLocales()) {
                         locales.put(locale.toString(), locale.getDisplayLanguage());
                     }
                     status.setLocales(locales);
-    
+
                     status.setPageEdition(repository.supportPageEdition());
-    
-    
+
+
                     Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
-    
-    
+
+
                     status.setSubtypes(personnalization.getSubTypes());
                     status.setManageable(personnalization.isManageable());
                     status.setModifiable(personnalization.isModifiable());
-    
-                    
-                    
+
+
                     if (status.isModifiable()) {
-                        
-                        // Space modification
-                        String modifySpaceUrl;
-
-                        String title = bundle.getString("MODIFY_SPACE_MODIFY_TITLE");
-
-                        // Window properties
-                        Map<String, String> spaceProperties = new HashMap<>();
-                        spaceProperties.put("osivia.title", title);
-                        spaceProperties.put("osivia.hideTitle", "1");
-                        ctrl.addContentRefToProperties(spaceProperties, "osivia.space.id", document.getSpaceId());                        
 
 
-                        modifySpaceUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionModifySpaceInstance", title, "EditionModifySpaceInstance", spaceProperties,
-                                    new HashMap<>());
+                        getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, document, isAdministrator);
 
-                        
 
-                        this.addToolbarItem(toolbar, modifySpaceUrl,null, bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-folder-cogwheel");
-                        
-                        
-                        
-                        
-                        /*
-  <div class="dropdown show">
-  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Dropdown link
-  </a>
+                        getEditionMenu(portalControllerContext, ctrl, status, bundle, toolbar, id, cmsContext, document, repository, personnalization);
 
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-    <a class="dropdown-item" href="#">Action</a>
-    <a class="dropdown-item" href="#">Another action</a>
-    <a class="dropdown-item" href="#">Something else here</a>
-  </div>
-</div>
-                         * 
-                         * 
-                         */
-                        
-                        
-                        
-                        
-                        // Text
-                        Element menu = DOM4JUtils.generateDivElement("dropdown");
-                        Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-sm dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-monitor");
-                        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", "Page");
-                        menuTitle.add(text);
-                        
-                        DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
-                        
-                        menu.add(menuTitle);
-                        
-                        Element list = DOM4JUtils.generateDivElement("dropdown-menu");
-                        menu.add(list);
-                        
-                        toolbar.add(menu);
-                        
-                       
-                        
-                        //"${status.pageEdition && ( not  status.supportPreview ||  status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
-                        boolean hasPageSubtype = false;
-                        for(String subType : personnalization.getSubTypes())    {
-                            if( StringUtils.equalsIgnoreCase(subType, "Page"))
-                                hasPageSubtype = true;
-                        }
-                        
-                        
-                        if( ( ! repository.supportPreview() || cmsContext.isPreview())  && hasPageSubtype )   {
-                            if( portalControllerContext.getResponse() instanceof RenderResponse)   {
-                                PortletURL createPageUrl = ((RenderResponse)portalControllerContext.getResponse()).createActionURL();
-                                createPageUrl.setParameter(ActionRequest.ACTION_NAME, "addPage");
-                                this.addToolbarItem(list, createPageUrl.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
-                            }
-                        }
-                        
-                        
-                        if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
-                            Map<String, String> properties = new HashMap<>();
-                            ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());                            
-                            
-                            String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
-                            this.addToolbarItem(list, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
-                        }
-                        
-                        // Rename URL
-                        Map<String, String> properties = new HashMap<>();
-                        ctrl.addContentRefToProperties(properties, "osivia.rename.id", id);
-    
-    
-                        String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
-                        this.addToolbarItem(list, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text", true);
-                        
-                        
-                        
-                        String deleteContentUrl;
-                        properties = new HashMap<>();
-                        ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
-
-                        deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
-                        this.addToolbarItem(list, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin", true);
-                        
-                        
-                        
-                        if( document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace ) {
-                            if( status.isManageable())  {
-                                Map<String, String> aclsProperties = new HashMap<>();
-                                ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());                            
-                                
-                                String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
-                                this.addToolbarItem(list, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock", true);
-                            }
-                        }
-                                               
-                        
-    
-    
                     }
-    
-                    status.setAcls(repository.getACL(id.getInternalID()));
-    
-                    if (cmsContext.isPreview()) {
-                        cmsContext.setPreview(false);
-                        try {
-                            cmsService.getCMSSession(cmsContext).getDocument(id);
-                            status.setHavingPublication(true);
-                         } catch (CMSException e) {
-                            // Not found
-                        } finally {
-                            cmsContext.setPreview(true);
-                        }
-                    }
-                    
-                    if( repository.supportPreview() && personnalization.isModifiable() && cmsContext.isPreview())   {
-                         if( portalControllerContext.getResponse() instanceof RenderResponse)   {
-                             PortletURL publishURL = ((RenderResponse)portalControllerContext.getResponse()).createActionURL();
-                             publishURL.setParameter(ActionRequest.ACTION_NAME, "publish");
-                             this.addToolbarItem(toolbar, publishURL.toString(), null, bundle.getString("MODIFY_PAGE_ACCESS_PUBLISH"), "glyphicons glyphicons-basic-globe");
-                         }
-                    }
-                    
+
+
                 }
             }
 
@@ -954,6 +797,265 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
         PortalException e) {
             throw new PortletException(e);
+        }
+    }
+
+
+    private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, Boolean isAdministrator, String templatePath, String cmsTemplatePath) throws PortalException {
+        Element configurationList;
+        // Configuration menu
+        if (BooleanUtils.isTrue(isAdministrator)) {
+            Element menu = DOM4JUtils.generateDivElement("dropdown");
+            Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "halflings halflings-wrench");
+            menuTitle.addAttribute(new QName("id"), "dropdownConfigurationMenu");
+            Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
+            menuTitle.add(text);
+
+            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+
+            menu.add(menuTitle);
+
+            configurationList = DOM4JUtils.generateDivElement("dropdown-menu");
+
+            configurationList.addAttribute(new QName("aria-labelledby"), "dropdownConfigurationMenu");
+            menu.add(configurationList);
+
+
+            Element menuRoot = DOM4JUtils.generateDivElement("");
+            menuRoot.add(menu);
+
+            toolbar.add(menuRoot);
+
+
+            Map<String, String> properties = new HashMap<>();
+            String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryPortletInstance", bundle.getString("MODIFY_REPOSITORY_ACTION"), "EditionRepositoryPortletInstance", properties,
+                    new HashMap<>());
+            this.addToolbarItem(configurationList, manageRepositoriesUrl, "dropdown-link", bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", true);
+
+
+            addTemplateLink(portalControllerContext, ctrl, bundle, configurationList, id, templatePath, cmsTemplatePath);
+
+
+        }
+    }
+
+
+    private void getEditionMenu(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status, Bundle bundle, Element toolbar, UniversalID id, CMSContext cmsContext, Document document, AdvancedRepository repository,
+            Personnalization personnalization) throws PortalException {
+
+
+        if (!repository.supportPreview() || cmsContext.isPreview()) {
+
+            // Text
+            Element menu = DOM4JUtils.generateDivElement("dropdown");
+
+            Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-monitor");
+            menuTitle.addAttribute(new QName("id"), "dropdownEditionMenu");
+            Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_EDITION"));
+            menuTitle.add(text);
+            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+            menu.add(menuTitle);
+
+            Element editionList = DOM4JUtils.generateDivElement("dropdown-menu");
+            editionList.addAttribute(new QName("aria-labelledby"), "dropdownEditionMenu");
+
+            menu.add(editionList);
+
+            Element menuRoot = DOM4JUtils.generateDivElement("");
+            menuRoot.add(menu);
+
+            toolbar.add(menuRoot);
+
+
+            // "${status.pageEdition && ( not status.supportPreview || status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
+            boolean hasPageSubtype = false;
+            for (String subType : personnalization.getSubTypes()) {
+                if (StringUtils.equalsIgnoreCase(subType, "Page"))
+                    hasPageSubtype = true;
+            }
+
+
+            if ((!repository.supportPreview() || cmsContext.isPreview()) && hasPageSubtype) {
+                if (portalControllerContext.getResponse() instanceof RenderResponse) {
+                    PortletURL createPageUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+                    createPageUrl.setParameter(ActionRequest.ACTION_NAME, "addPage");
+                    this.addToolbarItem(editionList, createPageUrl.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
+                }
+            }
+
+
+            if (document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace) {
+                Map<String, String> properties = new HashMap<>();
+                ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());
+
+                String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
+                this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
+            }
+
+            // Rename URL
+            Map<String, String> properties = new HashMap<>();
+            ctrl.addContentRefToProperties(properties, "osivia.rename.id", id);
+
+
+            String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
+            this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text", true);
+
+
+            String deleteContentUrl;
+            properties = new HashMap<>();
+            ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
+
+            deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
+            this.addToolbarItem(editionList, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin", true);
+
+
+            if (document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace) {
+                if (status.isManageable()) {
+                    Map<String, String> aclsProperties = new HashMap<>();
+                    ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());
+
+                    String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
+                    this.addToolbarItem(editionList, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock", true);
+                }
+            }
+
+
+            Map<String, String> treeProperties = new HashMap<>();
+
+            ctrl.addContentRefToProperties(treeProperties, "osivia.space.id", document.getSpaceId());
+            ctrl.addContentRefToProperties(treeProperties, "osivia.move.id", document.getId());
+
+            String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
+            this.addToolbarItem(editionList, treeUrl, "#osivia-modal", bundle.getString("MODIFY_MOVE_ACTION"), "glyphicons glyphicons-basic-list", true);
+
+
+            if (cmsContext.isPreview()) {
+                cmsContext.setPreview(false);
+                try {
+                    cmsService.getCMSSession(cmsContext).getDocument(id);
+                    status.setHavingPublication(true);
+                } catch (CMSException e) {
+                    // Not found
+                } finally {
+                    cmsContext.setPreview(true);
+                }
+            }
+
+            if (repository.supportPreview() && personnalization.isModifiable() && cmsContext.isPreview()) {
+                if (portalControllerContext.getResponse() instanceof RenderResponse) {
+                    PortletURL publishURL = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+                    publishURL.setParameter(ActionRequest.ACTION_NAME, "publish");
+                    this.addToolbarItem(editionList, publishURL.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_PUBLISH"), "glyphicons glyphicons-basic-globe", true);
+                }
+            }
+            
+            if( status.isHavingPublication())   {
+                if (portalControllerContext.getResponse() instanceof RenderResponse) {
+                    PortletURL publishURL = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+                    publishURL.setParameter(ActionRequest.ACTION_NAME, "unpublish");
+                    this.addToolbarItem(editionList, publishURL.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_UNPUBLISH"), "glyphicons glyphicons-basic-globe-data", true);
+                }                
+            }
+        }
+    }
+
+
+    private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, Boolean isAdministrator) throws PortalException {
+        Element configurationList;
+        // Space menu
+        if (BooleanUtils.isTrue(isAdministrator)) {
+            Element menu = DOM4JUtils.generateDivElement("dropdown");
+            Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-folder");
+            menuTitle.addAttribute(new QName("id"), "spaceConfigurationMenu");
+            Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_SPACE"));
+            menuTitle.add(text);
+
+            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+
+            menu.add(menuTitle);
+
+            configurationList = DOM4JUtils.generateDivElement("dropdown-menu");
+
+            configurationList.addAttribute(new QName("aria-labelledby"), "spaceConfigurationMenu");
+            menu.add(configurationList);
+
+
+            Element menuRoot = DOM4JUtils.generateDivElement("");
+            menuRoot.add(menu);
+
+            toolbar.add(menuRoot);
+
+
+            // Space modification
+            String modifySpaceUrl;
+
+            String title = bundle.getString("MODIFY_SPACE_MODIFY_TITLE");
+
+            // Window properties
+            Map<String, String> spaceProperties = new HashMap<>();
+            spaceProperties.put("osivia.title", title);
+            spaceProperties.put("osivia.hideTitle", "1");
+            ctrl.addContentRefToProperties(spaceProperties, "osivia.space.id", document.getSpaceId());
+
+
+            modifySpaceUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionModifySpaceInstance", title, "EditionModifySpaceInstance", spaceProperties, new HashMap<>());
+
+
+            this.addToolbarItem(configurationList, modifySpaceUrl, "dropdown-link", bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-folder-cogwheel", true);
+
+
+            Map<String, String> treeProperties = new HashMap<>();
+
+            ctrl.addContentRefToProperties(treeProperties, "osivia.space.id", document.getSpaceId());
+
+            String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
+            this.addToolbarItem(configurationList, treeUrl, "#osivia-modal", bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true);
+        }
+    }
+
+
+    private void addTemplateLink(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, String templatePath, String cmsTemplatePath) {
+        if (templatePath != null) {
+            String templateTokens[] = templatePath.split(":");
+            String templatePathItems[] = templateTokens[1].split("/");
+
+
+            UniversalID templateID;
+
+            // Portal template
+            UniversalID portalTemplateId = new UniversalID(templateTokens[0], templatePathItems[templatePathItems.length - 1]);
+
+            // Get real content (ignore root item)
+            UniversalID templateExtractedContentId;
+            if (portalTemplateId.getInternalID().equals("root")) {
+                String extractedInternalId = templatePathItems[templatePathItems.length - 2].split("__")[0];
+                templateExtractedContentId = new UniversalID(templateTokens[0], extractedInternalId);
+            } else
+                templateExtractedContentId = portalTemplateId;
+
+
+            if (id.equals(templateExtractedContentId)) {
+                if (cmsTemplatePath != null) {
+                    // CMS template
+                    String cmsTemplateTokens[] = cmsTemplatePath.split(":");
+                    templateID = new UniversalID(cmsTemplateTokens[0], cmsTemplateTokens[1].substring(cmsTemplateTokens[1].lastIndexOf("/") + 1));
+                } else {
+                    templateID = null;
+                }
+            } else {
+                templateID = portalTemplateId;
+            }
+
+
+            if (templateID != null) {
+
+                CMSContext cmsTemplateContext = ctrl.getCMSContext();
+                cmsTemplateContext.setPreview(false);
+
+                String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext, templateID);
+                this.addToolbarItem(toolbar, url, "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails", true);
+            }
+
         }
     }
 

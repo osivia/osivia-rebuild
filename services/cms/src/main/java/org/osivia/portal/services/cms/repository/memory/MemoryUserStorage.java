@@ -269,7 +269,7 @@ public class MemoryUserStorage extends BaseUserStorage {
     public void deleteDocument(String internalID, boolean batchMode) throws CMSException {
       
         
-        deleteDocumentInternal(internalID);
+        deleteDocumentInternal(internalID, true);
         
         if(!batchMode)  {
             updatePaths();
@@ -279,7 +279,7 @@ public class MemoryUserStorage extends BaseUserStorage {
           
     }
 
-    public void deleteDocumentInternal(String internalID) throws CMSException {
+    public void deleteDocumentInternal(String internalID, boolean recurse) throws CMSException {
         
         RepositoryDocument document = getDocuments().get(internalID);
         if (document == null)
@@ -288,12 +288,14 @@ public class MemoryUserStorage extends BaseUserStorage {
         List<String> children = new ArrayList<>();
         children.addAll(document.getChildrenId());
         
-        for(String childId: children)   {
-            deleteDocumentInternal(childId);
+        if( recurse)   {
+            for(String childId: children)   {
+                deleteDocumentInternal(childId, recurse);
+            }
         }
         
         getDocuments().remove(internalID);
-
+        
         
         
         // update parent

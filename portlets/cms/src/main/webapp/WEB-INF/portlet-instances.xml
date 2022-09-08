@@ -109,7 +109,15 @@
          <portlet-ref>EditionModifySpace</portlet-ref>
       </instance>      
    </deployment>       
-   
+    <deployment>    
+      <instance>
+         <display-name xml:lang="en">CMS Edition Tree portlet</display-name>
+         <display-name xml:lang="fr">Portlet Edition Arbre</display-name>
+         <instance-id>EditionTreeInstance</instance-id>
+         <portlet-ref>EditionTree</portlet-ref>
+      </instance>      
+   </deployment>       
+     
    
      
    <deployment>    
