@@ -10,6 +10,7 @@ import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
+import org.osivia.portal.api.cms.repository.RepositoryFactory;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
@@ -19,8 +20,8 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 public class UserWorkspacesRepository extends UserRepositoryMemoryBase {
 
     
-    public UserWorkspacesRepository(SharedRepositoryKey repositoryKey, String userName) {
-        super(repositoryKey, null, userName);
+    public UserWorkspacesRepository(RepositoryFactory repositoryFactory,SharedRepositoryKey repositoryKey, String userName) {
+        super(repositoryFactory, repositoryKey, null, userName);
     }
 
     

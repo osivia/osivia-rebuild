@@ -3,6 +3,7 @@ package org.osivia.portal.services.cms.repository.memory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,7 +19,9 @@ import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.RepositoryFactory;
 import org.osivia.portal.api.cms.repository.UserRepository;
+import org.osivia.portal.api.cms.repository.cache.SharedRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
@@ -30,19 +33,26 @@ import org.osivia.portal.services.cms.service.RuntimeBeanBuilder;
  * A factory for creating InMemory objects.
  */
 
-public class DefaultRepositoryFactory {
+public class DefaultRepositoryFactory implements RepositoryFactory{
 
     /** The super user repositories. */
     private Map<SharedRepositoryKey, BaseUserRepository> staticRepositories;
 
+    private Map<SharedRepositoryKey, SharedRepository>  sharedRepositories;
     
-    
+
 
     public DefaultRepositoryFactory() {
         super();
         staticRepositories = new ConcurrentHashMap<SharedRepositoryKey, BaseUserRepository>();
+        sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
     }
 
+
+    public Map<SharedRepositoryKey, SharedRepository> getSharedRepositories() {
+        return sharedRepositories;
+    }
+    
     
     public UniversalID getDefaultPortal() {
         return new UniversalID(System.getProperty("osivia.portal.default"));
@@ -128,24 +138,26 @@ public class DefaultRepositoryFactory {
                 Class<?>[] paramTypes = ctor.getParameterTypes();
 
                 // If the arity matches, let's use it.
-                if (paramTypes.length == 2) {
+                if (paramTypes.length == 3) {
 
                     // Convert the String arguments into the parameters' types.
-                    Object[] convertedArgs = new Object[2];
-                    convertedArgs[0] = repositoryKey;
-                    convertedArgs[1] = userId;
+                    Object[] convertedArgs = new Object[3];
+                    convertedArgs[0] = this;
+                    convertedArgs[1] = repositoryKey;
+                    convertedArgs[2] = userId;
                     // Instantiate the object with the converted arguments.
                     return (BaseUserRepository) ctor.newInstance(convertedArgs);
                 }
                 
                 // If the parity matches, let's use it.
-                if (paramTypes.length == 3) {
+                if (paramTypes.length == 4) {
 
                     // Convert the String arguments into the parameters' types.
-                    Object[] convertedArgs = new Object[3];
-                    convertedArgs[0] = repositoryKey;
-                    convertedArgs[1] = publishRepository;
-                    convertedArgs[2] = userId;
+                    Object[] convertedArgs = new Object[4];
+                    convertedArgs[0] = this;
+                    convertedArgs[1] = repositoryKey;
+                    convertedArgs[2] = publishRepository;
+                    convertedArgs[3] = userId;
                     // Instantiate the object with the converted arguments.
                     return (BaseUserRepository) ctor.newInstance(convertedArgs);
                 }

@@ -43,6 +43,7 @@ import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.model.Space;
+import org.osivia.portal.api.cms.repository.RepositoryFactory;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryFolder;
@@ -94,8 +95,8 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     public static String checksum = null;
 
 
-    public FileRepository(SharedRepositoryKey repositoryKey, String userName) {
-        super(repositoryKey, null, userName);
+    public FileRepository(RepositoryFactory repositoryFactory,SharedRepositoryKey repositoryKey, String userName) {
+        super(repositoryFactory,repositoryKey, null, userName);
     }
     
     private FileUtils getFilesUtils()   {

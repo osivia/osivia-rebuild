@@ -15,6 +15,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.repository.RepositoryFactory;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
@@ -30,8 +31,8 @@ import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 public class TemplatesRepository extends UserRepositoryMemoryBase  {
 
       
-      public TemplatesRepository(SharedRepositoryKey repositoryKey, String userName) {
-          super(repositoryKey, null, userName);
+      public TemplatesRepository(RepositoryFactory repositoryFactory, SharedRepositoryKey repositoryKey, String userName) {
+          super(repositoryFactory, repositoryKey, null, userName);
       }
     /**
      * {@inheritDoc}

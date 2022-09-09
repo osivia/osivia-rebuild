@@ -17,6 +17,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.repository.RepositoryFactory;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
@@ -27,8 +28,8 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 
 public class SiteRepository extends UserRepositoryMemoryBase  {
 
-    public SiteRepository(SharedRepositoryKey repositoryKey,  BaseUserRepository publishRepository, String userName) {
-        super(repositoryKey, publishRepository, userName);
+    public SiteRepository(RepositoryFactory repositoryFactory,SharedRepositoryKey repositoryKey,  BaseUserRepository publishRepository, String userName) {
+        super(repositoryFactory, repositoryKey, publishRepository, userName);
     }
 
     

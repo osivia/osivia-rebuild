@@ -62,7 +62,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     protected BaseUserRepository publishRepository;
     
-    private static Map<SharedRepositoryKey, SharedRepository>  sharedRepositories = new Hashtable<SharedRepositoryKey, SharedRepository>();
+
 
     private boolean previewRepository = false;
     
@@ -74,6 +74,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     public ThreadLocal<PortalControllerContext> portalCtx = new ThreadLocal<PortalControllerContext>();
     
+    private RepositoryFactory repositoryFactory;
    
 
     /** The group service */
@@ -87,7 +88,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
     
     
 
-    public BaseUserRepository(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, UserStorage userStorage) {
+    public BaseUserRepository( RepositoryFactory repositoryFactory, SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName, UserStorage userStorage) {
         super();
         this.repositoryKey = repositoryKey;
         this.listeners = new ArrayList<>();
@@ -98,6 +99,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         this.userName = userName;
         this.userStorage = userStorage;
         userStorage.setUserRepository(this);
+        this.repositoryFactory=repositoryFactory;
         init(repositoryKey);
     }
 
@@ -168,12 +170,12 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
 
         boolean initRepository = false;
         if( getSharedRepository() == null)    {
-            sharedRepositories.put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName(), userStorage));   
+            repositoryFactory.getSharedRepositories().put(repositoryKey, new SharedRepository(repositoryKey.getRepositoryName(), userStorage));   
             initRepository = true;
         }
         
         
-        sharedRepositories.get(repositoryKey).addListener(this);
+        getSharedRepository().addListener(this);
         
         if(initRepository)  {
             startInitBatch();    
@@ -225,7 +227,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
    
 
     public SharedRepository getSharedRepository() {
-         return sharedRepositories.get(repositoryKey);
+         return repositoryFactory.getSharedRepositories().get(repositoryKey);
     }
 
 

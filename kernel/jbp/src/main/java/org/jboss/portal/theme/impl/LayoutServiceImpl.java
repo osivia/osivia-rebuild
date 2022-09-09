@@ -175,7 +175,13 @@ public class LayoutServiceImpl extends AbstractJBossService implements LayoutSer
    }
 
    /** @see LayoutService#getDefaultLayout() */
-   public PortalLayout getDefaultLayout()
+   
+   public PortalLayout getDefaultLayout( )   {
+       return getDefaultLayout( true);
+   }
+   
+   
+   public PortalLayout getDefaultLayout(boolean mustLog)
    {
       if (defaultLayout == null)
       {
@@ -190,7 +196,7 @@ public class LayoutServiceImpl extends AbstractJBossService implements LayoutSer
             defaultLayout = (PortalLayout)layouts.get(defaultID);
          }
       }
-      if (defaultLayout == null)
+      if (defaultLayout == null && mustLog)
       {
          log.error("Couldn't find the default layout named:" + defaultName);
       }
@@ -317,7 +323,7 @@ public class LayoutServiceImpl extends AbstractJBossService implements LayoutSer
       layouts.remove(id);
       layout.destroy();
 
-      if (getDefaultLayout() != null && getDefaultLayout().equals(layout))
+      if (getDefaultLayout( false) != null && getDefaultLayout(false).equals(layout))
       {
          log.debug("removed default layout, need to set new one...");
          Iterator i = layouts.keySet().iterator();

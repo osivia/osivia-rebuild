@@ -18,6 +18,7 @@ import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.BaseUserStorage;
+import org.osivia.portal.api.cms.repository.RepositoryFactory;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
@@ -44,8 +45,8 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
 
 
 
-    public UserRepositoryMemoryBase(SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
-        super(repositoryKey, publishRepository, userName, new MemoryUserStorage());
+    public UserRepositoryMemoryBase(RepositoryFactory repositoryFactory, SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
+        super(repositoryFactory, repositoryKey, publishRepository, userName, new MemoryUserStorage());
     }
     
     
@@ -64,10 +65,9 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         
         try {
             
-            ((MemoryUserStorage) publishRepository.getUserStorage()).deleteDocumentInternal(id, false);
+            ((MemoryUserStorage) publishRepository.getUserStorage()).deleteDocumentNonRecurse(id, batchMode);
         
-            
-            
+              
         
         } catch( Exception e)   {
             throw new CMSException( e);
@@ -242,7 +242,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         if( publishRepository != null)  {
             try {
                 publishRepository.getSharedDocument(id);
-                publishRepository.getUserStorage().deleteDocument(id, false);
+                publishRepository.getUserStorage().deleteDocument(id, batchMode);
                 
                 if(!batchMode)  {        
                     UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), id), document.getSpaceId(), UpdateScope.SCOPE_SPACE, true);
@@ -257,7 +257,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
          }
         
           
-        getUserStorage().deleteDocument(id, false);
+        getUserStorage().deleteDocument(id, batchMode);
           
          if(!batchMode)  {        
               UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), id), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);

@@ -73,7 +73,7 @@ public class MemoryUserStorage extends BaseUserStorage {
                     parent.getChildrenId().add(internalID);
                     
                 }
-                getSharedRepository().addDocumentToCache(parentID, parent, true);
+                getSharedRepository().addDocumentToCache(parentID, parent, batchMode);
             }
         }
         
@@ -279,7 +279,21 @@ public class MemoryUserStorage extends BaseUserStorage {
           
     }
 
-    public void deleteDocumentInternal(String internalID, boolean recurse) throws CMSException {
+    public void deleteDocumentNonRecurse(String internalID, boolean batchMode) throws CMSException {
+      
+        
+        deleteDocumentInternal(internalID, false);
+        
+        if(!batchMode)  {
+            updatePaths();
+        }
+        
+
+          
+    }
+    
+    
+    private void deleteDocumentInternal(String internalID, boolean recurse) throws CMSException {
         
         RepositoryDocument document = getDocuments().get(internalID);
         if (document == null)
@@ -307,16 +321,13 @@ public class MemoryUserStorage extends BaseUserStorage {
                     parent.getChildrenId().remove(internalID);
                     
                 }
-                getSharedRepository().updateDocumentToCache(parentID, parent, true);
+                getSharedRepository().updateDocumentToCache(parentID, parent, batchMode);
             }
         }
         
        
-        getSharedRepository().removeDocumentFromCache(internalID, true);
-        
-        
-        
-        
+        getSharedRepository().removeDocumentFromCache(internalID, batchMode);
+          
     }
 
 

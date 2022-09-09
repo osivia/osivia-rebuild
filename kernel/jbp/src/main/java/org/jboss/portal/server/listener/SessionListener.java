@@ -120,7 +120,9 @@ public class SessionListener implements HttpSessionListener
                }
                catch (Exception e)
                {
-                  log.error("An error occured when trying to invalidate the sessions");
+                   // Can occur if target context is already undeployed
+                  if( ! (e instanceof IllegalStateException))
+                      log.error("An error occured when trying to invalidate the sessions");
                }
             }
          }
