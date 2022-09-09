@@ -58,7 +58,13 @@ public class TemplatesRepository extends UserRepositoryMemoryBase  {
         
         modules.add(nav);     
         MemoryRepositorySpace space = new MemoryRepositorySpace(this,id, id,null,children, properties, modules);
+        List<String> acls = new ArrayList<>();
+        acls.add("_anonymous_");
+        space.setACL(acls);        
         addDocument(id, space);
+        
+
+
     }
 
     /**

@@ -65,7 +65,16 @@ public interface CMSService {
      * @return
      * @throws CMSException
      */
-    List<NativeRepository> getUserRepositories(CMSContext cmsContext) throws CMSException; 
+    List<NativeRepository> getUserRepositories(CMSContext cmsContext) throws CMSException;
 
+
+
+    /**
+     * Remove the listener
+     * @param cmsContext
+     * @param repositoryName
+     * @param listener
+     */
+    void removeListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener); 
    
 }

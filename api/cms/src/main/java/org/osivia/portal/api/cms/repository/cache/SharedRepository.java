@@ -95,7 +95,9 @@ public class SharedRepository {
         listeners.add(listener);
     }
 
-
+    public void removeListener(RepositoryListener listener) {
+        listeners.remove(listener);
+    }
     
     public void endBatch(UserStorage storageRepository)  {
         storageRepository.endBatch();

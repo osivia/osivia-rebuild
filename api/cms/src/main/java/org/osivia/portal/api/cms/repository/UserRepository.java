@@ -28,6 +28,15 @@ public interface UserRepository {
      */
     public void addListener(RepositoryListener listener) ;
     
+    
+    
+    /**
+     * Remove the listener.
+     *
+     * @param listener the listener
+     */
+    public void removeListener(RepositoryListener listener) ;
+    
     /**
      * Execute request.
      *

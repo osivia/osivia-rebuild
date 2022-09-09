@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.Mode;
@@ -33,9 +34,16 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.service.CMSContentEvent;
+import org.osivia.portal.api.cms.service.CMSEvent;
+import org.osivia.portal.api.cms.service.CMSRepositoryEvent;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
 import org.osivia.portal.core.content.IPublicationManager;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.tracker.ITracker;
@@ -83,15 +91,57 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     
     private CMSService cmsService;
     
+    private Map<String, CMSListener> listeners;
+    
+    private ICMSServiceLocator cmServiceLocator;
+    
+    public ICMSServiceLocator getCmsServiceLocator() {
+        if( cmServiceLocator == null)
+            cmServiceLocator = Locator.getService( ICMSServiceLocator.MBEAN_NAME,ICMSServiceLocator.class);
+        return cmServiceLocator;
+    }
+
+    
+    
 
     @PostConstruct
     private void build() {
+       nodes = new ConcurrentHashMap();
+        
+       listeners = new ConcurrentHashMap();
+   }
+    
 
-        nodes = new ConcurrentHashMap();
+   private CMSListener getCMSListener(String namespace) {
+
+       CMSListener listener = listeners.get(namespace);
+       if (listener == null) {
+           synchronized (namespace) {
+               listener = listeners.get(namespace);
+               if (listener == null) {
+                   listener = new CMSListener(namespace);
+
+                   PortalControllerContext portalCtx;
+                   try {
+                       portalCtx = new PortalControllerContext(getCmsServiceLocator().getCMSService().getPortletContext());
+                       
+                   } catch (CMSException e) {
+                       throw new RuntimeException(e);
+                   }
+
+                   CMSContext cmsContext = new CMSContext(portalCtx);
+                   cmsContext.setSuperUserMode(true);
+                   getCMSService().addListener(cmsContext, namespace, listener);
 
 
-    }
+                   listeners.put(namespace, listener);
+               }
+           }
+       }
 
+       return listener;
+   }
+  
 
     @Override
     public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
@@ -110,13 +160,18 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
             PortalObjectId contextId = new PortalObjectId(id.getNamespace(), contextPath);
             ContextImplBase context =  (ContextImplBase) getContextNodes().get(contextId);
             if (context != null)    {
-                if( (context.getObjectNode().isDirty()))    {
+                
+                CMSListener listener = getCMSListener(context.getId().getNamespace());
+                
+                if( (context.getObjectNode().getVersion() < listener.getVersion()))    {
                     // TODO remove all child
                     Set<PortalObjectId> nodes = new HashSet<>(getContextNodes().keySet());
                     for( PortalObjectId poid: nodes)
                         getContextNodes().remove(poid);
                     createDefaultContext(getContextNodes());
                     res = null;
+                    
+                   
                 }
             }
          }
@@ -194,6 +249,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
     }
 
+
     /**
      * Gets the context nodes.
      *
@@ -248,12 +304,10 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
         Map<PortalObjectId, PortalObject> currentContextNodes = nodes.get(sessionId);
         
         PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
-        ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId(nameSpace, contextPath), "", containerContext);
+        long version = getCMSListener(nameSpace).getVersion();
+        ObjectNodeImplBase contextNode = new ObjectNodeImplBase(new PortalObjectId(nameSpace, contextPath), "", containerContext, version);
         
-        PortalControllerContext portalCtx = new PortalControllerContext(tracker.getHttpRequest());
-        
-        CMSContext cmsContext = new CMSContext(portalCtx);
-        getCMSService().addListener(cmsContext, nameSpace, contextNode);              
+          
 
         ContextImplBase context = new ContextImplBase();
         context.setDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME, defaultPortalName);

@@ -69,6 +69,13 @@ public class CMSServiceImpl implements CMSService {
         repositoryFactory.addListener(cmsContext, repositoryName, listener);
     }
 
+    
+
+    @Override
+    public void removeListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+        repositoryFactory.addListener(cmsContext, repositoryName, listener);
+    }
+
 
     @Override
     public NativeRepository getUserRepository(CMSContext cmsContext, String repositoryName) throws CMSException {

@@ -48,7 +48,7 @@ import org.osivia.portal.api.directory.v2.service.GroupService;
  */
 
 
-public abstract class BaseUserRepository implements UserRepository, RepositoryListener {
+public abstract class BaseUserRepository implements UserRepository {
 
  
 
@@ -156,9 +156,14 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
      */
 
     public void addListener(RepositoryListener listener) {
-        listeners.add(listener);
+        getSharedRepository().addListener(listener);
     }
 
+    
+    
+    public void removeListener(RepositoryListener listener) {
+        getSharedRepository().removeListener(listener);
+    }
     
     public boolean isPreviewRepository() {
         return previewRepository;
@@ -175,7 +180,7 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         }
         
         
-        getSharedRepository().addListener(this);
+       
         
         if(initRepository)  {
             startInitBatch();    
@@ -312,14 +317,6 @@ public abstract class BaseUserRepository implements UserRepository, RepositoryLi
         }
 
         return children;
-    }
-    
-    @Override
-    public void contentModified( CMSEvent e) {
-            
-        for (RepositoryListener listener : listeners) {
-                listener.contentModified( e);
-        }
     }
 
 

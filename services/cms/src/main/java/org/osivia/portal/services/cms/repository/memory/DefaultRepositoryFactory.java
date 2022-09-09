@@ -293,6 +293,32 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
         }
     }
     
+    
+    /**
+     * Remove the listener.
+     *
+     * @param cmsContext the cms context
+     * @param repositoryName the repository name
+     * @param listener the listener
+     */
+    public void removeListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+
+        logger.debug("addListener repositoryName" + repositoryName);
+        
+        
+        UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
+
+
+        removeListenerForEachLanguage(cmsContext, repositoryName, listener);
+        
+        if (userRepository.supportPreview()) {
+            boolean savedPreview = cmsContext.isPreview();
+            cmsContext.setPreview(true);
+            removeListenerForEachLanguage(cmsContext, repositoryName, listener);
+            cmsContext.setPreview(savedPreview);
+        }
+    }
+    
     /**
      * Adds the listener for each language.
      *
@@ -308,6 +334,27 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
             UserRepository localeRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
             if( localeRepository != null)
                 localeRepository.addListener(listener);
+        }
+        cmsContext.setLocale(savedLocale);
+    }
+    
+    
+    
+    /**
+     * Remove the listener for each language.
+     *
+     * @param cmsContext the cms context
+     * @param repositoryName the repository name
+     * @param listener the listener
+     */
+    public void removeListenerForEachLanguage(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+        Locale savedLocale = cmsContext.getlocale();
+        UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
+        for( Locale locale: userRepository.getLocales())    {
+            cmsContext.setLocale(locale);
+            UserRepository localeRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
+            if( localeRepository != null)
+                localeRepository.removeListener(listener);
         }
         cmsContext.setLocale(savedLocale);
     }

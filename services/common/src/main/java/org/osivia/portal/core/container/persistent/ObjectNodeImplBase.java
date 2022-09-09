@@ -52,7 +52,7 @@ import java.util.Set;
 /**
  * cf. PersistentPortalObjectContainer ...
  */
-public class ObjectNodeImplBase implements ContextObject, RepositoryListener {
+public class ObjectNodeImplBase implements ContextObject  {
 
     /** . */
     protected static final Logger log = Logger.getLogger(ObjectNodeImplBase.class);
@@ -69,11 +69,13 @@ public class ObjectNodeImplBase implements ContextObject, RepositoryListener {
     private PortalObjectImplBase object;
     private Map<String, ObjectNodeSecurityConstraint> securityConstraints;
 
-    private boolean dirty = false;
+    private long version;
 
+    
 
-    public boolean isDirty() {
-        return dirty;
+    
+    public long getVersion() {
+        return version;
     }
 
     // Runtime fields
@@ -95,6 +97,17 @@ public class ObjectNodeImplBase implements ContextObject, RepositoryListener {
         this.children = new ConcurrentHashMap();
         this.securityConstraints = new HashMap<String, ObjectNodeSecurityConstraint>();
     }
+    
+    public ObjectNodeImplBase(PortalObjectId path, String name, Object containerContext, long version) {
+        this.path = path;
+        this.name = name;
+        this.containerContext = (StaticPortalObjectContainer.ContainerContext) containerContext;
+        this.children = new ConcurrentHashMap();
+        this.securityConstraints = new HashMap<String, ObjectNodeSecurityConstraint>();
+        this.version = version;
+    }
+    
+    
 
     // ContextObject implementation *************************************************************************************
 
@@ -238,29 +251,7 @@ public class ObjectNodeImplBase implements ContextObject, RepositoryListener {
         }
     }
 
-    @Override
-    public void contentModified(CMSEvent e) {
-        boolean makeDirtyNode = false;
-        if (e instanceof CMSContentEvent) {
-            Document sourceDocument = ((CMSContentEvent) e).getSourceDocument();
-            if (sourceDocument instanceof Space) {
-
-                String templated = (String) sourceDocument.getProperties().get("osivia.connect.templated");
-                if (!"false".equals(templated)) {
-                    makeDirtyNode = true;
-                }
-
-            }
-        }
-        if (e instanceof CMSRepositoryEvent) {
-            makeDirtyNode = true;
-        }
-
-        if (makeDirtyNode) {
-            dirty = true;
-            DynamicPortalObjectContainer.clearCache();
-        }
-    }
+   
 
 
 }
