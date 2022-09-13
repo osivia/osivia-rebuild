@@ -8,7 +8,7 @@
    <deployment>
       <instance>
          <display-name xml:lang="en">Sample portlet</display-name>
-         <display-name xml:lang="fr">Portlet exemple</display-name>
+         <display-name xml:lang="fr">OSIVIA - Portlet exemple</display-name>
          <instance-id>SampleInstance</instance-id>
          <portlet-ref>Sample</portlet-ref>
       </instance>

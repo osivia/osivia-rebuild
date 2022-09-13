@@ -6,126 +6,219 @@
 
 <deployments>
    <deployment>
+   	  <if-exists>overwrite</if-exists>
       <instance>
          <display-name xml:lang="en">CMS content portlet</display-name>
-         <display-name xml:lang="fr">Portlet affichage contenu</display-name>
+         <display-name xml:lang="fr">OSIVIA - Portlet affichage contenu</display-name>
          <instance-id>ContentInstance</instance-id>
          <portlet-ref>Content</portlet-ref>
       </instance>
    </deployment>  
-   <deployment>    
+   <deployment>  
+   	  <if-exists>overwrite</if-exists>     
       <instance>
          <display-name xml:lang="en">CMS delete content portlet</display-name>
          <display-name xml:lang="fr">Portlet suppression content</display-name>
          <instance-id>DeleteContentPortletInstance</instance-id>
          <portlet-ref>DeleteContentPortlet</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment>     
    <deployment>
+   	  <if-exists>overwrite</if-exists>   
       <instance>
          <display-name xml:lang="en">CMS fragment portlet</display-name>
-         <display-name xml:lang="fr">Portlet affichage contenu</display-name>
+         <display-name xml:lang="fr">OSIVIA - Portlet affichage fragment</display-name>
          <instance-id>FragmentInstance</instance-id>
          <portlet-ref>Fragment</portlet-ref>
       </instance>
    </deployment>     
    <deployment>
+   	  <if-exists>overwrite</if-exists>   
       <instance>
          <display-name xml:lang="en">CMS browser portlet</display-name>
          <display-name xml:lang="fr">Portlet affichage dossier</display-name>
          <instance-id>BrowserInstance</instance-id>
          <portlet-ref>Browser</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>
    </deployment>       
-   <deployment>    
+   <deployment>
+      <if-exists>overwrite</if-exists>
       <instance>
          <display-name xml:lang="en">CMS menu portlet</display-name>
-         <display-name xml:lang="fr">Portlet affichage menu</display-name>
+         <display-name xml:lang="fr">OSIVIA - Portlet affichage menu</display-name>
          <instance-id>MenuInstance</instance-id>
          <portlet-ref>Menu</portlet-ref>
       </instance>      
    </deployment>
    <deployment>    
+   	  <if-exists>overwrite</if-exists>   
       <instance>
          <display-name xml:lang="en">CMS edition portlet</display-name>
          <display-name xml:lang="fr">Portlet edition contenu</display-name>
          <instance-id>EditionInstance</instance-id>
          <portlet-ref>Edition</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment>   
    <deployment>    
+   	  <if-exists>overwrite</if-exists>   
       <instance>
          <display-name xml:lang="en">CMS edition page properties portlet</display-name>
          <display-name xml:lang="fr">Portlet edition propriétés page</display-name>
          <instance-id>EditionPagePropertiesPortletInstance</instance-id>
          <portlet-ref>EditionPagePropertiesPortlet</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment> 
-   <deployment>    
+   <deployment>
+      <if-exists>overwrite</if-exists>
       <instance>
          <display-name xml:lang="en">CMS edition page acls portlet</display-name>
          <display-name xml:lang="fr">Portlet edition acls page</display-name>
          <instance-id>EditionPageAclsPortletInstance</instance-id>
          <portlet-ref>EditionPageAclsPortlet</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment> 
-   <deployment>    
+   <deployment>
+   	  <if-exists>overwrite</if-exists>       
       <instance>
          <display-name xml:lang="en">CMS repository portlet</display-name>
          <display-name xml:lang="fr">Portlet edition repository </display-name>
          <instance-id>EditionRepositoryPortletInstance</instance-id>
          <portlet-ref>EditionRepositoryPortlet</portlet-ref>
+		 <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>              
       </instance>      
    </deployment> 
-   <deployment>    
+   <deployment>
+   	  <if-exists>overwrite</if-exists>       
       <instance>
          <display-name xml:lang="en">CMS EditionAddPortlet portlet</display-name>
          <display-name xml:lang="fr">Portlet EditionAddPortlet</display-name>
          <instance-id>EditionAddPortletInstance</instance-id>
          <portlet-ref>EditionAddPortlet</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment>   
-   <deployment>    
+   <deployment>
+   	  <if-exists>overwrite</if-exists>       
       <instance>
          <display-name xml:lang="en">CMS EditionModifyPortlet portlet</display-name>
          <display-name xml:lang="fr">Portlet EditionModifyPortlet</display-name>
          <instance-id>EditionModifyPortletInstance</instance-id>
          <portlet-ref>EditionModifyPortlet</portlet-ref>
+          <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <unchecked />
+              </policy-permission>
+          </security-constraint>
+ 			<preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>                    
       </instance>      
    </deployment>    
-   <deployment>    
+   <deployment>
+   	  <if-exists>overwrite</if-exists>       
       <instance>
          <display-name xml:lang="en">CMS EditionDeletePortlet portlet</display-name>
          <display-name xml:lang="fr">Portlet EditionDeletePortlet</display-name>
          <instance-id>EditionDeletePortletInstance</instance-id>
          <portlet-ref>EditionDeletePortlet</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment>    
-   <deployment>    
+   <deployment>
+   	  <if-exists>overwrite</if-exists>       
       <instance>
          <display-name xml:lang="en">CMS EditionModifyPortal portlet</display-name>
          <display-name xml:lang="fr">Portlet EditionModifyPortal</display-name>
          <instance-id>EditionModifySpaceInstance</instance-id>
          <portlet-ref>EditionModifySpace</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment>       
-    <deployment>    
+    <deployment>
+   	  <if-exists>overwrite</if-exists>        
       <instance>
          <display-name xml:lang="en">CMS Edition Tree portlet</display-name>
          <display-name xml:lang="fr">Portlet Edition Arbre</display-name>
          <instance-id>EditionTreeInstance</instance-id>
          <portlet-ref>EditionTree</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
       </instance>      
    </deployment>       
      
    
      
-   <deployment>    
+   <deployment>
+   	  <if-exists>overwrite</if-exists>       
       <instance>
          <display-name xml:lang="en">CMS rename portlet</display-name>
          <display-name xml:lang="fr">Portlet renommage contenu</display-name>
          <instance-id>RenameInstance</instance-id>
          <portlet-ref>Rename</portlet-ref>
-      </instance>      
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>      
+      </instance>
    </deployment>     
 </deployments>
