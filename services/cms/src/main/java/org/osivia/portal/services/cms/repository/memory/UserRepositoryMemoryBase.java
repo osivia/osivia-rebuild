@@ -450,4 +450,34 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         
     }
 
+
+    @Override
+    public void setNewId(String internalID, String newId) throws CMSException {
+        
+        try {
+            MemoryRepositoryDocument doc = (MemoryRepositoryDocument) getSharedDocument(internalID);
+            
+            MemoryRepositoryDocument targetParent = (MemoryRepositoryDocument) getSharedDocument(doc.getParentInternalId());
+            
+
+            MemoryRepositoryDocument newDoc = (MemoryRepositoryDocument) doc.duplicateForNewId(newId);
+            
+            // Add at the same ordrer than old one
+            int index = targetParent.getChildrenId().indexOf(internalID);
+            targetParent.getChildrenId().add(index, newId);
+            
+             
+            // Delete old doc
+            ((MemoryUserStorage) getUserStorage()).deleteDocumentNonRecurse(internalID, true);
+
+            // Update parent
+             getUserStorage().updateDocument(targetParent.getInternalID(), targetParent, true);            
+
+             // Add coument
+            addDocument(newId, newDoc);
+        } catch (Exception e)   {
+            throw new CMSException(e);
+        }
+    }
+
 }

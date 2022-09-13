@@ -194,16 +194,19 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         String docId = window.getProperty("osivia.move.id");
 
         Boolean move;
+        UniversalID pageId;
         if (StringUtils.isNotEmpty(docId)) {
             move = true;
+            pageId = new UniversalID( docId);
         } else {
             move = false;
+            pageId = new UniversalID(  window.getProperty("osivia.browse.id"));
         }
 
         // Browse
         String data;
         try {
-            data = browse(portalControllerContext, move);
+            data = browse(portalControllerContext, move, pageId);
         } catch (Exception e) {
             throw new PortletException(e);
         }
@@ -219,7 +222,7 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
     }
 
 
-    private String browse(PortalControllerContext portalControllerContext, boolean move) throws CMSException, JSONException {
+    private String browse(PortalControllerContext portalControllerContext, boolean move, UniversalID pageId) throws CMSException, JSONException {
         // JSON array
         JSONArray jsonArray;
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
@@ -227,7 +230,7 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         if (move) {
             jsonArray = new JSONArray();
             for (NavigationItem child : getSpace(portalControllerContext).getChildren()) {
-                JSONObject childObject = this.generateMoveObject(portalControllerContext, bundle, child);
+                JSONObject childObject = this.generateMoveObject(portalControllerContext, bundle, child, pageId);
                 jsonArray.put(childObject);
             }
             
@@ -235,7 +238,7 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
             jsonArray = new JSONArray();
             
 
-            JSONObject jsonObject = this.generateBrowseJSONObject(portalControllerContext, bundle, getSpace(portalControllerContext), true);
+            JSONObject jsonObject = this.generateBrowseJSONObject(portalControllerContext, bundle, getSpace(portalControllerContext), true, pageId);
             if (jsonObject != null) {
                 jsonArray.put(jsonObject);
             }
@@ -246,22 +249,25 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
     }
 
 
-    private JSONObject generateBrowseJSONObject(PortalControllerContext portalControllerContext, Bundle bundle, NavigationItem navItem, boolean root) throws JSONException, CMSException {
+    private JSONObject generateBrowseJSONObject(PortalControllerContext portalControllerContext, Bundle bundle, NavigationItem navItem, boolean root, UniversalID pageId) throws JSONException, CMSException {
         JSONObject object = new JSONObject();
 
 
-        if (root) {
+        if (root || !navItem.getChildren().isEmpty()) {
             object.put("expanded", "true");
         }
         object.put("title", navItem.getTitle());
         object.put("href", portalUrlFactory.getViewContentUrl(portalControllerContext, navItem.getDocumentId()));
         object.put("path", navItem.getDocumentId().toString());
+        if( navItem.getDocumentId().equals(pageId))
+            object.put("extraClasses", "font-weight-bold");
+
 
         // Children
         if (!navItem.getChildren().isEmpty()) {
             JSONArray childrenArray = new JSONArray();
             for (NavigationItem child : navItem.getChildren()) {
-                JSONObject childObject = this.generateBrowseJSONObject(portalControllerContext, bundle, child, false);
+                JSONObject childObject = this.generateBrowseJSONObject(portalControllerContext, bundle, child, false, pageId);
                 childrenArray.put(childObject);
             }
 
@@ -271,12 +277,19 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         return object;
     }
 
-    private JSONObject generateMoveObject(PortalControllerContext portalControllerContext, Bundle bundle, NavigationItem navItem) throws JSONException, CMSException {
+    private JSONObject generateMoveObject(PortalControllerContext portalControllerContext, Bundle bundle, NavigationItem navItem, UniversalID pageId) throws JSONException, CMSException {
         JSONObject object = new JSONObject();
 
+        
+        if (!navItem.getChildren().isEmpty()) {
+            object.put("expanded", "true");
+        }
 
         object.put("title", navItem.getTitle());
         object.put("path", navItem.getDocumentId().toString());
+        
+        if( navItem.getDocumentId().equals(pageId))
+            object.put("extraClasses", "font-weight-bold");
 
         // Children
         
@@ -285,7 +298,7 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         if (!navItem.getChildren().isEmpty()) {
             
             for (NavigationItem child : navItem.getChildren()) {
-                JSONObject childObject = this.generateMoveObject(portalControllerContext, bundle, child);
+                JSONObject childObject = this.generateMoveObject(portalControllerContext, bundle, child, pageId);
                 childrenArray.put(childObject);
             }
 

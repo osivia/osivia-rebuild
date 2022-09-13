@@ -45,19 +45,27 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-
+import org.osivia.portal.cms.portlets.rename.controller.RenameFormValidator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
@@ -102,6 +110,9 @@ public class PropertiesController extends GenericPortlet implements PortletConte
     @Autowired
     private IBundleFactory bundleFactory;    
     
+    @Autowired
+    private PropertiesFormValidator validator;
+    
     /** The logger. */
     protected static Log logger = LogFactory.getLog(PropertiesController.class);
 
@@ -142,46 +153,114 @@ public class PropertiesController extends GenericPortlet implements PortletConte
      * Submit action
      */
     @ActionMapping(name = "submit")
-    public void updateProperties(ActionRequest request, ActionResponse response, PropertiesForm form) throws PortletException {
+    public void updateProperties(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") PropertiesForm form, BindingResult result, SessionStatus sessionStatus) throws PortletException {
+
 
         try {
             // Portal Controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-            // Portal controller context
-            CMSController ctrl = new CMSController(portalControllerContext);
-            CMSContext cmsContext = ctrl.getCMSContext();
+            if (!result.hasErrors()) {
 
-            RepositoryDocument document;
+                RepositoryDocument document;
 
-            document = getDocument(portalControllerContext);
+                document = getDocument(portalControllerContext);
+
+                boolean checkId = true;
+                if (!StringUtils.equals(form.getId(), document.getInternalID())) {
+                    checkId = checkNewDocument(portalControllerContext, form.getId());
+                }
+
+                if (!checkId) {
+                    result.rejectValue("id", "MODIFY_PAGE_PROPERTIES_ID_ALREADY_EXISTS");
+                } else {
+
+                    sessionStatus.setComplete();
+
+                    // Portal controller context
+                    CMSController ctrl = new CMSController(portalControllerContext);
+                    CMSContext cmsContext = ctrl.getCMSContext();
 
 
-            AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, document.getId().getRepositoryName());
+                    AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, document.getId().getRepositoryName());
 
-            if( StringUtils.isNotEmpty(form.getLayoutId()))
-                document.getProperties().put(ThemeConstants.PORTAL_PROP_LAYOUT, form.getLayoutId());
-            else
-                document.getProperties().remove(ThemeConstants.PORTAL_PROP_LAYOUT);
-            
-            if( StringUtils.isNotEmpty(form.getThemeId()))
-                document.getProperties().put(ThemeConstants.PORTAL_PROP_THEME, form.getThemeId());
-            else
-                document.getProperties().remove(ThemeConstants.PORTAL_PROP_THEME);            
 
-            ((AdvancedRepository) repository).updateDocument(document.getId().getInternalID(), document);
+                    if (!StringUtils.equals(form.getId(), document.getInternalID())) {
+                        // Change ID
+                        ((AdvancedRepository) repository).setNewId(document.getInternalID(), form.getId());
+                        document = getNewDocument(portalControllerContext, form.getId());
+                    }
 
-            String url = this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
-            response.sendRedirect(url);
+
+                    if (StringUtils.isNotEmpty(form.getLayoutId()))
+                        document.getProperties().put(ThemeConstants.PORTAL_PROP_LAYOUT, form.getLayoutId());
+                    else
+                        document.getProperties().remove(ThemeConstants.PORTAL_PROP_LAYOUT);
+
+                    if (StringUtils.isNotEmpty(form.getThemeId()))
+                        document.getProperties().put(ThemeConstants.PORTAL_PROP_THEME, form.getThemeId());
+                    else
+                        document.getProperties().remove(ThemeConstants.PORTAL_PROP_THEME);
+
+
+                    ((AdvancedRepository) repository).updateDocument(form.getId(), document);
+
+                    String url = this.portalUrlFactory.getViewContentUrl(portalControllerContext, cmsContext, new UniversalID(document.getId().getRepositoryName(), form.getId()));
+                    response.sendRedirect(url);
+                }
+            }
+
 
         } catch (CMSException | IOException e) {
-           throw new PortletException( e);
+            throw new PortletException(e);
         }
     }
-
    
 
+    private boolean checkNewDocument(PortalControllerContext portalControllerContext, String checkId) throws CMSException {
+        
+        // Portal controller context
+        CMSController ctrl = new CMSController(portalControllerContext);
 
+        
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+        UniversalID navigationId = new UniversalID(window.getProperty("osivia.properties.id"));
+        
+        
+        CMSContext cmsContext = ctrl.getCMSContext();
+        
+        boolean check = false;
+
+        try {
+            cmsService.getCMSSession(cmsContext).getDocument(new UniversalID(navigationId.getRepositoryName(), checkId));
+        
+        } catch( CMSException e) {
+            check = true;
+        }
+        
+        return check;
+    }
+    
+    private RepositoryDocument getNewDocument(PortalControllerContext portalControllerContext, String newId) throws CMSException {
+        
+        // Portal controller context
+        CMSController ctrl = new CMSController(portalControllerContext);
+
+        
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+        UniversalID navigationId = new UniversalID(window.getProperty("osivia.properties.id"));
+        
+        
+        CMSContext cmsContext = ctrl.getCMSContext();
+        
+
+        RepositoryDocument document = (RepositoryDocument)
+            cmsService.getCMSSession(cmsContext).getDocument(new UniversalID(navigationId.getRepositoryName(), newId));
+
+        
+        return document;
+    }
+    
     private RepositoryDocument getDocument(PortalControllerContext portalControllerContext) throws CMSException {
         
         // Portal controller context
@@ -227,9 +306,15 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
             
             PropertiesForm form = this.applicationContext.getBean(PropertiesForm.class);
+
+            RepositoryDocument document = getDocument(portalCtx);
+            
+            form.setId( document.getInternalID());
+            
             
             //Layouts
-            form.setLayoutId((String) getDocument(portalCtx).getProperties().get(ThemeConstants.PORTAL_PROP_LAYOUT));
+
+            form.setLayoutId((String) document.getProperties().get(ThemeConstants.PORTAL_PROP_LAYOUT));
 
             Map<String, String> formLayouts = new LinkedHashMap<String, String>();
 
@@ -256,7 +341,7 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             
             // Themes
             
-            form.setThemeId((String) getDocument(portalCtx).getProperties().get(ThemeConstants.PORTAL_PROP_THEME));
+            form.setThemeId((String) document.getProperties().get(ThemeConstants.PORTAL_PROP_THEME));
 
             Map<String, String> formThemes = new LinkedHashMap<String, String>();
 
@@ -289,4 +374,14 @@ public class PropertiesController extends GenericPortlet implements PortletConte
     }
 
 
+    /**
+     * Form init binder.
+     *
+     * @param binder portlet request data binder
+     */
+    @InitBinder("form")
+    public void formInitBinder(PortletRequestDataBinder binder) {
+        binder.addValidators(this.validator);
+    }
+    
 }

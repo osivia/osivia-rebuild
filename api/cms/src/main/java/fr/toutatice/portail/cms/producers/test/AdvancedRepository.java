@@ -55,6 +55,8 @@ public interface AdvancedRepository extends NativeRepository {
     public void addDocument(String internalID, RepositoryDocument document) throws CMSException  ;
     
     public void updateDocument(String internalID, RepositoryDocument document) throws CMSException ;
+    
+    public void setNewId(String internalID, String newId) throws CMSException ;
 
     void setProfiles(String id, List<Profile> profiles) throws CMSException;
     

@@ -27,7 +27,7 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
 
 
     /** The id. */
-    private final String internalID;
+    private String internalID;
 
 
     /** The properties. */
@@ -209,6 +209,15 @@ public class RepositoryDocument implements org.osivia.portal.api.cms.model.Docum
     }
 
 
+    public RepositoryDocument duplicateForNewId( String newId) throws CloneNotSupportedException {
+        RepositoryDocument newDoc = SerializationUtils.clone(this);
+        newDoc.parentInternalId = getParentInternalId();
+        newDoc.childrenId = getChildrenId();
+        newDoc.userRepository = userRepository;
+        newDoc.preview = isPreview();
+        newDoc.internalID = newId;
+        return newDoc;
+    }
 
 
     @Override

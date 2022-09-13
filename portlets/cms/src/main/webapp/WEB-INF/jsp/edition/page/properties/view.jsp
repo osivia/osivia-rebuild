@@ -1,5 +1,6 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%> 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%> 
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
@@ -18,6 +19,17 @@
 
 <form:form action="${submitUrl}" method="post" modelAttribute="form"
 	class="w-100">
+	
+	
+	<%--Id--%>
+    <c:set var="placeholder"><op:translate key="MODIFY_PAGE_PROPERTIES_ID_PLACEHOLDER" /></c:set>
+    <spring:bind path="id">
+        <div class="form-group required">
+            <form:label path="id"><op:translate key="MODIFY_PAGE_PROPERTIES_ID_LABEL" /></form:label>
+            <form:input path="id" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
+            <form:errors path="id" cssClass="invalid-feedback" />
+        </div>
+    </spring:bind>
 	
      <div class="form-group">
          <form:label path="layoutId"><op:translate key="MODIFY_PAGE_PROPERTIES_LAYOUT_LABEL" /></form:label>

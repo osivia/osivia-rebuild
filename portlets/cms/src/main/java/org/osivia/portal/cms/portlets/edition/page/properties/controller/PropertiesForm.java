@@ -10,6 +10,12 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PropertiesForm {
     
+    private String id;
+    
+
+
+
+
     private String layoutId;
     private String themeId;
 
@@ -60,4 +66,14 @@ public class PropertiesForm {
         this.layouts = layouts;
     }
 
+    
+    public String getId() {
+        return id;
+    }
+
+
+    
+    public void setId(String id) {
+        this.id = id;
+    }
 }

@@ -1007,6 +1007,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             Map<String, String> treeProperties = new HashMap<>();
 
             ctrl.addContentRefToProperties(treeProperties, "osivia.space.id", document.getSpaceId());
+            ctrl.addContentRefToProperties(treeProperties, "osivia.browse.id", document.getId());
 
             String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
             this.addToolbarItem(configurationList, treeUrl, "#osivia-modal", bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true);
