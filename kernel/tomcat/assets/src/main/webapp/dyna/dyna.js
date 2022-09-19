@@ -24,9 +24,68 @@
 var currentSubmit;
 
 
+var localCache = {
+    /**
+     * timeout for cache in millis
+     * @type {number}
+     */
+    timeout: 300000,
+    /** 
+     * @type {{_: number, data: {}}}
+     **/
+    data: {},
+    remove: function (url) {
+        delete localCache.data[url];
+    },
+    exist: function (url) {
+        return !!localCache.data[url] && ((new Date().getTime() - localCache.data[url]._) < localCache.timeout);
+    },
+    get: function (url) {
+
+        return localCache.data[url].data;
+    },
+    set: function (url, cachedData, callback) {
+        localCache.remove(url);
+        localCache.data[url] = {
+            _: new Date().getTime(),
+            data: cachedData
+        };
+        if ($JQry.isFunction(callback)) callback(cachedData);
+    }
+};
+
+/*
+Cache scripts loaded in ajax
+(defined at a portlet level)
+*/
 
 
+$JQry.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
 
+	
+  var staticResource = false;
+  if ( options.dataType == 'script' || originalOptions.dataType == 'script' )
+  		staticResource = true;
+
+  
+  if( staticResource)
+   {
+		var complete = originalOptions.complete || $JQry.noop,
+            url = originalOptions.url;
+        //remove jQuery cache as we have our own localCache
+        options.cache = false;
+        options.beforeSend = function () {
+            if (localCache.exist(url)) {
+                complete(localCache.get(url));
+                return false;
+            }
+            return true;
+        };
+        options.complete = function (data, textStatus) {
+            localCache.set(url, data, complete);
+        };
+  }
+});
 
 
 
@@ -881,7 +940,7 @@ function updateResources(newHeaderResources, layout)	{
 
 			   for( var i=0; i<  headers.length; i++)	{
 	    		   if( newHeader.tag == "LINK" && headers[i].tagName == "LINK")	{
-	     			   if(  location.origin+newHeader.href == headers[i].href)
+	     			   if(  location.origin+newHeader.href == headers[i].href && headers[i].rel != "preload")
 	     				   insert = false;
 	    		   }
 	     		   if( newHeader.tag == "SCRIPT" && headers[i].tagName == "SCRIPT")	{
@@ -893,7 +952,16 @@ function updateResources(newHeaderResources, layout)	{
 	    	   var tagToInsert;
 			   
 			   if( insert && newHeader.tag == "LINK")	{
+				
+				let parent = document.querySelector("head");
+				if (parent) {
+					addPreload( newHeader.href);
+					
+				}
+				
+								
 	 		    tagToInsert  = document.createElement('LINK');
+	 		    
 	 		    tagToInsert.rel  =  newHeader.rel;
 	 		    tagToInsert.type =  newHeader.type;
 	 		    tagToInsert.href =  newHeader.href;
@@ -914,7 +982,7 @@ function updateResources(newHeaderResources, layout)	{
 					    return this.nodeType == 8;
 					 	}).each(function(i, e) {
 					    	if ( $JQry.trim(e.nodeValue) == "portlets-end") {
-					      	$JQry(e).before(tagToInsert);
+					      	$JQry(tagToInsert).insertBefore(e);
 					    	}
 					  	});
 				  	}
@@ -998,7 +1066,7 @@ function insertPortalResources(srcContainer, section)	{
 					    // While we still have child elements to process...
 					    while (headChild) {
 					        nextChild = headChild.nextSibling;
-					       	if( child.href !== undefined &&  headChild.href == child.href)	{
+					       	if( child.href !== undefined &&  headChild.href == child.href && headChild.rel != 'preload')	{
 								elementChange = false;
 							}
 					       	if( child.src !== undefined && headChild.src == child.src)	{
@@ -1053,6 +1121,13 @@ function insertPortalResources(srcContainer, section)	{
 		            }
 		        } else	{
 		        	if (insertThis) {
+			
+						if( child.nodeName == "LINK")	{
+							addPreload( child.href);
+						}
+
+			
+			
 		           	 $JQry("head").contents().filter(function() {
 						    return this.nodeType == 8;
 						  }).each(function(i, e) {
@@ -1069,6 +1144,25 @@ function insertPortalResources(srcContainer, section)	{
 	    }
     }
  }
+
+// Preload llow the use use of browser inner cache
+
+function addPreload( linkRef)	{ 
+ 
+	let parent = document.querySelector("head");
+	if (parent) {
+			$JQry("head").find('[rel=preload][href="'+ linkRef+'"]').remove()
+
+			preloadTag  = document.createElement('LINK');
+			preloadTag.rel  =  "preload";
+			preloadTag.href =  linkRef;
+			preloadTag.as = "style";
+			
+			parent.appendChild(preloadTag);
+
+	}
+}							
+
 
 function copyInnerHTML(srcContainer, dstContainer, className)
 {
