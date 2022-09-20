@@ -78,6 +78,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       this.writeResource(out, "<link rel='stylesheet' href='/portal-assets/components/jquery-ui/jquery-ui-1.11.3.min.css'>");
   
       
+      this.writeResource(out,  "<script src='/portal-assets/components/jquery-mobile/jquery.mobile.custom.min.js'></script>");
+
+      
       this.writeResource(out,  "<script src='/portal-assets/js/ajax-redirection.js'></script>");  
       
       this.writeResource(out,  "<script src='/portal-assets/js/auto-submit.js'></script>");  
@@ -85,6 +88,8 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       
       // Bootstrap
       this.writeResource(out,  "<script src='/portal-assets/components/bootstrap/js/bootstrap.bundle.min.js'></script>");
+      this.writeResource(out,  "<script src='/portal-assets/js/bootstrap-integration.js'></script>");        
+      
 
       // Fancytree
       this.writeResource(out,  "<script src='/portal-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");
