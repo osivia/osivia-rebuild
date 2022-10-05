@@ -40,6 +40,10 @@ public class MemoryRepositorySpace extends MemoryRepositoryDocument implements S
         return templateId;
     }
 
+    public void setTemplateId(UniversalID templateId) {
+        this.templateId = templateId;
+    }
+    
     public boolean isNavigable()    {
         return true;
     }

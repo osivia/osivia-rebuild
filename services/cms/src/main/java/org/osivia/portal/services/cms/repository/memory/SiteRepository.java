@@ -32,10 +32,7 @@ public class SiteRepository extends UserRepositoryMemoryBase  {
         super(repositoryFactory, repositoryKey, publishRepository, userName);
     }
 
-    
-    private String generateTitle( String originalTitle) {
-        return "["+repositoryKey.getLocale().getLanguage().toString()+"]" + originalTitle;
-    }
+
     
     /**
      * Adds the site space.
@@ -66,26 +63,7 @@ public class SiteRepository extends UserRepositoryMemoryBase  {
     }
 
 
-    /**
-     * Adds the space.
-     *
-     * @param id the id
-     * @param properties the properties
-     * @throws CMSException 
-     */
-    private void addSitePage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules) throws CMSException {
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", generateTitle("Page "+ id));
-        MemoryRepositoryPage page = new MemoryRepositoryPage(this, id, name, null, parentId, spaceId, children, properties, modules);
-        addDocument(id, page);
-    }
 
-
-    @Override
-    public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        RepositoryDocument parent = (RepositoryDocument) getSharedDocument(parentId);
-        addSitePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>());
-    }
 
 
     protected void initDocuments() {

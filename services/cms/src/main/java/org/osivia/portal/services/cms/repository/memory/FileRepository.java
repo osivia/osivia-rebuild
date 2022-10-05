@@ -147,33 +147,6 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
 
 
-    @Override
-    public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        RepositoryDocument parent = getSharedDocument(parentId);
-        addPage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>(), null);
-    }
-
-    /**
-     * Adds the space.
-     *
-     * @param id the id
-     * @param properties the properties
-     * @throws CMSException
-     */
-    private void addPage(String id, String name, String parentId, String spaceId, List<String> children, List<ModuleRef> modules, Map propMap) throws CMSException {
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Page " + id);
-
-        if (propMap != null) {
-            properties.putAll(propMap);
-        }
-
-
-        MemoryRepositoryPage page = new MemoryRepositoryPage(this, id, name, null, parentId, spaceId, children, properties, modules);
-
-        addDocument(id, page);
-    }
-
 
     protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList, Map<String, Object> portalProperties, List<String> inheritedAcls) throws CMSException {
 

@@ -59,7 +59,7 @@ public class MemoryUserStorage extends BaseUserStorage {
     /* (non-Javadoc)
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#addDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
      */
-    @Override
+
     public void addDocument(String internalID, RepositoryDocument document, boolean batchMode) throws CMSException {
         
         getDocuments().put(internalID, document);
@@ -92,7 +92,7 @@ public class MemoryUserStorage extends BaseUserStorage {
     /* (non-Javadoc)
      * @see org.osivia.portal.services.cms.repository.test.StorageRepository#updateDocument(java.lang.String, org.osivia.portal.services.cms.model.test.DocumentImpl, boolean)
      */
-    @Override
+
     public void updateDocument(String internalID, RepositoryDocument document, boolean batchMode)  throws CMSException {
         
         getDocuments().put(internalID, document);
@@ -265,7 +265,6 @@ public class MemoryUserStorage extends BaseUserStorage {
 
 
 
-    @Override
     public void deleteDocument(String internalID, boolean batchMode) throws CMSException {
       
         

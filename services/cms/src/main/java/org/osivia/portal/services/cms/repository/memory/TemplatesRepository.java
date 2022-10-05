@@ -269,11 +269,7 @@ public class TemplatesRepository extends UserRepositoryMemoryBase  {
         addDocument("OSIVIA_PORTAL_UTILS", space);
      }
 
-@Override
-    public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-        RepositoryDocument parent = getSharedDocument(parentId);
-        addTemplatePage(id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), new ArrayList<ModuleRef>(), null);
-    }
+
     
 
 

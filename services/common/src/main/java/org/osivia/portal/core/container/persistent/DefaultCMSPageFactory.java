@@ -137,16 +137,18 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
             if (templateCMSId != null) {
 
                 Document templateDoc = cmsService.getCMSSession(cmsContext).getDocument(templateCMSId);
-                String templatePath = "/" + templateDoc.getId().getInternalID();
+                String templatePath = "";
+                
                 
                 NavigationItem templateNav = cmsService.getCMSSession(cmsContext).getNavigationItem(templateDoc.getId());
                 
 
-                while (! templateNav.getParent().isRoot()) {
-                    templateNav = templateNav.getParent();
+                while(! templateNav.isRoot())  {
+                    
                     templateDoc = cmsService.getCMSSession(cmsContext).getDocument( templateNav.getDocumentId());
 
                     templatePath = "/" + templateDoc.getId().getInternalID() + templatePath;
+                    templateNav = templateNav.getParent();
                 }
 
                 // Add space

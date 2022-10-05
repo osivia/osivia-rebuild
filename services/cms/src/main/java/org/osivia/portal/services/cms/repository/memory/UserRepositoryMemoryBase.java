@@ -19,6 +19,7 @@ import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.BaseUserStorage;
 import org.osivia.portal.api.cms.repository.RepositoryFactory;
+import org.osivia.portal.api.cms.repository.UserStorage;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
@@ -45,6 +46,20 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
 
 
 
+
+
+
+    @Override
+    public MemoryUserStorage getUserStorage() {
+        return (MemoryUserStorage) super.getUserStorage();
+    }
+
+    
+
+    public MemoryUserStorage getPublishUserStorage() {
+        return (MemoryUserStorage) publishRepository.getUserStorage();
+    }
+
     public UserRepositoryMemoryBase(RepositoryFactory repositoryFactory, SharedRepositoryKey repositoryKey, BaseUserRepository publishRepository, String userName) {
         super(repositoryFactory, repositoryKey, publishRepository, userName, new MemoryUserStorage());
     }
@@ -64,11 +79,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
     public void unpublish(String id) throws CMSException {
         
         try {
-            
             ((MemoryUserStorage) publishRepository.getUserStorage()).deleteDocumentNonRecurse(id, batchMode);
-        
-              
-        
         } catch( Exception e)   {
             throw new CMSException( e);
         }
@@ -123,7 +134,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         List<String> childrenId;
         if( existingPublishedParent != null)   {
             existingPublishedParent.getChildrenId().remove(id);
-            publishRepository.getUserStorage().updateDocument(existingPublishedParent.getInternalID(), existingPublishedParent, true);
+            getPublishUserStorage().updateDocument(existingPublishedParent.getInternalID(), existingPublishedParent, true);
         }
         
         
@@ -145,7 +156,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
                 // reset child parent
                 publishedChild.setParentInternalId( id);
                 
-                publishRepository.getUserStorage().updateDocument(publishedChild.getInternalID(), publishedChild, true);
+                getPublishUserStorage().updateDocument(publishedChild.getInternalID(), publishedChild, true);
             }
         }            
         
@@ -182,7 +193,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
             publishedParent.getChildrenId().addAll(parentChildren);
             
             
-            publishRepository.getUserStorage().updateDocument(publishedParent.getInternalID(), publishedParent, true);
+            getPublishUserStorage().updateDocument(publishedParent.getInternalID(), publishedParent, true);
         }     
         
         
@@ -195,7 +206,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         }
         
         
-        publishRepository.getUserStorage().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
+        getPublishUserStorage().addDocument(publishedDoc.getInternalID(), publishedDoc, false);
         
         
         } catch( Exception e)   {
@@ -216,10 +227,10 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         getUserStorage().addDocument(internalID, document, batchMode);
         
         if(!batchMode)  {   
-            if(this instanceof StreamableRepository)    {
+            //if(this instanceof StreamableRepository)    {
                 UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), internalID), document.getSpaceId(), UpdateScope.SCOPE_SPACE, false);
                 getSharedRepository().notifyUpdate( getUserStorage(), infos);
-            }
+            //}
         }
      }
 
@@ -242,7 +253,7 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         if( publishRepository != null)  {
             try {
                 publishRepository.getSharedDocument(id);
-                publishRepository.getUserStorage().deleteDocument(id, batchMode);
+                getPublishUserStorage().deleteDocument(id, batchMode);
                 
                 if(!batchMode)  {        
                     UpdateInformations infos = new UpdateInformations(new UniversalID(getRepositoryName(), id), document.getSpaceId(), UpdateScope.SCOPE_SPACE, true);
@@ -268,10 +279,6 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
       }
 
 
-    @Override
-    public void addEmptyPage(String id, String name, String parentId) throws CMSException {
-    }
-
 
     @Override  
     public void addWindow(String id, String name, String portletName, String region, int position, String pageId,  Map<String,String> properties) throws CMSException {
@@ -286,31 +293,43 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         updateDocument(pageId, (RepositoryDocument) page);
     }
     
-    
-    @Override
-    public void addFolder(String id, String name, String parentId) throws CMSException {
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Folder." + id);
-        
-        RepositoryDocument parent = getSharedDocument(parentId);
 
-        MemoryRepositoryFolder folder = new MemoryRepositoryFolder(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);        
-        
-        addDocument(id, folder);
-  
+    protected String generateTitle( String originalTitle) {
+        return "["+repositoryKey.getLocale().getLanguage().toString()+"]" + originalTitle;
     }
 
-
     @Override
-    public void addDocument(String id, String name, String parentId) throws CMSException {
+    public void addDocument(String id, String type, String name, String parentId) throws CMSException {
         
         Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Document." + id);
+        properties.put("dc:title",  generateTitle( type + " " +id));
         
         RepositoryDocument parent = getSharedDocument(parentId);
-        RepositoryDocument doc = new MemoryRepositoryDocument(this, null, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
+        
+        RepositoryDocument doc;
+        
+        if( "space".equals(type))   {
+            properties.put("templates.namespace", "templates");
+            
+            List<ModuleRef> modules = new ArrayList<>();
+            doc = new MemoryRepositorySpace(this, id, id, new UniversalID("templates", "ID_TEMPLATE_SITE"), new ArrayList<String>(), properties, modules);
+        } else if("page".equals(type))   {
+
+            doc =  new MemoryRepositoryPage(this, id, name, null, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties, new ArrayList<ModuleRef>());
+
+        } else  if("folder".equals(type))
+            doc = new MemoryRepositoryFolder(this, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties); 
+        else
+             doc = new MemoryRepositoryDocument(this, null, id, name, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties);
         
         addDocument(id, doc);
+        
+        
+        if( "space".equals(type) && supportPreview())   {
+            publish(id, true);
+        }
+        
+        
      }
     
     @Override
@@ -479,5 +498,25 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
             throw new CMSException(e);
         }
     }
+    
+    
+    
+    
+    @Override
+    public void setTemplateId(String id, UniversalID templateID) throws CMSException {
+        MemoryRepositoryDocument doc = (MemoryRepositoryDocument) getSharedDocument(id);
+        
+        if( doc instanceof MemoryRepositoryPage)
+            ((MemoryRepositoryPage) doc).setTemplateId(templateID);
+        if( doc instanceof MemoryRepositorySpace)
+            ((MemoryRepositorySpace) doc).setTemplateId(templateID);
+          
+        
+        updateDocument(id, doc);
+
+            
+            
+    }
+
 
 }

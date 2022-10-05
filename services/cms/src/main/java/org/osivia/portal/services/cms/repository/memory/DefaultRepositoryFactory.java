@@ -264,6 +264,10 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
         if ("sites".equals(repositoryName)) {
             return true;
         }
+        
+        if ("nx".equals(repositoryName)) {
+            return true;
+        }        
 
         return false;
     }

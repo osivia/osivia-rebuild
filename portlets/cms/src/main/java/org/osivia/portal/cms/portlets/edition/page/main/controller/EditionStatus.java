@@ -25,7 +25,10 @@ public class EditionStatus {
     public boolean modifiable = false;
     public List<String> acls = new ArrayList<>();   
     public String toolbar = null;
-    
+    public boolean liveSpace = false;
+
+
+
 
 
 
@@ -171,5 +174,15 @@ public class EditionStatus {
         this.toolbar = toolbar;
     }
 
+    
+    
+    public boolean isLiveSpace() {
+        return liveSpace;
+    }
+
+    
+    public void setLiveSpace(boolean liveSpace) {
+        this.liveSpace = liveSpace;
+    }
     
 }

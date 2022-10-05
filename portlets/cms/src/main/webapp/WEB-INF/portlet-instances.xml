@@ -92,6 +92,21 @@
 	      </preferences>          
       </instance>      
    </deployment> 
+   <deployment>    
+   	  <if-exists>overwrite</if-exists>   
+      <instance>
+         <display-name xml:lang="en">CMS edition web page properties portlet</display-name>
+         <display-name xml:lang="fr">Portlet edition propriétés page web</display-name>
+         <instance-id>EditionWebPagePropertiesPortletInstance</instance-id>
+         <portlet-ref>EditionWebPagePropertiesPortlet</portlet-ref>
+	      <preferences>
+	          <preference>
+	              <name>hide</name>
+	              <value>true</value>
+	          </preference>
+	      </preferences>          
+      </instance>      
+   </deployment>   
    <deployment>
       <if-exists>overwrite</if-exists>
       <instance>

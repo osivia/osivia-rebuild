@@ -144,6 +144,9 @@ $JQry(document).ready(function() {
 
 		if (!$element.data("fancytree-loaded")) {
 			var url = $element.data("lazyloadingurl");
+			
+			
+			
 			var options = {
 					activeVisible : true,
 					autoActivate : false,
@@ -180,6 +183,10 @@ $JQry(document).ready(function() {
 							path = data.node.data.path;
 
 						$input.val(path);
+						
+				
+						$selector.find("input.selector-label").val(data.node.title);	
+						$selector.find(".collapse").collapse('hide')					
 					},
 
 					click : function(event, data) {
@@ -188,7 +195,15 @@ $JQry(document).ready(function() {
 						} else {
 							return data.node.data.acceptable;
 						}
-					}
+					},
+					
+					init: function(event, data) {
+						// Display active node after lazyload
+						if (url !== undefined)
+        					data.tree.reactivate();
+    				}				
+					
+					
 				},
 				activeNode;
 
@@ -198,6 +213,9 @@ $JQry(document).ready(function() {
 					url : url,
 					cache : false
 				};
+				
+				
+
 
 				// Lazy loading
 				options["lazyLoad"] = function(event, data) {
@@ -208,8 +226,12 @@ $JQry(document).ready(function() {
 						data : {
 							"path" : node.data.path
 						},
-						cache : false
+						cache : false,
+						active :  node.data.active
 					};
+					
+					
+					
 				}
 			}
 
@@ -225,6 +247,7 @@ $JQry(document).ready(function() {
 					path = activeNode.data.path;
 
 				$input.val(path);
+				
 			}
 
 			$element.data("fancytree-loaded", true);
@@ -321,6 +344,22 @@ $JQry(document).ready(function() {
 		$filter.val("");
 		
 		clearFilter(tree, expand);
+	});
+	
+	
+	
+	$JQry(".selector .selector-eraser").click(function(event) {
+		var $target = $JQry(event.target),
+			$selector =  $target.closest(".selector"),
+			$tree = $selector.find(".fancytree"),
+		 	tree = $tree.fancytree("getTree");
+		
+			activeNode = tree.getActiveNode();
+			if (activeNode) {
+				activeNode.setActive(false);
+				$selector.find("input.selector-value").val("");	
+				$selector.find("input.selector-label").val("");	
+			}
 	});
 	
 	

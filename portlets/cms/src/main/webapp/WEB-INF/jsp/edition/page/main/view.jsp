@@ -39,7 +39,7 @@
 			</a>
 			
 
-			<c:if test="${status.supportPreview && status.modifiable}">
+			<c:if test="${status.supportPreview && not status.liveSpace && status.modifiable}">
 				<c:if test="${status.preview}">
 					<div class="btn-group">
 						<c:if test="${status.havingPublication}">

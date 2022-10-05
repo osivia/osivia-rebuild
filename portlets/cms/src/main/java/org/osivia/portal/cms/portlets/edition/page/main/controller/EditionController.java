@@ -40,10 +40,13 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
+import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Personnalization;
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -297,8 +300,51 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
 
                 String newID = "" + System.currentTimeMillis();
+                
 
-                ((AdvancedRepository) repository).addEmptyPage(newID, "" + System.currentTimeMillis(), id.getInternalID());
+                ((AdvancedRepository) repository).addDocument(newID, "page",  "" + System.currentTimeMillis(), id.getInternalID());
+
+
+                String url = portalUrlFactory.getViewContentUrl(portalControllerContext, ctrl.getCMSContext(), new UniversalID(id.getRepositoryName(), newID));
+                response.sendRedirect(url);
+
+
+            }
+        } catch (PortalException | IOException e) {
+            throw new PortletException(e);
+        }
+
+    }
+    
+    
+    /**
+     * Add space
+     */
+    @ActionMapping(name = "addSpace")    
+    public void addSpace(ActionRequest request, ActionResponse response) throws PortletException, CMSException {
+
+        try {
+            // Portal Controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+            NxControllerMock nuxeoController = new NxControllerMock(portalControllerContext);
+
+            String navigationId = WindowFactory.getWindow(request).getPageProperty("osivia.navigationId");
+            if (navigationId != null) {
+
+                UniversalID id = new UniversalID(navigationId);
+
+                CMSController ctrl = new CMSController(portalControllerContext);
+
+                CMSContext cmsContext = ctrl.getCMSContext();
+
+
+                AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
+
+                String newID = "" + System.currentTimeMillis();
+                
+
+                ((AdvancedRepository) repository).addDocument(newID, "space",  "" + System.currentTimeMillis(), id.getInternalID());
 
 
                 String url = portalUrlFactory.getViewContentUrl(portalControllerContext, ctrl.getCMSContext(), new UniversalID(id.getRepositoryName(), newID));
@@ -585,7 +631,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 if (repository instanceof AdvancedRepository) {
                     String newID = "" + System.currentTimeMillis();
 
-                    ((AdvancedRepository) repository).addFolder(newID, newID, id.getInternalID());
+                    ((AdvancedRepository) repository).addDocument(newID, "folder", newID, id.getInternalID());
                 }
 
 
@@ -617,7 +663,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 if (repository instanceof AdvancedRepository) {
                     String newID = "" + System.currentTimeMillis();
 
-                    ((AdvancedRepository) repository).addDocument(newID, newID, id.getInternalID());
+                    ((AdvancedRepository) repository).addDocument(newID, "file", newID, id.getInternalID());
                 }
 
 
@@ -720,12 +766,13 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
 
                 Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
+                
+                Document space = cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
 
 
                 Boolean isAdministrator = (Boolean) portalControllerContext.getRequest().getAttribute(InternalConstants.ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME);
 
 
-                Element configurationList = null;
 
 
                 String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
@@ -759,12 +806,13 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     status.setSubtypes(personnalization.getSubTypes());
                     status.setManageable(personnalization.isManageable());
                     status.setModifiable(personnalization.isModifiable());
+                    status.setLiveSpace(BooleanUtils.isTrue(((Boolean)space.getProperties().get("osivia.connect.liveSpace"))));
 
 
                     if (status.isModifiable()) {
 
 
-                        getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, document, isAdministrator);
+                        getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, document, isAdministrator, cmsContext, repository);
 
 
                         getEditionMenu(portalControllerContext, ctrl, status, bundle, toolbar, id, cmsContext, document, repository, personnalization);
@@ -884,12 +932,20 @@ public class EditionController implements PortletContextAware, ApplicationContex
             }
 
 
-            if (document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace) {
-                Map<String, String> properties = new HashMap<>();
-                ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());
-
-                String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
-                this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
+            if (document instanceof Space || document instanceof Page) {
+                if( !repository.supportPreview())   {
+                    Map<String, String> properties = new HashMap<>();
+                    ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());
+    
+                    String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
+                    this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
+                }   else    {
+                    Map<String, String> properties = new HashMap<>();
+                    ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());
+    
+                    String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionWebPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
+                    this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);                    
+                }
             }
 
             // Rename URL
@@ -960,7 +1016,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, Boolean isAdministrator) throws PortalException {
+    private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, Boolean isAdministrator, CMSContext cmsContext, AdvancedRepository repository) throws PortalException {
         Element configurationList;
         // Space menu
         if (BooleanUtils.isTrue(isAdministrator)) {
@@ -986,6 +1042,15 @@ public class EditionController implements PortletContextAware, ApplicationContex
             toolbar.add(menuRoot);
 
 
+            if ((!repository.supportPreview() || cmsContext.isPreview()) ) {
+                if (portalControllerContext.getResponse() instanceof RenderResponse) {
+                    PortletURL createSpaceUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+                    createSpaceUrl.setParameter(ActionRequest.ACTION_NAME, "addSpace");
+                    this.addToolbarItem(configurationList, createSpaceUrl.toString(), "dropdown-link", bundle.getString("MODIFY_SPACE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
+                }
+            }
+            
+            
             // Space modification
             String modifySpaceUrl;
 

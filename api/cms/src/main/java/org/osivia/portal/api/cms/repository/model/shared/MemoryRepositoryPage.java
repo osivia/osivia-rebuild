@@ -41,6 +41,9 @@ public class MemoryRepositoryPage extends MemoryRepositoryDocument implements Pa
         return templateId;
     }
 
+    public void setTemplateId(UniversalID templateId) {
+        this.templateId = templateId;
+    }
     
     public boolean isNavigable()    {
         return true;

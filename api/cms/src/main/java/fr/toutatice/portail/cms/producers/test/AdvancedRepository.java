@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.Profile;
@@ -22,15 +23,12 @@ public interface AdvancedRepository extends NativeRepository {
     public final static int POSITION_END = -1;
     
     
-    void addEmptyPage(String id, String name, String parentId) throws CMSException;
 
     void addWindow(String id, String name, String portletName, String region, int position, String pageId, Map<String, String> properties) throws CMSException;
     
     boolean supportPreview();
     
-    void addFolder(String id, String name, String parentId) throws CMSException;
-    
-    void addDocument(String id, String name, String parentId) throws CMSException;    
+    void addDocument(String id, String type, String name, String parentId) throws CMSException;    
     
     void publish(String id) throws CMSException;
     
@@ -61,4 +59,6 @@ public interface AdvancedRepository extends NativeRepository {
     void setProfiles(String id, List<Profile> profiles) throws CMSException;
     
     void setStyles(String id, List<String> styles) throws CMSException;
+    
+    void setTemplateId( String id, UniversalID templateID) throws CMSException;
 }

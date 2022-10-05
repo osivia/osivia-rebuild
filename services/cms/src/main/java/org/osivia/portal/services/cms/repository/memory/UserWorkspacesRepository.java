@@ -35,13 +35,7 @@ public class UserWorkspacesRepository extends UserRepositoryMemoryBase {
     }
 
     
-    private void addDocument(String id, String name, String parentId, String spaceId ) throws CMSException {
-        Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
-        properties.put("dc:title", "Document." + id);
 
-        RepositoryDocument doc = new MemoryRepositoryDocument(this, null, id, name, parentId, spaceId, new ArrayList<String>(), properties);
-        addDocument(id, doc);
-    }
 
     
     
