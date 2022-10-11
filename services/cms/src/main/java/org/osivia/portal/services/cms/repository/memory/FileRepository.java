@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -477,8 +478,22 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
             ContentProviderRegistry contentProvicerRegistry = Locator.getService("portal:service=ContentProviderRegistry", ContentProviderRegistry.class);
 
+            
 
-            InputStream in = IOTools.safeBufferedWrapper(this.getClass().getResourceAsStream("/default-object.xml"));
+            
+
+            InputStream in;
+            
+            String path = System.getProperty("portal.configuration.path")+ "/" + getRepositoryName() + "-default-object.xml";
+            
+            File defaultConfigFile= new File(path);
+            if( defaultConfigFile.exists()) {
+                in = new FileInputStream(defaultConfigFile);
+            }
+            else    {
+                in = IOTools.safeBufferedWrapper(this.getClass().getResourceAsStream("/default-object.xml"));
+            
+            }
 
             Document doc = builder.parse(in);
             Element deploymentsElt = doc.getDocumentElement();
