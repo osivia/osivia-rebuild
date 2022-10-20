@@ -44,6 +44,7 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -57,6 +58,7 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
+import org.osivia.portal.core.profiles.IProfileManager;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -81,10 +83,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     private CMSService cmsService;
 
     
-    
-    /** The locale service. */
-    @Autowired
-    private ILocaleService localeService;
+
 
     private CMSService getCMSService() {
         if (cmsService == null) {
@@ -92,6 +91,16 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         return cmsService;
+    }
+    
+    private IProfileManager profileManager;
+    
+    private IProfileManager getProfileManager() {
+        if (profileManager == null) {
+            profileManager = Locator.getService(IProfileManager.class);
+        }
+
+        return profileManager;
     }
 
     /**
@@ -272,15 +281,10 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                      portalId = new UniversalID(poid.getNamespace(), poid.getPath().getLastComponentName());
                  } 
   
-                 Document portal = getCMSService().getCMSSession(cmsContext).getDocument(portalId);
-                 String pageId;
-                 if( request.getUserPrincipal() == null)
-                     pageId = (String) portal.getProperties().get("portal.defaultPageId");
-                 else
-                     pageId = (String) portal.getProperties().get("portal.unprofiledPageId");                     
-
-                 if( pageId != null)
-                     redirectId = new UniversalID(portalId.getRepositoryName(), pageId);
+                 Profile profile = getProfileManager().getMainProfile(portalCtx, portalId);
+                 
+                 if( profile != null && profile.getUrl() != null)
+                     redirectId = new UniversalID(portalId.getRepositoryName(), profile.getUrl());
                  else 
                      redirectId = portalId;
                  

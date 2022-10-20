@@ -182,9 +182,9 @@ public class RegionsThemingService implements IRegionsThemingService {
         
         String windowName = renderedRegion.getName();
         
-        // Toolbar must accept edition portlet
+        // Admin must accept edition portlet
         // Doesn't work if window and region have the same name
-        if( "toolbar".equals(windowName))   {
+        if( "admin".equals(windowName))   {
             windowName += "main-";
         }
         

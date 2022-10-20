@@ -51,6 +51,11 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
      * Breadcrumb path init parameter name.
      */
     private static final String BREADCRUMB_PATH_INIT_PARAM = "osivia.portal.customizer.regions.breadcrumb.path";
+    
+    /**
+     * Admin path init parameter name.
+     */
+    private static final String ADMIN_PATH_INIT_PARAM = "osivia.portal.customizer.regions.admin.path";
     /**
      * Footer path init parameter name.
      */
@@ -156,6 +161,9 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
 
         // Breadcrumb default region
         renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
+        
+        // Breadcrumb default region
+        renderedRegions.defineDefaultRenderedRegion("admin", this.getInitParameter(ADMIN_PATH_INIT_PARAM));
 
         /*
         if (renderedRegions.isSpaceSite()) {

@@ -173,7 +173,7 @@ public  class  CMSPage extends PageImplBase {
         Map<String, String> editionProperties = new ConcurrentHashMap<>();
         editionProperties.put("osivia.hideTitle", "1");
         editionProperties.put("osivia.sequence.priority", "1");
-        ModuleRef edition = new ModuleRef("edition", "toolbar", "EditionInstance", editionProperties);
+        ModuleRef edition = new ModuleRef("edition", "admin", "EditionInstance", editionProperties);
         this.addWindow(windows, edition, 0);
 		
 		

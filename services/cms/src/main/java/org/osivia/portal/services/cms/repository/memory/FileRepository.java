@@ -11,6 +11,8 @@ import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -149,7 +152,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
 
 
-    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList, Map<String, Object> portalProperties, List<String> inheritedAcls) throws CMSException {
+    protected void createPage(PortalMetaData portalMetaData, List<String> parentHierarchy, PageMetaData pageMetaData, List<String> pageList, Map<String, Object> portalProperties, List<String> inheritedAcls, List<Profile> profiles) throws CMSException {
 
         try {
 
@@ -202,6 +205,13 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
             if (StringUtils.equals(unprofiledPageName, pageMetaData.getName())) {
                 portalProperties.put("portal.unprofiledPageId", pageName);
             }
+            
+            /* update profile url */
+            
+            for(Profile profile: profiles) {
+                if(StringUtils.equals(profile.getUrl(), pageMetaData.getName()))
+                    profile.setUrl(pageName);
+            }
 
 
             /* get childrens */
@@ -226,8 +236,8 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
                             skip = true;
                         if(StringUtils.equals(key, "osivia.ajaxLink"))
                             skip = true;
-                        if(StringUtils.equals(key, ThemeConstants.PORTAL_PROP_ORDER))
-                            skip = true;                           
+//                        if(StringUtils.equals(key, ThemeConstants.PORTAL_PROP_ORDER))
+//                            skip = true;                           
                         
                         if (!skip)
                             moduleProperties.put(entry.getKey(), entry.getValue());
@@ -244,10 +254,35 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
 
                     // Add page as a child of container
-                    createPage(portalMetaData, pageHierarchy, (PageMetaData) portalObjectMD, children, portalProperties, new ArrayList<>());
+                    createPage(portalMetaData, pageHierarchy, (PageMetaData) portalObjectMD, children, portalProperties, new ArrayList<>(),  profiles);
 
                 }
             }
+            
+            // Sort module by order
+            
+            Collections.sort(modules, new Comparator<ModuleRef>() {
+                @Override
+                public int compare(final ModuleRef m1, ModuleRef m2) {
+                        int res = ObjectUtils.compare(m1.getRegion(),m2.getRegion());
+                        if( res == 0) {
+                            String s1 = m1.getProperties().get(ThemeConstants.PORTAL_PROP_ORDER);
+                            String s2 = m2.getProperties().get(ThemeConstants.PORTAL_PROP_ORDER);
+                            if( s1 != null &&  s2 != null )
+                                res = ObjectUtils.compare( Integer.parseInt(s1) ,Integer.parseInt(s2));
+                            else
+                                res = ObjectUtils.compare( s1 , s2);
+                        }
+                        return res;
+                }
+              });
+            
+            // Remove order property
+            for( ModuleRef module:modules)  {
+                module.getProperties().remove(ThemeConstants.PORTAL_PROP_ORDER);
+            }
+                    
+    
 
 
             MemoryRepositoryPage page = new MemoryRepositoryPage(this, getPageName(pageMetaData, parentHierarchy), getPageName(pageMetaData, parentHierarchy), null, getParentName(parentHierarchy), getPortalName(portalMetaData), children,
@@ -324,25 +359,14 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
         }
 
 
-        for (PortalObjectMetaData portalObjectMD : children.values()) {
-            if (portalObjectMD instanceof PageMetaData) {
-                createPage(portalMetaData, pageHierarchy, (PageMetaData) portalObjectMD, portalChildren, portalProperties, inheritedAcls);
-            }
-        }
-
-
-        /* Create portal */
 
         String encodedList = (String) portalProperties.get("osivia.profils");
         portalProperties.remove("osivia.profils");
 
-        String encodedStyles = (String) portalProperties.get("osivia.liste_styles");
-        portalProperties.remove("osivia.liste_styles");
-
-
-        MemoryRepositorySpace space = new MemoryRepositorySpace(this, getPortalName(portalMetaData), getPortalName(portalMetaData), null, portalChildren, portalProperties, new ArrayList<ModuleRef>());
-
+        
         // profiles
+        
+        List<Profile> profiles = new ArrayList<>();
         XMLSerializer serializer = new XMLSerializer();
 
 
@@ -358,11 +382,34 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
             }
 
             Profile importProfile = new Profile(profile.getName(), roleName, profile.getDefaultPageName(), profile.getNuxeoVirtualUser());
-            space.getProfiles().add(importProfile);
+            profiles.add(importProfile);
         }
+        
+        
+        
+        
+        
+        for (PortalObjectMetaData portalObjectMD : children.values()) {
+            if (portalObjectMD instanceof PageMetaData) {
+                createPage(portalMetaData, pageHierarchy, (PageMetaData) portalObjectMD, portalChildren, portalProperties, inheritedAcls, profiles);
+            }
+        }
+
+
+        /* Create portal */
+
+
+
+        MemoryRepositorySpace space = new MemoryRepositorySpace(this, getPortalName(portalMetaData), getPortalName(portalMetaData), null, portalChildren, portalProperties, new ArrayList<ModuleRef>());
+
+
+        space.getProfiles().addAll(profiles);
 
         // styles
 
+        String encodedStyles = (String) portalProperties.get("osivia.liste_styles");
+        portalProperties.remove("osivia.liste_styles");
+        
         if (StringUtils.isNotEmpty(encodedStyles)) {
             for (String style : Arrays.asList(encodedStyles.split(","))) {
                 space.getStyles().add(style);

@@ -101,6 +101,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -116,6 +117,7 @@ import org.osivia.portal.api.theming.AbstractRegionBean;
 import org.osivia.portal.api.theming.IRegionsThemingService;
 import org.osivia.portal.api.theming.IRenderedRegions;
 import org.osivia.portal.api.theming.RenderedRegionBean;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.cms.edition.CMSEditionService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
@@ -164,6 +166,7 @@ public class AjaxResponseHandler implements ResponseHandler {
     
     private CMSEditionService CMSEditionService;
 
+    private LayoutItemsService layoutItemsService;
 
     
     public CMSEditionService getCMSEditionService() {
@@ -478,49 +481,26 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 }
 
-                /*
-                 * // CMS Cache windows for (PortalObject window :
-                 * page.getChildren(PortalObject.WINDOW_MASK)) { Long updateTs =
-                 * requestCacheMgr.getCMSRequestUpdateTs(controllerContext, (Window) window); if
-                 * (updateTs != null) { Long lastSentTs = (Long)
-                 * controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
-                 * "osivia.ajax.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-                 * if (lastSentTs == null || updateTs > lastSentTs) { if
-                 * (!dirtyWindowIds.contains(window.getId())) {
-                 * dirtyWindowIds.add(window.getId()); }
-                 * controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.refreshWindow." +
-                 * window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE); } } }
-                 */
-                
-             // Windows
-/*                
-                 try {
-                     String contentId = page.getProperty("osivia.contentId");
-    
-                     if (contentId != null) {
-    
-                         UniversalID id = new UniversalID(contentId);
-                         if (getPreviewModeService().isPreviewing(portalControllerContext, id)) {
-//                             Collection<PortalObject> specialWindows = page.getChildren(PortalObject.WINDOW_MASK);
-//    
-//                             for (PortalObject window : specialWindows) {
-//                                 dirtyWindowIds.add(window.getId());
-//                             }
-    
-                             refreshPageStructure = true;    
-                             
-                         }
-                     }
-    
-                 } catch (Exception e) {
-                     log.error("An error occured during preview mode tests", e);
-    
-                     //
-                     fullRefresh = true;
-                 }
 
-*/
-                                
+                for (PortalObject window : page.getChildren(PortalObject.WINDOW_MASK)) {
+
+                    // Linked layout item
+                    String linkedLayoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+                    try {
+                        if (StringUtils.isNotEmpty(linkedLayoutItemId) )    {
+                            if(  !dirtyWindowIds.contains(window.getId()))  {
+                                if( this.layoutItemsService.isDirty(portalControllerContext, (Window) window)) {
+                                    dirtyWindowIds.add(window.getId());
+                                }
+                            } else  if(! this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId))    {
+                                dirtyWindowIds.remove(window.getId());
+                            }
+                        }
+                    } catch (PortalException e) {
+                        log.error("Unable to determine if window is dirty.", e);
+                        dirtyWindowIds.add(window.getId());
+                    }
+                }
 
                 if (!fullRefresh) {
                     // Prevent Ajax refresh
@@ -1027,6 +1007,8 @@ public class AjaxResponseHandler implements ResponseHandler {
         this.previewModeService = previewModeService;
     }
 
-    
+    public void setLayoutItemsService(LayoutItemsService layoutItemsService) {
+        this.layoutItemsService = layoutItemsService;
+    }
     
 }

@@ -5,6 +5,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.UpdateScope;
@@ -23,6 +25,7 @@ public class MemoryUserStorage extends BaseUserStorage {
     
      
 
+    private static final String GROUP = "group:";
     private static boolean batchMode = false;
     private static boolean error = false;
     private static Map<String,RepositoryDocument> savedDocuments;
@@ -234,6 +237,20 @@ public class MemoryUserStorage extends BaseUserStorage {
                 
                 if (acls.contains("_anonymous_"))
                     aclControl = true;
+                
+                if( aclControl == false){
+                    HttpServletRequest request = userRepository.getPortalContext().getHttpServletRequest();
+                    if( request != null)    {
+                        for( String acl:acls)   {
+                            if( acl.startsWith(GROUP))    {
+                                if( request.isUserInRole(acl.substring(GROUP.length())))    {
+                                        aclControl = true; 
+                                        break;
+                                }
+                             }
+                        }
+                    }
+                }
 
             }
             

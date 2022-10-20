@@ -120,8 +120,16 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       // Filler
       this.writeResource(out,  "<script src='/portal-assets/js/fancytree-integration.js'></script>");      
       
+      // bxSlider
+      this.writeResource(out, "<link rel='stylesheet' href='/portal-assets/components/bxslider/jquery.bxslider.css'>");
+      this.writeResource(out, "<script src='/portal-assets/components/bxslider/jquery.bxslider.min.js'></script>");
+      this.writeResource(out,  "<script src='/portal-assets/js/bxslider-integration.js'></script>"); 
+
+      
       //Location
       this.writeResource(out,  "<script src='/portal-assets/js/location.js'></script>");  
+      
+      
       
       // Logout
       this.writeResource(out,  "<script src='/portal-assets/js/logout.js'></script>"); 

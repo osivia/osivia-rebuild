@@ -49,6 +49,10 @@
             <name>osivia.portal.customizer.regions.page.settings.path</name>
             <value>/WEB-INF/jsp/fixed-regions/page-settings.jsp</value>
         </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.admin.path</name>
+            <value>/WEB-INF/jsp/fixed-regions/admin.jsp</value>
+        </init-param>        
         
         <expiration-cache>180</expiration-cache>
         
