@@ -43,6 +43,19 @@
 		 <form:errors path="themeId" cssClass="invalid-feedback" />
      </div>	     
      
+     
+     <div class="form-group form-check">
+         <form:checkbox path="selectorsPropagation" cssClass="form-check-input" />
+         <form:label path="selectorsPropagation" cssClass="form-check-label" ><op:translate key="MODIFY_PAGE_PROPERTIES_SELECTORS_PROPAGATION_LABEL" /></form:label>
+      </div> 
+
+<c:if test="${not empty form.categories}">     
+     <div class="form-group">
+         <form:label path="category"><op:translate key="MODIFY_PAGE_PROPERTIES_CATEGORY_LABEL" /></form:label>
+		 <form:select path="category" items="${form.categories}" cssClass="form-control"/>
+		 <form:errors path="category" cssClass="invalid-feedback" />
+     </div>	 
+</c:if>     
     <%--Buttons--%>
     <div class="text-right">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">

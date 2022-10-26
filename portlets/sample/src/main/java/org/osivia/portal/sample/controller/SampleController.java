@@ -78,7 +78,7 @@ public class SampleController implements PortletContextAware {
     public String view1(RenderRequest request, RenderResponse response, @RequestParam(name = "count", defaultValue = "1") String count) throws Exception {
         request.setAttribute("count", count);
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
-
+/*
         UniversalID docId = new UniversalID("myspace","ID_DOC_1");
         UniversalID pageId = new UniversalID("templates","ID_PAGE_A");        
         
@@ -86,15 +86,17 @@ public class SampleController implements PortletContextAware {
         
         String foo = cmsService.getCMSSession(new CMSContext(portalCtx)).getDocument( docId).getTitle();
         request.setAttribute("foo", foo);
+        */
         
         Map<String, String> properties = new HashMap<String, String>();
         String startWindowUrl = portalUrlFactory.getStartPortletUrl(portalCtx, "SampleInstance", properties, PortalUrlType.DEFAULT);
         request.setAttribute("startWindowCommand", startWindowUrl);
         
-        
+        /*
         request.setAttribute("docURL", portalUrlFactory.getViewContentUrl(portalCtx, new CMSContext(portalCtx),docId));
         
         request.setAttribute("pageURL",portalUrlFactory.getViewContentUrl(portalCtx, new CMSContext(portalCtx),pageId));
+        */
         
         request.setAttribute("user", request.getRemoteUser());
         

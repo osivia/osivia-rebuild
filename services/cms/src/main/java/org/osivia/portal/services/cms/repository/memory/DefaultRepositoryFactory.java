@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSPortalControllerContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.RepositoryFactory;
@@ -25,6 +26,7 @@ import org.osivia.portal.api.cms.repository.cache.SharedRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.services.cms.service.RuntimeBeanBuilder;
 
 
@@ -249,7 +251,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
         NativeRepository repository = (NativeRepository) getOrCreateUserRepository(cmsContext, repositoryName, null);
         
 
-        ((BaseUserRepository) repository).setPortalContext(cmsContext.getPortalControllerContext());
+        ((BaseUserRepository) repository).setPortalContext(new CMSPortalControllerContext(cmsContext.getPortalControllerContext(), PageProperties.getProperties().isRefreshingPage()));
         
         return repository;
     }

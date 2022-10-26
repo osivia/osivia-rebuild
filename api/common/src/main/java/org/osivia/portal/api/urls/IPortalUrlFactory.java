@@ -269,5 +269,17 @@ public interface IPortalUrlFactory {
     String getViewContentUrl(PortalControllerContext portalControllerContext, CMSContext cmsContext, UniversalID id, boolean authentified, Map<String, String> pageParameters);
 
 
+	/**
+	 * @param portalControllerContext
+	 * @param portletInstance
+	 * @param windowProperties
+	 * @param popup
+	 * @return
+	 * @throws PortalException
+	 */
+    @Deprecated
+	String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, boolean popup) throws PortalException;
+
+
 
 }

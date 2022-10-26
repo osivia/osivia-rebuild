@@ -22,6 +22,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicPage;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.page.PageProperties;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -112,4 +113,7 @@ public class PortalBridgeService implements PortalBridge {
     }
 
     
+    public boolean isRefreshingPage()	{
+    	return PageProperties.getProperties().isRefreshingPage();
+    }
 }

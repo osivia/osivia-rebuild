@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.osivia.portal.api.cms.CMSPortalControllerContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.UpdateScope;
@@ -72,7 +73,7 @@ public abstract class BaseUserRepository implements UserRepository {
     
     UserStorage userStorage;
     
-    public ThreadLocal<PortalControllerContext> portalCtx = new ThreadLocal<PortalControllerContext>();
+    public ThreadLocal<CMSPortalControllerContext> portalCtx = new ThreadLocal<CMSPortalControllerContext>();
     
     private RepositoryFactory repositoryFactory;
    
@@ -116,7 +117,7 @@ public abstract class BaseUserRepository implements UserRepository {
 
     public Principal getPrincipal()   {
         Principal principal = null;
-        PortalControllerContext ctx = portalCtx.get();
+        PortalControllerContext ctx = portalCtx.get().getPortalControllerContext();
         if( ctx.getHttpServletRequest() != null)    {
              principal = ctx.getHttpServletRequest().getUserPrincipal();
         }
@@ -127,7 +128,7 @@ public abstract class BaseUserRepository implements UserRepository {
     
     
     public boolean isAdministrator()    {
-        PortalControllerContext ctx = portalCtx.get();
+        PortalControllerContext ctx = portalCtx.get().getPortalControllerContext();
         if( ctx.getHttpServletRequest() != null &&  ctx.getHttpServletRequest().getUserPrincipal() != null)    {
             Boolean isAdministrator = (Boolean) ctx.getHttpServletRequest().getSession().getAttribute("osivia.isAdmin");
             if (isAdministrator == null) {
@@ -142,13 +143,17 @@ public abstract class BaseUserRepository implements UserRepository {
     
     
     @Override
-    public void setPortalContext(PortalControllerContext portalContext) {
+    public void setPortalContext(CMSPortalControllerContext portalContext) {
         portalCtx.set(portalContext);
      }
     
 
     public PortalControllerContext getPortalContext() {
-        return portalCtx.get();
+        return portalCtx.get().getPortalControllerContext();
+     }
+    
+    public boolean isUserRefreshingPage() {
+        return portalCtx.get().isUserRefreshingPage();
      }
     
     /**
@@ -246,7 +251,9 @@ public abstract class BaseUserRepository implements UserRepository {
     
     public Document getDocument(String internalId) throws CMSException {
         
-       
+    	if( isUserRefreshingPage())
+    		reload(internalId);
+        
         RepositoryDocument sharedDocument = getSharedRepository().getDocument(getUserStorage(),internalId);
         
         if( checkSecurity(sharedDocument)) {

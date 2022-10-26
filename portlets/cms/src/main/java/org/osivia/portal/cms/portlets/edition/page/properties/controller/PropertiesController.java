@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -51,6 +54,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.cms.portlets.rename.controller.RenameFormValidator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -83,7 +87,13 @@ import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 @SessionAttributes("form")
 public class PropertiesController extends GenericPortlet implements PortletContextAware, ApplicationContextAware   {
 
-    /** Portlet context. */
+    private static final String OSIVIA_CMS_PROPAGATE_SELECTORS = "osivia.cms.propagateSelectors";
+
+
+	private static final String OSIVIA_PAGE_CATEGORY = "osivia.pageCategory";
+
+
+	/** Portlet context. */
     private PortletContext portletContext;
 
 
@@ -201,6 +211,23 @@ public class PropertiesController extends GenericPortlet implements PortletConte
                         document.getProperties().put(ThemeConstants.PORTAL_PROP_THEME, form.getThemeId());
                     else
                         document.getProperties().remove(ThemeConstants.PORTAL_PROP_THEME);
+                    
+                    String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
+
+                    if (pageCategoryPrefix != null) {
+	                    if (StringUtils.isNotEmpty(form.getCategory()))
+	                        document.getProperties().put(OSIVIA_PAGE_CATEGORY, form.getCategory());
+	                    else
+	                        document.getProperties().remove(OSIVIA_PAGE_CATEGORY);
+                    }
+                    
+                    // Selectors propagation
+                    if (form.isSelectorsPropagation()) {
+                    	document.getProperties().put(OSIVIA_CMS_PROPAGATE_SELECTORS, "1");
+                    } else if (document.getProperties().get(OSIVIA_CMS_PROPAGATE_SELECTORS) != null) {
+                    	document.getProperties().remove(OSIVIA_CMS_PROPAGATE_SELECTORS);
+                    }
+                    
 
 
                     ((AdvancedRepository) repository).updateDocument(form.getId(), document);
@@ -307,6 +334,8 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             
             PropertiesForm form = this.applicationContext.getBean(PropertiesForm.class);
 
+            Bundle bundle = bundleFactory.getBundle(portalCtx.getHttpServletRequest().getLocale());
+            
             RepositoryDocument document = getDocument(portalCtx);
             
             form.setId( document.getInternalID());
@@ -318,7 +347,8 @@ public class PropertiesController extends GenericPortlet implements PortletConte
 
             Map<String, String> formLayouts = new LinkedHashMap<String, String>();
 
-            formLayouts.put("", bundleFactory.getBundle(portalCtx.getHttpServletRequest().getLocale()).getString("MODIFY_PAGE_PROPERTIES_DEFAULT_ITEM"));
+
+			formLayouts.put("", bundle.getString("MODIFY_PAGE_PROPERTIES_DEFAULT_ITEM"));
             
             @SuppressWarnings("unchecked")
             ArrayList<PortalLayout> layouts = new ArrayList<>((Collection<PortalLayout>) layoutService.getLayouts());
@@ -345,7 +375,7 @@ public class PropertiesController extends GenericPortlet implements PortletConte
 
             Map<String, String> formThemes = new LinkedHashMap<String, String>();
 
-            formThemes.put("", bundleFactory.getBundle(portalCtx.getHttpServletRequest().getLocale()).getString("MODIFY_PAGE_PROPERTIES_DEFAULT_ITEM"));
+            formThemes.put("", bundle.getString("MODIFY_PAGE_PROPERTIES_DEFAULT_ITEM"));
 
             @SuppressWarnings("unchecked")
             ArrayList<PortalTheme> themes = new ArrayList<>((Collection<PortalTheme>) themeService.getThemes());
@@ -363,6 +393,61 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             }
 
             form.setThemes(formThemes);
+            
+            
+
+            // Selectors propagation page indicator
+            Boolean selectorsPropagation = "1".equals((String) document.getProperties().get(OSIVIA_CMS_PROPAGATE_SELECTORS));
+            form.setSelectorsPropagation(selectorsPropagation);
+
+            // categories (optional)
+            String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
+
+            if (pageCategoryPrefix != null) {
+
+                String category = (String) document.getProperties().get(OSIVIA_PAGE_CATEGORY);
+                form.setCategory(category);
+
+                Map<String, String> categories = new LinkedHashMap<>();
+
+
+                categories.put("", bundle.getString("MODIFY_PAGE_PROPERTIES_NO_CATEGORY_ITEM"));
+
+                TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<>();
+
+                Properties properties = System.getProperties();
+                Enumeration<Object> props = properties.keys();
+                while (props.hasMoreElements()) {
+
+                    String key = (String) props.nextElement();
+
+                    if (key.startsWith(pageCategoryPrefix)) {
+                        String curCategory = key.substring(pageCategoryPrefix.length());
+
+                        int curOrder = 100;
+
+                        try {
+                            curOrder = Integer.parseInt(curCategory);
+                        } catch (NumberFormatException e) {
+                            // non orderable
+                        }
+                        String curLabel = (String) properties.get(key);
+
+                        orderedCategories.add(new OrderedPageCategory(curOrder, curCategory, curLabel));
+
+                    }
+                }
+
+
+                for (OrderedPageCategory pageCategory : orderedCategories) {
+                    categories.put(pageCategory.getCode(), pageCategory.getLabel());
+                }
+
+
+                form.setCategories(categories);
+            }           
+            
+            
 
             return form;
 

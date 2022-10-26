@@ -32,6 +32,8 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.server.ServerInvocationContext;
+import org.jboss.portal.server.request.URLContext;
+import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
@@ -53,6 +55,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.portalcommands.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.utils.URLUtils;
@@ -392,6 +395,12 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return this.getStartPortletUrl(portalControllerContext, portletInstance, windowProperties, PortalUrlType.DEFAULT);
     }
     
+    @Override
+    public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, boolean popup)
+            throws PortalException {
+        return this.getStartPortletUrl(portalControllerContext, portletInstance, windowProperties, PortalUrlType.DEFAULT);
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -414,14 +423,40 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                                   Map<String, String> params) throws PortalException {
 
         try {
-            // TODO : refonte a valider après report
+
             final ControllerCommand cmd = new StartDynamicPageCommand();
             final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
             final String parentId = URLEncoder
-                    .encode(PortalObjectId.parse(parentName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                    .encode(parentName, "UTF-8");
+            
+            String templatePath = templateName;
+            
+            // Compatibility
+            // ac-rennes:/DEFAULT__ctx__locale_fr/root/DEFAULT_TEMPLATES/DEFAULT_TEMPL
+            if( templatePath.startsWith("/"))	{
+            	
+            	String templateID= "";
+            	String tokens[] = templatePath.split("/");
+            	
+            	templatePath = "ac-rennes:/DEFAULT__ctx__locale_fr/root";
+            	for(int i=1; i< tokens.length; i++)	{
+            		if( templateID.length() > 0)
+            			templateID += "_";
+            		
+            		templateID += tokens[i].toUpperCase();
+
+            		if( i > 1)	{
+	           			templatePath += "/";
+	            		templatePath += templateID;
+            		}
+            	}
+             }
+
+            
+            
             final String templateId = URLEncoder
-                    .encode(PortalObjectId.parse(templateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                    .encode(templatePath, "UTF-8");
 
             String url = portalURL.toString();
             url += "&parentId=" + parentId + "&pageName=" + pageName + "&templateId=" + templateId + "&props=" + WindowPropertiesEncoder.encodeProperties(props)
@@ -501,7 +536,23 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     @Override
     public String getRefreshPageUrl(PortalControllerContext portalControllerContext) {
-        return "/refresh";
+
+        // Controller context
+        final ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        final PortalObjectId currentPageId = PortalObjectUtilsInternal.getPageId(controllerContext);
+
+        // URL context
+        final URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+        // URL format
+        final URLFormat urlFormat = URLFormat.newInstance(false, true);
+
+        final RefreshPageCommand resfreshCmd = new RefreshPageCommand(currentPageId.toString(PortalObjectPath.SAFEST_FORMAT));
+
+
+
+        // URL
+        return controllerContext.renderURL(resfreshCmd, urlContext, urlFormat);
     }
   
    

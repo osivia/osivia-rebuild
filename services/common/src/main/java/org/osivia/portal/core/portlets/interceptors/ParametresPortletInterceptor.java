@@ -44,6 +44,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
@@ -166,6 +167,18 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 Boolean recomputeModels = (Boolean) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,   Constants.PORTLET_ATTR_RECOMPUTE_MODELS);      
                 if( BooleanUtils.isTrue(recomputeModels))
                     attributes.put(Constants.PORTLET_ATTR_RECOMPUTE_MODELS, recomputeModels);
+                
+                // v2.0 : user datas
+                Map<String, Object> userDatas = (Map<String, Object>) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
+                if (userDatas != null) {
+                    attributes.put(Constants.PORTLET_ATTR_USER_DATAS, userDatas);
+                }
+
+                // v3.3 : new user object
+                DirectoryPerson person = (DirectoryPerson) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON);
+                if (person != null) {
+                    attributes.put(Constants.ATTR_LOGGED_PERSON, person);
+                }
                 
                 
                 Person p2 = (Person) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2);

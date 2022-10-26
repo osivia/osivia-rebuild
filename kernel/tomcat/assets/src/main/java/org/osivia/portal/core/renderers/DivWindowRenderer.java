@@ -197,7 +197,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         if (bootstrapPanelStyle) {
-            out.print("<div class=\"card\"><div class=\"card-body\">");
+            out.print("<div class=\"card\"><div class=\"card-header\">");
         }
         
         // Div rendering
@@ -216,6 +216,12 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         out.print("<div class=\"" + headerClass + "\">");
         rendererContext.render(wrc.getDecoration());
         out.print("</div>");
+        
+        
+        if (bootstrapPanelStyle) {
+            out.print("</div> <div class=\"card-body\">");
+        }
+       
 
         out.print("<div class=\"" + bodyClass + "\">");
         rendererContext.render(wrc.getPortlet());

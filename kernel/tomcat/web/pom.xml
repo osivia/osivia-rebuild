@@ -66,8 +66,13 @@
             <scope>compile</scope>
         </dependency>
  
-
-                
+<!--
+		<dependency>
+			<groupId>net.bull.javamelody</groupId>
+			<artifactId>javamelody-core</artifactId>
+			<version>1.91.0</version>
+		</dependency>
+-->             
         <!-- JBoss -->
 
         <dependency>

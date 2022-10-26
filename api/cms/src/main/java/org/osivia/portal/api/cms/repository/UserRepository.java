@@ -3,6 +3,7 @@ package org.osivia.portal.api.cms.repository;
 import java.util.List;
 import java.util.Locale;
 
+import org.osivia.portal.api.cms.CMSPortalControllerContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.exception.CMSException;
@@ -118,7 +119,7 @@ public interface UserRepository {
      *
      * @param portalContext the new portal context
      */
-    void setPortalContext(PortalControllerContext portalContext) ;
+	void setPortalContext(CMSPortalControllerContext portalContext); 
     
     
     /**
@@ -133,5 +134,9 @@ public interface UserRepository {
      * @param infos
      * @throws CMSException
      */
-    void handleUpdate(UpdateInformations infos) throws CMSException; 
+    void handleUpdate(UpdateInformations infos) throws CMSException;
+
+
+
+
 }

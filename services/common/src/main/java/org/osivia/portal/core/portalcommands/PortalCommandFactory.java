@@ -16,6 +16,7 @@ package org.osivia.portal.core.portalcommands;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -45,6 +46,7 @@ import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.Profile;
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -186,6 +188,10 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         if (viewState != null) {
             PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(viewState));
             PageMarkerUtils.restorePageState(controllerContext, viewState);
+        }	
+        else	{
+        	// Try to restore non ajax link (beta)
+        	PageMarkerUtils.restorePageStateByRequest(controllerContext, requestPath);
         }
         
 
@@ -281,12 +287,19 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                      portalId = new UniversalID(poid.getNamespace(), poid.getPath().getLastComponentName());
                  } 
   
-                 Profile profile = getProfileManager().getMainProfile(portalCtx, portalId);
+                 if( request.getUserPrincipal() == null)	{
+                      Space   space = (Space) getCMSService().getCMSSession(cmsContext).getDocument(portalId);
+                     redirectId = new UniversalID(portalId.getRepositoryName(), (String) space.getProperties().get("portal.defaultPageId"));
+                 }
+                 else	{
                  
-                 if( profile != null && profile.getUrl() != null)
-                     redirectId = new UniversalID(portalId.getRepositoryName(), profile.getUrl());
-                 else 
-                     redirectId = portalId;
+	                 Profile profile = getProfileManager().getMainProfile(portalCtx, portalId);
+	                 
+	                 if( profile != null && profile.getUrl() != null)
+	                     redirectId = new UniversalID(portalId.getRepositoryName(), profile.getUrl());
+	                 else 
+	                     redirectId = portalId;
+                 }
                  
             } catch (CMSException e) {
                 throw new RuntimeException(e);

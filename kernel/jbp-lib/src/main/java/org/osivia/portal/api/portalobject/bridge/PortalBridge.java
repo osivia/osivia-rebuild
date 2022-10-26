@@ -8,6 +8,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.page.PageProperties;
 
 /**
  * The Interface PortalBridge.
@@ -120,4 +121,10 @@ public interface PortalBridge {
         public Object getPortalSessionAttribute(PortalControllerContext portalControllerContext, String name) ;
         
 
- }
+        
+        /**
+         * Is the user explicitly refreshing the page
+         */
+        public boolean isRefreshingPage() ;
+        
+}

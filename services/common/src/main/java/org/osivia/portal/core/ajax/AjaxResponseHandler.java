@@ -492,9 +492,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 if( this.layoutItemsService.isDirty(portalControllerContext, (Window) window)) {
                                     dirtyWindowIds.add(window.getId());
                                 }
-                            } else  if(! this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId))    {
-                                dirtyWindowIds.remove(window.getId());
-                            }
+                            } 
                         }
                     } catch (PortalException e) {
                         log.error("Unable to determine if window is dirty.", e);
@@ -568,11 +566,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
                     
-                    
-                    
-
-
-
+   
                     
                     HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
                     //
@@ -679,8 +673,33 @@ public class AjaxResponseHandler implements ResponseHandler {
                             
                             if( skipWindow == false)    {
                             
-                                RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
-                                WindowRendition rendition = rwc.render(controllerContext);
+                            	WindowRendition rendition;
+                            	
+                            	 // Linked layout item
+                                String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+
+                                if (StringUtils.isEmpty(linkedLayoutItemId) || this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId)) {
+                                    RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
+                                    rendition = rwc.render(controllerContext);
+
+                                    if (StringUtils.isNotEmpty(linkedLayoutItemId)) {
+                                        this.layoutItemsService.markWindowAsRendered(portalControllerContext, refreshedWindow);
+                                    }
+                                } else {
+                                    // Window properties
+                                    Map<String, String> windowProperties = new HashMap<>();
+
+                                    List<WindowState> supportedWindowStates = new ArrayList<>(0);
+                                    List<Mode> supportedModes = new ArrayList<>(0);
+
+                                    // Response
+                                    MarkupResponse markupResponse = new MarkupResponse(null, StringUtils.EMPTY, null);
+                                    // Window rendition
+                                    rendition = new WindowRendition(windowProperties, WindowState.NORMAL, Mode.VIEW, supportedWindowStates, supportedModes, markupResponse);
+                                }                            	
+                            	
+                            	
+
     
                                 //
                                 if (rendition != null) {

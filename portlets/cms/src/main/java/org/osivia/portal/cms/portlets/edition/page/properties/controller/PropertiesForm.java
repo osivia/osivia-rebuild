@@ -13,16 +13,23 @@ public class PropertiesForm {
     private String id;
     
 
-
-
-
     private String layoutId;
     private String themeId;
+    private String category;
 
-    private Map<String, String> layouts;
+    private boolean selectorsPropagation;
+
+
+
+
+	private Map<String, String> layouts;
     private Map<String, String> themes;    
+    private Map<String, String> categories;    
     
-    public String getLayoutId() {
+
+
+
+	public String getLayoutId() {
         return layoutId;
     }
 
@@ -43,6 +50,14 @@ public class PropertiesForm {
         this.themeId = themeId;
     }
 
+    public String getCategory() {
+		return category;
+	}
+
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
 
     
     public Map<String, String> getThemes() {
@@ -60,12 +75,20 @@ public class PropertiesForm {
         return layouts;
     }
 
-
     
     public void setLayouts(Map<String, String> layouts) {
         this.layouts = layouts;
     }
 
+    public Map<String, String> getCategories() {
+		return categories;
+	}
+
+
+	public void setCategories(Map<String, String> categories) {
+		this.categories = categories;
+	}
+    
     
     public String getId() {
         return id;
@@ -76,4 +99,15 @@ public class PropertiesForm {
     public void setId(String id) {
         this.id = id;
     }
+
+	public boolean isSelectorsPropagation() {
+		return selectorsPropagation;
+	}
+
+
+	public void setSelectorsPropagation(boolean selectorsPropagation) {
+		this.selectorsPropagation = selectorsPropagation;
+	}
+
+
 }

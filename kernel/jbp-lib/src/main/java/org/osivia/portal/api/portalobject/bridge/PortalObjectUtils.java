@@ -272,6 +272,11 @@ public class PortalObjectUtils {
        return getService().getPortalSessionAttribute(portalCtx, name);
     }
     
-    
+    /**
+     * Is the user explicitly refreshing the page
+     */
+    public static boolean isUserRefreshingPage()	{
+    	 return getService().isRefreshingPage();
+    }
     
 }

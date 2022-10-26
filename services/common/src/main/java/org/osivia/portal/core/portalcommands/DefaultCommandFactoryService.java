@@ -35,6 +35,7 @@ import org.osivia.portal.core.cms.edition.CMSEditionChangeModeCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
+import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
 import org.osivia.portal.core.tasks.ViewTaskCommand;
@@ -166,6 +167,18 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                 }      
                 
+                
+                if ("refreshPage".equals(action)) {
+                    String pageId = null;
+
+                    if (parameterMap.get("pageId") != null) {
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
+
+                        RefreshPageCommand refreshPageCommand = new RefreshPageCommand(pageId);
+
+                        return refreshPageCommand;
+                    }
+                }                
                 
                 // Update task command
                 if (UpdateTaskCommand.ACTION.equals(action)) {

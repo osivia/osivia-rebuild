@@ -32,8 +32,10 @@ import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.cms.edition.CMSEditionChangeModeCommand;
+import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
+import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
 import org.osivia.portal.core.tasks.ViewTaskCommand;
@@ -82,6 +84,14 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
         }
         
+        if (cmd instanceof StartDynamicPageCommand) {
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            asu.setParameterValue("action", "startDynamicPage");
+            return asu;
+        }        
+        
         if (cmd instanceof StartDynamicWindowInNewPageCommand) {
             AbstractServerURL asu = new AbstractServerURL();
             asu.setPortalRequestPath(this.path);
@@ -102,7 +112,27 @@ public class DefaultURLFactory extends URLFactoryDelegate {
         }
        
         
-        
+        if (cmd instanceof RefreshPageCommand) {
+            RefreshPageCommand command = (RefreshPageCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            String pageId = command.getPageId();
+
+
+            try {
+                asu.setParameterValue("action", "refreshPage");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(pageId, "UTF-8"));
+                
+                         
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
         
         // Update task command
         if (cmd instanceof UpdateTaskCommand) {

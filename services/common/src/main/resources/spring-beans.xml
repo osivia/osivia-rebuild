@@ -272,6 +272,10 @@
 	</bean>
     
     
+    <bean class="org.osivia.portal.core.directory.DirectoryServiceLocator" id="osivia:service=DirectoryServiceLocator" >
+
+	</bean>
+    
 
      
 </beans>

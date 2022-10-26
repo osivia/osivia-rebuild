@@ -136,7 +136,7 @@
 		<springframework.version>5.3.13</springframework.version>
 		<springframework.webmvc-portlet.version>4.2.6.RELEASE</springframework.webmvc-portlet.version>
 
-        <org.springframework.ldap.version>2.1.0.RELEASE</org.springframework.ldap.version>		
+        <org.springframework.ldap.version>2.3.4.RELEASE</org.springframework.ldap.version>		
 		<org.springframework.security.version>5.3.12.RELEASE</org.springframework.security.version>
 		<org.springframework.security.oauth2.version>2.0.18.RELEASE</org.springframework.security.oauth2.version>
 		<!-- Commons -->
@@ -424,11 +424,7 @@
 	            <artifactId>httpcore</artifactId>
 	            <version>${apache.httpcomponents.version}</version>
 	        </dependency>        
-	         <dependency>
-	            <groupId>javax.mail</groupId>
-	            <artifactId>mail</artifactId>
-	            <version>${javax-mail.version}</version>
-	        </dependency>	 
+
 
 			<!-- DOM -->
 

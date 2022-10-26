@@ -159,6 +159,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
             List<String> acls = new ArrayList<>();
 
+            String pageName = getPageName(pageMetaData, parentHierarchy);
 
             if (pageMetaData.getSecurityConstraints() != null) {
                 Set<RoleSecurityBinding> pageConstraints = (Set<RoleSecurityBinding>) pageMetaData.getSecurityConstraints().getConstraints();
@@ -176,6 +177,10 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
                         }
                     }
                 }
+                
+                if( pageName.equals("DEFAULT_TEMPLATES")) {
+                	acls.add("_anonymous_");
+                }
             }
 
 
@@ -186,7 +191,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
             inheritedAcls = new ArrayList<>();
 
 
-            String pageName = getPageName(pageMetaData, parentHierarchy);
+
 
             log.debug("create page " + pageName);
 

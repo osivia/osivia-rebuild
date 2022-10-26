@@ -254,6 +254,8 @@ public class MemoryUserStorage extends BaseUserStorage {
 
             }
             
+
+            
             if (aclControl == false)
                 throw new DocumentForbiddenException();
 

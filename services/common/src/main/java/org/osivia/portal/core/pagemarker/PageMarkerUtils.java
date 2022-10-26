@@ -223,6 +223,51 @@ public class PageMarkerUtils {
             DynamicPortalObjectContainer.clearCache();
      }
 
+    
+    
+    /**
+     * Restore the last pagemarker associated to current Page
+     * 
+     * (non AJAX mode)
+     * @param controllerContext
+     * @param requestPath
+     */
+    public static void restorePageStateByRequest(ControllerContext controllerContext, String requestPath) { 
+		// /ac-rennes/DEFAULT__ctx__locale_fr/_dyn_c3BhY2VfREVGQVVMVF9fY3R4X19sb2NhbGVfZnI=.Y29udGVudDphYy1yZW5uZXM6REVGQVVMVF9URU1QTEFURVNfUFVCTElTSA==.b3NpdmlhLmNvbnRlbnRJZCUzRGFjLXJlbm5lcyUzQURFRkFVTFRfX2N0eF9fbG9jYWxlX2ZyJTI2b3NpdmlhLmNvbnRlbnQucHJldmlldyUzRGZhbHNlJTI2b3NpdmlhLnBhZ2VUeXBlJTNEdGVtcGxhdGUlMjZvc2l2aWEuaW5pdGlhbFdpbmRvd1JlZ2lvbiUzRGNvbC0xJTI2b3NpdmlhLmluaXRpYWxXaW5kb3dQcm9wcyUzRG9zaXZpYS5hamF4TGluayUyNTNEMSUyNTI2b3NpdmlhLmhpZGVUaXRsZSUyNTNEMSUyNTI2b3NpdmlhLmhpZGVEZWNvcmF0b3JzJTI1M0QxJTI1MjZ0aGVtZS5keW5hLnBhcnRpYWxfcmVmcmVzaF9lbmFibGVkJTI1M0R0cnVlJTI1MjZvc2l2aWEudGl0bGUlMjUzRE1vbiUyQnByb2ZpbCUyNTI2dWlkRmljaGVQZXJzb25uZSUyNTNEaG93bGFuZC5zaW1wc29uJTI2b3NpdmlhLm5hdmlnYXRpb25JZCUzRGFjLXJlbm5lcyUzQURFRkFVTFRfX2N0eF9fbG9jYWxlX2ZyJTI2b3NpdmlhLmNvbnRlbnQubG9jYWxlJTNEZnIlMjZvc2l2aWEuaW5pdGlhbFdpbmRvd0luc3RhbmNlJTNEdG91dGF0aWNlLWlkZW50aXRlLWZpY2hlcGVyc29ubmUtcG9ydGFpbFBvcnRsZXRJbnN0YW5jZSUyNm9zaXZpYS50ZW1wbGF0ZUlkJTNEYWMtcmVubmVzJTNBREVGQVVMVF9URU1QTEFURVNfUFVCTElTSCUyNm9zaXZpYS5zcGFjZUlkJTNEYWMtcmVubmVzJTNBREVGQVVMVF9fY3R4X19sb2NhbGVfZnI=.X19OX18=.ZnIlM0RkZWZhdWx0/content
+		String tokens[] = requestPath.split("/");
+		if (tokens.length > 3) {
+			String pageName = tokens[3];
+			if (pageName.startsWith("_dyn_")) {
+				Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext
+						.getAttribute(Scope.SESSION_SCOPE, "markers");
+				if (markers != null) {
+					// Tri pour avoir les markers les plus récents
+					List<PageMarkerInfo> list = new LinkedList<PageMarkerInfo>(markers.values());
+
+					Collections.sort(list, new Comparator<PageMarkerInfo>() {
+
+						public int compare(PageMarkerInfo o1, PageMarkerInfo o2) {
+							return - o1.getLastTimeStamp().compareTo(o2.getLastTimeStamp());
+						}
+					});
+					
+					for( PageMarkerInfo info: list) {
+						if( info.getPageId().toString(PortalObjectPath.CANONICAL_FORMAT).contains(pageName))	{
+							logger.warn("non ajax request "+ requestPath);
+							
+							restorePageState(controllerContext, info.getViewState());
+							// In non ajax mode JBP will increment view_state in the response
+							PageMarkerUtils.setViewState(controllerContext, Integer.parseInt(info.getViewState()) -1);
+							return;
+						}
+					}
+				}
+
+			}
+
+    	}
+    	
+    }
 
     public static void setViewState(ControllerContext controllerContext, Integer viewState) {
         controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,"view_id", viewState);
