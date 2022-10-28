@@ -139,6 +139,17 @@ public class JSONMarshaller {
 
                 }
                 writer.endObject();
+                
+                
+                //
+                writer.key("async_windows").object();
+                for (Iterator i = umr.getAsyncWindows().entrySet().iterator(); i.hasNext();) {
+                    Map.Entry entry = (Map.Entry) i.next();
+                    String id = ((String) entry.getKey());
+                    String fragment = (String) entry.getValue();
+                    writer.key(id).value(fragment);
+                }
+                writer.endObject();
 
 
                 if (umr.getLayout() != null) {

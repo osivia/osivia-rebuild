@@ -725,7 +725,26 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	  synchronizeMetadatas();
 	  
 	  
+	  
+	  
+	  
 	  $JQry(".notification-container").delay(10000).fadeOut(2000);
+	  
+	  for (var id in resp.async_windows)
+	  {
+      	var url = resp.async_windows[id];
+        // Set URL
+        var options = new Object();
+
+        // We have a get
+        options.method = "get"
+
+        // We don't block
+        options.asynchronous = true;
+
+        directAjaxCall(null, options, url, null, null, null,null, id);
+
+	  }
 	  
 	  
 	  
@@ -754,7 +773,7 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 }
 
 
-function getHeaders(popState, refresh)	{
+function getHeaders(popState, refresh, asyncWindow)	{
 	
 	 // Setup headers
 	var headers =  new Object();
@@ -764,7 +783,7 @@ function getHeaders(popState, refresh)	{
     
 
 	var headerState = null;
-	if (popState !== undefined) {
+	if (popState !== undefined && popState != null) {
 		headerState = popState.viewState;
 
 	} else {
@@ -788,13 +807,18 @@ function getHeaders(popState, refresh)	{
 		headers.session_check= session_check;
 	}
 	
+	if (asyncWindow !== undefined) {
+		headers.asyncWindow= asyncWindow;
+
+	}
+	
 	return headers;
 }
 
 
-function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popState, refresh){
+function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popState, refresh, asyncWindow){
    
-	var headers = getHeaders(popState, refresh);
+	var headers = getHeaders(popState, refresh, asyncWindow);
 	
 	if( ajaxContext !== undefined)	{
 		headers.ajax_context = ajaxContext;

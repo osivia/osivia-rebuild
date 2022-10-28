@@ -26,6 +26,7 @@
    </bean>
    
 	<!-- Server stack -->
+
    <bean class="org.jboss.portal.server.aspects.server.SessionLockInterceptor"
           id="portal:service=Interceptor,type=Server,name=SessionLock" >
       
@@ -73,7 +74,9 @@
           id="portal:service=InterceptorStackFactory,type=Server" >
      <property name="InterceptorNames">
       	<list>
+      	<!-- 
            <value>portal:service=Interceptor,type=Server,name=SessionLock</value>
+           -->
            <value>portal:service=Interceptor,type=Server,name=CMSSessionInterceptor</value>
            <!-- <value>portal:service=Interceptor,type=Server,name=IdentityCache</value> -->
            <value>portal:service=Interceptor,type=Server,name=UserEvent</value>

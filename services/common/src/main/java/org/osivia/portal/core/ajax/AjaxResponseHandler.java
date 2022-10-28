@@ -83,6 +83,7 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.WindowContextFactory;
+import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.LayoutService;
@@ -127,6 +128,7 @@ import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.resources.ResourceHandler;
@@ -167,6 +169,8 @@ public class AjaxResponseHandler implements ResponseHandler {
     private CMSEditionService CMSEditionService;
 
     private LayoutItemsService layoutItemsService;
+    
+    private List<String> asynchronousPortlets=null;
 
     
     public CMSEditionService getCMSEditionService() {
@@ -661,6 +665,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                     }
                     
                     
+                    String asyncWindow = request.getHeader("asyncWindow");
+                    
                     //
                     for (Window refreshedWindow : sortedWindows) {
                         try {
@@ -671,6 +677,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     skipWindow = true;
                             }
                             
+                            if( StringUtils.isNotEmpty(asyncWindow))	{
+                            	if(!StringUtils.equals(asyncWindow, refreshedWindow.getName()))
+                            		skipWindow = true;
+                            }
+                            	
+                            
                             if( skipWindow == false)    {
                             
                             	WindowRendition rendition;
@@ -679,12 +691,29 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
 
                                 if (StringUtils.isEmpty(linkedLayoutItemId) || this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId)) {
+                                	
+                                	
+                                	String portletInstance = refreshedWindow.getContent().getURI();
+                                	
+                                	if( !StringUtils.equals(asyncWindow, refreshedWindow.getName()) && getAsynchronousPortlets().contains(portletInstance))	{
+                                        
+                                		// Perform a render URL on the target window
+                                        ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(refreshedWindow.getId(), Mode.VIEW, null,  ParametersStateString.create());
+                                        String url = new PortalURLImpl(renderCmd, controllerContext, null, null).toString();
+                                        updatePage.getAsyncWindows().put(refreshedWindow.getName(), url);
+                                        
+                                        // Notify the renderwindwommand
+                                        request.setAttribute("osivia.async."+refreshedWindow.getName(), Boolean.TRUE);
+                                		
+                                	}	
+                               	
                                     RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
                                     rendition = rwc.render(controllerContext);
 
                                     if (StringUtils.isNotEmpty(linkedLayoutItemId)) {
                                         this.layoutItemsService.markWindowAsRendered(portalControllerContext, refreshedWindow);
                                     }
+                                	
                                 } else {
                                     // Window properties
                                     Map<String, String> windowProperties = new HashMap<>();
@@ -745,7 +774,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                     
 
                     // Notifications & menubar refresh
-                    if (!fullRefresh) {
+                    if (!fullRefresh && StringUtils.isEmpty(asyncWindow)) {
                         try {
                             if (!modal) {
                                 // Notifications window context
@@ -1016,6 +1045,19 @@ public class AjaxResponseHandler implements ResponseHandler {
 
     }
     
+    private List<String> getAsynchronousPortlets()	{
+    	if(asynchronousPortlets == null)	{
+    		asynchronousPortlets = new ArrayList<>();
+    		String asyncProperties = System.getProperty("portlet.asynchronous.instances");
+    		if( StringUtils.isNotEmpty(asyncProperties))	{
+    			String tokens[] = asyncProperties.split("|");
+    			for(int i=0;i<tokens.length;i++) {
+    				asynchronousPortlets.add(tokens[i]);
+    			}
+    		}
+    	}
+    	return asynchronousPortlets;
+    }
     
     public IPreviewModeService getPreviewModeService() {
         return previewModeService;

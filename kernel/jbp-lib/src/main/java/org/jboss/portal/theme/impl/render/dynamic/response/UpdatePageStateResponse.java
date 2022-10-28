@@ -24,6 +24,7 @@ package org.jboss.portal.theme.impl.render.dynamic.response;
 
 import org.jboss.portal.theme.impl.render.dynamic.DynaResponse;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +42,13 @@ public class UpdatePageStateResponse extends DynaResponse {
 
     /** . */
     private Map<String, List<String>> regions;
+    private Map<String, String> asyncWindows;
 
 
-    /** . */
+
+
+
+	/** . */
     private String viewState;
     private String layout;
     private String restoreUrl;
@@ -128,6 +133,7 @@ public class UpdatePageStateResponse extends DynaResponse {
         this.viewState = viewState;
         this.fragments = new HashMap();
         this.regions = new HashMap();
+        this.asyncWindows = new HashMap<>();
     }
 
     public String getViewState() {
@@ -167,6 +173,11 @@ public class UpdatePageStateResponse extends DynaResponse {
     public void setResources(Set<PageResource> resources) {
         this.resources = resources;
     }
+
+
+	public Map<String, String> getAsyncWindows() {
+		return asyncWindows;
+	}
 
 
 }

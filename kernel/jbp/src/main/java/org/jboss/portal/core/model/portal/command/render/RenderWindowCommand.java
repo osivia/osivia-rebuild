@@ -22,6 +22,10 @@
  ******************************************************************************/
 package org.jboss.portal.core.model.portal.command.render;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.portal.Mode;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -34,6 +38,7 @@ import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.WindowCommand;
+import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
 import org.jboss.portal.core.model.portal.content.ContentRenderer;
 import org.jboss.portal.core.model.portal.content.ContentRendererContext;
 import org.jboss.portal.core.model.portal.content.ContentRendererRegistry;
@@ -43,7 +48,12 @@ import org.jboss.portal.identity.User;
 import org.jboss.portal.portlet.controller.state.PortletWindowNavigationalState;
 import org.jboss.portal.portlet.invocation.RenderInvocation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
@@ -89,7 +99,29 @@ public class RenderWindowCommand extends WindowCommand implements ContentRendere
       ContentRendererRegistry registry = context.getController().getContentRendererRegistry();
       ContentType contentType = window.getContentType();
       ContentRenderer renderer = registry.getRenderer(contentType);
-
+      
+      
+      HttpServletRequest request = getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+      String windowName = getTargetId().getPath().getLastComponentName();
+      
+      String asyncIndicator = "osivia.async."+windowName;
+      
+      if( BooleanUtils.isTrue((Boolean)request.getAttribute(asyncIndicator)))	{
+	      // empty window
+	      Map<String, String> windowProperties = new HashMap<>();
+	
+	      List<WindowState> supportedWindowStates = new ArrayList<>(0);
+	      List<Mode> supportedModes = new ArrayList<>(0);                                		
+	      // Response
+	      MarkupResponse markupResponse = new MarkupResponse(null, StringUtils.EMPTY, null);
+	      // Window rendition
+	      rendition = new WindowRendition(windowProperties, WindowState.NORMAL, Mode.VIEW, supportedWindowStates, supportedModes, markupResponse); 
+	      rendition = renderer.renderWindow(this);
+	      return null;
+      }
+      
+      
+      
       //
       if (renderer == null)
       {

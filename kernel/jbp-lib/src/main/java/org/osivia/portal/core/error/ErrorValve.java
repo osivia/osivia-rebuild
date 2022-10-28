@@ -47,7 +47,10 @@ public class ErrorValve extends ValveBase {
     @Override
     public void invoke(Request request, Response response) throws IOException, ServletException, IllegalStateException {
 
-
+    	// needed for java melody
+    	response.setCharacterEncoding("UTF-8");
+    	
+    	
         mainRequest.set(request);
 
 
