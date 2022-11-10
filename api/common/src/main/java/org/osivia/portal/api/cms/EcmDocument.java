@@ -14,13 +14,15 @@
  */
 package org.osivia.portal.api.cms;
 
+import java.io.Serializable;
+
 /**
  * Document.
  * 
  * @author Loïc Billon
  * @author Cédric Krommenhoek
  */
-public interface EcmDocument {
+public interface EcmDocument extends Serializable {
 
     /**
      * Get document title.
@@ -28,5 +30,12 @@ public interface EcmDocument {
      * @return title
      */
     String getTitle();
+    
+    /**
+     * Get document type.
+     * 
+     * @return title
+     */
+    String getType();
 
 }

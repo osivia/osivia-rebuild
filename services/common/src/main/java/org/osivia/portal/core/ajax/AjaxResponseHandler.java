@@ -1050,7 +1050,7 @@ public class AjaxResponseHandler implements ResponseHandler {
     		asynchronousPortlets = new ArrayList<>();
     		String asyncProperties = System.getProperty("portlet.asynchronous.instances");
     		if( StringUtils.isNotEmpty(asyncProperties))	{
-    			String tokens[] = asyncProperties.split("|");
+    			String tokens[] = asyncProperties.split("\\|");
     			for(int i=0;i<tokens.length;i++) {
     				asynchronousPortlets.add(tokens[i]);
     			}

@@ -116,7 +116,6 @@ public class RenderWindowCommand extends WindowCommand implements ContentRendere
 	      MarkupResponse markupResponse = new MarkupResponse(null, StringUtils.EMPTY, null);
 	      // Window rendition
 	      rendition = new WindowRendition(windowProperties, WindowState.NORMAL, Mode.VIEW, supportedWindowStates, supportedModes, markupResponse); 
-	      rendition = renderer.renderWindow(this);
 	      return null;
       }
       

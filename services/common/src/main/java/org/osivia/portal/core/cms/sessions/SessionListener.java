@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.core.cms.sessions;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
@@ -98,10 +99,14 @@ public class SessionListener implements HttpSessionListener {
         
         // HTTP session
         HttpSession httpSession = sessionEvent.getSession();
+        
+        
 
         try {
-            this.statisticsService.aggregateUserStatistics(httpSession);
-            getUpdateUserPreferencesService().update(httpSession);
+        	if( BooleanUtils.toBoolean(System.getProperty("portal.user.preferences"))) {
+        		this.statisticsService.aggregateUserStatistics(httpSession);
+        		getUpdateUserPreferencesService().update(httpSession);
+        	}
         } catch (Exception e) {
             log.error("Update preferences ", e);
         }

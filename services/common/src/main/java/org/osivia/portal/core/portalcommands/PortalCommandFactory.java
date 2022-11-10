@@ -54,6 +54,7 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.content.IPublicationManager;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.page.PageProperties;
@@ -284,11 +285,16 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                      portalId = getCMSService().getDefaultPortal(cmsContext);
                  }  else{
                      PortalObjectId poid = ((ViewPortalCommand) cmd).getTargetId();
-                     portalId = new UniversalID(poid.getNamespace(), poid.getPath().getLastComponentName());
+                     String portalName = poid.getPath().getLastComponentName();
+                     // TODO : manage locale and state
+                     int index = portalName.indexOf(IPublicationManager.PAGEID_CTX);
+                     if( index != -1)
+                    	 portalName = portalName.substring(0, index);
+                     portalId = new UniversalID(poid.getNamespace(), portalName);
                  } 
   
                  if( request.getUserPrincipal() == null)	{
-                      Space   space = (Space) getCMSService().getCMSSession(cmsContext).getDocument(portalId);
+                     Space   space = (Space) getCMSService().getCMSSession(cmsContext).getDocument(portalId);
                      redirectId = new UniversalID(portalId.getRepositoryName(), (String) space.getProperties().get("portal.defaultPageId"));
                  }
                  else	{

@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.cms.CMSContext;
@@ -140,6 +142,8 @@ public class CMSServiceImpl implements CMSService {
 
     @Override
     public UniversalID getDefaultPortal(CMSContext cmsContext) throws CMSException {
+    	HttpServletRequest servletRequest = cmsContext.getPortalControllerContext().getHttpServletRequest();
+    	
         return repositoryFactory.getDefaultPortal();
     }
 

@@ -96,7 +96,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
     private FileUtils fileUtils = null;
 
-    public static String checksum = null;
+    public String checksum = null;
 
 
     public FileRepository(RepositoryFactory repositoryFactory,SharedRepositoryKey repositoryKey, String userName) {

@@ -65,6 +65,10 @@ public class DynamicPortal extends PortalImplBase {
 
         // Optimisation : ajout cache
         DynamicPortalObjectContainer.addToCache(orig.getId(), this);
+        
+
+        
+        
     }
 
 

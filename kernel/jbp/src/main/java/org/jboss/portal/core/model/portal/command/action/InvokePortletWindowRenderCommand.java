@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.jboss.portal.core.model.portal.command.action;
 
+import org.apache.log4j.Logger;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerException;
@@ -35,6 +36,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.StateString;
+import org.jboss.portal.portlet.NoSuchPortletException;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.info.PortletInfo;
 import org.jboss.portal.portlet.info.ParameterInfo;
@@ -60,6 +62,8 @@ import java.util.Collections;
 public class InvokePortletWindowRenderCommand extends InvokePortletWindowCommand
 {
 
+   private final static Logger log = Logger.getLogger(InvokePortletWindowRenderCommand.class);
+	   
    /** . */
    private static final String[] REMOVED_PARAMETER = new String[0];
 
@@ -182,24 +186,29 @@ public class InvokePortletWindowRenderCommand extends InvokePortletWindowCommand
 
          //
          PortletInfo portletInfo = cpcc.getPortletInfo(window.getName());
-
-         //
-         ContainerRequest containerRequest = createPortletRequest(portletInfo, pageNS, windowNS);
-
-         //
-         PortletController controller = new PortletController();
-
-         //
-         org.jboss.portal.portlet.controller.response.ControllerResponse cr = controller.process(cpcc, containerRequest);
-
-         //
-         PageUpdateResponse pageUpdate = (PageUpdateResponse)cr;
-
-         //
-         ControllerPageNavigationalState pageNavigationalState = (ControllerPageNavigationalState)pageUpdate.getPageNavigationalState();
-
-         // Flush all NS
-         pageNavigationalState.flushUpdates();
+         
+         if( portletInfo != null)	{
+	
+	         //
+	         ContainerRequest containerRequest = createPortletRequest(portletInfo, pageNS, windowNS);
+	
+	         //
+	         PortletController controller = new PortletController();
+	
+	         //
+	         org.jboss.portal.portlet.controller.response.ControllerResponse cr = controller.process(cpcc, containerRequest);
+	
+	         //
+	         PageUpdateResponse pageUpdate = (PageUpdateResponse)cr;
+	
+	         //
+	         ControllerPageNavigationalState pageNavigationalState = (ControllerPageNavigationalState)pageUpdate.getPageNavigationalState();
+	
+	         // Flush all NS
+	         pageNavigationalState.flushUpdates();
+         }	else	{
+        	 log.warn("Portlet associated with " + window + " window could not be found!");
+         }
 
          //
          return new UpdatePageResponse(page.getId());

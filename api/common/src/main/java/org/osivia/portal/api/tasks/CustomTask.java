@@ -27,7 +27,11 @@ public class CustomTask implements EcmDocument {
 
 
 
-    /** The title. */
+ 
+
+
+
+	/** The title. */
     private String title;
     
     /** The inner document. */
@@ -113,5 +117,10 @@ public class CustomTask implements EcmDocument {
         return publicationDTO;
     }
 
+    @Override
+ 	public String getType() {
+ 		
+ 		return "";
+ 	}
     
 }

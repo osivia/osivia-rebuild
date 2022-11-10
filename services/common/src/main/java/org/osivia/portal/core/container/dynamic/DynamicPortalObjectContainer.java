@@ -76,6 +76,10 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
     public static void addToCache(PortalObjectId id, PortalObject value) {
         getDatas().put(id, value);
     }
+    
+    public static PortalObject getFromCache(PortalObjectId id) {
+        return getDatas().get(id);
+    }
 
     private static Map<PortalObjectId, PortalObject> getDatas() {
 
@@ -360,6 +364,14 @@ public class DynamicPortalObjectContainer implements org.jboss.portal.core.model
         
 
         if (staticObject instanceof PortalImplBase) {
+            // If context already in cache, force update of children
+        	// (ex: case of loose of session where a default portal is loaded and later the current portal is restored from url)
+        	// #PortalObjectCommandFactory
+            PortalObjectId contextId = new PortalObjectId(id.getNamespace(), id.getPath().getParent());
+            PortalObject context = DynamicPortalObjectContainer.getFromCache(contextId);
+            if( context instanceof DynamicContext)	{
+            	((DynamicContext) context).children = null;
+            }
              return new DynamicPortal(portalObjectContainer, (PortalImplBase) staticObject, this);
         }
 
