@@ -426,7 +426,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             System.out.println("portalcommandfactory full refresh");
         }
 
-          
+  
  /*       
         if(cmd instanceof RenderPageCommand)    {
             PortalObjectUtilsInternal.setPageId(controllerContext, ((RenderPageCommand) cmd).getTargetId());

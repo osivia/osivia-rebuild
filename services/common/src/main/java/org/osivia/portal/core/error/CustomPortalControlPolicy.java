@@ -25,9 +25,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
 import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.jboss.portal.core.model.portal.control.portal.PortalControlPolicy;
 import org.jboss.portal.theme.PageService;
@@ -146,9 +148,19 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
                 encodedToken = StringUtils.EMPTY;
             }
 
-
-            controlContext.setResponse(new RedirectionResponse(
-                    getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?httpCode=" + errDescriptor.getHttpErrCode() + "&token=" + encodedToken));
+            boolean pageReponse = true;
+            if( response instanceof ErrorResponse) {
+            	// Portlet -> might be a resourceRequest
+            	if( ((ErrorResponse) response).getCause() instanceof PortletException)	{
+            		controlContext.setResponse( response);
+            		portalControllerContext.getHttpServletRequest().setAttribute("osivia.no_redirection","1");
+            		pageReponse = false;
+            	}
+            }
+            
+            if( pageReponse)
+	            controlContext.setResponse(new RedirectionResponse(
+	                    getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?httpCode=" + errDescriptor.getHttpErrCode() + "&token=" + encodedToken));
 		}
 	}
 

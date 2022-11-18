@@ -102,32 +102,36 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
                 // Get recycled proxy
 
                 CMSSessionRecycle sessionrecyle = null;
-
-                sessionrecyle = fifo.remove();
-
                 
-                
-                sessionrecyle.setCMSContext(cmsContext);
-                
-                /*
-                
-                if( cmsContext.getPortalControllerContext() != null)
-                    log.debug("recycle request "+ cmsContext.getPortalControllerContext().getHttpServletRequest());
-                else
-                    log.debug("recycle portalControllerContext = null ");
-                
-                StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-                
-                for(int i=8; i< Math.min(stack.length, 15); i++) {
-                    log.debug("-"+stack[i].getClassName()+"."+stack[i].getMethodName());
+                try	{
+                	sessionrecyle = fifo.remove();
+                } catch( NoSuchElementException e)	{
+                	sessionrecyle = null;
                 }
-                */
                 
-                
-                
-                session = (CMSSession) sessionrecyle;
-                
-                storeSession( sessionrecyle);
+                if(sessionrecyle != null)	{
+	                sessionrecyle.setCMSContext(cmsContext);
+	                
+	                /*
+	                
+	                if( cmsContext.getPortalControllerContext() != null)
+	                    log.debug("recycle request "+ cmsContext.getPortalControllerContext().getHttpServletRequest());
+	                else
+	                    log.debug("recycle portalControllerContext = null ");
+	                
+	                StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+	                
+	                for(int i=8; i< Math.min(stack.length, 15); i++) {
+	                    log.debug("-"+stack[i].getClassName()+"."+stack[i].getMethodName());
+	                }
+	                */
+	                
+	                
+	                
+	                session = (CMSSession) sessionrecyle;
+	                
+	                storeSession( sessionrecyle);
+                }
            }
         }
 

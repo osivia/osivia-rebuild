@@ -13,13 +13,16 @@
  */
 package org.osivia.portal.core.dynamic;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
-
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
@@ -29,6 +32,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
@@ -72,6 +76,8 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 
     @Autowired
     private ApplicationContext applicationContext;
+    
+    private static final String OSIVIA_CMS_URL_MAPPING = "osivia.cms.url.mapping.";
 
     /**
      * Constructor.
@@ -135,11 +141,10 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             if( templateId == null) {
                 String sTemplateId = this.dynaProps.get("template.id");
                 if (sTemplateId == null) {
-                    String genericTemplateId = System.getProperty("template.generic.id");
-                    if (genericTemplateId == null) {
+                	templateId = getGenericTemplateId();
+                    if (templateId == null) {
                         throw new ControllerException("template.generic.id undefined. Cannot instantiate this page");
-                    } else
-                        templateId = new  UniversalID(System.getProperty("osivia.repository.default"),  genericTemplateId);
+                    } 
                 }   else    {
                     templateId = new  UniversalID("templates",  sTemplateId);
                 }
@@ -149,7 +154,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 
             if( templateRegion == null) {
                 // Generic template region name
-                String genericTemplateRegion = System.getProperty("template.generic.region");
+                String genericTemplateRegion = getGenericTemplateRegion();
                 if (genericTemplateRegion == null) {
                     throw new ControllerException("template.generic.region undefined. Cannot instantiate this page");
                 }
@@ -224,15 +229,46 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
                 }
             }
             
-            
             PortalObjectId pageId = getPublicationManager().getPageId(portalCtx, parentId, templateId, properties, null, null);
-
-
             
             return new UpdatePageResponse(pageId);
         } catch (Exception e) {
             throw new ControllerException(e);
         }
     }
+
+
+	private String getGenericTemplateRegion() {
+		String region = null;
+		
+        PortalObject portal = PortalObjectUtilsInternal.getPortal(getControllerContext());
+        
+        if( portal != null)
+        	region = portal.getProperty("portal.template.generic.region");
+ 
+		if (region == null)
+			region = System.getProperty("template.generic.region");
+
+		return region;
+	}
+
+	private UniversalID getGenericTemplateId() {
+		
+		UniversalID templateId = null;
+		
+		PortalObject portal = PortalObjectUtilsInternal.getPortal(getControllerContext());
+        if( portal != null)	{
+        	String sTemplateID = portal.getProperty("portal.template.generic.id");
+        	if( sTemplateID != null)	{
+        		templateId = new  UniversalID( portal.getId().getNamespace(), sTemplateID);
+        	}
+        }
+
+		if (templateId == null)	{
+            templateId = new  UniversalID(System.getProperty("osivia.repository.default"),  System.getProperty("template.generic.id"));
+		}
+
+		return templateId;
+	}
 
 }

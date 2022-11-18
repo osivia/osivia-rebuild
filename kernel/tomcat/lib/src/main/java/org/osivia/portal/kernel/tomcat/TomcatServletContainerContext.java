@@ -1,7 +1,11 @@
 package org.osivia.portal.kernel.tomcat;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -20,6 +24,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.core.StandardContext;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.web.RequestDispatchCallback;
 import org.jboss.portal.web.command.CommandDispatcher;
 import org.jboss.portal.web.impl.DefaultServletContainerFactory;
@@ -48,7 +53,7 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
     /** Registration. */
     private Registration registration;
 
-
+    private List<String> orderedContexts = null;
     /**
      * Constructor.
      *
@@ -64,6 +69,7 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
     }
 
 
+    
     /**
      * {@inheritDoc}
      */
@@ -180,6 +186,10 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
     private void registerHost(Host host) {
         if (!this.monitoredHosts.contains(host.getName())) {
             Container[] childrenContainers = host.findChildren();
+            
+
+            Arrays.sort(childrenContainers, compare());
+            
             for (Container childContainer : childrenContainers) {
                 if (childContainer instanceof StandardContext) {
                     StandardContext context = (StandardContext) childContainer;
@@ -192,7 +202,58 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
             this.monitoredHosts.add(host.getName());
         }
     }
+    
+    private List<String> getOrdererContexts()	{
+    	if(orderedContexts == null)	{
+    		orderedContexts = new ArrayList<>();
+    		String order = System.getProperty("portal.deploy.order");
+    		if( StringUtils.isNotEmpty(order))	{
+    			String tokens[] = order.split("\\|");
+    			for(int i=0;i<tokens.length;i++) {
+    				orderedContexts.add("/" +tokens[i]);
+    			}
+    		}
+    	}
+    	return orderedContexts;
+    }
 
+    /** The portlet webapp name */
+    private static final String PORTAL_WAR = "/portail";
+    private static final String ANNUAIRE_WAR = "/toutatice-annuaire-custom";
+    
+    private Comparator<Container> compare() {
+        return (o1, o2) -> {
+        	int i1 = getOrdererContexts().indexOf(o1.getName());
+        	int i2 = getOrdererContexts().indexOf(o2.getName());
+        	
+        	if( i1 != -1)	{
+        		if( i2 != -1)	{
+        			return (i1 - i2);
+        		}	else	{
+        			return -1;
+        		}
+        			
+        	}	else	{
+        		if (i2 != -1)	{
+        			return 1;
+        		} else	{
+        			return  o1.getName().compareTo(o2.getName());
+        		}
+        	}
+        	/*
+            if( PORTAL_WAR.equals(o1.getName()))
+                return -10;
+            else if( PORTAL_WAR.equals(o2.getName()))
+                return 10;
+            else if( ANNUAIRE_WAR.equals(o1.getName()))
+                return -9;
+            else if( ANNUAIRE_WAR.equals(o2.getName()))
+                return 9;            
+            else
+                return o1.getName().compareTo(o2.getName());
+            */
+    };
+    }
 
     /**
      * Unregister host.

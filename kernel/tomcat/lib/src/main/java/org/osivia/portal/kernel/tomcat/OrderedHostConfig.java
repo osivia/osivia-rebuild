@@ -13,7 +13,8 @@ import org.apache.catalina.startup.HostConfig;
 public class OrderedHostConfig extends HostConfig {
 
     /** The portl webapp name */
-    private static final String PORTAL_WAR = "portal.war";
+    private static final String PORTAL_WAR = "portail.war";
+    private static final String ANNUAIRE_WAR = "toutatice-annuaire-custom.war";
 
     @Override
     protected String[] filterAppPaths(String[] unfilteredAppPaths) {
@@ -24,12 +25,22 @@ public class OrderedHostConfig extends HostConfig {
 
     private Comparator<String> compare() {
         return (o1, o2) -> {
+        	
+        	return o1.compareTo(o2);
+        	
+        	// Moved to TomcatServletContainerContext
+ /*       	
             if( PORTAL_WAR.equals(o1))
-                return -1;
+                return -10;
             else if( PORTAL_WAR.equals(o2))
-                return 1;
+                return 10;
+            else if( ANNUAIRE_WAR.equals(o1))
+                return -9;
+            else if( ANNUAIRE_WAR.equals(o2))
+                return 9;            
             else
                 return o1.compareTo(o2);
+                */
     };
     }
 }

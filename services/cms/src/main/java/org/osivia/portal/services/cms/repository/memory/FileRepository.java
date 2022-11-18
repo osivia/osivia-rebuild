@@ -198,6 +198,9 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
             List<ModuleRef> modules = new ArrayList<ModuleRef>();
 
             Map<String, Object> pageProperties = configure(pageMetaData);
+            if( pageName.equals("DEFAULT_TEMPLATES")) {
+            	pageProperties.put("osivia.hidden", Boolean.TRUE);
+            }
 
             /* change defaut page properties */
 

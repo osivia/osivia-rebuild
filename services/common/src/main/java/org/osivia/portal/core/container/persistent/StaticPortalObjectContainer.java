@@ -448,7 +448,17 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                     String templateRepository = (String) space.getProperties().get("templates.namespace");
                     if( templateRepository != null)    {
                         portal.setDeclaredProperty("templates.namespace", templateRepository);
-                    }                   
+                    }    
+                    
+                    String templateId = (String) space.getProperties().get("portal.template.generic.id");
+                    if( templateId != null)    {
+                        portal.setDeclaredProperty("portal.template.generic.id", templateId);
+                    }  
+                    
+                    String templateCol = (String) space.getProperties().get("portal.template.generic.region");
+                    if( templateCol != null)    {
+                        portal.setDeclaredProperty("portal.template.generic.region", templateCol);
+                    }                      
                    
                     NavigationItem navRoot = cmsService.getCMSSession(cmsContext).getNavigationItem(space.getId());
                       

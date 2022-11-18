@@ -68,14 +68,24 @@ public class CMSServiceImpl implements CMSService {
 
     @Override
     public void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
-        repositoryFactory.addListener(cmsContext, repositoryName, listener);
+    	try	{
+    		repositoryFactory.addListener(cmsContext, repositoryName, listener);
+    	} catch( CMSException e)	{
+    		log.error("addListener" + e);
+    		
+    	}
     }
 
     
 
     @Override
     public void removeListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
-        repositoryFactory.addListener(cmsContext, repositoryName, listener);
+      	try	{
+       		repositoryFactory.addListener(cmsContext, repositoryName, listener);
+    	} catch( CMSException e)	{
+    		log.error("removeListener" + e);
+    		
+    	}        
     }
 
 
@@ -142,9 +152,7 @@ public class CMSServiceImpl implements CMSService {
 
     @Override
     public UniversalID getDefaultPortal(CMSContext cmsContext) throws CMSException {
-    	HttpServletRequest servletRequest = cmsContext.getPortalControllerContext().getHttpServletRequest();
-    	
-        return repositoryFactory.getDefaultPortal();
+        return repositoryFactory.getDefaultPortal(cmsContext);
     }
 
 

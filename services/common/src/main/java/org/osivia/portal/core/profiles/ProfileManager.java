@@ -90,7 +90,7 @@ public class ProfileManager implements IProfileManager {
                           }
                        
                           if( keepPage) {
-                              session.setAttribute(ATTRIBUTE_PROFILE_NAME, profile);
+                              session.setAttribute(getProfileKey(spaceID), profile);
                               return profile;
                           }
                     }
@@ -105,7 +105,7 @@ public class ProfileManager implements IProfileManager {
             }
 
             Profile profilDefaut = new Profile(DEFAULT_PROFIL_NAME, "default", pageAccueilConnecte, "");
-            session.setAttribute(ATTRIBUTE_PROFILE_NAME, profilDefaut);
+            session.setAttribute(getProfileKey(spaceID), profilDefaut);
 
             return profilDefaut;
         }
@@ -119,13 +119,18 @@ public class ProfileManager implements IProfileManager {
  
         HttpSession session = portalCtx.getHttpServletRequest().getSession();
 
-        Profile profile = (Profile) session.getAttribute(ATTRIBUTE_PROFILE_NAME);
+        Profile profile = (Profile) session.getAttribute(getProfileKey(spaceID));
         if (profile == null) {
             profile = this.createUserProfile(portalCtx, spaceID);
         }
         return profile;
 
     }
+
+
+	private String getProfileKey(UniversalID spaceID) {
+		return ATTRIBUTE_PROFILE_NAME+"."+spaceID.toString();
+	}
 
 
   

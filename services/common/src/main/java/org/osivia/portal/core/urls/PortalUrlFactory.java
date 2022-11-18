@@ -430,33 +430,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             final String parentId = URLEncoder
                     .encode(parentName, "UTF-8");
             
-            String templatePath = templateName;
-            
-            // Compatibility
-            // ac-rennes:/DEFAULT__ctx__locale_fr/root/DEFAULT_TEMPLATES/DEFAULT_TEMPL
-            if( templatePath.startsWith("/"))	{
-            	
-            	String templateID= "";
-            	String tokens[] = templatePath.split("/");
-            	
-            	templatePath = "ac-rennes:/DEFAULT__ctx__locale_fr/root";
-            	for(int i=1; i< tokens.length; i++)	{
-            		if( templateID.length() > 0)
-            			templateID += "_";
-            		
-            		templateID += tokens[i].toUpperCase();
-
-            		if( i > 1)	{
-	           			templatePath += "/";
-	            		templatePath += templateID;
-            		}
-            	}
-             }
-
-            
-            
+           
+                        
             final String templateId = URLEncoder
-                    .encode(templatePath, "UTF-8");
+                    .encode(templateName, "UTF-8");
 
             String url = portalURL.toString();
             url += "&parentId=" + parentId + "&pageName=" + pageName + "&templateId=" + templateId + "&props=" + WindowPropertiesEncoder.encodeProperties(props)

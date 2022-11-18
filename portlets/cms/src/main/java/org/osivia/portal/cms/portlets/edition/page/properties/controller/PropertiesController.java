@@ -1,6 +1,8 @@
 package org.osivia.portal.cms.portlets.edition.page.properties.controller;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,6 +79,8 @@ import org.springframework.web.portlet.context.PortletContextAware;
 import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 
+
+
 /**
  * Update page controller.
  *
@@ -89,8 +93,9 @@ public class PropertiesController extends GenericPortlet implements PortletConte
 
     private static final String OSIVIA_CMS_PROPAGATE_SELECTORS = "osivia.cms.propagateSelectors";
 
-
 	private static final String OSIVIA_PAGE_CATEGORY = "osivia.pageCategory";
+	
+    private static final String OSIVIA_CMS_URL_MAPPING = "osivia.cms.url.mapping.";
 
 
 	/** Portlet context. */
@@ -341,6 +346,32 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             form.setId( document.getInternalID());
             
             
+
+
+        	String hostName = portalCtx.getHttpServletRequest().getHeader("osivia-virtual-host");
+        	String charteCtx = null;
+        		
+			if (StringUtils.isNotEmpty(hostName)) {
+				try {
+					URI uri = new URI(hostName);
+					String domain = uri.getHost();
+
+					String sDefaultPortalId = System.getProperty(OSIVIA_CMS_URL_MAPPING + domain);
+					if (StringUtils.isNotEmpty(sDefaultPortalId)) {
+						UniversalID defaultPortalId = new UniversalID(sDefaultPortalId);
+						charteCtx = System
+								.getProperty("osivia.cms.repository."+defaultPortalId.getRepositoryName()+".charte.context" );
+					}
+				} catch (URISyntaxException e) {
+					logger.error("can't parse host :" + e.getMessage());
+				}
+			}
+            
+            
+            
+            
+            
+            
             //Layouts
 
             form.setLayoutId((String) document.getProperties().get(ThemeConstants.PORTAL_PROP_LAYOUT));
@@ -362,7 +393,8 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             
 
              for (PortalLayout layout : layouts) {
-                formLayouts.put(layout.getLayoutInfo().getName(), layout.getLayoutInfo().getName());
+            	 if( charteCtx == null || layout.getLayoutInfo().getContextPath().equals(charteCtx))
+                	formLayouts.put(layout.getLayoutInfo().getName(), layout.getLayoutInfo().getName());
             }
              
              
@@ -389,7 +421,8 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             
 
             for (PortalTheme theme : themes) {
-                formThemes.put(theme.getThemeInfo().getName(), theme.getThemeInfo().getName());
+            	if( charteCtx == null || theme.getThemeInfo().getContextPath().equals(charteCtx))
+            		formThemes.put(theme.getThemeInfo().getName(), theme.getThemeInfo().getName());
             }
 
             form.setThemes(formThemes);

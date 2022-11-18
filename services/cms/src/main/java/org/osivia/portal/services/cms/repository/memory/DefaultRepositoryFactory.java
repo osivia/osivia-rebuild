@@ -2,6 +2,8 @@ package org.osivia.portal.services.cms.repository.memory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -19,6 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSPortalControllerContext;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.RepositoryFactory;
 import org.osivia.portal.api.cms.repository.UserRepository;
@@ -26,7 +30,9 @@ import org.osivia.portal.api.cms.repository.cache.SharedRepository;
 import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.services.cms.service.CMSServiceImpl;
 import org.osivia.portal.services.cms.service.RuntimeBeanBuilder;
 
 
@@ -37,11 +43,20 @@ import org.osivia.portal.services.cms.service.RuntimeBeanBuilder;
 
 public class DefaultRepositoryFactory implements RepositoryFactory{
 
-    /** The super user repositories. */
+    private static final String OSIVIA_CMS_URL_MAPPING = "osivia.cms.url.mapping.";
+
+	private static final String ATTR_OSIVIA_PORTAL_DEFAUT = "osivia.portal.defaut";
+
+	/** The super user repositories. */
     private Map<SharedRepositoryKey, BaseUserRepository> staticRepositories;
 
     private Map<SharedRepositoryKey, SharedRepository>  sharedRepositories;
     
+    
+    /**
+     * Logger.
+     */
+    private static final Log log = LogFactory.getLog(DefaultRepositoryFactory.class);
 
 
     public DefaultRepositoryFactory() {
@@ -56,8 +71,42 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
     }
     
     
-    public UniversalID getDefaultPortal() {
-        return new UniversalID(System.getProperty("osivia.portal.default"));
+    public UniversalID getDefaultPortal(CMSContext cmsContext) {
+		
+    	HttpServletRequest servletRequest = cmsContext.getPortalControllerContext().getHttpServletRequest();
+		
+		if( servletRequest == null)	{
+			UniversalID defaultPortalID = new UniversalID(System.getProperty("osivia.portal.default"));
+			return defaultPortalID;
+		}
+		
+
+		UniversalID defaultPortalID = (UniversalID) servletRequest.getAttribute(ATTR_OSIVIA_PORTAL_DEFAUT);
+		if (defaultPortalID == null) {
+
+			String sDefaultPortal = null;
+
+			String hostName = servletRequest.getHeader("osivia-virtual-host");
+			if (StringUtils.isNotEmpty(hostName)) {
+				try {
+					URI uri = new URI(hostName);
+					String domain = uri.getHost();
+
+					sDefaultPortal = System.getProperty(OSIVIA_CMS_URL_MAPPING + domain);
+				} catch (Exception e) {
+					log.error("can't parse host :" + e.getMessage());
+				}
+			}
+
+			if (sDefaultPortal == null) {
+				sDefaultPortal = System.getProperty("osivia.portal.default");
+			}
+
+			defaultPortalID = new UniversalID(sDefaultPortal);
+			servletRequest.setAttribute(ATTR_OSIVIA_PORTAL_DEFAUT, defaultPortalID);
+
+		}
+		return defaultPortalID;
     }
     
     protected static final Log logger = LogFactory.getLog(DefaultRepositoryFactory.class);
@@ -93,7 +142,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
         return userRepository;
     }
 
-    public List<NativeRepository> getRepositories( CMSContext cmsContext)  {
+    public List<NativeRepository> getRepositories( CMSContext cmsContext) throws CMSException  {
 
         List<NativeRepository> repositories =new ArrayList<>();
         
@@ -179,7 +228,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
      * @param id the id
      * @return the user repository
      */
-    public BaseUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName, BaseUserRepository publishRepository) {
+    public BaseUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName, BaseUserRepository publishRepository) throws CMSException{
 
         BaseUserRepository userRepository;
 
@@ -212,6 +261,40 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
 
             userRepository = (BaseUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null || (!StringUtils.equals(userRepository.getUserName(), userName))) {
+            	
+            	
+				// Check whether current repository is associated with another host
+            	
+            	HttpServletRequest servletRequest = cmsContext.getPortalControllerContext().getHttpServletRequest();
+ 
+        		String hostName = servletRequest.getHeader("osivia-virtual-host");
+        		if (StringUtils.isNotEmpty(hostName)) {
+        			try {
+        				URI uri = new URI(hostName);
+        				String domain = uri.getHost();
+         				
+        		        Properties properties = System.getProperties();
+        		        for (Object propertyName : properties.keySet()) {
+        		            if (propertyName instanceof String) {
+        		                String sPropertyName = (String) propertyName;
+        		                if (sPropertyName.startsWith(OSIVIA_CMS_URL_MAPPING)) {
+        		                	String domainProperty = sPropertyName.substring(OSIVIA_CMS_URL_MAPPING.length());
+        		                	UniversalID defaultPortalId = new UniversalID(properties.getProperty(sPropertyName));
+        		                	if( defaultPortalId.getRepositoryName().equals(repositoryName) && (!domain.equals(domainProperty)))
+        		                			throw new DocumentForbiddenException();
+
+        		                }
+        		            }
+        		        }
+        			} catch (URISyntaxException e) {
+        				log.error("can't parse host :" + e.getMessage());
+        			}
+        		}
+
+            	
+            	
+            	
+            	
                 userRepository = createRepository(repositoryKey, publishRepository, userName);
 
                 session.setAttribute(repositoryAttributeName, userRepository);
@@ -229,7 +312,9 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
      * @param repositoryName the repository name
      * @return the user repository
      */
-    public NativeRepository getUserRepository(CMSContext cmsContext, String repositoryName) {
+    public NativeRepository getUserRepository(CMSContext cmsContext, String repositoryName) throws CMSException {
+    	
+  
         // for previewed respositories, ensure online repository has been loaded
         // just for synchronicity of the 2 shared repositories initialisation
 
@@ -281,7 +366,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
      * @param repositoryName the repository name
      * @param listener the listener
      */
-    public void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+    public void addListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) throws CMSException {
 
         logger.debug("addListener repositoryName" + repositoryName);
         
@@ -307,7 +392,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
      * @param repositoryName the repository name
      * @param listener the listener
      */
-    public void removeListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+    public void removeListener(CMSContext cmsContext, String repositoryName, RepositoryListener listener) throws CMSException{
 
         logger.debug("addListener repositoryName" + repositoryName);
         
@@ -332,7 +417,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
      * @param repositoryName the repository name
      * @param listener the listener
      */
-    public void addListenerForEachLanguage(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+    public void addListenerForEachLanguage(CMSContext cmsContext, String repositoryName, RepositoryListener listener) throws CMSException{
         Locale savedLocale = cmsContext.getlocale();
         UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
         for( Locale locale: userRepository.getLocales())    {
@@ -353,7 +438,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
      * @param repositoryName the repository name
      * @param listener the listener
      */
-    public void removeListenerForEachLanguage(CMSContext cmsContext, String repositoryName, RepositoryListener listener) {
+    public void removeListenerForEachLanguage(CMSContext cmsContext, String repositoryName, RepositoryListener listener) throws CMSException {
         Locale savedLocale = cmsContext.getlocale();
         UserRepository userRepository = (UserRepository) getUserRepository(cmsContext, repositoryName);
         for( Locale locale: userRepository.getLocales())    {
