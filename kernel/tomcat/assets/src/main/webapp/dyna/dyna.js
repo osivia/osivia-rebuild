@@ -722,10 +722,9 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 		  }
 	  }
 	
-	  synchronizeMetadatas();
-	  
-	  
-	  
+	
+	  if( resp.regions["header-metadata"] != undefined)
+	    synchronizeMetadatas();
 	  
 	  
 	  $JQry(".notification-container").delay(10000).fadeOut(2000);
