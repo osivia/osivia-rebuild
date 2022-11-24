@@ -27,6 +27,7 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -74,10 +75,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
     /** Command info. */
     private final CommandInfo info;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-    
-    private static final String OSIVIA_CMS_URL_MAPPING = "osivia.cms.url.mapping.";
+
 
     /**
      * Constructor.
@@ -136,12 +134,18 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
     public ControllerResponse execute() throws ControllerException {
         try {
             
+        	String portalName = parentId.getInternalID();
+        	String names[] = new String [1];
+        	names[0] = portalName;
+        	
+        	PortalObjectId portalId = new PortalObjectId(parentId.getRepositoryName(), new PortalObjectPath(names));
+        	Portal parentPortal = (Portal) context.getController().getPortalObjectContainer().getObject(portalId);
             
             // Generic template name
             if( templateId == null) {
                 String sTemplateId = this.dynaProps.get("template.id");
                 if (sTemplateId == null) {
-                	templateId = getGenericTemplateId();
+                	templateId = getGenericTemplateId( parentPortal);
                     if (templateId == null) {
                         throw new ControllerException("template.generic.id undefined. Cannot instantiate this page");
                     } 
@@ -154,7 +158,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 
             if( templateRegion == null) {
                 // Generic template region name
-                String genericTemplateRegion = getGenericTemplateRegion();
+                String genericTemplateRegion = getGenericTemplateRegion(parentPortal);
                 if (genericTemplateRegion == null) {
                     throw new ControllerException("template.generic.region undefined. Cannot instantiate this page");
                 }
@@ -238,13 +242,12 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
     }
 
 
-	private String getGenericTemplateRegion() {
+	private String getGenericTemplateRegion(Portal parentPortal) {
 		String region = null;
-		
-        PortalObject portal = PortalObjectUtilsInternal.getPortal(getControllerContext());
+
         
-        if( portal != null)
-        	region = portal.getProperty("portal.template.generic.region");
+        if( parentPortal != null)
+        	region = parentPortal.getProperty("portal.template.generic.region");
  
 		if (region == null)
 			region = System.getProperty("template.generic.region");
@@ -252,15 +255,15 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 		return region;
 	}
 
-	private UniversalID getGenericTemplateId() {
+	private UniversalID getGenericTemplateId( Portal parentPortal) {
 		
 		UniversalID templateId = null;
 		
-		PortalObject portal = PortalObjectUtilsInternal.getPortal(getControllerContext());
-        if( portal != null)	{
-        	String sTemplateID = portal.getProperty("portal.template.generic.id");
+
+        if( parentPortal != null)	{
+        	String sTemplateID = parentPortal.getProperty("portal.template.generic.id");
         	if( sTemplateID != null)	{
-        		templateId = new  UniversalID( portal.getId().getNamespace(), sTemplateID);
+        		templateId = new  UniversalID( parentPortal.getId().getNamespace(), sTemplateID);
         	}
         }
 
