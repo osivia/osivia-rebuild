@@ -479,9 +479,22 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	
 	
 	           if( regionsModifications == false)	{
-	              // Copy the region content
-	              copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
-	              copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
+		
+				  // Empty response + hidePortlet : reinitialize then window
+				  	
+				  var emptyResponse = true;
+	           	  $srcContainer.find('.dyna-portlet').each(function( ) {
+					emptyResponse = false;
+				  });
+				  
+				  if( emptyResponse == true)	{
+						// Copy the region content
+		                copyInnerHTML(srcContainer, dstContainer, "dyna-window-content");
+				  }	else	{		
+		              // Copy the region content
+		              copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
+		              copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
+	              }
 	           }
 	           
 	           
