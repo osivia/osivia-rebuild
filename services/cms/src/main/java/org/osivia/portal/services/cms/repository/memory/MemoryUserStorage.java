@@ -232,7 +232,7 @@ public class MemoryUserStorage extends BaseUserStorage {
                 if (userRepository.getUserName() != null && acls.contains("group:members"))
                     aclControl = true;
                 
-                if (userRepository.isAdministrator())
+                if (userRepository.isManager())
                     aclControl = true;
                 
                 if (acls.contains("_anonymous_"))
@@ -262,10 +262,10 @@ public class MemoryUserStorage extends BaseUserStorage {
 
             List<String> subtypes = new ArrayList<String>(doc.getSupportedSubTypes());
 
-            if (!getUserRepository().isAdministrator())
+            if (!getUserRepository().isManager())
                 subtypes.clear();
 
-            return new UserDatasImpl(subtypes, userRepository.isAdministrator(), userRepository.isAdministrator());
+            return new UserDatasImpl(subtypes, userRepository.isManager(), userRepository.isManager());
         } catch (Exception e) {
             throw new CMSException(e);
         }

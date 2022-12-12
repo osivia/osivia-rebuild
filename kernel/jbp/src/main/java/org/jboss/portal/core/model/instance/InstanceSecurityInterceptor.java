@@ -45,6 +45,8 @@ import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.jboss.portal.security.spi.provider.PermissionRepository;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 
 
 public class InstanceSecurityInterceptor extends PortletInvokerInterceptor {
@@ -105,6 +107,16 @@ public PortletInvocationResponse invoke(PortletInvocation invocation) throws Ill
                 }
             }
         }
+        
+        if(authorized == false)	{
+        	PortalControllerContext portalCtx = new PortalControllerContext(httpServletRequest);
+        	if( PortalObjectUtils.isPageRepositoryManager(portalCtx))	{
+        		authorized = true;
+        	}
+        }
+        
+        
+        
 
          //
          //

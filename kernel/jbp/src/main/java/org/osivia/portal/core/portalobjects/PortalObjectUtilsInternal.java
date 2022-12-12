@@ -107,11 +107,7 @@ public class PortalObjectUtilsInternal {
         return page;
     }
 
-    public static final boolean isAdmin(ControllerContext controllerContext) {
-        // TODO
-        return false;
-    }
-    
+
     
     /**
      * Get current portal object

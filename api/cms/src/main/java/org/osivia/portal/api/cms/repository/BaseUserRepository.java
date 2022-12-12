@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.osivia.portal.api.cms.CMSPortalControllerContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.UpdateInformations;
@@ -52,7 +53,8 @@ import org.osivia.portal.api.directory.v2.service.GroupService;
 public abstract class BaseUserRepository implements UserRepository {
 
  
-
+	private static final String OSIVIA_REPOSITORY_ADMINISTRATOR = "osivia.repository.administrator.";
+	
     public static String SESSION_ATTRIBUTE_NAME = "osivia.CMSUserRepository";
     
     public static String SUPERUSER_NAME = "superuser";
@@ -124,6 +126,50 @@ public abstract class BaseUserRepository implements UserRepository {
         return principal;
     }
     
+
+    
+	public boolean isManager() {
+
+		if (isAdministrator())
+			return true;
+
+		Boolean repositoryAdministrator = Boolean.FALSE;
+		
+		PortalControllerContext ctx = portalCtx.get().getPortalControllerContext();
+
+		if (ctx.getHttpServletRequest() != null) {
+
+			repositoryAdministrator = (Boolean) ctx.getHttpServletRequest().getSession()
+					.getAttribute(getRepositoryAdministratorKey());
+
+			if (repositoryAdministrator == null) {
+
+				HttpServletRequest request = ctx.getHttpServletRequest();
+				repositoryAdministrator = Boolean.FALSE;
+
+				if (StringUtils.isNotEmpty(getRepositoryName())) {
+					String profile = System
+							.getProperty("osivia.cms.repository." + getRepositoryName() + ".administrators.profile");
+					if (StringUtils.isNotEmpty(profile) && request.isUserInRole(profile)) {
+						repositoryAdministrator = Boolean.TRUE;
+					}
+
+				}
+				
+				// Store in session
+				ctx.getHttpServletRequest().getSession().setAttribute(getRepositoryAdministratorKey(),
+						repositoryAdministrator);
+			}
+		}
+
+		return repositoryAdministrator.booleanValue();
+	}
+
+
+
+	private String getRepositoryAdministratorKey() {
+		return OSIVIA_REPOSITORY_ADMINISTRATOR+ getUserName()+"."+getRepositoryName();
+	}
 
     
     

@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -33,6 +34,7 @@ import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.VirtualNavigationUtils;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Templateable;
@@ -46,6 +48,7 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.player.Player;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.core.cms.CMSItem;
@@ -167,8 +170,19 @@ public class PublicationManager implements IPublicationManager {
 		PortalObjectId pageId = null;
 
 		try {
-			CMSContext cmsContext = new CMSContext(portalCtx);
 
+			
+			// Check whether current repository is associated with another host
+        	
+        	HttpServletRequest servletRequest = portalCtx.getHttpServletRequest();
+        	if( !PortalObjectUtils.isRepositoryCompatibleWithHost(servletRequest, docId.getRepositoryName()))
+          			throw new DocumentForbiddenException();
+
+			
+
+			CMSContext cmsContext = new CMSContext(portalCtx);
+			
+        	
 			Document doc;
 			CMSItem notSupportedCMSItem;
 			Object nxNativeItem;

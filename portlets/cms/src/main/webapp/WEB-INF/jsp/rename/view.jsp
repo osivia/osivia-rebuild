@@ -12,10 +12,10 @@
 
 <form:form action="${url}" method="post" modelAttribute="form">
     <%--Title--%>
-    <c:set var="placeholder"><op:translate key="TITLE_PLACEHOLDER" /></c:set>
+    <c:set var="placeholder"><op:translate key="MODIFY_PAGE_RENAME_NEW_NAME_LABEL" /></c:set>
     <spring:bind path="title">
         <div class="form-group required">
-            <form:label path="title"><op:translate key="TITLE_LABEL" /></form:label>
+            <form:label path="title"><op:translate key="MODIFY_PAGE_RENAME_NEW_NAME_LABEL" /></form:label>
             <form:input path="title" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
             <form:errors path="title" cssClass="invalid-feedback" />
         </div>

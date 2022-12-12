@@ -2,11 +2,14 @@ package org.osivia.portal.api.portalobject.bridge;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.page.PageProperties;
 
@@ -57,6 +60,16 @@ public interface PortalBridge {
          * @return true, if is admin
          */
         public  boolean  isAdmin(PortalControllerContext portalCtx);
+        
+        
+        
+        /**
+         * Checks if user is repository manager.
+         *
+         * @param controllerContext the controller context
+         * @return true, if is admin
+         */
+        public  boolean  isPageRepositoryManager(PortalControllerContext portalCtx);
         
         
         /**
@@ -126,5 +139,41 @@ public interface PortalBridge {
          * Is the user explicitly refreshing the page
          */
         public boolean isRefreshingPage() ;
-        
+
+
+        /**
+         * Get errorPageUrl
+         * @param request
+         * @return
+         */
+		String getHostErrorPageURI(HttpServletRequest request);
+
+
+		/**
+		 * Get current host context
+		 * @param request
+		 * @return
+		 */
+		String getHostCharteContext(HttpServletRequest request);
+
+
+		/**
+		 * Get Host Default portal CMS ID
+		 * 
+		 * @param request
+		 * @return
+		 */
+		UniversalID getHostPortalID(HttpServletRequest request); 
+		
+		/**
+		 * Check if the repository is public or associated to current host
+		 * 
+		 * @param request
+		 * @return
+		 */
+		public boolean checkIfRepositoryIsCompatibleWithHost(HttpServletRequest request, String repository);
+
+
+
+
 }

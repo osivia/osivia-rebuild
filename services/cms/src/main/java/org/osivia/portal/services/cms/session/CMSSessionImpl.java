@@ -83,6 +83,10 @@ public class CMSSessionImpl implements CMSSession, CMSSessionRecycle {
         return ((UserRepository) cmsService.getUserRepository(cmsContext, spaceId.getRepositoryName())).getSpaceCacheInformations(spaceId.getInternalID());
     }
 
+    @Override
+    public boolean isManager( String repositoryName) throws CMSException {
+        return ((UserRepository) cmsService.getUserRepository(cmsContext,repositoryName)).isManager();
+    }
 
 
 }

@@ -48,6 +48,7 @@ import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.content.IPublicationManager;
 import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -348,7 +349,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             UniversalID spaceId =  getCMSService().getDefaultPortal(cmsContext);
             
             Portal portal = PortalObjectUtilsInternal.getPortal(controllerContext);
-            spaceId = new UniversalID(portal.getId().getNamespace(), portal.getId().getPath().getLastComponentName());
+            
+            // TODO : manage locale and state
+            String portalName = portal.getId().getPath().getLastComponentName();
+            int index = portalName.indexOf(IPublicationManager.PAGEID_CTX);
+            if( index != -1)
+           	 portalName = portalName.substring(0, index);
+
+            
+            spaceId = new UniversalID(portal.getId().getNamespace(), portalName);
 
             
             

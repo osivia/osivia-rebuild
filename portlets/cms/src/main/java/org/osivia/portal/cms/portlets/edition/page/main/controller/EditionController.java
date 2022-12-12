@@ -55,6 +55,7 @@ import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.locale.ILocaleService;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
@@ -778,8 +779,10 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
                 String cmsTemplatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.cmsTemplatePath");
 
-
-                getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, id, isAdministrator, templatePath, cmsTemplatePath);
+                
+                Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
+                if( personnalization.isManageable())
+                	getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, id, isAdministrator, templatePath, cmsTemplatePath);
 
 
                 status.setPreview(cmsContext.isPreview());
@@ -800,8 +803,6 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     status.setPageEdition(repository.supportPageEdition());
 
 
-                    Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
-
 
                     status.setSubtypes(personnalization.getSubTypes());
                     status.setManageable(personnalization.isManageable());
@@ -809,12 +810,11 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     status.setLiveSpace(BooleanUtils.isTrue(((Boolean)space.getProperties().get("osivia.connect.liveSpace"))));
 
 
+                    if (status.isManageable()) {
+                        getSpaceConfiguration(portalControllerContext, ctrl, bundle, toolbar, document, isAdministrator, cmsContext, repository);
+                    }
+
                     if (status.isModifiable()) {
-
-
-                        getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, document, isAdministrator, cmsContext, repository);
-
-
                         getEditionMenu(portalControllerContext, ctrl, status, bundle, toolbar, id, cmsContext, document, repository, personnalization);
 
                     }
@@ -851,40 +851,42 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
     private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, Boolean isAdministrator, String templatePath, String cmsTemplatePath) throws PortalException {
         Element configurationList;
-        // Configuration menu
-        if (BooleanUtils.isTrue(isAdministrator)) {
-            Element menu = DOM4JUtils.generateDivElement("dropdown");
-            Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "halflings halflings-wrench");
-            menuTitle.addAttribute(new QName("id"), "dropdownConfigurationMenu");
-            Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
-            menuTitle.add(text);
 
-            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+        Element menu = DOM4JUtils.generateDivElement("dropdown");
+        Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "halflings halflings-wrench");
+        menuTitle.addAttribute(new QName("id"), "dropdownConfigurationMenu");
+        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
+        menuTitle.add(text);
 
-            menu.add(menuTitle);
+        DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
 
-            configurationList = DOM4JUtils.generateDivElement("dropdown-menu");
+        menu.add(menuTitle);
 
-            configurationList.addAttribute(new QName("aria-labelledby"), "dropdownConfigurationMenu");
-            menu.add(configurationList);
+        configurationList = DOM4JUtils.generateDivElement("dropdown-menu");
 
-
-            Element menuRoot = DOM4JUtils.generateDivElement("");
-            menuRoot.add(menu);
-
-            toolbar.add(menuRoot);
+        configurationList.addAttribute(new QName("aria-labelledby"), "dropdownConfigurationMenu");
+        menu.add(configurationList);
 
 
-            Map<String, String> properties = new HashMap<>();
-            String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryPortletInstance", bundle.getString("MODIFY_REPOSITORY_ACTION"), "EditionRepositoryPortletInstance", properties,
-                    new HashMap<>());
-            this.addToolbarItem(configurationList, manageRepositoriesUrl, "dropdown-link", bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", true);
+        Element menuRoot = DOM4JUtils.generateDivElement("");
+        menuRoot.add(menu);
+
+        toolbar.add(menuRoot);
 
 
-            addTemplateLink(portalControllerContext, ctrl, bundle, configurationList, id, templatePath, cmsTemplatePath);
+        Map<String, String> properties = new HashMap<>();
+        String title = bundle.getString("MODIFY_REPOSITORY_ACTION");
+        properties.put("osivia.title", title);
+       
+        String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryPortletInstance", title, "EditionRepositoryPortletInstance", properties,
+                new HashMap<>());
+        this.addToolbarItem(configurationList, manageRepositoriesUrl, "dropdown-link", bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", true);
 
 
-        }
+        addTemplateLink(portalControllerContext, ctrl, bundle, configurationList, id, templatePath, cmsTemplatePath);
+
+
+    
     }
 
 
@@ -1016,10 +1018,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, Boolean isAdministrator, CMSContext cmsContext, AdvancedRepository repository) throws PortalException {
+    private void getSpaceConfiguration(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, Boolean isAdministrator, CMSContext cmsContext, AdvancedRepository repository) throws PortalException {
         Element configurationList;
-        // Space menu
-        if (BooleanUtils.isTrue(isAdministrator)) {
+
             Element menu = DOM4JUtils.generateDivElement("dropdown");
             Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-folder");
             menuTitle.addAttribute(new QName("id"), "spaceConfigurationMenu");
@@ -1042,12 +1043,16 @@ public class EditionController implements PortletContextAware, ApplicationContex
             toolbar.add(menuRoot);
 
 
-            if ((!repository.supportPreview() || cmsContext.isPreview()) ) {
-                if (portalControllerContext.getResponse() instanceof RenderResponse) {
-                    PortletURL createSpaceUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
-                    createSpaceUrl.setParameter(ActionRequest.ACTION_NAME, "addSpace");
-                    this.addToolbarItem(configurationList, createSpaceUrl.toString(), "dropdown-link", bundle.getString("MODIFY_SPACE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
-                }
+            // Only one space if association with host
+            if( PortalObjectUtils.getHostPortalID(portalControllerContext.getHttpServletRequest()) == null)	{
+            
+	            if ((!repository.supportPreview() || cmsContext.isPreview()) ) {
+	                if (portalControllerContext.getResponse() instanceof RenderResponse) {
+	                    PortletURL createSpaceUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+	                    createSpaceUrl.setParameter(ActionRequest.ACTION_NAME, "addSpace");
+	                    this.addToolbarItem(configurationList, createSpaceUrl.toString(), "dropdown-link", bundle.getString("MODIFY_SPACE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
+	                }
+	            }
             }
             
             
@@ -1066,7 +1071,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             modifySpaceUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionModifySpaceInstance", title, "EditionModifySpaceInstance", spaceProperties, new HashMap<>());
 
 
-            this.addToolbarItem(configurationList, modifySpaceUrl, "dropdown-link", bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-folder-cogwheel", true);
+            this.addToolbarItem(configurationList, modifySpaceUrl, "dropdown-link", bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-pencil", true);
 
 
             Map<String, String> treeProperties = new HashMap<>();
@@ -1076,7 +1081,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
             this.addToolbarItem(configurationList, treeUrl, "#osivia-modal", bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true);
-        }
+
     }
 
 

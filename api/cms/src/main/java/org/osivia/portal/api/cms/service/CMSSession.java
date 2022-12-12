@@ -100,6 +100,15 @@ public interface CMSSession {
     void handleUpdate(UpdateInformations infos) throws CMSException;
 
 
+	/**
+	 * is current user manager of this repository
+	 * @param repositoryName
+	 * @return
+	 * @throws CMSException
+	 */
+
+	boolean isManager(String repositoryName) throws CMSException; 
+
 
 
  

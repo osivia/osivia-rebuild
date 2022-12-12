@@ -52,6 +52,7 @@ import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -95,7 +96,6 @@ public class PropertiesController extends GenericPortlet implements PortletConte
 
 	private static final String OSIVIA_PAGE_CATEGORY = "osivia.pageCategory";
 	
-    private static final String OSIVIA_CMS_URL_MAPPING = "osivia.cms.url.mapping.";
 
 
 	/** Portlet context. */
@@ -345,34 +345,10 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             
             form.setId( document.getInternalID());
             
+     
+            String charteCtx = PortalObjectUtils.getHostCharteContext(portalCtx.getHttpServletRequest());
             
-
-
-        	String hostName = portalCtx.getHttpServletRequest().getHeader("osivia-virtual-host");
-        	String charteCtx = null;
-        		
-			if (StringUtils.isNotEmpty(hostName)) {
-				try {
-					URI uri = new URI(hostName);
-					String domain = uri.getHost();
-
-					String sDefaultPortalId = System.getProperty(OSIVIA_CMS_URL_MAPPING + domain);
-					if (StringUtils.isNotEmpty(sDefaultPortalId)) {
-						UniversalID defaultPortalId = new UniversalID(sDefaultPortalId);
-						charteCtx = System
-								.getProperty("osivia.cms.repository."+defaultPortalId.getRepositoryName()+".charte.context" );
-					}
-				} catch (URISyntaxException e) {
-					logger.error("can't parse host :" + e.getMessage());
-				}
-			}
-            
-            
-            
-            
-            
-            
-            //Layouts
+             //Layouts
 
             form.setLayoutId((String) document.getProperties().get(ThemeConstants.PORTAL_PROP_LAYOUT));
 

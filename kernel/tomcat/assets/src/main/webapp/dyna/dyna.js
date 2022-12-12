@@ -1432,9 +1432,7 @@ function synchronizeMetadatas()
 }
 
 
-
-function footer()
-{  
+	function footer()	{
 
     	// Non Ajax Response
         var options = new Object();
@@ -1445,11 +1443,17 @@ function footer()
         // We don't block
         options.asynchronous = false;
 
-    	directAjaxCall("footer",options, window.location.href,null);
+		// In firefox, even winhout any treament on json response
+		// If page is already in history and Ajax.request is called with the same url
+		//    -> The JSON reponse appears in source code
+		
+		var url = new URL(window.location.href);
+		url.searchParams.append('_ts', Date.now());
+		
+    	directAjaxCall("footer",options, url.href,null);
 
 
 }
-
 // Compatibility for admin mode
 function closeFancybox()	{
 	history.back();

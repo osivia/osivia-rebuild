@@ -31,6 +31,7 @@ import org.apache.catalina.valves.ValveBase;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.core.utils.URLUtils;
 
 
@@ -45,7 +46,6 @@ public class ErrorValve extends ValveBase {
 
     public static ThreadLocal<Request> mainRequest = new ThreadLocal<Request>();
     
-    private static final String OSIVIA_CMS_URL_MAPPING = "osivia.cms.url.mapping.";
 
     /**
      * {@inheritDoc}
@@ -67,29 +67,10 @@ public class ErrorValve extends ValveBase {
             int httpErrorCode = 0;
             Throwable cause = null;
 
-
+            
             HttpServletRequest httpRequest = request.getRequest();
 
-         	String hostName = httpRequest.getHeader("osivia-virtual-host");
-        	String errorPageUri = null;
-        		
-			if (StringUtils.isNotEmpty(hostName)) {
-				try {
-					URI uri = new URI(hostName);
-					String domain = uri.getHost();
-
-					String sDefaultPortalId = System.getProperty(OSIVIA_CMS_URL_MAPPING + domain);
-					if (StringUtils.isNotEmpty(sDefaultPortalId)) {
-						UniversalID defaultPortalId = new UniversalID(sDefaultPortalId);
-						String charteCtx = System
-								.getProperty("osivia.cms.repository."+defaultPortalId.getRepositoryName()+".charte.context" );
-						if( StringUtils.isNotEmpty(charteCtx))
-							errorPageUri = charteCtx +"/error/errorPage.jsp";
-					}
-				} catch (URISyntaxException e) {
-					//do nothing
-				}
-			}
+            String errorPageUri = PortalObjectUtils.getHostErrorPageURI(httpRequest);
                 
             
             if (errorPageUri == null) {

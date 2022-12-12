@@ -137,6 +137,8 @@ public interface UserRepository {
     void handleUpdate(UpdateInformations infos) throws CMSException;
 
 
-
-
+    /**
+     * @return
+     */
+    public boolean isManager(); 
 }

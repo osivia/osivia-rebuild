@@ -4,6 +4,9 @@ import javax.portlet.PortletConfig;
 
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -83,5 +86,20 @@ public class RenameConfiguration implements PortletConfigAware {
         return Locator.getService(IPortalUrlFactory.class);
     }
     
-
+    /**
+     * Get internationalization bundle factory.
+     *
+     * @return internationalization bundle factory
+     */
+    @Bean
+    public IBundleFactory getBundleFactory() {
+        IInternationalizationService internationalizationService = Locator.getService( IInternationalizationService.MBEAN_NAME, IInternationalizationService.class);
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
+    }
+    
+    
+    @Bean
+    public ILocaleService getLocaleService() {
+        return Locator.getService(ILocaleService.class);
+    }
 }

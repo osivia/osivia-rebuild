@@ -5,6 +5,7 @@
 
 # Package Files #
 *.jar
+!osivia-portal-repository-populate/**/*.jar
 *.war
 *.ear
 *.zip

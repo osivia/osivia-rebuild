@@ -227,9 +227,15 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         for(NativeRepository repository: repositories)  {
             if( repository instanceof BaseUserRepository)   {
                 RepositoryBean repositoryBean = new RepositoryBean();
-                repositoryBean.setName( ((BaseUserRepository) repository).getRepositoryName());
-                repositoryBean.setStreamable(repository instanceof StreamableRepository);
-                formRepositories.add(repositoryBean);
+
+                String repositoryName = ((BaseUserRepository) repository).getRepositoryName();
+           		boolean repositoryManager = cmsService.getCMSSession(new CMSContext(portalControllerContext)).isManager( repositoryName);
+           		
+           		if( repositoryManager)	{
+	                repositoryBean.setName( repositoryName);
+	                repositoryBean.setStreamable(repository instanceof StreamableRepository);
+	                formRepositories.add(repositoryBean);
+           		}
             }
         }
          

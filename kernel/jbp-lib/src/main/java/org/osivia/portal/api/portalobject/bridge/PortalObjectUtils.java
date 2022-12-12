@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.*;
 import org.jboss.portal.WindowState;
@@ -29,6 +30,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -36,7 +38,7 @@ import org.osivia.portal.core.page.PageProperties;
 
 
 /**
- * Utility class with null-safe methods for portal objects.
+ * Utility class with null-safe methods for portal objects, session and users
  *
  * @author Jean-Sébastien Steux
  * @see PortalObject
@@ -127,6 +129,18 @@ public class PortalObjectUtils {
     public static final boolean  isAdmin(PortalControllerContext portalCtx) {
         return getService().isAdmin(portalCtx);
     }
+    
+    
+    /**
+     * Checks if is admin.
+     *
+     * @param portalCtx the portal ctx
+     * @return true, if is admin
+     */
+    public static final boolean  isPageRepositoryManager(PortalControllerContext portalCtx) {
+        return getService().isPageRepositoryManager(portalCtx);
+    }
+    
     
     
     /**
@@ -279,4 +293,43 @@ public class PortalObjectUtils {
     	 return getService().isRefreshingPage();
     }
     
+    /** 
+     * Get error page associated to current host
+     * @param request
+     * @return
+     */
+    public static String getHostErrorPageURI(HttpServletRequest request)	{
+    	return getService().getHostErrorPageURI( request);
+    }
+    
+    /**
+     * Get charte context associated with current host
+     * @param request
+     * @return
+     */
+    public static String getHostCharteContext(HttpServletRequest request)	{
+    	return getService().getHostCharteContext( request);
+    }
+    
+    /**
+     * Get CMS ID of current host portal
+     * 
+     * @param request
+     * @return
+     */
+    public static UniversalID getHostPortalID(HttpServletRequest request)	{
+    	return getService().getHostPortalID( request);
+	}
+    
+    
+	/**
+	 * Check if the repository is public or associated to current host
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static boolean isRepositoryCompatibleWithHost(HttpServletRequest request, String repository) {
+		return getService().checkIfRepositoryIsCompatibleWithHost( request, repository);
+	}
+
 }

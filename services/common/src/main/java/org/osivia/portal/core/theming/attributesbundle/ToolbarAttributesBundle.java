@@ -46,7 +46,11 @@ import org.jboss.portal.server.request.URLFormat;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.Personnalization;
+import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.IDirProvider;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -61,6 +65,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.tasks.ITasksService;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.theming.IInternalAttributesBundle;
@@ -120,6 +125,8 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
 
     /** Administration portal identifier. */
     private final PortalObjectId adminPortalId;
+    
+    private final CMSService cmsService;
 
     /** Toolbar attributes names. */
     private final Set<String> names;
@@ -147,6 +154,8 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
         this.tasksService = Locator.findMBean(ITasksService.class, ITasksService.MBEAN_NAME);
         // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
+        
+    	this.cmsService = Locator.getService(CMSService.class);
 
 
         this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
@@ -275,7 +284,13 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
 
 
         // Administration content
-        String administrationContent = this.formatHTMLAdministration(controllerContext, page);
+        String administrationContent;
+		try {
+			administrationContent = this.formatHTMLAdministration(controllerContext, page);
+		} catch (org.osivia.portal.api.cms.exception.CMSException e1) {
+			throw new ControllerException(e1);
+		}
+		
         attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
         
         // Userbar content
@@ -426,7 +441,10 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
 
 
     
-    private String formatHTMLAdministration(ControllerContext context, Page page) {
+    private String formatHTMLAdministration(ControllerContext context, Page page) throws org.osivia.portal.api.cms.exception.CMSException {
+    	
+
+        PortalControllerContext portalControllerContext = new PortalControllerContext(context.getServerInvocation().getServerContext().getClientRequest());
 
         // Administration root element
         Element administration = DOM4JUtils.generateElement(HTMLConstants.UL, "navbar-nav", StringUtils.EMPTY);
@@ -446,21 +464,28 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
                 }
                
                 UniversalID myAccountDocumentId = new UniversalID( System.getProperty("osivia.repository.default"), pageInternalID);
-                String customAdminPageURL = urlFactory.getViewContentUrl(new PortalControllerContext(context.getServerInvocation().getServerContext().getClientRequest()), myAccountDocumentId);
+
+				String customAdminPageURL = urlFactory.getViewContentUrl(portalControllerContext, myAccountDocumentId);
                 
                 
                 Element functionalhome = DOM4JUtils.generateLinkElement(customAdminPageURL, null, null, "nav-link", "", "glyphicons glyphicons-basic-cogwheel");
                 administration.add(functionalhome);
             }
+        }
+        
+
+        
+        if(  PortalObjectUtils.isPageRepositoryManager(portalControllerContext))	{
             
-            
-            // Logout
+            // CMS
             CMSEditionChangeModeCommand changeCmsEditionMode = new CMSEditionChangeModeCommand();
             PortalURL changeCmsEditionModeUrl = new PortalURLImpl(changeCmsEditionMode, context, false, null);
               
             Element cmsEditionMode = DOM4JUtils.generateLinkElement(changeCmsEditionModeUrl.toString(), null, null, "nav-link", "", "glyphicons glyphicons-basic-square-edit");
             administration.add(cmsEditionMode);
-            
+       }
+        
+       if (PageCustomizerInterceptor.isAdministrator(context)) {           
             // Configuration menu dropdown element
             Element configurationDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
             administration.add(configurationDropdown);

@@ -31,6 +31,7 @@ import org.osivia.portal.api.cms.repository.cache.SharedRepositoryKey;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.services.cms.service.CMSServiceImpl;
 import org.osivia.portal.services.cms.service.RuntimeBeanBuilder;
@@ -43,15 +44,13 @@ import org.osivia.portal.services.cms.service.RuntimeBeanBuilder;
 
 public class DefaultRepositoryFactory implements RepositoryFactory{
 
-    private static final String OSIVIA_CMS_URL_MAPPING = "osivia.cms.url.mapping.";
-
-	private static final String ATTR_OSIVIA_PORTAL_DEFAUT = "osivia.portal.defaut";
 
 	/** The super user repositories. */
     private Map<SharedRepositoryKey, BaseUserRepository> staticRepositories;
 
     private Map<SharedRepositoryKey, SharedRepository>  sharedRepositories;
     
+	private static final String ATTR_OSIVIA_PORTAL_DEFAUT = "osivia.portal.defaut";
     
     /**
      * Logger.
@@ -73,41 +72,31 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
     
     public UniversalID getDefaultPortal(CMSContext cmsContext) {
 		
-    	HttpServletRequest servletRequest = cmsContext.getPortalControllerContext().getHttpServletRequest();
-		
-		if( servletRequest == null)	{
-			UniversalID defaultPortalID = new UniversalID(System.getProperty("osivia.portal.default"));
-			return defaultPortalID;
-		}
-		
+		UniversalID defaultPortalID;
+		HttpServletRequest servletRequest = cmsContext.getPortalControllerContext().getHttpServletRequest();
 
-		UniversalID defaultPortalID = (UniversalID) servletRequest.getAttribute(ATTR_OSIVIA_PORTAL_DEFAUT);
-		if (defaultPortalID == null) {
-
-			String sDefaultPortal = null;
-
-			String hostName = servletRequest.getHeader("osivia-virtual-host");
-			if (StringUtils.isNotEmpty(hostName)) {
-				try {
-					URI uri = new URI(hostName);
-					String domain = uri.getHost();
-
-					sDefaultPortal = System.getProperty(OSIVIA_CMS_URL_MAPPING + domain);
-				} catch (Exception e) {
-					log.error("can't parse host :" + e.getMessage());
-				}
+		if (servletRequest == null) {
+			defaultPortalID = getSystemDefaultPortalID();
+		} else {
+			defaultPortalID = (UniversalID) servletRequest.getAttribute(ATTR_OSIVIA_PORTAL_DEFAUT);
+			if (defaultPortalID == null)
+				defaultPortalID = PortalObjectUtils.getHostPortalID(servletRequest);
+			if (defaultPortalID == null) {
+				defaultPortalID = getSystemDefaultPortalID();
 			}
-
-			if (sDefaultPortal == null) {
-				sDefaultPortal = System.getProperty("osivia.portal.default");
+			if (defaultPortalID != null) {
+				servletRequest.setAttribute(ATTR_OSIVIA_PORTAL_DEFAUT, defaultPortalID);
 			}
-
-			defaultPortalID = new UniversalID(sDefaultPortal);
-			servletRequest.setAttribute(ATTR_OSIVIA_PORTAL_DEFAUT, defaultPortalID);
-
 		}
 		return defaultPortalID;
     }
+
+
+	private UniversalID getSystemDefaultPortalID() {
+		UniversalID defaultPortalID;
+		defaultPortalID = new UniversalID(System.getProperty("osivia.portal.default"));
+		return defaultPortalID;
+	}
     
     protected static final Log logger = LogFactory.getLog(DefaultRepositoryFactory.class);
     
@@ -228,7 +217,7 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
      * @param id the id
      * @return the user repository
      */
-    public BaseUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName, BaseUserRepository publishRepository) throws CMSException{
+    public BaseUserRepository getOrCreateUserRepository(CMSContext cmsContext, String repositoryName, BaseUserRepository publishRepository ) throws CMSException{
 
         BaseUserRepository userRepository;
 
@@ -261,39 +250,6 @@ public class DefaultRepositoryFactory implements RepositoryFactory{
 
             userRepository = (BaseUserRepository) session.getAttribute(repositoryAttributeName);
             if (userRepository == null || (!StringUtils.equals(userRepository.getUserName(), userName))) {
-            	
-            	
-				// Check whether current repository is associated with another host
-            	
-            	HttpServletRequest servletRequest = cmsContext.getPortalControllerContext().getHttpServletRequest();
- 
-        		String hostName = servletRequest.getHeader("osivia-virtual-host");
-        		if (StringUtils.isNotEmpty(hostName)) {
-        			try {
-        				URI uri = new URI(hostName);
-        				String domain = uri.getHost();
-         				
-        		        Properties properties = System.getProperties();
-        		        for (Object propertyName : properties.keySet()) {
-        		            if (propertyName instanceof String) {
-        		                String sPropertyName = (String) propertyName;
-        		                if (sPropertyName.startsWith(OSIVIA_CMS_URL_MAPPING)) {
-        		                	String domainProperty = sPropertyName.substring(OSIVIA_CMS_URL_MAPPING.length());
-        		                	UniversalID defaultPortalId = new UniversalID(properties.getProperty(sPropertyName));
-        		                	if( defaultPortalId.getRepositoryName().equals(repositoryName) && (!domain.equals(domainProperty)))
-        		                			throw new DocumentForbiddenException();
-
-        		                }
-        		            }
-        		        }
-        			} catch (URISyntaxException e) {
-        				log.error("can't parse host :" + e.getMessage());
-        			}
-        		}
-
-            	
-            	
-            	
             	
                 userRepository = createRepository(repositoryKey, publishRepository, userName);
 
