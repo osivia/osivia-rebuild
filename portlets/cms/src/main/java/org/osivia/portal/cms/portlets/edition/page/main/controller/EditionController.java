@@ -718,7 +718,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 url = "javascript:";
                 target = null;
             } else if ("modal".equals(target)) {
-                data.put("toggle", "modal");
+                data.put("bs-toggle", "modal");
 
                 target = null;
             } else if ("dropdown-link".equals(target)) {
@@ -779,7 +779,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
                 String cmsTemplatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.cmsTemplatePath");
 
-                
+
                 Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
                 if( personnalization.isManageable())
                 	getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, id, isAdministrator, templatePath, cmsTemplatePath);
@@ -858,7 +858,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
         menuTitle.add(text);
 
-        DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
 
         menu.add(menuTitle);
 
@@ -877,7 +877,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         Map<String, String> properties = new HashMap<>();
         String title = bundle.getString("MODIFY_REPOSITORY_ACTION");
         properties.put("osivia.title", title);
-       
+
         String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryPortletInstance", title, "EditionRepositoryPortletInstance", properties,
                 new HashMap<>());
         this.addToolbarItem(configurationList, manageRepositoriesUrl, "dropdown-link", bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", true);
@@ -886,7 +886,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         addTemplateLink(portalControllerContext, ctrl, bundle, configurationList, id, templatePath, cmsTemplatePath);
 
 
-    
+
     }
 
 
@@ -903,7 +903,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             menuTitle.addAttribute(new QName("id"), "dropdownEditionMenu");
             Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_EDITION"));
             menuTitle.add(text);
-            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
             menu.add(menuTitle);
 
             Element editionList = DOM4JUtils.generateDivElement("dropdown-menu");
@@ -1027,7 +1027,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_SPACE"));
             menuTitle.add(text);
 
-            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
 
             menu.add(menuTitle);
 
@@ -1045,7 +1045,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             // Only one space if association with host
             if( PortalObjectUtils.getHostPortalID(portalControllerContext.getHttpServletRequest()) == null)	{
-            
+
 	            if ((!repository.supportPreview() || cmsContext.isPreview()) ) {
 	                if (portalControllerContext.getResponse() instanceof RenderResponse) {
 	                    PortletURL createSpaceUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
@@ -1054,7 +1054,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 	                }
 	            }
             }
-            
+
             
             // Space modification
             String modifySpaceUrl;

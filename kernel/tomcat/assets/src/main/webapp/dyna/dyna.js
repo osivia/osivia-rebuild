@@ -610,7 +610,9 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	  if( newPage ){
 		  
 		  if( modale == false){
-			  $JQry('#osivia-modal').modal('hide')
+              const modalElement = document.getElementById('osivia-modal');
+              const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+              modal.hide();
 		  }
 		  
 		  observePortlets();

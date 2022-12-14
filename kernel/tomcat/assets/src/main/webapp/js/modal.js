@@ -172,7 +172,7 @@ $JQry(function() {
 				$modal.data("size", size);
 				$modal.data("backdrop", backdrop);
 
-				$modal.modal("show");
+				$modal.modal("show"); // FIXME
 			});
 			
 			$element.data("loaded", true);
@@ -183,7 +183,7 @@ $JQry(function() {
 	$JQry("#osivia-modal [data-close-modal=true]").each(function(index, element) {
 		var $modal = $JQry("#osivia-modal");
 		
-		$modal.modal("hide");
+		$modal.modal("hide"); // FIXME
 	});
 	
 });
