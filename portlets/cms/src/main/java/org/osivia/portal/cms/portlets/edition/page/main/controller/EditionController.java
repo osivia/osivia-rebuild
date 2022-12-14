@@ -717,7 +717,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 url = "javascript:";
                 target = null;
             } else if ("modal".equals(target)) {
-                data.put("toggle", "modal");
+                data.put("bs-toggle", "modal");
 
                 target = null;
             } else if ("dropdown-link".equals(target)) {
@@ -859,7 +859,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
             menuTitle.add(text);
 
-            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
 
             menu.add(menuTitle);
 
@@ -901,7 +901,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             menuTitle.addAttribute(new QName("id"), "dropdownEditionMenu");
             Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_EDITION"));
             menuTitle.add(text);
-            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
             menu.add(menuTitle);
 
             Element editionList = DOM4JUtils.generateDivElement("dropdown-menu");
@@ -1026,7 +1026,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_SPACE"));
             menuTitle.add(text);
 
-            DOM4JUtils.addDataAttribute(menu, "toggle", "dropdown");
+            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
 
             menu.add(menuTitle);
 

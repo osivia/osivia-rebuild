@@ -83,7 +83,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
     
             
             if (bootstrapPanelStyle) {
-                builder.append(" card-title");
+                builder.append(" mb-0");
             }
     
             DOM4JUtils.addAttribute(titleContainer, HTMLConstants.CLASS, builder.toString());
