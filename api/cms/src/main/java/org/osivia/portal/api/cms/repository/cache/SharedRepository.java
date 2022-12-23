@@ -162,6 +162,12 @@ public class SharedRepository {
                             reload = true;
                         }
                     }
+                    
+                    if( reload == false)	{
+                    	 if( !getHAService().checkIfPortalParametersReloaded(doc.getTimestamp()))   {
+                    		 reload = true;
+                    	 }
+                    }
                 }
                 
             } else

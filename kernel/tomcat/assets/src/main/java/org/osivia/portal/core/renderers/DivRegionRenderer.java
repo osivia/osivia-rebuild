@@ -65,7 +65,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         super();
         
         this.headerRegions = new ArrayList<String>();
-        this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
+       // this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
         
         IInternationalizationService internationalizationService = Locator.getService(IInternationalizationService.class);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
@@ -171,7 +171,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                     
                     markup.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+addPortletUrl+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_LIST")+"\">\n"
                     + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
-                    + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_LIST")+"</span>\n"
+                    + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_APP_LIST")+"</span>\n"
                     + "    </a>");
                     
                     

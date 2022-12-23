@@ -24,7 +24,7 @@
 	<div class="d-flex flex-row-reverse mb-2">
 	
 	 	<button type="submit" class="btn btn-primary">
-            <span><op:translate key="MODIFY_SPACE_SAVE_LABEL" /></span>
+            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
         </button>
 	
 	</div>

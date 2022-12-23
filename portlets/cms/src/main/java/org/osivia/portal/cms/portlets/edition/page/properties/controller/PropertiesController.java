@@ -343,6 +343,14 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             
             RepositoryDocument document = getDocument(portalCtx);
             
+            // if spaceId associated to host, the modification of the ID of the main page
+            // would lead to a unrecoverable error
+            form.setModifiableId(true);
+            UniversalID portalId =  PortalObjectUtils.getHostPortalID(portalCtx.getHttpServletRequest()) ;
+            if( portalId != null && portalId.equals(document.getId()))	{
+            	form.setModifiableId(false);
+            }
+            
             form.setId( document.getInternalID());
             
      

@@ -278,6 +278,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 boolean pageStructureModified = false;
                 boolean pushHistory = false;
+                
+                String changeState = "";
 
                 // String pagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.pagePath");
                 // if (pagePath != null) {
@@ -371,12 +373,15 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 if (!WindowState.MAXIMIZED.equals(newWindowState)) {
                                     refreshPageStructure = true;
                                     pushHistory = true;
+                                    changeState = "toNormal";
                                 }
                             } else if (WindowState.MAXIMIZED.equals(newWindowState)) {
                                 refreshPageStructure = true;
                                 pushHistory = true;
+                                changeState = "toMax";
                             }
-
+                            
+ 
                             // Render parameters modified
                             if (BooleanUtils.isNotTrue((Boolean) controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.actionForward"))) {
                                 if ((newNS != null && oldNS == null) || (newNS == null && oldNS != null) || (newNS != null && oldNS != null && newNS.getContentState() != null && !newNS.getContentState().equals(oldNS.getContentState()))) {
@@ -623,6 +628,10 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     // History indicator
                     updatePage.setPushHistory(pushHistory);
+                    
+                    
+                    // ChangeMode indicator
+                    updatePage.setChangeState(changeState);
 
                     // Call to the theme framework
                     PageResult res = new PageResult(page.getName(), page.getProperties());

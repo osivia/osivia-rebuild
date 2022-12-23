@@ -205,24 +205,24 @@ public class NotificationsUtils {
                 }
 
                 // Close button
-                Element button = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "close", "&times;");
+                Element button = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn-close", "&times;");
                 DOM4JUtils.addAttribute(button, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
                 DOM4JUtils.addAttribute(button, HTMLConstants.DATA_DISMISS, "alert");
                 DOM4JUtils.addAttribute(button, HTMLConstants.ARIA_HIDDEN, "true");
                 alert.add(button);
 
                 // Media
-                Element media = DOM4JUtils.generateDivElement("media");
+                Element media = DOM4JUtils.generateDivElement("d-flex");
                 alert.add(media);
 
                 // Media left
                 if (type.getIcon() != null) {
-                    Element mediaLeft = DOM4JUtils.generateElement(HTMLConstants.DIV, "align-self-center mr-3", null, type.getIcon(), null);
+                    Element mediaLeft = DOM4JUtils.generateElement(HTMLConstants.DIV, "mr-3", null, type.getIcon(), null);
                     media.add(mediaLeft);
                 }
 
                 // Media body
-                Element mediaBody = DOM4JUtils.generateDivElement("media-body align-self-center");
+                Element mediaBody = DOM4JUtils.generateDivElement("align-self-center");
                 media.add(mediaBody);
 
                 // Messages

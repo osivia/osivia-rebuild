@@ -7,7 +7,7 @@
             <%--Header--%>
             <div class="modal-header d-none">
                 <h5 class="modal-title"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -33,7 +33,7 @@
 
             <%--Footer--%>
             <div class="modal-footer d-none">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <span><op:translate key="CLOSE"/></span>
                 </button>
             </div>

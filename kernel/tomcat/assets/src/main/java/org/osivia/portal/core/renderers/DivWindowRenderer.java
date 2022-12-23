@@ -29,6 +29,7 @@ import java.util.Locale;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
@@ -95,6 +96,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         
         // Bootstrap panel style indicator
         boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.bootstrapPanelStyle"));
+        
+
 
         // Hide portlet indicator
         boolean hidePortlet = !showCMSTools && BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet"));
@@ -109,6 +112,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Styles
+
+        
         String styles = properties.getWindowProperty(wrc.getId(), "osivia.style");
         if (styles != null) {
             styles = styles.replaceAll(",", " ");
@@ -116,6 +121,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             styles = StringUtils.EMPTY;
         }
 
+
+        if( Mode.ADMIN.equals(wrc.getMode()))	{
+        	bootstrapPanelStyle = false;
+        	styles =  StringUtils.EMPTY;
+        }
 
         // Window root element
         out.print("<div");
@@ -169,7 +179,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                     
                     out.print("<a href=\""+displayAdminURL+"\" class=\"btn\">\n"
                             + "        <i class=\"halflings halflings-cog \"></i>\n"
-                            + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_LIST")+"</span>\n"
+                            + "        <span class=\"d-md-none\">"+bundle.getString("PARAMS")+"</span>\n"
                             + "    </a>");                    
                     
                     break;
@@ -195,9 +205,16 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         
         out.print("<section class=\"portlet-container " + styles + "\">");
 
-
+        boolean displayCardHeader = false;
+        
+        if(bootstrapPanelStyle && "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle")))
+        	displayCardHeader = true;
+        
         if (bootstrapPanelStyle) {
-            out.print("<div class=\"card\"><div class=\"card-header\">");
+            out.print("<div class=\"card\">");
+            if( displayCardHeader) {
+            	out.print("<div class=\"card-header\">");
+            }
         }
         
         // Div rendering
@@ -213,13 +230,19 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
         // Header
-        out.print("<div class=\"" + headerClass + "\">");
-        rendererContext.render(wrc.getDecoration());
-        out.print("</div>");
+        if( !Mode.ADMIN.equals(wrc.getMode()))	{
+	        out.print("<div class=\"" + headerClass + "\">");
+	        
+	        rendererContext.render(wrc.getDecoration());
+	        out.print("</div>");
+        }
         
         
         if (bootstrapPanelStyle) {
-            out.print("</div> <div class=\"card-body\">");
+        	 if( displayCardHeader) {
+             	out.print("</div>");
+             }
+            out.print("<div class=\"card-body\">");
         }
        
 

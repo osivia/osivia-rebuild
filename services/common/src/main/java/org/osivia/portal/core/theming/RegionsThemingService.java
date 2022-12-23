@@ -123,6 +123,10 @@ public class RegionsThemingService implements IRegionsThemingService {
         String markup = response.getContent();
         */
 
+        if(true)
+        	
+        	return;
+        
         String markup = "";
         
         if (markup != null) {
@@ -184,11 +188,11 @@ public class RegionsThemingService implements IRegionsThemingService {
         
         // Admin must accept edition portlet
         // Doesn't work if window and region have the same name
-        if( "admin".equals(windowName))   {
-            windowName += "main-";
-        }
+        //if( "admin".equals(windowName))   {
+            windowName = "main-"+windowName;
+        //}
         
-        markup = "<dyna-window id=\""+windowName+"\"><dyna-window-content>"+markup+"</dyna-window-content></dyna-window>";
+        //markup = "<div class=\"dyna-window\" id=\""+windowName+"\" class=\p><dyna-window-content>"+markup+"</dyna-window-content></dyna-window>";
       
 
         if (markup != null) {

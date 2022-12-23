@@ -143,8 +143,8 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
 
         // Temporary file
-        MultipartFile upload = form.getFileUpload();
 
+        MultipartFile upload = (MultipartFile) form.getFileUpload().get(0);
         try {
            
             // Portal controller context

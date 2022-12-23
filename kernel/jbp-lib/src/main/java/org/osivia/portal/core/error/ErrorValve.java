@@ -56,6 +56,7 @@ public class ErrorValve extends ValveBase {
     	// needed for java melody
     	response.setCharacterEncoding("UTF-8");
     	
+    	request.getCoyoteRequest().getMimeHeaders().setValue("Accept-Language").setString("fr-FR");
     	
         mainRequest.set(request);
 
@@ -93,6 +94,10 @@ public class ErrorValve extends ValveBase {
             if (response.getStatus() == HttpServletResponse.SC_FORBIDDEN) {
                 httpErrorCode = HttpServletResponse.SC_FORBIDDEN;
             }
+            
+            if (response.getStatus() == HttpServletResponse.SC_UNAUTHORIZED) {
+                httpErrorCode = HttpServletResponse.SC_UNAUTHORIZED;
+            }
 
             if (httpErrorCode > 0) {
                 // On récupère l'exception transmise par le portail
@@ -109,7 +114,7 @@ public class ErrorValve extends ValveBase {
                 properties.put("osivia.header.userAgent", request.getHeader("User-Agent"));
 
 
-                if ((response.getStatus() == 500 || response.getStatus() == 403 || response.getStatus() == 404) && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
+                if ((response.getStatus() == 500 || response.getStatus() == 403 || response.getStatus() == 401|| response.getStatus() == 404) && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
                     Map<String, String> parameters = new HashMap<String, String>(2);
                     parameters.put("httpCode", String.valueOf(httpErrorCode));
                     parameters.put("token", URLEncoder.encode(StringUtils.trimToEmpty(token), CharEncoding.UTF_8));

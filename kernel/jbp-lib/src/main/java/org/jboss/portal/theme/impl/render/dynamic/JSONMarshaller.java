@@ -83,6 +83,10 @@ public class JSONMarshaller {
                 if (umr.getPushHistory() != null) {
                     writer.key("push_history").value(umr.getPushHistory().toString());
                 }
+                
+                if (umr.getChangeState() != null) {
+                    writer.key("change_state").value(umr.getChangeState());
+                }
 
                 
                 //

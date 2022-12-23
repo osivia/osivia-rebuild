@@ -142,11 +142,18 @@ function isURLAccepted(url)
         scheme = "https://";
     }
     if (scheme) {
+	
         var indexOfSlash = url.indexOf("/", scheme.length);
         if (indexOfSlash < 0) {
             return false;
         } else {
-            var path = url.substring(indexOfSlash);
+			var host = window.location.host;
+			var urlHost = url.substring( scheme.length, indexOfSlash ) ;
+			
+			if( urlHost != host)
+				return false;
+
+            var path = url.substring(indexOfSlash, );
             if (path.indexOf(urlPrefix) != 0) {
                 return false;
             }
@@ -390,6 +397,11 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	    	popping = true;
 	   }
 	   
+
+		// Save scroll
+		if( resp.change_state == "toMax") {
+			currentNormalScroll = window.scrollY;
+		}
 		   
 	   var newPage = false;
 		
@@ -417,6 +429,9 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 		   		}
 		   	}
 	   }	   
+
+
+
 	   
 	   /* Update portlets resources */
 	
@@ -721,19 +736,35 @@ function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
 	  
 	  
 	  // Restore cursor
-	  if( popState !== undefined && popState!=null)    {
-	      if( popState.currentScroll != 0)	{
-	    	filler = $JQry(".portlet-filler").first();
-	    	if( filler != undefined)	{
-	    		filler.scrollTop(popState.currentScroll);
-	    	}
-	      }
+	  filler = $JQry(".portlet-filler").first();
+	  if( filler != undefined && filler.length > 0)	{
+		  if (popState !== undefined && popState != null) {
+			  if (popState.currentScroll !== 0) {
+				  filler.scrollTop(popState.currentScroll);
+				  }
+		  } else {
+			  if (resp.page_changed == "false") {
+				  filler = $JQry(".portlet-filler").first();
+				  if (currentScroll != 0) {
+					  filler.scrollTop(currentScroll);
+				  }
+			  }
+		  }
 	  }	else	{
-		  if( resp.page_changed == "false"){
-			  filler = $JQry(".portlet-filler").first();
-	      		if( filler != undefined && currentScroll != 0)	{
-	      			filler.scrollTop(currentScroll);
-	      	}
+	  	if (popState !== undefined && popState != null) {
+			  if (popState.currentScroll !== 0) {
+				  window.scrollTo({ top: popState.currentScroll, left: 0, behavior: 'instant' } );
+				  }
+		  } else {
+				if( modale == false) {
+					if((resp.page_changed == "true" || resp.change_state == "toMax"))	{
+						window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+					}
+					
+					if(resp.change_state == "toNormal")	{
+						window.scrollTo({ top: currentNormalScroll, left: 0, behavior: 'instant' } );
+					}
+				}
 		  }
 	  }
 	
@@ -842,10 +873,11 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
 	// Save current scroll position
 	currentScroll = 0;
 	filler = $JQry(".portlet-filler").first();
-    if( filler != undefined)	{
-		currentScroll = filler.scrollTop();
-	}	
-	
+    if( filler.length > 0)	{
+	  currentScroll = filler.scrollTop();
+	}	else	{
+	  currentScroll = window.scrollY; 
+  	}
 	   
     
     // note : we don't convert query string to prototype parameters as in the case
@@ -1206,7 +1238,7 @@ function copyInnerHTML(srcContainer, dstContainer, className)
 {
    var classSelector = "." + className;
    var srcs = srcContainer.select(classSelector);
-   if (srcs.length == 1)
+   if (srcs.length > 0)
    {
       var src = srcs[0];
 

@@ -21,7 +21,7 @@
 		                            <a href="javascript:"
 		                               class="d-block p-2 text-secondary no-ajax-link portal-properties-administration-list-sortable-handle">
 		                                <i class="glyphicons glyphicons-basic-sort"></i>
-		                                <span class="sr-only"><op:translate
+		                                <span class="visually-hidden"><op:translate
 		                                        key="MODIFY_SPACE_MOVE_PROFILE"/></span>
 		                            </a>
 		                        </div>
@@ -30,7 +30,7 @@
 		                            <h5 class="card-title mb-1"><c:out value="${profile.name}" /></h5>
 		                            <div class="ml-n3">
 		                                 <%--Modify--%>
-		                                <a href="javascript:" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link" data-toggle="modal"
+		                                <a href="javascript:" class="btn link-primary  btn-sm mb-1 ml-1  no-ajax-link" data-toggle="modal"
 		                                   data-target="#osivia-modal" 
 		                                   data-load-url="${urls.modifyProfileUrls[status.index]}">
 		                                                    <i class="glyphicons glyphicons-basic-square-edit"></i>
@@ -43,7 +43,7 @@
 	                                    	<portlet:param name="index" value="${status.index}" />
 	                                    </portlet:actionURL>
 		                                    
-		                                <a href="${deleteProfileUrl}" class="btn btn-link btn-sm mb-1 ml-1 ">
+		                                <a href="${deleteProfileUrl}" class="btn link-primary btn-sm mb-1 ml-1 ">
 	                                         <i class="glyphicons glyphicons-basic-bin"></i>
 	                                         <strong class="d-none d-md-inline"><op:translate
 	                                                 key="MODIFY_PROFILE_DELETE_LABEL"/></strong>
@@ -61,9 +61,9 @@
 		                                            <portlet:param name="index" value="${status.index}"/>
 		                                            <portlet:param name="direction" value="up"/>
 		                                        </portlet:actionURL>
-		                                        <a href="${moveUpUrl}" class="btn btn-link btn-sm">
+		                                        <a href="${moveUpUrl}" class="btn link-primary btn-sm">
 		                                            <i class="glyphicons glyphicons-basic-arrow-up"></i>
-		                                            <span class="sr-only"><op:translate
+		                                            <span class="visually-hidden"><op:translate
 		                                                    key="MODIFY_PROFILE_MOVE_UP"/></span>
 		                                        </a>
 		                                    </c:if>
@@ -75,9 +75,9 @@
 		                                            <portlet:param name="index" value="${status.index}"/>
 		                                            <portlet:param name="direction" value="down"/>
 		                                        </portlet:actionURL>
-		                                        <a href="${moveDownUrl}" class="btn btn-link btn-sm">
+		                                        <a href="${moveDownUrl}" class="btn link-primary btn-sm">
 		                                            <i class="glyphicons glyphicons-basic-arrow-down"></i>
-		                                            <span class="sr-only"><op:translate
+		                                            <span class="visually-hidden"><op:translate
 		                                                    key="MODIFY_PROFILE_MOVE_DOWN"/></span>
 		                                        </a>
 		                                    </c:if>
@@ -91,7 +91,7 @@
 			</c:forEach>
 		</ul>
 	     <%--Buttons--%>
-	    <div class="text-right">
+	    <div class="float-end">
             <a href="javascript:" class="btn btn-sm btn-sm btn-outline-primary" data-toggle="modal"
                data-target="#osivia-modal" 
                data-load-url="${urls.addProfileUrl}">

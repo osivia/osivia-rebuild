@@ -11,9 +11,12 @@ import org.springframework.stereotype.Component;
 public class PropertiesForm {
     
     private String id;
-    
+    private boolean modifiableId;
 
-    private String layoutId;
+
+
+
+	private String layoutId;
     private String themeId;
     private String category;
 
@@ -109,5 +112,12 @@ public class PropertiesForm {
 		this.selectorsPropagation = selectorsPropagation;
 	}
 
+    public boolean isModifiableId() {
+		return modifiableId;
+	}
 
+
+	public void setModifiableId(boolean modifiableId) {
+		this.modifiableId = modifiableId;
+	}
 }

@@ -1,6 +1,7 @@
 package org.osivia.portal.cms.portlets.edition.repository.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class RepositoryForm {
     List<RepositoryBean> repositories;
     /** upload multipart file. */
-    private MultipartFile fileUpload;
+    private ArrayList fileUpload;
     
 
 
@@ -31,13 +32,13 @@ public class RepositoryForm {
     
 
     
-    public MultipartFile getFileUpload() {
+    public ArrayList getFileUpload() {
         return fileUpload;
     }
 
 
     
-    public void setFileUpload(MultipartFile fileUpload) {
+    public void setFileUpload(ArrayList fileUpload) {
         this.fileUpload = fileUpload;
     }
 

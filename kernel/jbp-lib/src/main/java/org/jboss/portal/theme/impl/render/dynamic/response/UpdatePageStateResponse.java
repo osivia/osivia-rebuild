@@ -63,9 +63,19 @@ public class UpdatePageStateResponse extends DynaResponse {
     private Boolean pageChanged = false;
     private Boolean pushHistory = false;    
     
+    private String changeState;
     
-    
-    public String getPortalRedirection() {
+    public String getChangeState() {
+		return changeState;
+	}
+
+
+	public void setChangeState(String changeState) {
+		this.changeState = changeState;
+	}
+
+
+	public String getPortalRedirection() {
         return portalRedirection;
     }
 

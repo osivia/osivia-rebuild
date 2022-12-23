@@ -8,7 +8,7 @@
 
 
 <nav>
-    <h2 class="sr-only"><op:translate key="BREADCRUMB_TITLE" /></h2>
+    <h2 class="visually-hidden"><op:translate key="BREADCRUMB_TITLE" /></h2>
     <ol class="breadcrumb mb-0 px-0">
         <c:forEach var="child" items="${breadcrumb.children}" varStatus="status">
             <c:choose>

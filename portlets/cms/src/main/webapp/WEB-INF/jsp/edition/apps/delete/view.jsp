@@ -25,8 +25,8 @@
 <div>
      <p class="mb-3"><op:translate key="CONFIRM_DELETE_PORTLET_LABEL" /></p>
      
-     <div class="text-right">
-		 <button type="button" class="btn btn-secondary" data-dismiss="modal">
+     <div class="float-end">
+		 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             <span><op:translate key="CANCEL" /></span>
      	 </button>     
           <a href="${deletePortletURL}" class="btn btn-primary ml-2">

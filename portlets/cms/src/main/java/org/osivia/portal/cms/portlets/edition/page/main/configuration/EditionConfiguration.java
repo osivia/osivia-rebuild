@@ -4,6 +4,7 @@ import javax.portlet.PortletConfig;
 
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.ha.IHAService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locale.ILocaleService;
@@ -116,4 +117,11 @@ public class EditionConfiguration implements PortletConfigAware {
         IInternationalizationService internationalizationService = Locator.getService( IInternationalizationService.MBEAN_NAME, IInternationalizationService.class);
         return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
     }
+    
+
+	@Bean
+	public IHAService getHAService() {
+		return Locator.getService(IHAService.MBEAN_NAME, IHAService.class);
+	}
+
 }

@@ -130,7 +130,7 @@ public final class HTMLConstants {
     /** HTML "data-container" attributes. */
     public static final String DATA_CONTAINER = "data-container";
     /** HTML "data-dismiss" attributes. */
-    public static final String DATA_DISMISS = "data-dismiss";
+    public static final String DATA_DISMISS = "data-bs-dismiss";
     /** HTML "data-original-title" attributes. */
     public static final String DATA_ORIGINAL_TITLE = "data-original-title";
     /** HTML "data-placement" attributes. */

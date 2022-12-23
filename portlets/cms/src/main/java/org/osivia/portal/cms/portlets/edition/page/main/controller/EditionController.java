@@ -50,6 +50,7 @@ import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ha.IHAService;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -118,6 +119,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
      */
     @Autowired
     private IBundleFactory bundleFactory;
+    
+    @Autowired
+    private IHAService haService;
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(EditionController.class);
@@ -814,9 +818,10 @@ public class EditionController implements PortletContextAware, ApplicationContex
                         getSpaceConfiguration(portalControllerContext, ctrl, bundle, toolbar, document, isAdministrator, cmsContext, repository);
                     }
 
-                    if (status.isModifiable()) {
-                        getEditionMenu(portalControllerContext, ctrl, status, bundle, toolbar, id, cmsContext, document, repository, personnalization);
-
+                    if( getTemplateID( portalControllerContext,  id,  templatePath,  cmsTemplatePath) == null )	{
+	                    if (status.isModifiable()) {
+	                        getEditionMenu(portalControllerContext, ctrl, status, bundle, toolbar, id, cmsContext, document, repository, personnalization);
+	                    }
                     }
 
 
@@ -883,6 +888,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
         this.addToolbarItem(configurationList, manageRepositoriesUrl, "dropdown-link", bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", true);
 
 
+        // init caches
+        PortletURL initCacheUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+        initCacheUrl.setParameter(ActionRequest.ACTION_NAME, "initCaches");
+
+        this.addToolbarItem(configurationList, initCacheUrl.toString(), "dropdown-link", bundle.getString("INIT_CACHES_ACTION"), "glyphicons glyphicons-basic-sync", true);
+
+        
+        
         addTemplateLink(portalControllerContext, ctrl, bundle, configurationList, id, templatePath, cmsTemplatePath);
 
 
@@ -1086,12 +1099,29 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
 
     private void addTemplateLink(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, String templatePath, String cmsTemplatePath) {
-        if (templatePath != null) {
+    	
+    	UniversalID templateID = getTemplateID( portalControllerContext,   id,  templatePath,  cmsTemplatePath);
+    	
+        if (templateID != null) {
+
+            CMSContext cmsTemplateContext = ctrl.getCMSContext();
+            cmsTemplateContext.setPreview(false);
+
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext, templateID);
+            this.addToolbarItem(toolbar, url, "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails", true);
+        }
+
+    	
+    }
+    
+    
+    private UniversalID getTemplateID(PortalControllerContext portalControllerContext, UniversalID id, String templatePath, String cmsTemplatePath) {
+    	 UniversalID templateID = null;
+    	
+    	if (templatePath != null) {
             String templateTokens[] = templatePath.split(":");
             String templatePathItems[] = templateTokens[1].split("/");
 
-
-            UniversalID templateID;
 
             // Portal template
             UniversalID portalTemplateId = new UniversalID(templateTokens[0], templatePathItems[templatePathItems.length - 1]);
@@ -1116,18 +1146,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
             } else {
                 templateID = portalTemplateId;
             }
-
-
-            if (templateID != null) {
-
-                CMSContext cmsTemplateContext = ctrl.getCMSContext();
-                cmsTemplateContext.setPreview(false);
-
-                String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext, templateID);
-                this.addToolbarItem(toolbar, url, "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails", true);
-            }
-
         }
+    	
+    	return templateID;
     }
 
 
@@ -1204,6 +1225,8 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
+    
+    
     /**
      * Update locale.
      *
@@ -1232,6 +1255,27 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
     }
 
+    
+    /**
+     * Update locale.
+     *
+     * @param form the form
+     */
+
+    @ActionMapping(name = "initCaches")
+    public void initCaches(PortletRequest request, ActionResponse response) throws PortletException {
+
+      	haService.initPortalParameters();
+      	try {
+      		// Refresh portlets
+			response.sendRedirect("/refresh");
+		} catch (IOException e) {
+			throw new PortletException();
+		}
+
+    }
+    
+    
     /**
      * Search filters form init binder.
      *

@@ -51,8 +51,8 @@
 	</div>									
               
     <%--Buttons--%>
-    <div class="text-right">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+    <div class="float-end">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             <span><op:translate key="CANCEL" /></span>
         </button>
 

@@ -260,7 +260,7 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         object.put("href", portalUrlFactory.getViewContentUrl(portalControllerContext, navItem.getDocumentId()));
         object.put("path", navItem.getDocumentId().toString());
         if( navItem.getDocumentId().equals(pageId))
-            object.put("extraClasses", "font-weight-bold");
+            object.put("extraClasses", "fw-bold");
 
 
         // Children
@@ -289,7 +289,7 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         object.put("path", navItem.getDocumentId().toString());
         
         if( navItem.getDocumentId().equals(pageId))
-            object.put("extraClasses", "font-weight-bold");
+            object.put("extraClasses", "fw-bold");
 
         // Children
         
