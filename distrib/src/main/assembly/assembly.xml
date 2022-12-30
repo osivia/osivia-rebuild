@@ -67,9 +67,16 @@
                 <include>org.apache.httpcomponents:httpcore</include>
                 <include>com.fasterxml.jackson.core:jackson-core:jar:${jackson.version}</include>     
                 <include>com.fasterxml.jackson.core:jackson-databind:jar:${jackson.version}</include>                    
-                <include>com.fasterxml.jackson.core:jackson-annotations:jar:${jackson.version}</include>                  
-              </includes>
+                <include>com.fasterxml.jackson.core:jackson-annotations:jar:${jackson.version}</include>  
+                
+                <!-- Java Melody -->
+                <include>org.osivia.services:osivia-services-java-melody-integration:jar:${java-melody.version}</include>            
+                <include>org.jrobin:jrobin</include>        
+                <include>net.bull.javamelody:javamelody-core</include>            
+       
+             </includes>
         	</dependencySet> 
+        	
             <dependencySet>
 	            <outputDirectory>/log4j2/lib</outputDirectory>
 	            <unpack>false</unpack>

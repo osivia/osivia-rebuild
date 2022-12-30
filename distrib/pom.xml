@@ -455,10 +455,23 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>				
-   
-   
-   
-    </dependencies>
+         <!-- Java Melody -->
+        <dependency>
+            <groupId>org.osivia.services</groupId>
+            <artifactId>osivia-services-java-melody-integration</artifactId>
+            <version>${java-melody.version}</version>
+        </dependency>  
+		<dependency>
+			<groupId>org.jrobin</groupId>
+			<artifactId>jrobin</artifactId>
+			<version>1.5.9</version>
+		</dependency>
+		<dependency>
+			<groupId>net.bull.javamelody</groupId>
+			<artifactId>javamelody-core</artifactId>
+			<version>1.82.0</version>
+		</dependency>		
+     </dependencies>
 
 
     <build>
