@@ -30,7 +30,7 @@ var localCache = {
      * @type {number}
      */
     timeout: 300000,
-    /** 
+    /**
      * @type {{_: number, data: {}}}
      **/
     data: {},
@@ -58,20 +58,14 @@ var localCache = {
 Cache scripts loaded in ajax
 (defined at a portlet level)
 */
+$JQry.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+    let staticResource = false;
+    if (options.dataType === 'script' || originalOptions.dataType === 'script')
+        staticResource = true;
 
-
-$JQry.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
-
-	
-  var staticResource = false;
-  if ( options.dataType == 'script' || originalOptions.dataType == 'script' )
-  		staticResource = true;
-
-  
-  if( staticResource)
-   {
-		var complete = originalOptions.complete || $JQry.noop,
-            url = originalOptions.url;
+    if (staticResource) {
+        const complete = originalOptions.complete || $JQry.noop;
+        const url = originalOptions.url;
         //remove jQuery cache as we have our own localCache
         options.cache = false;
         options.beforeSend = function () {
@@ -84,47 +78,47 @@ $JQry.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
         options.complete = function (data, textStatus) {
             localCache.set(url, data, complete);
         };
-  }
+    }
 });
 
 
-
-function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId)
-{
-   var options = {
-      requestHeaders: ["ajax","true","bilto","toto"],
-      method: "post",
-      postBody: "action=" + action + "&windowId=" + windowId + "&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId,
-      onSuccess: function(t)
-      {
-      },
-      on404: function(t)
-      {
-         alert("Error 404: location " + t.statusText + " was not found.");
-      },
-      onFailure: function(t)
-      {
-         alert("Error " + t.status + " -- " + t.statusText);
-      },
-      onLoading: function(t)
-      {
-      }
-   };
-   new Ajax.Request(server_base_url + "/ajax", options);
+function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId) {
+    $JQry.ajax({
+        url: server_base_url + "/ajax",
+        method: "post",
+        headers: {"ajax": true},
+        data: {
+            "action": action,
+            "windowId": windowId,
+            "fromPos": fromPos,
+            "fromRegion": fromRegionId,
+            "toPos": toPos,
+            "toRegion": toRegionId
+        },
+        statusCode: {
+            404: function (xhr, textStatus, errorThrown) {
+                alert("Error 404: location " + textStatus + " was not found.");
+            }
+        },
+        success: function (data, status, xhr) {
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            alert("Error " + textStatus + " -- " + errorThrown);
+        }
+    });
 }
 
 
 // Check that the URL starts with the provided prefix
-function isURLAccepted(url)
-{
-	var urlPrefix = server_base_url;
-	if( urlPrefix.endsWith("/auth/"))	{
-		urlPrefix = urlPrefix.substring( 0, urlPrefix.length - "/auth/".length);
-	}
-    if (url.indexOf("&action=f") != -1) {
+function isURLAccepted(url) {
+    var urlPrefix = server_base_url;
+    if (urlPrefix.endsWith("/auth/")) {
+        urlPrefix = urlPrefix.substring(0, urlPrefix.length - "/auth/".length);
+    }
+    if (url.indexOf("&action=f") !== -1) {
         // Pas d'ajax pour les ressources
         return false;
-    } else if (url.indexOf("&action=b") != -1) {
+    } else if (url.indexOf("&action=b") !== -1) {
         // Pas d'ajax pour les ressources
         return false;
     }
@@ -136,29 +130,28 @@ function isURLAccepted(url)
     }
 
     var scheme = "";
-    if (url.indexOf("http://") == 0) {
+    if (url.indexOf("http://") === 0) {
         scheme = "http://";
-    } else if (url.indexOf("https://") == 0) {
+    } else if (url.indexOf("https://") === 0) {
         scheme = "https://";
     }
     if (scheme) {
-	
         var indexOfSlash = url.indexOf("/", scheme.length);
         if (indexOfSlash < 0) {
             return false;
         } else {
-			var host = window.location.host;
-			var urlHost = url.substring( scheme.length, indexOfSlash ) ;
-			
-			if( urlHost != host)
-				return false;
+            var host = window.location.host;
+            var urlHost = url.substring(scheme.length, indexOfSlash);
 
-            var path = url.substring(indexOfSlash, );
-            if (path.indexOf(urlPrefix) != 0) {
+            if (urlHost !== host)
+                return false;
+
+            var path = url.substring(indexOfSlash,);
+            if (path.indexOf(urlPrefix) !== 0) {
                 return false;
             }
         }
-    } else if (url.indexOf(urlPrefix) != 0) {
+    } else if (url.indexOf(urlPrefix) !== 0) {
         return false;
     }
 
@@ -166,152 +159,122 @@ function isURLAccepted(url)
     return true;
 }
 
-function bilto(event)
-{
+function bilto(event) {
 
-   // Locate the div container of the window
-   var source = Event.element(event);
-   var container = Element.up(source, "div.dyna-window");
+    // Locate the div container of the window
+    const $currentTarget = $JQry(event.currentTarget);
+    const $container = $currentTarget.closest("div.dyna-window");
 
 
-   // We found the window
-   if (container != null)
-   {
+    // We found the window
+    if ($container.length) {
+        const options = {};
+        let url;
 
-      //
-      var options = new Object();
-      var url;
+        // if unknow source (IMG, SPAN, ...) , search the ancestor A, INPUT or BUTTON
+        const $source = $currentTarget.closest("a, input, button");
+        const source = $source.get(0);
+        if (!$source.length) {
+            return;
+        }
 
-      
+        if (source.disabled) {
+            return;
+        }
 
-      
-      // if unknow source (IMG, SPAN, ...) , search the ancestor A, INPUT or BUTTON
-      if ((source.nodeName != "A") && (source.nodeName != "INPUT") && (source.nodeName != "BUTTON")) {
-          source = Element.up(source, "A, INPUT, BUTTON");
-          if (source == null)
-              return;
-      }
-      
-      if (source.disabled) { 
-          return;
-      }
-      
-      if (!source.classList.contains("ajax-link")
-    	        && ((Element.up(source, ".no-ajax-link") != null) || source.hasClassName("no-ajax-link"))) {
-    	        return;
-    	    }
-      
-      //
-      if (source.nodeName == "A")
-      {
+        if (!$source.hasClass("ajax-link") && $source.closest(".no-ajax-link").length) {
+            return;
+        }
 
-         // Check we can handle this URL
-         if (isURLAccepted(source.href))
-         {
-
-            // Set URL
-            url = source.href;
-
-            // We have a get
-            options.method = "get"
-
-            // We don't block
-            options.asynchronous = true;
-         }
-      }
-      else if ((source.nodeName == "INPUT" || source.nodeName == "BUTTON") && (source.type == "submit" || source.type == "image"))
-      {
-         // Find enclosing form
-         var current = source.parentNode;
-         while (current.nodeName != 'FORM' && current.nodeName != 'BODY')
-         {
-            current = current.parentNode;
-         }
-
-         // Check we have a form and use it
-         if (current.nodeName == 'FORM')
-         {
-
-            var enctype = current.enctype
-
-            // We don't handle file upload for now
-            if (enctype != "multipart/form-data")
-            {
-
-               // Check it is a POST
-               if (current.method.toLowerCase() == "post")
-               {
-
-                  // Check we can handle this URL
-                  if (isURLAccepted(current.action))
-                  {
-                	  // Set URL
-                      url = current.action;
-
-                      // Set the specified enctype
-                      options.enctype = enctype;
-                      options.asynchronous = true;
-                      options.method = "post"
-                      options.postBody = Form.serialize(current, {
-                          'hash': false,
-                          'submit': source.name
-                      });
-                  }
-               }
-            } else {
-                //event.preventDefault();
-                
-                
-                if ((event !== undefined) &&  (event !== null) && !(event.type === "popstate")) {
-                    Event.stop(event);
-                }
-
-                var $form = $JQry(current);
-                var formdata = (window.FormData) ? new FormData($form[0]) : null;
-                var data;
-                if (formdata != null) {
-                    formdata.append("hash", false);
-                    formdata.append(source.name, source.value);
-                    data = formdata;
-                } else {
-                    data = $form.serialize();
-                }
-
-                $JQry.ajax({
-                    url: current.action,
-                    method: "post",
-                    headers: {"ajax": true, "session_check": session_check, "view_state": view_state},
-                    contentType: false, // obligatoire pour de l'upload
-                    processData: false, // obligatoire pour de l'upload
-                    dataType: "json",
-                    data: formdata,
-                    success: function (data, status, xhr) {
-                        onAjaxSuccess(data, null, true, null, null, url);
-                    }
-                });
+        //
+        if (source.nodeName === "A") {
+            // Check we can handle this URL
+            if (isURLAccepted(source.href)) {
+                // Set URL
+                url = source.href;
+                // We have a get
+                options.method = "get"
+                // We don't block
+                options.async = true;
             }
-         }
-      }
+        } else if ((source.nodeName === "INPUT" || source.nodeName === "BUTTON") && (source.type === "submit" || source.type === "image")) {
+            // Find enclosing form
+            let current = source.parentNode;
+            while (current.nodeName !== 'FORM' && current.nodeName !== 'BODY') {
+                current = current.parentNode;
+            }
 
-      // Handle links here
-      if (url != null)
-      {
-         
-         directAjaxCall( container, options, url, event, null);
+            // Check we have a form and use it
+            if (current.nodeName === 'FORM') {
+                const enctype = current.enctype;
 
-      }
+                // We don't handle file upload for now
+                if (enctype !== "multipart/form-data") {
+                    // Check it is a POST
+                    if (current.method.toLowerCase() === "post") {
+                        // Check we can handle this URL
+                        if (isURLAccepted(current.action)) {
+                            // Set URL
+                            url = current.action;
 
-   }
+                            // Set the specified enctype
+                            options.enctype = enctype;
+                            options.async = true;
+                            options.method = "post";
+                            options.data = {
+                                ...current,
+                                'hash': false,
+                                'submit': source.name
+                            };
+                        }
+                    }
+                } else {
+                    if (!(event.type === "popstate")) {
+                        event.preventDefault();
+                    }
 
+                    const $form = $JQry(current);
+                    const formdata = (window.FormData) ? new FormData($form[0]) : null;
+                    let data;
+                    if (formdata != null) {
+                        formdata.append("hash", false);
+                        formdata.append(source.name, source.value);
+                        data = formdata;
+                    } else {
+                        data = $form.serialize();
+                    }
+
+                    $JQry.ajax({
+                        url: current.action,
+                        method: "post",
+                        headers: {"ajax": true, "session_check": session_check, "view_state": view_state},
+                        contentType: false, // obligatoire pour de l'upload
+                        processData: false, // obligatoire pour de l'upload
+                        dataType: "json",
+                        data: data,
+                        success: function (data, status, xhr) {
+                            onAjaxSuccess(data, null, true, null, null, url);
+                        }
+                    });
+                }
+            }
+        }
+
+        // Handle links here
+        if (url != null) {
+            directAjaxCall($container.get(0), options, url, event, null);
+        }
+    }
 }
+
 
 //Get unique key per session/location
 function getScrollKey() {
-	var session = readCookie("JSESSIONID");
-	if( session == null)
-		session = "";
-	key = session + "/scroll/" +  window.location.href;
-	return key;
+    var session = readCookie("JSESSIONID");
+    if (session == null)
+        session = "";
+    key = session + "/scroll/" + window.location.href;
+    return key;
 }
 
 
@@ -336,7 +299,7 @@ function updatePortletContent(item, url) {
         options.method = "get"
 
         // We don't block
-        options.asynchronous = true;
+        options.async = true;
 
         directAjaxCall(null, options, url, null, null);
     } else {
@@ -345,723 +308,628 @@ function updatePortletContent(item, url) {
 }
 
 
+function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop, url) {
+    let stateObject;
+    let i;
+    let $dstContainer;
+    let srcContainer;
+    let markup;
+    let resp = "";
 
-function onAjaxSuccess(t, callerId, multipart, popState, eventToStop, url) {
+    if (multipart) {
+        resp = responseText;
+    } else {
+        if (responseText.length > 0) {
+            try {
+                eval("resp =" + responseText);
+            } catch (e) {
+                // If modal, redirect to history page
+                if ($JQry('#osivia-modal').is(':visible')) {
+                    window.location = history.state.fullUrl;
+                    return;
+                }
 
-	var resp = "";
-	
-	if (multipart) {
-        resp = t;
-    } else	{
-		if( t.responseText.length > 0)	{
-		
-		   try	{
-			   eval("resp =" + t.responseText + ";");
-		   } catch ( e){
-			   
-			   	   // If modal, redirect to history page
-			   
-			   	   if( $JQry('#osivia-modal').is(':visible'))	{
-				   		var redirect = history.state.fullUrl;
-				   		window.location = redirect;
-				   		return;
-			   	   }
-			   
-				   window.location = url;
-				   return;
-			   
-		   }
-		}
+                window.location = url;
+                return;
+            }
+        }
     }
-	
-	
+
     // call save state
-    componentStates = new Map();
-	$JQry("[data-state-method]").each(function(index, element) {
-		var $element = $JQry(element);
-		var method = $element.data("state-method");
-		var componentState = window[$element.data("state-method")]($element, 'save');
-		
-		componentStates.set($element.data("state-id"), componentState);
-	})	
-	
-	
-	if (resp.type == "update_markup")
-	{
-		
-	  // New layout
-	   var layout = resp.layout;
-	   
-	   var popping;
-	   if ((eventToStop != null) && (eventToStop.type === "popstate")) {
-	    	popping = true;
-	   }
-	   
+    let componentStates = new Map();
+    $JQry("[data-state-method]").each(function (index, element) {
+        const $element = $JQry(element);
+        const componentState = window[$element.data("state-method")]($element, 'save');
 
-		// Save scroll
-		if( resp.change_state == "toMax") {
-			currentNormalScroll = window.scrollY;
-		}
-		   
-	   var newPage = false;
-		
-	   var preventHistory = false;
-	   
-	   var modale = false;
-	    
-	   if( layout != null){
-		     // New layout
-	
-	         
-	         copyLayout( resp.layout);
-	         newPage = true;
-	        }
-		
-	   // Is it a modal ?
-	   
-	   for (var regionName in resp.regions)	{
-		   	for( var i=0; i< resp.regions[regionName].length; i++)	{
-		   		if( regionName == "modal-region")	{
-	    			 modale = true;
-	    			 
-	    			// Modal window must not be reloadable
-				  	preventHistory = true;
-		   		}
-		   	}
-	   }	   
+        componentStates.set($element.data("state-id"), componentState);
+    })
+
+    let originalId;
+    let view_state;
+    let session_check;
+    let portal_redirection;
+    let filler;
+    if (resp.type === "update_markup") {
+        let regionName;
+        let id;
+
+        // New layout
+        const layout = resp.layout;
+
+        let popping;
+        if ((eventToStop != null) && (eventToStop.type === "popstate")) {
+            popping = true;
+        }
+
+        // Save scroll
+        if (resp.change_state === "toMax") {
+            currentNormalScroll = window.scrollY;
+        }
+
+        let newPage = false;
+        let preventHistory = false;
+        let modale = false;
+
+        if (layout != null) {
+            // New layout
+            copyLayout(resp.layout);
+            newPage = true;
+        }
+
+        // Is it a modal ?
+        for (regionName in resp.regions) {
+            for (i = 0; i < resp.regions[regionName].length; i++) {
+                if (regionName === "modal-region") {
+                    modale = true;
+
+                    // Modal window must not be reloadable
+                    preventHistory = true;
+                }
+            }
+        }
 
 
-
-	   
-	   /* Update portlets resources */
-	
-	  if( modale == false)
-	   	updateResources(resp.resources, layout);
-	  else
-	   	updateResources(resp.resources, null);
-	  	   
-	   
-
-	  
-	   
-	  // Iterate all changes
-	  for (var id in resp.fragments)
-	  {
-		 originalId = id;
-		 id = id.replace(':','_');
-		 
-	     var matchingElt = document.getElementById(id);
-	
-	     // Different than 1 is not good
-	     if (matchingElt != null)
-	     {
-	        var dstContainer = matchingElt;
-	        if (dstContainer != null)
-	        {
-	           // Get markup fragment
-	           var markup = resp.fragments[originalId];
-	
-	           // Create a temporary element and paste the innerHTML in it
-	           var srcContainer = document.createElement("div");
-	
-	           new Insertion.Bottom(srcContainer, markup);
-	
-
-	
-               // Regions modifications
-			   var regionsModifications = false;	
-	
-			   var $srcContainer = $JQry(srcContainer);
-	           $srcContainer.find('[data-ajax-region-modified]').each(function( index, src ) {
-	        		
-
-	        		
-	        		regionsModifications = true;
-	        		   
-	        		var $src = $JQry(src);
-					var ajaxRegion = $src.data("ajax-region-modified");
-	        		   
-	        		var $dstContainer = $JQry(dstContainer);
-	        		
-	        		$dstContainer.find('[data-ajax-region='+ajaxRegion+']').each(function( index, dst ) {   
-		
-
-						copyNodes (src, dst);
-	        		   
-	        	   });		
-	        	   
-	           });		   
-	
-	
-	           if( regionsModifications == false)	{
-		
-				  // Empty response + hidePortlet : reinitialize then window
-				  	
-				  var emptyResponse = true;
-	           	  $srcContainer.find('.dyna-portlet').each(function( ) {
-					emptyResponse = false;
-				  });
-				  
-				  if( emptyResponse == true)	{
-						// Copy the region content
-		                copyInnerHTML(srcContainer, dstContainer, "dyna-window-content");
-				  }	else	{		
-		              // Copy the region content
-		              copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
-		              copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
-	              }
-	           }
-	           
-	           
-	           if( newPage == false)	{
-	        	   // StartDynamic window in normal mode
-	        	   var $dstContainer = $JQry(dstContainer);
-	        	   $dstContainer.find('#'+id).each(function( index ) {
-	        		   observePortlet( this);
-	        	   });	
-	           }
-	        }
-	       
-	     }
-	     else
-	     {
-	   	  // It may be a new windows
-	   	  // Check the regions ...
-	    	 
-	   	  
-	         for (var regionName in resp.regions)	{
-	     		  for( var i=0; i< resp.regions[regionName].length; i++)	{
-	     		      var windowId = resp.regions[regionName][i].replace(':','_');
-	     		      
-    				  
-	     		      if( windowId == id){
-	     			      var matchingWindow  = document.getElementById(windowId);
-	     			  
-	         			  if( matchingWindow == null)	{
-	         				  // New window
-	         				  // <div class="dyna-window"><div id="cG9ydGFsQQ_e_e_dcGFnZUEtYWpheA_e_e_dd2luQXBhZ2VBLWFqYXg_e" class="partial-refresh-window">
-	
-	         				  var divRegion =  document.getElementById(regionName);
-	         				  
-	         				  if( divRegion != null)	{
-	         					  
-	         					  	  if( regionName == "modal-region")	{
-	         					  		  // Modal region already contains a default window that must be replaced
-	         					  		  var $target = $JQry(divRegion);
-	         					  		  $target.empty();
-	         					  	  }
-	         					  
-	         					  	  // Prepare new window
-		             				  var newWindowDiv = document.createElement("div");
-		             				  newWindowDiv.className = "dyna-window";
-		             				  var partialWindowDiv = document.createElement("div");
-		             				  partialWindowDiv.id = windowId;
-		             				  partialWindowDiv.className = "partial-refresh-window";
-		             				  newWindowDiv.appendChild(partialWindowDiv);
-		             				  
-		             				  
-		             				  // Search for first inserted windows to insert before it
-		             				  var children = divRegion.children;
-		             				  
-		        	
-		             				  var insertBefore = null;
-		             				  
-	
-		             				  for( var iDomWindow=0; iDomWindow< children.length && insertBefore == null; iDomWindow++)	{
-		             					 var domWindow = children[iDomWindow];
-		             					 var className = domWindow.className;
-		             					 if( className == "dyna-window")	{
-			             					 var insertedId = domWindow.firstChild.id;
-			             					 
-			             					 // Browse by order to find if this window is after the window to insert
-			             					 for( var j=i+1; j< resp.regions[regionName].length && insertBefore == null; j++)	{
-			             						 var orderedWindowId = resp.regions[regionName][j].replace(':','_');
-			             						 if( orderedWindowId == insertedId)	{
-			             							 insertBefore = domWindow;
-
-			             						 }
-			             					 }
-		             					  }
-		             				  }
-	
-		             				  
-		             				if( insertBefore == null)
-		             					divRegion.appendChild(newWindowDiv);
-		             				else	
-		             					divRegion.insertBefore(newWindowDiv, insertBefore);
-		             				
-		
-		                            // Get markup fragment
-		                            var markup = resp.fragments[originalId];
-		
-		                            // Create a temporary element and paste the innerHTML in it
-		                            var srcContainer = document.createElement("div");
-		
-		                            // Insert the markup in the div
-		                            new Insertion.Bottom(srcContainer, markup);
-		
-		                            // Copy the region content
-		                            copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window");
-		                            
-		                            if( newPage == false)	{
-		             	        	   // StartDynamic window in normal mode
-		             	        	   var $dstContainer = $JQry(newWindowDiv);
-		             	        	   $dstContainer.find('#'+id).each(function( index ) {
-		             	        		   observePortlet( this);
-		             	        	   });	
-		             	           }
-
-	         				  }
-	
-	          			  }
-	     		  	  }	
-	     		 }
-	         }
-	     }
-	  }
-	   
-	   
-	  
-	  if( newPage ){
-		  
-		  if( modale == false){
-              const modalElement = document.getElementById('osivia-modal');
-              const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-              modal.hide();
-		  }
-		  
-		  observePortlets();
-	  }
-	
-	
-	  // update view state
-	  if (resp.view_state != null)
-	  {
-	     view_state = resp.view_state;
-	  }
-	
-	  // update view state
-	  if (resp.session_check != null)
-	  {
-		  session_check = resp.session_check;
-	  }
-	  
-	  // update portal_redirection
-	  if (resp.portal_redirection != null)
-	  {
-		  portal_redirection = resp.portal_redirection;
-	  }	else	{
-			portal_redirection = null;
-	 }
-	  
-	  // Save components state in history
-	  
-	  if (popping === undefined   && resp.restore_url != "" && preventHistory == false) {
-		  if( resp.push_history == "true")	{
-		      // update the current page
-			  if( history.state != null)	{
-		          var stateObject = history.state;
-		          stateObject.currentScroll = currentScroll;
-		          if( componentStates !== undefined)	{
-		        	  stateObject.componentStates = componentStates;
-		          }
-		          history.replaceState(stateObject,"", stateObject.fullUrl);
-			  }
-			  
-			  
-		      // Add the new page
-		      var newState = {
-		          url: resp.pop_url,
-		          viewState:view_state,
-		          currentScroll:0,
-		          fullUrl: resp.full_state_url
-		      };
-		      
-	          if( componentStates !== undefined)	{
-	        	  newState.componentStates = componentStates;
-	          }
-		      
-		      history.pushState(newState, "", resp.full_state_url);
-		  }	else	{
-		      // update the current page
-			  if( history.state != null)	{
-			      var stateObject = {
-			          url: resp.pop_url,
-			          viewState:view_state,
-			          currentScroll:currentScroll,
-			          componentStates:componentStates,
-			          fullUrl: resp.full_state_url
-			      };
-		          history.replaceState(stateObject,"", stateObject.fullUrl);
-			  }			  
-			  
-		  }
-	  }
+        /* Update portlets resources */
+        if (modale === false)
+            updateResources(resp.resources, layout);
+        else
+            updateResources(resp.resources, null);
 
 
-	  
-	  
-	  
-	  
-	  // Call jQuery.ready() events
-	  $JQry(document).ready();         
-	  
-	  
+        // Iterate all changes
+        for (id in resp.fragments) {
+            originalId = id;
+            id = id.replace(':', '_');
 
-	  
-	  //  restore component states
-	  var restoreComponentStates = null;
-	  
-	  if( popState !== undefined && popState!=null)    {
-		  restoreComponentStates = popState.componentStates;
-	  }	else {
-		if( history.state != null)  {
-			restoreComponentStates = history.state.componentStates;
-		} 
-	  }
-	  
-	  if( restoreComponentStates !=null)	{
-		  $JQry("[data-state-method]").each(function(index, element) {
-				var $element = $JQry(element);
-				var method = $element.data("state-method");
-				var id = $element.data("state-id");
-				var componentState = restoreComponentStates.get( id);
-				if( componentState != null){
-					window[$element.data("state-method")]($element, 'restore', componentState);
-				}
-		  })	
-	  }
+            var matchingElt = document.getElementById(id);
 
-	  
-	  
-	  
-	  // Restore cursor
-	  filler = $JQry(".portlet-filler").first();
-	  if( filler != undefined && filler.length > 0)	{
-		  if (popState !== undefined && popState != null) {
-			  if (popState.currentScroll !== 0) {
-				  filler.scrollTop(popState.currentScroll);
-				  }
-		  } else {
-			  if (resp.page_changed == "false") {
-				  filler = $JQry(".portlet-filler").first();
-				  if (currentScroll != 0) {
-					  filler.scrollTop(currentScroll);
-				  }
-			  }
-		  }
-	  }	else	{
-	  	if (popState !== undefined && popState != null) {
-			  if (popState.currentScroll !== 0) {
-				  window.scrollTo({ top: popState.currentScroll, left: 0, behavior: 'instant' } );
-				  }
-		  } else {
-				if( modale == false) {
-					if((resp.page_changed == "true" || resp.change_state == "toMax"))	{
-						window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-					}
-					
-					if(resp.change_state == "toNormal")	{
-						window.scrollTo({ top: currentNormalScroll, left: 0, behavior: 'instant' } );
-					}
-				}
-		  }
-	  }
-	
-	
-	  if( resp.regions["header-metadata"] != undefined)
-	    synchronizeMetadatas();
-	  
-	  
-	  $JQry(".notification-container").delay(10000).fadeOut(2000);
-	  
-	  for (var id in resp.async_windows)
-	  {
-      	var url = resp.async_windows[id];
-        // Set URL
-        var options = new Object();
+            // Different than 1 is not good
+            if (matchingElt != null) {
+                const dstContainer = matchingElt;
+                if (dstContainer != null) {
+                    // Get markup fragment
+                    markup = resp.fragments[originalId];
 
-        // We have a get
-        options.method = "get"
+                    // Create a temporary element and paste the innerHTML in it
+                    srcContainer = document.createElement("div");
 
-        // We don't block
-        options.asynchronous = true;
+                    const $srcContainer = $JQry(srcContainer);
+                    $srcContainer.append(markup);
 
-        directAjaxCall(null, options, url, null, null, null,null, id);
+                    // Regions modifications
+                    let regionsModifications = false;
 
-	  }
-	  
-	  
-	  
-	}
-	else if (resp.type == "update_page")
-	{
-	  if( resp.location == "/back")	{
-		  reload(history.state, null, false)
-		  return;
-	  }	
-	  
-	  if( resp.location == "/back-refresh")	{
-		  reload(history.state, null, true)
-		  return;
-	  }	   	  
-	  
-	  if( resp.location == "/refresh")	{
-		  reload(history.state, null, true)
-		  return;
-	  }	
-	  
-	 
-	  
-		  document.location = resp.location;
-	}
+                    $srcContainer.find('[data-ajax-region-modified]').each(function (index, src) {
+                        regionsModifications = true;
+
+                        const $src = $JQry(src);
+                        const ajaxRegion = $src.data("ajax-region-modified");
+
+                        const $dstContainer = $JQry(dstContainer);
+
+                        $dstContainer.find('[data-ajax-region=' + ajaxRegion + ']').each(function (index, dst) {
+                            copyNodes(src, dst);
+                        });
+                    });
+
+                    if (regionsModifications === false) {
+                        // Empty response + hidePortlet : reinitialize then window
+                        let emptyResponse = true;
+                        $srcContainer.find('.dyna-portlet').each(function () {
+                            emptyResponse = false;
+                        });
+
+                        if (emptyResponse === true) {
+                            // Copy the region content
+                            copyInnerHTML(srcContainer, dstContainer, "dyna-window-content");
+                        } else {
+                            // Copy the region content
+                            copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
+                            copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
+                        }
+                    }
+
+                    if (newPage === false) {
+                        // StartDynamic window in normal mode
+                        $dstContainer = $JQry(dstContainer);
+                        $dstContainer.find('#' + id).each(function (index) {
+                            observePortlet(this);
+                        });
+                    }
+                }
+
+            } else {
+                // It may be a new windows
+                // Check the regions ...
+                for (regionName in resp.regions) {
+                    for (i = 0; i < resp.regions[regionName].length; i++) {
+                        const windowId = resp.regions[regionName][i].replace(':', '_');
+
+                        if (windowId === id) {
+                            const matchingWindow = document.getElementById(windowId);
+
+                            if (matchingWindow == null) {
+                                // New window
+                                // <div class="dyna-window"><div id="cG9ydGFsQQ_e_e_dcGFnZUEtYWpheA_e_e_dd2luQXBhZ2VBLWFqYXg_e" class="partial-refresh-window">
+                                const divRegion = document.getElementById(regionName);
+
+                                if (divRegion != null) {
+                                    if (regionName === "modal-region") {
+                                        // Modal region already contains a default window that must be replaced
+                                        const $target = $JQry(divRegion);
+                                        $target.empty();
+                                    }
+
+                                    // Prepare new window
+                                    const newWindowDiv = document.createElement("div");
+                                    newWindowDiv.className = "dyna-window";
+                                    const partialWindowDiv = document.createElement("div");
+                                    partialWindowDiv.id = windowId;
+                                    partialWindowDiv.className = "partial-refresh-window";
+                                    newWindowDiv.appendChild(partialWindowDiv);
+
+                                    // Search for first inserted windows to insert before it
+                                    const children = divRegion.children;
+
+                                    let insertBefore = null;
+
+                                    for (let iDomWindow = 0; iDomWindow < children.length && insertBefore == null; iDomWindow++) {
+                                        const domWindow = children[iDomWindow];
+                                        const className = domWindow.className;
+                                        if (className === "dyna-window") {
+                                            const insertedId = domWindow.firstChild.id;
+
+                                            // Browse by order to find if this window is after the window to insert
+                                            for (let j = i + 1; j < resp.regions[regionName].length && insertBefore == null; j++) {
+                                                const orderedWindowId = resp.regions[regionName][j].replace(':', '_');
+                                                if (orderedWindowId === insertedId) {
+                                                    insertBefore = domWindow;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (insertBefore == null)
+                                        divRegion.appendChild(newWindowDiv);
+                                    else
+                                        divRegion.insertBefore(newWindowDiv, insertBefore);
+
+
+                                    // Get markup fragment
+                                    markup = resp.fragments[originalId];
+
+                                    // Create a temporary element and paste the innerHTML in it
+                                    srcContainer = document.createElement("div");
+
+                                    // Insert the markup in the div
+                                    const $srcContainer = $JQry(srcContainer);
+                                    $srcContainer.append(markup);
+
+                                    // Copy the region content
+                                    copyInnerHTML(srcContainer, newWindowDiv, "partial-refresh-window");
+
+                                    if (newPage === false) {
+                                        // StartDynamic window in normal mode
+                                        $dstContainer = $JQry(newWindowDiv);
+                                        $dstContainer.find('#' + id).each(function (index) {
+                                            observePortlet(this);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (newPage) {
+            if (modale === false) {
+                const modalElement = document.getElementById('osivia-modal');
+                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                modal.hide();
+            }
+
+            observePortlets();
+        }
+
+        // update view state
+        if (resp.view_state != null) {
+            view_state = resp.view_state;
+        }
+
+        // update view state
+        if (resp.session_check != null) {
+            session_check = resp.session_check;
+        }
+
+        // update portal_redirection
+        if (resp.portal_redirection != null) {
+            portal_redirection = resp.portal_redirection;
+        } else {
+            portal_redirection = null;
+        }
+
+        // Save components state in history
+        if (popping === undefined && resp.restore_url !== "" && preventHistory === false) {
+            if (resp.push_history === "true") {
+                // update the current page
+                if (history.state != null) {
+                    stateObject = history.state;
+                    stateObject.currentScroll = currentScroll;
+                    if (componentStates !== undefined) {
+                        stateObject.componentStates = componentStates;
+                    }
+                    history.replaceState(stateObject, "", stateObject.fullUrl);
+                }
+
+                // Add the new page
+                const newState = {
+                    url: resp.pop_url,
+                    viewState: view_state,
+                    currentScroll: 0,
+                    fullUrl: resp.full_state_url
+                };
+
+                if (componentStates !== undefined) {
+                    newState.componentStates = componentStates;
+                }
+
+                history.pushState(newState, "", resp.full_state_url);
+            } else {
+                // update the current page
+                if (history.state != null) {
+                    stateObject = {
+                        url: resp.pop_url,
+                        viewState: view_state,
+                        currentScroll: currentScroll,
+                        componentStates: componentStates,
+                        fullUrl: resp.full_state_url
+                    };
+                    history.replaceState(stateObject, "", stateObject.fullUrl);
+                }
+            }
+        }
+
+        // Call jQuery.ready() events
+        $JQry(document).ready();
+
+        //  restore component states
+        let restoreComponentStates = null;
+
+        if (popState !== undefined && popState != null) {
+            restoreComponentStates = popState.componentStates;
+        } else {
+            if (history.state != null) {
+                restoreComponentStates = history.state.componentStates;
+            }
+        }
+
+        if (restoreComponentStates != null) {
+            $JQry("[data-state-method]").each(function (index, element) {
+                const $element = $JQry(element);
+                const id = $element.data("state-id");
+                const componentState = restoreComponentStates.get(id);
+                if (componentState != null) {
+                    window[$element.data("state-method")]($element, 'restore', componentState);
+                }
+            })
+        }
+
+        // Restore cursor
+        filler = $JQry(".portlet-filler").first();
+        if (filler !== undefined && filler.length > 0) {
+            if (popState !== undefined && popState != null) {
+                if (popState.currentScroll !== 0) {
+                    filler.scrollTop(popState.currentScroll);
+                }
+            } else {
+                if (resp.page_changed === "false") {
+                    filler = $JQry(".portlet-filler").first();
+                    if (currentScroll !== 0) {
+                        filler.scrollTop(currentScroll);
+                    }
+                }
+            }
+        } else {
+            if (popState !== undefined && popState != null) {
+                if (popState.currentScroll !== 0) {
+                    window.scrollTo({top: popState.currentScroll, left: 0, behavior: 'instant'});
+                }
+            } else {
+                if (modale === false) {
+                    if ((resp.page_changed === "true" || resp.change_state === "toMax")) {
+                        window.scrollTo({top: 0, left: 0, behavior: 'instant'})
+                    }
+
+                    if (resp.change_state === "toNormal") {
+                        window.scrollTo({top: currentNormalScroll, left: 0, behavior: 'instant'});
+                    }
+                }
+            }
+        }
+
+
+        if (resp.regions["header-metadata"] !== undefined)
+            synchronizeMetadatas();
+
+
+        $JQry(".notification-container").delay(10000).fadeOut(2000);
+
+        for (id in resp.async_windows) {
+            var url = resp.async_windows[id];
+            // Set URL
+            const options = {};
+
+            // We have a get
+            options.method = "get"
+
+            // We don't block
+            options.async = true;
+
+            directAjaxCall(null, options, url, null, null, null, null, id);
+        }
+    } else if (resp.type === "update_page") {
+        if (resp.location === "/back") {
+            reload(history.state, null, false)
+            return;
+        }
+
+        if (resp.location === "/back-refresh") {
+            reload(history.state, null, true)
+            return;
+        }
+
+        if (resp.location === "/refresh") {
+            reload(history.state, null, true)
+            return;
+        }
+
+        document.location = resp.location;
+    }
 }
 
 
-function getHeaders(popState, refresh, asyncWindow)	{
-	
-	 // Setup headers
-	var headers =  new Object();
-	
-	headers.ajax = true;    
-    
-    
+function getHeaders(popState, refresh, asyncWindow) {
 
-	var headerState = null;
-	if (popState !== undefined && popState != null) {
-		headerState = popState.viewState;
+    // Setup headers
+    var headers = new Object();
 
-	} else {
-		// Add the view state value
-		if (view_state != null) {
-			headerState = view_state;
-		}
-	}
-	
-	if (headerState != null) {
-		headers.view_state= headerState;
-	}
-
-	if (refresh !== undefined) {
-		if( refresh != null)
-			headers.refresh = refresh;
-	}
-
-    
-	if( session_check != null)	{
-		headers.session_check= session_check;
-	}
-	
-	if (asyncWindow !== undefined) {
-		headers.asyncWindow= asyncWindow;
-
-	}
-	
-	return headers;
-}
+    headers.ajax = true;
 
 
-function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popState, refresh, asyncWindow){
-   
-	var headers = getHeaders(popState, refresh, asyncWindow);
-	
-	if( ajaxContext !== undefined)	{
-		headers.ajax_context = ajaxContext;
-	}
-	
-	
-	// Save current scroll position
-	currentScroll = 0;
-	filler = $JQry(".portlet-filler").first();
-    if( filler.length > 0)	{
-	  currentScroll = filler.scrollTop();
-	}	else	{
-	  currentScroll = window.scrollY; 
-  	}
-	   
-    
-    // note : we don't convert query string to prototype parameters as in the case
-    // of a post, the parameters will be appended to the body of the query which
-    // will lead to a non correct request
+    var headerState = null;
+    if (popState !== undefined && popState != null) {
+        headerState = popState.viewState;
 
-    // Complete the ajax request options
-    options.requestHeaders = headers;
-    
-
-    
-    options.onSuccess = function(t)
-    {
-    	
-    	onAjaxSuccess(t, callerId, null, popState, eventToStop, url);
-    };
-     
-
-    if ((eventToStop !== undefined) &&  (eventToStop !== null) && !(eventToStop.type === "popstate")) {
-        Event.stop(eventToStop);
+    } else {
+        // Add the view state value
+        if (view_state != null) {
+            headerState = view_state;
+        }
     }
 
-    
-    new Ajax.Request(url, options);
+    if (headerState != null) {
+        headers.view_state = headerState;
+    }
+
+    if (refresh !== undefined) {
+        if (refresh != null)
+            headers.refresh = refresh;
+    }
+
+
+    if (session_check != null) {
+        headers.session_check = session_check;
+    }
+
+    if (asyncWindow !== undefined) {
+        headers.asyncWindow = asyncWindow;
+
+    }
+
+    return headers;
 }
 
 
-function reload(state, event, refresh)	{
-	var options = new Object();
-	options.method = "get";
-	options.asynchronous = true;
-	directAjaxCall( null,options, state.url, event,null, state, refresh);
+function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popState, refresh, asyncWindow) {
+    const headers = getHeaders(popState, refresh, asyncWindow);
+
+    if (ajaxContext !== undefined) {
+        headers.ajax_context = ajaxContext;
+    }
+
+    // Save current scroll position
+    currentScroll = 0;
+
+    if ((eventToStop !== undefined) && (eventToStop !== null) && !(eventToStop.type === "popstate")) {
+        eventToStop.preventDefault();
+    }
+
+    const ajaxSettings = {
+        ...options,
+        url: url,
+        headers: headers,
+        success: function (data, status, xhr) {
+            onAjaxSuccess(data, callerId, null, popState, eventToStop, url);
+        }
+    }
+    $JQry.ajax(ajaxSettings);
+}
+
+
+function reload(state, event, refresh) {
+    var options = new Object();
+    options.method = "get";
+    options.async = true;
+    directAjaxCall(null, options, state.url, event, null, state, refresh);
 }
 
 
 window.onpopstate = function (event) {
     if (event.state) {
-    	reload(event.state, event)
+        reload(event.state, event)
     }
 
 }
 
 
+function updateResources(newHeaderResources, layout) {
 
-function updateResources(newHeaderResources, layout)	{
+    if (newHeaderResources != null) {
 
-	if( newHeaderResources != null){
-		
-				
-			// Remove unused scripts
-		
-			if( layout != null)	{
-				
-				var section = false;
-				
-				let parent = document.querySelector("head");
-				if (parent) {
 
-				    let removing = false;
-				    let child = parent.firstChild;
-				    let next = null;
-				    // While we still have child elements to process...
-				    while (child) {
-				        // If we're already removing, remember that
-				        let removeThis = removing;
-				        // Before we remove anything, identify the next child to visit
-				        next = child.nextSibling;
-				        // Is this a comment node?
-				        if (child.nodeType === Node.COMMENT_NODE) {
-				            if (child.nodeValue.includes("portlets-begin")) {
-				                // It's the node that tells us to start removing:
-				                // Turn on our flag and also remove this node
-				                removing = true;
-				                removeThis = false;
-				                section = true;
-				            } else if (child.nodeValue.includes("portlets-end")) {
-				                // It's the node that tells us to stop removing:
-				                // Turn off our flag, but do remove this node
-				                removing = false;
-				                removeThis = false;
-				            }
-				        }
-				        if (removeThis) {
-							var remove = true;
-							for( var iNewHeader=0; iNewHeader< newHeaderResources.length; iNewHeader++)	{
-								var newHeader = newHeaderResources[iNewHeader];
-											
-								if( newHeader.tag == "LINK" && child.nodeName == "LINK")	{
-				     			   if(  location.origin+newHeader.href == child.href)
-				     				   remove = false;
-				    		   }
-				     		   if( newHeader.tag == "SCRIPT" && child.nodeName == "SCRIPT")	{
-				 			   	if(  location.origin+newHeader.src == child.src )
-				 				   remove = false;
-				    		   }
-							}
-	
-							if(remove)
-				            		parent.removeChild(child);
-				        }
-				
-				        // Move on to next child
-				        child = next;
-				    }
-				}
-				
-				if( section == false)	{
-					// Create portlet section
-					
-					var commentBegin = document.createComment("portlets-begin");
-					parent.appendChild(commentBegin);
-					var commentEnd = document.createComment("portlets-end");
-					parent.appendChild(commentEnd);					
-				}
-				
-				
-			}		
-		
-		
-		
-		
-		   for( var iNewHeader=0; iNewHeader< newHeaderResources.length; iNewHeader++)	{
-			   
-			   var newHeader = newHeaderResources[iNewHeader];
-			   
-			   var head  = document.getElementsByTagName('head')[0];        		   
-			   var headers = head.children;
-			   var insert = true;
-			   
+        // Remove unused scripts
 
-			   for( var i=0; i<  headers.length; i++)	{
-	    		   if( newHeader.tag == "LINK" && headers[i].tagName == "LINK")	{
-	     			   if(  location.origin+newHeader.href == headers[i].href && headers[i].rel != "preload")
-	     				   insert = false;
-	    		   }
-	     		   if( newHeader.tag == "SCRIPT" && headers[i].tagName == "SCRIPT")	{
-	 			   if(  location.origin+newHeader.src == headers[i].src )
-	 				   insert = false;
-	    		   }
-	    	   }        		   
-	    	   
-	    	   var tagToInsert;
-			   
-			   if( insert && newHeader.tag == "LINK")	{
-				
-				let parent = document.querySelector("head");
-				if (parent) {
-					addPreload( newHeader.href);
-					
-				}
-				
-								
-	 		    tagToInsert  = document.createElement('LINK');
-	 		    
-	 		    tagToInsert.rel  =  newHeader.rel;
-	 		    tagToInsert.type =  newHeader.type;
-	 		    tagToInsert.href =  newHeader.href;
-	 		    if( newHeader.media != undefined)
-	 		       tagToInsert.media = newHeader.media;
-			   }
-			   
-			   if( insert && newHeader.tag == "SCRIPT")	{
-	 		    tagToInsert  = document.createElement('SCRIPT');
-	 		    tagToInsert.type  =  newHeader.type;
-	 		    tagToInsert.src  =  newHeader.src;	
-	 		    // Important to preserve order
-	 		    tagToInsert.async = false;
-			   }
-			   
-			   if( tagToInsert)	{
-	   		       $JQry("head").contents().filter(function() {
-					    return this.nodeType == 8;
-					 	}).each(function(i, e) {
-					    	if ( $JQry.trim(e.nodeValue) == "portlets-end") {
-					      	$JQry(tagToInsert).insertBefore(e);
-					    	}
-					  	});
-				  	}
-		   }
-		   
-		   
-		   
-		   
-	}
+        if (layout != null) {
+
+            var section = false;
+
+            let parent = document.querySelector("head");
+            if (parent) {
+
+                let removing = false;
+                let child = parent.firstChild;
+                let next = null;
+                // While we still have child elements to process...
+                while (child) {
+                    // If we're already removing, remember that
+                    let removeThis = removing;
+                    // Before we remove anything, identify the next child to visit
+                    next = child.nextSibling;
+                    // Is this a comment node?
+                    if (child.nodeType === Node.COMMENT_NODE) {
+                        if (child.nodeValue.includes("portlets-begin")) {
+                            // It's the node that tells us to start removing:
+                            // Turn on our flag and also remove this node
+                            removing = true;
+                            removeThis = false;
+                            section = true;
+                        } else if (child.nodeValue.includes("portlets-end")) {
+                            // It's the node that tells us to stop removing:
+                            // Turn off our flag, but do remove this node
+                            removing = false;
+                            removeThis = false;
+                        }
+                    }
+                    if (removeThis) {
+                        var remove = true;
+                        for (var iNewHeader = 0; iNewHeader < newHeaderResources.length; iNewHeader++) {
+                            var newHeader = newHeaderResources[iNewHeader];
+
+                            if (newHeader.tag == "LINK" && child.nodeName == "LINK") {
+                                if (location.origin + newHeader.href == child.href)
+                                    remove = false;
+                            }
+                            if (newHeader.tag == "SCRIPT" && child.nodeName == "SCRIPT") {
+                                if (location.origin + newHeader.src == child.src)
+                                    remove = false;
+                            }
+                        }
+
+                        if (remove)
+                            parent.removeChild(child);
+                    }
+
+                    // Move on to next child
+                    child = next;
+                }
+            }
+
+            if (section == false) {
+                // Create portlet section
+
+                var commentBegin = document.createComment("portlets-begin");
+                parent.appendChild(commentBegin);
+                var commentEnd = document.createComment("portlets-end");
+                parent.appendChild(commentEnd);
+            }
+
+
+        }
+
+
+        for (var iNewHeader = 0; iNewHeader < newHeaderResources.length; iNewHeader++) {
+
+            var newHeader = newHeaderResources[iNewHeader];
+
+            var head = document.getElementsByTagName('head')[0];
+            var headers = head.children;
+            var insert = true;
+
+
+            for (var i = 0; i < headers.length; i++) {
+                if (newHeader.tag == "LINK" && headers[i].tagName == "LINK") {
+                    if (location.origin + newHeader.href == headers[i].href && headers[i].rel != "preload")
+                        insert = false;
+                }
+                if (newHeader.tag == "SCRIPT" && headers[i].tagName == "SCRIPT") {
+                    if (location.origin + newHeader.src == headers[i].src)
+                        insert = false;
+                }
+            }
+
+            var tagToInsert;
+
+            if (insert && newHeader.tag == "LINK") {
+
+                let parent = document.querySelector("head");
+                if (parent) {
+                    addPreload(newHeader.href);
+
+                }
+
+
+                tagToInsert = document.createElement('LINK');
+
+                tagToInsert.rel = newHeader.rel;
+                tagToInsert.type = newHeader.type;
+                tagToInsert.href = newHeader.href;
+                if (newHeader.media != undefined)
+                    tagToInsert.media = newHeader.media;
+            }
+
+            if (insert && newHeader.tag == "SCRIPT") {
+                tagToInsert = document.createElement('SCRIPT');
+                tagToInsert.type = newHeader.type;
+                tagToInsert.src = newHeader.src;
+                // Important to preserve order
+                tagToInsert.async = false;
+            }
+
+            if (tagToInsert) {
+                $JQry("head").contents().filter(function () {
+                    return this.nodeType == 8;
+                }).each(function (i, e) {
+                    if ($JQry.trim(e.nodeValue) == "portlets-end") {
+                        $JQry(tagToInsert).insertBefore(e);
+                    }
+                });
+            }
+        }
+
+
+    }
 }
 
 
@@ -1070,426 +938,379 @@ function updateResources(newHeaderResources, layout)	{
  * The zone are found using the css class names. The operation
  * will succeed only if there is exactly one zone in each container.
  */
-function copyLayout( layout)
-{
-	// TODO : a supprimer
-	if( layout.includes("modal_do_not_delete"))
-		return;
+function copyLayout(layout) {
+    // TODO : a supprimer
+    if (layout.includes("modal_do_not_delete"))
+        return;
 
     // Create a temporary element and paste the innerHTML in it
-    var srcContainer = document.createElement("html");
-    
-     
-    srcContainer.innerHTML = layout;
-	
-    var srcs = srcContainer.select("body");
-    if (srcs.length == 1)
-    {
-       var src = srcs[0];
+    const srcContainer = document.createElement("html");
+    const $srcContainer = $JQry(srcContainer);
 
-       document.body = src;
+    $srcContainer.html(layout);
+
+    const srcs = $srcContainer.find("body");
+    if (srcs.length === 1) {
+        document.body = srcs[0];
     }
 
-
-	/* Insert dynamic resources from theme */
-	
-	insertPortalResources(srcContainer, "theme-link");
-	insertPortalResources(srcContainer, "theme-script");
-
+    /* Insert dynamic resources from theme */
+    insertPortalResources(srcContainer, "theme-link");
+    insertPortalResources(srcContainer, "theme-script");
 }
 
-function insertPortalResources(srcContainer, section)	{
+function insertPortalResources(srcContainer, section) {
+    let src;
 
-	// Check if new resources must be inserted
-	
-	var srcs = srcContainer.select("head");
-	let changes = false;
-	
-	if (srcs.length == 1)
-    {
-       var src = srcs[0];
+    // Check if new resources must be inserted
+    const $srcContainer = $JQry(srcContainer);
+    const srcs = $srcContainer.find("head");
+    let changes = false;
 
-	    let checking = false;
-	    let child = src.firstChild;
-	    let next = null;
-	    // While we still have child elements to process...
-	    while (child && (changes == false)) {
-			let checkThis = checking;
-	        next = child.nextSibling;
-	        // Is this a comment node?
-	        if (child.nodeType === Node.COMMENT_NODE) {
-	            if (child.nodeValue.includes(section+"-begin")) {
-	                checking = true;
-	                checkThis = false;
-	            } else if (child.nodeValue.includes(section+"-end")) {
-	                checking = false;
-	                checkThis = false;
-	            }
-	        } 
-	        
-        	if (checkThis &&  (child.href !== undefined || child.src !== undefined))  {
-					let elementChange = true;
-					let parent = document.querySelector("head");
-					if (parent) {
-					    let headChild = parent.firstChild;
-					    let nextChild = null;
-					    // While we still have child elements to process...
-					    while (headChild) {
-					        nextChild = headChild.nextSibling;
-					       	if( child.href !== undefined &&  headChild.href == child.href && headChild.rel != 'preload')	{
-								elementChange = false;
-							}
-					       	if( child.src !== undefined && headChild.src == child.src)	{
-								elementChange = false;
-							}							
-					        // Move on to next child
-					        headChild = nextChild;
-					}	
-					
-					if( elementChange == true)	
-						changes = true;
-           		}
-           	}
-			
-	        // Move on to next child
-	        child = next;
-	    }
+    if (srcs.length === 1) {
+        src = srcs[0];
+
+        let checking = false;
+        let child = src.firstChild;
+        let next = null;
+        // While we still have child elements to process...
+        while (child && (changes === false)) {
+            let checkThis = checking;
+            next = child.nextSibling;
+            // Is this a comment node?
+            if (child.nodeType === Node.COMMENT_NODE) {
+                if (child.nodeValue.includes(section + "-begin")) {
+                    checking = true;
+                    checkThis = false;
+                } else if (child.nodeValue.includes(section + "-end")) {
+                    checking = false;
+                    checkThis = false;
+                }
+            }
+
+            if (checkThis && (child.href !== undefined || child.src !== undefined)) {
+                let elementChange = true;
+                let parent = document.querySelector("head");
+                if (parent) {
+                    let headChild = parent.firstChild;
+                    let nextChild = null;
+                    // While we still have child elements to process...
+                    while (headChild) {
+                        nextChild = headChild.nextSibling;
+                        if (child.href !== undefined && headChild.href === child.href && headChild.rel !== 'preload') {
+                            elementChange = false;
+                        }
+                        if (child.src !== undefined && headChild.src === child.src) {
+                            elementChange = false;
+                        }
+                        // Move on to next child
+                        headChild = nextChild;
+                    }
+
+                    if (elementChange === true)
+                        changes = true;
+                }
+            }
+
+            // Move on to next child
+            child = next;
+        }
     }
-	
-	
-	if( changes == true)	{
-	
-	
-		removeHeadElementsBetweenComments(section);
-	
-	
-		if (srcs.length == 1)
-	    {
-	        var src = srcs[0];
-	
-		    let inserting = false;
-		    let child = src.firstChild;
-		    let next = null;
-		    // While we still have child elements to process...
-		    while (child) {
-				let insertThis = inserting;
-		        next = child.nextSibling;
-		        // Is this a comment node?
-		        if (child.nodeType === Node.COMMENT_NODE) {
-		            if (child.nodeValue.includes(section+"-begin")) {
-		                // It's the node that tells us to start removing:
-		                // Turn on our flag and also remove this node
-		                inserting = true;
-		                insertThis = false;
-	
-		            } else if (child.nodeValue.includes(section+"-end")) {
-		                // It's the node that tells us to stop removing:
-		                // Turn off our flag, but do remove this node
-		                inserting = false;
-		                insertThis = false;
-	
-		            }
-		        } else	{
-		        	if (insertThis) {
-			
-						if( child.nodeName == "LINK")	{
-							addPreload( child.href);
-						}
 
-			
-			
-		           	 $JQry("head").contents().filter(function() {
-						    return this.nodeType == 8;
-						  }).each(function(i, e) {
-						    if ( $JQry.trim(e.nodeValue) == section+"-end") {
-						      $JQry(child).insertBefore(e);
-						    }
-						  });
-					
-		        	}
-				}
-		        // Move on to next child
-		        child = next;
-		    }
-	    }
+    if (changes === true) {
+        removeHeadElementsBetweenComments(section);
+
+        if (srcs.length === 1) {
+            src = srcs[0];
+
+            let inserting = false;
+            let child = src.firstChild;
+            let next = null;
+            // While we still have child elements to process...
+            while (child) {
+                let insertThis = inserting;
+                next = child.nextSibling;
+                // Is this a comment node?
+                if (child.nodeType === Node.COMMENT_NODE) {
+                    if (child.nodeValue.includes(section + "-begin")) {
+                        // It's the node that tells us to start removing:
+                        // Turn on our flag and also remove this node
+                        inserting = true;
+                        insertThis = false;
+                    } else if (child.nodeValue.includes(section + "-end")) {
+                        // It's the node that tells us to stop removing:
+                        // Turn off our flag, but do remove this node
+                        inserting = false;
+                        insertThis = false;
+                    }
+                } else {
+                    if (insertThis) {
+                        if (child.nodeName === "LINK") {
+                            addPreload(child.href);
+                        }
+
+                        $JQry("head").contents().filter(function () {
+                            return this.nodeType === 8;
+                        }).each(function (i, e) {
+                            if ($JQry.trim(e.nodeValue) === section + "-end") {
+                                $JQry(child).insertBefore(e);
+                            }
+                        });
+                    }
+                }
+                // Move on to next child
+                child = next;
+            }
+        }
     }
- }
+}
 
 // Preload llow the use use of browser inner cache
 
-function addPreload( linkRef)	{ 
- 
-	let parent = document.querySelector("head");
-	if (parent) {
-			$JQry("head").find('[rel=preload][href="'+ linkRef+'"]').remove()
+function addPreload(linkRef) {
 
-			preloadTag  = document.createElement('LINK');
-			preloadTag.rel  =  "preload";
-			preloadTag.href =  linkRef;
-			preloadTag.as = "style";
-			
-			parent.appendChild(preloadTag);
+    let parent = document.querySelector("head");
+    if (parent) {
+        $JQry("head").find('[rel=preload][href="' + linkRef + '"]').remove()
 
-	}
-}							
+        preloadTag = document.createElement('LINK');
+        preloadTag.rel = "preload";
+        preloadTag.href = linkRef;
+        preloadTag.as = "style";
 
+        parent.appendChild(preloadTag);
 
-function copyInnerHTML(srcContainer, dstContainer, className)
-{
-   var classSelector = "." + className;
-   var srcs = srcContainer.select(classSelector);
-   if (srcs.length > 0)
-   {
-      var src = srcs[0];
-
-      //
-      var dsts = dstContainer.select(classSelector);
-      if (dsts.length == 1)
-      {
-         var dst = dsts[0];
-
-         copyNodes(src, dst);
-      }
-      else
-      {
-         // Should log that somewhere but
-      }
-   }
-   else
-   {
-      // Should log that somewhere
-   }
+    }
 }
 
 
-function copyNodes(src, dst)	{
-	 // Remove existing non attribute children in destination
-         var dstChildren = dst.childNodes;
-         var copy = new Array();
-         for (var i = 0; i < dstChildren.length; i++)
-         {
-            var dstChild = dstChildren.item(i);
-            if (dstChild.nodeType != 2)
-            {
-               copy[i] = dstChildren.item(i);
+function copyInnerHTML(srcContainer, dstContainer, className) {
+    const classSelector = "." + className;
+
+    const $srcContainer = $JQry(srcContainer);
+    const srcs = $srcContainer.find(classSelector);
+    if (srcs.length > 0) {
+        const src = srcs[0];
+
+        //
+        const $dstContainer = $JQry(dstContainer);
+        const dsts = $dstContainer.find(classSelector);
+        if (dsts.length === 1) {
+            const dst = dsts[0];
+
+            copyNodes(src, dst);
+        } else {
+            // Should log that somewhere but
+        }
+    } else {
+        // Should log that somewhere
+    }
+}
+
+
+function copyNodes(src, dst) {
+    // Remove existing non attribute children in destination
+    const $dstChildren = $JQry(dst.childNodes);
+    $dstChildren.each(function(index, element) {
+        const $dstChild = $JQry(element);
+        const dstChild = $dstChild.get(0);
+        if (dstChild.nodeType !== 2) {
+            $dstChild.remove();
+        }
+    });
+
+    // Move src non attribute children to the destination
+    while (src.hasChildNodes()) {
+        const srcChild = src.firstChild;
+        if (srcChild.nodeType !== 2) {
+            dst.appendChild(srcChild);
+        } else {
+            src.removeChild(srcChild);
+        }
+    }
+}
+
+
+function observePortlets() {
+    // Find the dyna portlets
+    const $windows = $JQry(".partial-refresh-window");
+
+    // Add listener for the dyna windows on the dyna-window element
+    // and not async-window as this one will have its markup replaced
+    $windows.each(function (index, element) {
+        observePortlet(element);
+    });
+}
+
+
+function observePortlet(refreshWindow) {
+    const $window = $JQry(refreshWindow);
+    if (!$window.data("ajax-observation")) {
+        $window.on("click", "*", bilto);
+        $window.data("ajax-observation", true);
+    }
+}
+
+
+function removeHeadElementsBetweenComments(name) {
+    //
+    // remove head datas between meta-datas-begin and meta-datas-end
+    //
+    let parent = document.querySelector("head");
+    if (parent) {
+        // Uncomment if you want to see nodes before the change
+        // showNodes("before", parent);
+        let removing = false;
+        let child = parent.firstChild;
+        let next = null;
+        // While we still have child elements to process...
+        while (child) {
+            // If we're already removing, remember that
+            let removeThis = removing;
+            // Before we remove anything, identify the next child to visit
+            next = child.nextSibling;
+            // Is this a comment node?
+            if (child.nodeType === Node.COMMENT_NODE) {
+                if (child.nodeValue.includes(name + "-begin")) {
+                    // It's the node that tells us to start removing:
+                    // Turn on our flag and also remove this node
+                    removing = true;
+                    removeThis = false;
+                } else if (child.nodeValue.includes(name + "-end")) {
+                    // It's the node that tells us to stop removing:
+                    // Turn off our flag, but do remove this node
+                    removing = false;
+                    removeThis = false;
+                }
             }
-         }
-         for (var i = 0; i < copy.length; i++)
-         {
-            Element.remove(copy[i]);
-         }
-
-         // Move src non attribute children to the destination
-         while (src.hasChildNodes())
-         {
-            var srcChild = src.firstChild;
-            if (srcChild.nodeType != 2)
-            {
-               dst.appendChild(srcChild);
+            if (removeThis) {
+                // This is either stuff in-between the two comment nodes
+                // or one of the comment nodes; either way, remove it
+                parent.removeChild(child);
             }
-            else
-            {
-               src.removeChild(srcChild);
+
+            // Move on to next child
+            child = next;
+        }
+    }
+}
+
+function removeFromHead(href) {
+
+    let parent = document.querySelector("head");
+    if (parent) {
+        let child = parent.firstChild;
+        let next = null;
+        while (child) {
+            next = child.nextSibling;
+            if (child.href !== undefined && child.href.includes(href)) {
+                parent.removeChild(child);
             }
-         }
+            child = next;
+        }
+    }
 }
 
 
+function synchronizeMetadatas() {
 
-function observePortlets()
-{
+    // create meta-datas section if doesn't exist
+    var section = false;
 
-   // Find the dyna portlets
-   var portlets_on_page = $$(".partial-refresh-window");
+    let parent = document.querySelector("head");
+    if (parent) {
 
-   // Add listener for the dyna windows on the dyna-window element
-   // and not async-window as this one will have its markup replaced
-   for (var i = 0; i < portlets_on_page.length; i++)
-   {
-      var portlet = Element.up(portlets_on_page[i]);
-      Event.observe(portlet, "click", bilto);
-   }
-}
+        let insertBefore = null;
+        let child = parent.firstChild;
+        let next = null;
+        // While we still have child elements to process...
+        while (child) {
+            // Before we remove anything, identify the next child to visit
+            next = child.nextSibling;
+            // Is this a comment node?
+            if (child.nodeType === Node.COMMENT_NODE) {
+                if (child.nodeValue.includes("meta-datas-begin")) {
+                    // It's the node that tells us to start removing:
+                    // Turn on our flag and also remove this node
+                    section = true;
+                }
 
+            }
 
-function observePortlet(refreshWindow)
-{
-
-      Event.observe(refreshWindow, "click", bilto);
-
-}
-
-
-
-
-function removeHeadElementsBetweenComments( name)	{
-	//
-	// remove head datas between meta-datas-begin and meta-datas-end
-	//
-	let parent = document.querySelector("head");
-	if (parent) {
-	    // Uncomment if you want to see nodes before the change
-	    // showNodes("before", parent);
-	    let removing = false;
-	    let child = parent.firstChild;
-	    let next = null;
-	    // While we still have child elements to process...
-	    while (child) {
-	        // If we're already removing, remember that
-	        let removeThis = removing;
-	        // Before we remove anything, identify the next child to visit
-	        next = child.nextSibling;
-	        // Is this a comment node?
-	        if (child.nodeType === Node.COMMENT_NODE) {
-	            if (child.nodeValue.includes(name+"-begin")) {
-	                // It's the node that tells us to start removing:
-	                // Turn on our flag and also remove this node
-	                removing = true;
-	                removeThis = false;
-	            } else if (child.nodeValue.includes(name+"-end")) {
-	                // It's the node that tells us to stop removing:
-	                // Turn off our flag, but do remove this node
-	                removing = false;
-	                removeThis = false;
-	            }
-	        }
-	        if (removeThis) {
-	            // This is either stuff in-between the two comment nodes
-	            // or one of the comment nodes; either way, remove it
-	            parent.removeChild(child);
-	        }
-	
-	        // Move on to next child
-	        child = next;
-	    }
-	}
-}
-
-function removeFromHead( href)	{
-
-	let parent = document.querySelector("head");
-	if (parent) {
-	    let child = parent.firstChild;
-	    let next = null;
-	    while (child) {
-	        next = child.nextSibling;
-	        if (child.href !== undefined &&  child.href.includes(href)) {
-	            parent.removeChild(child);
-	        }
-	        child = next;
-	    }
-	}
-}
-
-
-
-
-function synchronizeMetadatas()
-{
-	
-	// create meta-datas section if doesn't exist
-	var section = false;
-				
-	let parent = document.querySelector("head");
-	if (parent) {
-
-	    let insertBefore = null;
-	    let child = parent.firstChild;
-	    let next = null;
-	    // While we still have child elements to process...
-	    while (child) {
-	        // Before we remove anything, identify the next child to visit
-	        next = child.nextSibling;
-	        // Is this a comment node?
-	        if (child.nodeType === Node.COMMENT_NODE) {
-	            if (child.nodeValue.includes("meta-datas-begin")) {
-	                // It's the node that tells us to start removing:
-	                // Turn on our flag and also remove this node
-	                section = true;
-	            } 
-	            
-	        }
-	        
             if (child.nodeName == "META") {
                 insertBefore = child.nextSibling;
-            } 	 
-	
-	        // Move on to next child
-	        child = next;
-	    }
-	    
-		if( section == false)	{
-			// Create meta section
-	
-			var commentBegin = document.createComment("meta-datas-begin");
-			var commentEnd = document.createComment("meta-datas-end");
-	
-			if( insertBefore != null)	{
-				parent.insertBefore(commentBegin,insertBefore);
-				parent.insertBefore(commentEnd,insertBefore);						
-			}	else	{
-				parent.insertBefore(commentEnd, parent.firstChild);	
-				parent.insertBefore(commentBegin, parent.firstChild);
-			}
-		}
-	    
-	}
-	
-	
-	
-	
-	
-	
-	
-	removeHeadElementsBetweenComments("meta-datas");
+            }
 
-	//
-	// insert new elements
-	//
+            // Move on to next child
+            child = next;
+        }
 
-	$JQry("dyna-window#header-metadata dyna-window-content:first-child").each(function(index, element) {
-		var $element = $JQry(element);
-		$element.children().each(function(headIndex, headElement) {
-			
-			 $JQry("head").contents().filter(function() {
-			    return this.nodeType == 8;
-			  }).each(function(i, e) {
-			    if ( $JQry.trim(e.nodeValue) == "meta-datas-end") {
-			      $JQry(headElement).insertBefore(e);
-			    }
-			  });
-			});
-		
- 	});
+        if (section == false) {
+            // Create meta section
+
+            var commentBegin = document.createComment("meta-datas-begin");
+            var commentEnd = document.createComment("meta-datas-end");
+
+            if (insertBefore != null) {
+                parent.insertBefore(commentBegin, insertBefore);
+                parent.insertBefore(commentEnd, insertBefore);
+            } else {
+                parent.insertBefore(commentEnd, parent.firstChild);
+                parent.insertBefore(commentBegin, parent.firstChild);
+            }
+        }
+
+    }
+
+
+    removeHeadElementsBetweenComments("meta-datas");
+
+    //
+    // insert new elements
+    //
+
+    $JQry("dyna-window#header-metadata dyna-window-content:first-child").each(function (index, element) {
+        var $element = $JQry(element);
+        $element.children().each(function (headIndex, headElement) {
+
+            $JQry("head").contents().filter(function () {
+                return this.nodeType == 8;
+            }).each(function (i, e) {
+                if ($JQry.trim(e.nodeValue) == "meta-datas-end") {
+                    $JQry(headElement).insertBefore(e);
+                }
+            });
+        });
+
+    });
 
 
 }
 
 
-	function footer()	{
+function footer() {
+    // Non Ajax Response
+    var options = new Object();
 
-    	// Non Ajax Response
-        var options = new Object();
-    	
-    	// We have a get
-        options.method = "get"
+    // We have a get
+    options.method = "get"
 
-        // We don't block
-        options.asynchronous = false;
+    // We don't block
+    options.async = false;
 
-		// In firefox, even winhout any treament on json response
-		// If page is already in history and Ajax.request is called with the same url
-		//    -> The JSON reponse appears in source code
-		
-		var url = new URL(window.location.href);
-		url.searchParams.append('_ts', Date.now());
-		
-    	directAjaxCall("footer",options, url.href,null);
+    // In firefox, even winhout any treament on json response
+    // If page is already in history and Ajax.request is called with the same url
+    //    -> The JSON reponse appears in source code
 
+    var url = new URL(window.location.href);
+    url.searchParams.append('_ts', Date.now());
 
+    directAjaxCall("footer", options, url.href, null);
 }
+
+
 // Compatibility for admin mode
-function closeFancybox()	{
-	history.back();
+function closeFancybox() {
+    history.back();
 }
 
