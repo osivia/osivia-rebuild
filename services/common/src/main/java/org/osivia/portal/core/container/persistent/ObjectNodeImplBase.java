@@ -22,43 +22,26 @@
  ******************************************************************************/
 package org.osivia.portal.core.container.persistent;
 
-import org.apache.commons.lang3.StringUtils;
-import org.jboss.logging.Logger;
-import org.jboss.portal.core.impl.model.portal.ObjectNodeSecurityConstraint;
-import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
-import org.jboss.portal.core.model.portal.NoSuchPortalObjectException;
-import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.jems.hibernate.ContextObject;
-import org.jboss.portal.security.RoleSecurityBinding;
-import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.api.cms.service.CMSContentEvent;
-import org.osivia.portal.api.cms.service.CMSEvent;
-import org.osivia.portal.api.cms.service.CMSRepositoryEvent;
-import org.osivia.portal.api.cms.service.RepositoryListener;
-import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
-
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.jboss.portal.core.impl.model.portal.ObjectNodeSecurityConstraint;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.jems.hibernate.ContextObject;
+import org.jboss.portal.security.RoleSecurityBinding;
+
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 
 /**
  * cf. PersistentPortalObjectContainer ...
  */
 public class ObjectNodeImplBase implements ContextObject  {
 
-    /** . */
-    protected static final Logger log = Logger.getLogger(ObjectNodeImplBase.class);
 
-    /** . */
-    protected static final boolean trace = log.isTraceEnabled();
+
 
     // Persistent fields
     private Long key;

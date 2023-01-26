@@ -18,8 +18,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import javax.security.auth.Subject;
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.PolicyContextException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.portal.core.controller.ControllerCommand;
