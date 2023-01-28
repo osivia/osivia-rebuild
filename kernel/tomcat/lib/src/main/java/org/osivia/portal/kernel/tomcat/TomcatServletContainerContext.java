@@ -53,7 +53,7 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
     /** Registration. */
     private Registration registration;
 
-    private List<String> orderedContexts = null;
+    private OrderedContextComparator contextComparator = new OrderedContextComparator("/", "");
     /**
      * Constructor.
      *
@@ -187,8 +187,8 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
         if (!this.monitoredHosts.contains(host.getName())) {
             Container[] childrenContainers = host.findChildren();
             
-
-            Arrays.sort(childrenContainers, compare());
+            /* Start portlets */
+            Arrays.sort(childrenContainers, contextComparator);
             
             for (Container childContainer : childrenContainers) {
                 if (childContainer instanceof StandardContext) {
@@ -203,57 +203,9 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
         }
     }
     
-    private List<String> getOrdererContexts()	{
-    	if(orderedContexts == null)	{
-    		orderedContexts = new ArrayList<>();
-    		String order = System.getProperty("portal.deploy.order");
-    		if( StringUtils.isNotEmpty(order))	{
-    			String tokens[] = order.split("\\|");
-    			for(int i=0;i<tokens.length;i++) {
-    				orderedContexts.add("/" +tokens[i]);
-    			}
-    		}
-    	}
-    	return orderedContexts;
-    }
+   
 
-    /** The portlet webapp name */
-    private static final String PORTAL_WAR = "/portail";
-    private static final String ANNUAIRE_WAR = "/toutatice-annuaire-custom";
-    
-    private Comparator<Container> compare() {
-        return (o1, o2) -> {
-        	int i1 = getOrdererContexts().indexOf(o1.getName());
-        	int i2 = getOrdererContexts().indexOf(o2.getName());
-        	
-        	if( i1 != -1)	{
-        		if( i2 != -1)	{
-        			return (i1 - i2);
-        		}	else	{
-        			return -1;
-        		}
-        			
-        	}	else	{
-        		if (i2 != -1)	{
-        			return 1;
-        		} else	{
-        			return  o1.getName().compareTo(o2.getName());
-        		}
-        	}
-        	/*
-            if( PORTAL_WAR.equals(o1.getName()))
-                return -10;
-            else if( PORTAL_WAR.equals(o2.getName()))
-                return 10;
-            else if( ANNUAIRE_WAR.equals(o1.getName()))
-                return -9;
-            else if( ANNUAIRE_WAR.equals(o2.getName()))
-                return 9;            
-            else
-                return o1.getName().compareTo(o2.getName());
-            */
-    };
-    }
+   
 
     /**
      * Unregister host.
