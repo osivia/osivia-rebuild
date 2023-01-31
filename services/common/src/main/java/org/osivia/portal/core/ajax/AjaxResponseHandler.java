@@ -961,7 +961,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
     private HandlerResponse handleAjaxError(ControllerContext controllerContext, ControllerResponse controllerResponse) {
         
-        log.error(Debug.stackTraceToString( ((ErrorResponse) controllerResponse).getCause() ));
+    	if( controllerResponse instanceof ErrorResponse)
+    		log.error(Debug.stackTraceToString( ((ErrorResponse) controllerResponse).getCause() ));
         
         String themeId = getPortalObjectContainer().getContext().getDefaultPortal().getProperty(ThemeConstants.PORTAL_PROP_THEME);
         PageService pageService = controllerContext.getController().getPageService();
