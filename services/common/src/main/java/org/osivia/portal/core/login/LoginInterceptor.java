@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
-import javax.security.jacc.PolicyContext;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 

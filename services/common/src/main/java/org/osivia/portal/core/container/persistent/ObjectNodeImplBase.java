@@ -23,7 +23,7 @@
 package org.osivia.portal.core.container.persistent;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.logging.Logger;
+
 import org.jboss.portal.core.impl.model.portal.ObjectNodeSecurityConstraint;
 import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
 import org.jboss.portal.core.model.portal.NoSuchPortalObjectException;
@@ -53,11 +53,7 @@ import java.util.Set;
 public class ObjectNodeImplBase implements ContextObject, RepositoryListener
 {
 
-   /** . */
-   protected static final Logger log = Logger.getLogger(ObjectNodeImplBase.class);
 
-   /** . */
-   protected static final boolean trace = log.isTraceEnabled();
 
    // Persistent fields
    private Long key;

@@ -22,7 +22,7 @@
  ******************************************************************************/
 package org.jboss.portal.core.model.instance;
 
-import java.security.acl.Permission;
+
 import java.util.Iterator;
 import java.util.Set;
 

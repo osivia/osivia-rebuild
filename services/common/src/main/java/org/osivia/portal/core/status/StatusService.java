@@ -215,9 +215,9 @@ public class StatusService extends ServiceMBeanSupport implements IStatusService
             t.sendMessage(msg, msg.getAllRecipients());
             t.close();
         } catch (AddressException e) {
-            log.info(e.getMessage());
+        	statutLog.info(e.getMessage());
         } catch (MessagingException e) {
-            log.info(e.getMessage());
+        	statutLog.info(e.getMessage());
         }
 
 
