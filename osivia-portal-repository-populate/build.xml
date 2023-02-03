@@ -6,6 +6,9 @@
 	<property name="common-common.version" value="1.2.5"/>
 	<property name="web-web.version" value="1.2.0"/>
 	<property name="activation.version" value="1.0.2"/>
+	<property name="apache-xerces.version" value="2.9.1"/>
+	<property name="jboss-unit.version" value="1.2.3"/>	
+			
 	
 	
 	
@@ -58,6 +61,30 @@
 	   </sequential>
 	</macrodef>
 	
+	<macrodef name="maven-deploy-file-no-source">
+	   <attribute name="file"/>
+	   <attribute name="groupId"/>
+	   <attribute name="artifactId"/>
+	   <attribute name="version"/>
+	   <attribute name="packaging" default="jar"/>	   
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
+	   
+	   <sequential>
+		   	<echo>mvn @{command-line}</echo>
+		   	
+		   	<!-- Window exec command : -->
+		   	<exec executable="cmd.exe" osfamily="Windows" >
+				<arg line="/c mvn.bat @{command-line}"/>
+			</exec>
+			
+		   	<!-- Linux et Unix exec command : -->
+		   	<exec executable="mvn" os="Linux,Unix">
+				<arg line="@{command-line}"/>
+			</exec>	   	
+	   </sequential>
+	</macrodef>
+	
+	
 	<macrodef name="maven-deploy-pom">
 	   <attribute name="file"/>
 	   <attribute name="groupId"/>
@@ -93,8 +120,14 @@
 		
 		<maven-deploy-file file="web-web-1.2.0" groupId="org.jboss.portal.web" artifactId="web-web" version="${web-web.version}" />
 		<maven-deploy-file file="portlet-controller-2.0.9" groupId="org.jboss.portal.portlet" artifactId="portlet-controller" version="${jboss-portal.portlet.version}" />
-		<maven-deploy-file file="portlet-mc-2.0.9" groupId="org.jboss.portal.portlet" artifactId="portlet-mc" version="${jboss-portal.portlet.version}" /><maven-deploy-file file="activation-1.0.2" groupId="javax.activation" artifactId="activation" version="${activation.version}" />		
+		<maven-deploy-file file="portlet-mc-2.0.9" groupId="org.jboss.portal.portlet" artifactId="portlet-mc" version="${jboss-portal.portlet.version}" />
+		<maven-deploy-file file="activation-1.0.2" groupId="javax.activation" artifactId="activation" version="${activation.version}" />
 		
+		<maven-deploy-file-no-source file="xercesImpl-2.9.1" groupId="apache-xerces" artifactId="xercesImpl" version="${apache-xerces.version}" />
+		<maven-deploy-file-no-source file="xml-apis-2.9.1" groupId="apache-xerces" artifactId="xml-apis" version="${apache-xerces.version}" />
+		<maven-deploy-file-no-source file="resolver-2.9.1" groupId="apache-xerces" artifactId="resolver" version="${apache-xerces.version}" />
+		
+		<maven-deploy-file-no-source file="jboss-unit-1.2.3" groupId="org.jboss.unit" artifactId="jboss-unit" version="${jboss-unit.version}" />
 	
 	</target>
 </project>
