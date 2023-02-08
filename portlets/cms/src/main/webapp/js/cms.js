@@ -57,12 +57,8 @@ $JQry(function () {
                 // AJAX parameters
                 var container = null;
                 var options = {
-                    requestHeaders: ["ajax", "true", "bilto"],
                     method: "post",
-                    postBody: "source=" + sourceElement ,
-                    onSuccess: function (t) {
-                        onAjaxSuccess(t, null);
-                    }
+                    data: {"source" : sourceElement} 
                 };
                 var url = $target.closest(".cms-edition-droppable").data("drop-url");
                 var eventToStop = null;
@@ -167,7 +163,6 @@ $JQry(function() {
                     // Save location
                     var container = null;
                     var options = {
-                        requestHeaders: ["ajax", "true", "bilto"],
                         method: "post"
                     };
                     var url = $element.attr('href');
