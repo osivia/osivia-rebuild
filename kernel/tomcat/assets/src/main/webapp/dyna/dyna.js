@@ -218,14 +218,13 @@ function bilto(event) {
                             url = current.action;
 
                             const $form = $JQry(current);
-                            
+
                             // Set the specified enctype
                             options.enctype = enctype;
                             options.async = true;
                             options.method = "post";
                             options.data = $form.serialize();
                             options.data.submit = source.name;
-                            
                         }
                     }
                 } else {
@@ -763,7 +762,7 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
     if ((eventToStop !== undefined) && (eventToStop !== null) && !(eventToStop.type === "popstate")) {
         eventToStop.preventDefault();
         eventToStop.stopPropagation();
-        
+
     }
 
     const ajaxSettings = {
@@ -947,7 +946,6 @@ function copyLayout(layout) {
     const srcContainer = document.createElement("html");
     const $srcContainer = $JQry(srcContainer);
 
-    //$srcContainer.html(layout);
     srcContainer.innerHTML = layout;
 
     const srcs = $srcContainer.find("body");
