@@ -218,13 +218,17 @@ function bilto(event) {
                             url = current.action;
 
                             const $form = $JQry(current);
+                            const data = $form.serializeArray();
+                            data.push({
+                                "name": source.name,
+                                "value": source.value
+                            })
 
                             // Set the specified enctype
                             options.enctype = enctype;
                             options.async = true;
                             options.method = "post";
-                            options.data = $form.serialize();
-                            options.data.submit = source.name;
+                            options.data = data;
                         }
                     }
                 } else {
