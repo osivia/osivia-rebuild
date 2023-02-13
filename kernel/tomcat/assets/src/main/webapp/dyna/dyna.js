@@ -766,7 +766,7 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
     if ((eventToStop !== undefined) && (eventToStop !== null) && !(eventToStop.type === "popstate")) {
         eventToStop.preventDefault();
         eventToStop.stopPropagation();
-        
+
     }
 
     const ajaxSettings = {
@@ -954,7 +954,6 @@ function copyLayout(layout) {
     const srcContainer = document.createElement("html");
     const $srcContainer = $JQry(srcContainer);
 
-    //$srcContainer.html(layout);
     srcContainer.innerHTML = layout;
 
     const srcs = $srcContainer.find("body");
