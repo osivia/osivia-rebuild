@@ -218,14 +218,17 @@ function bilto(event) {
                             url = current.action;
 
                             const $form = $JQry(current);
-                            
+                            const data = $form.serializeArray();
+                            data.push({
+                                "name": source.name,
+                                "value": source.value
+                            })
+
                             // Set the specified enctype
                             options.enctype = enctype;
                             options.async = true;
                             options.method = "post";
-                            options.data = $form.serialize();
-                            options.data.submit = source.name;
-                            
+                            options.data = data;
                         }
                     }
                 } else {
@@ -805,7 +808,9 @@ function updateResources(newHeaderResources, layout) {
 
             var section = false;
 
+
             let parent = document.querySelector("head");
+/*
             if (parent) {
 
                 let removing = false;
@@ -855,7 +860,7 @@ function updateResources(newHeaderResources, layout) {
                     child = next;
                 }
             }
-
+*/
             if (section == false) {
                 // Create portlet section
 
@@ -922,7 +927,9 @@ function updateResources(newHeaderResources, layout) {
                     return this.nodeType == 8;
                 }).each(function (i, e) {
                     if ($JQry.trim(e.nodeValue) == "portlets-end") {
-                        $JQry(tagToInsert).insertBefore(e);
+                        e.parentNode.insertBefore(tagToInsert, e);
+                        //Ajoute un timestamp qui force le rechargement du script
+                        //$JQry(tagToInsert).insertBefore(e);
                     }
                 });
             }

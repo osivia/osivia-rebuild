@@ -49,7 +49,7 @@
 		                                <div class="col-sm-2 d-flex">
 		                                	<c:if test="${repository.streamable}">
 									           <div>
-									               <form:input type="file" path="fileUpload" cssClass="file-import"
+									               <form:input type="file" path="fileUpload['${repository.name}']" cssClass="file-import"
 									                           data-import-submit-id="${namespace}-file" data-import-repository-name-id="${namespace}-repositoryName" data-repository-name="${repository.name}" value="${browse}" />
 					                                <a href="#" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link text-truncate">
 					                                  

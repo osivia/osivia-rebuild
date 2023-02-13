@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class RepositoryForm {
     List<RepositoryBean> repositories;
     /** upload multipart file. */
-    private ArrayList fileUpload;
+    private Map fileUpload;
     
 
 
@@ -32,13 +32,13 @@ public class RepositoryForm {
     
 
     
-    public ArrayList getFileUpload() {
+    public Map getFileUpload() {
         return fileUpload;
     }
 
 
     
-    public void setFileUpload(ArrayList fileUpload) {
+    public void setFileUpload(Map fileUpload) {
         this.fileUpload = fileUpload;
     }
 

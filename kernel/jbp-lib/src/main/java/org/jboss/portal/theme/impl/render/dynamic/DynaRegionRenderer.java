@@ -129,10 +129,10 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
           try   {
           
           // AJAX header
-          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/prototype.js'></script>");
-          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/prototype-bootstrap-workaround.js'></script>");
-          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/effects.js'></script>");
-          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/dragdrop.js'></script>");
+//          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/prototype.js'></script>");
+//          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/prototype-bootstrap-workaround.js'></script>");
+//          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/effects.js'></script>");
+//          this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/dragdrop.js'></script>");
           this.writeResource(markup, "<script type='text/javascript' src='"+jsBase+"/dyna.js'></script>");
           } catch(IOException e) {
               throw new RenderException( e);
