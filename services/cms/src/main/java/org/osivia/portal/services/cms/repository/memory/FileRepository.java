@@ -88,6 +88,9 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     /** . */
     public static final int OVERWRITE_IF_EXISTS = 0;
 
+    
+    private static String PORTAL_ADMINISTRATION_PATH = "portal.administration.path";
+    
     /** . */
     public static final int KEEP_IF_EXISTS = 1;
 
@@ -539,7 +542,8 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
             InputStream in;
             
-            String path = System.getProperty("portal.configuration.path")+ "/" + getRepositoryName() + "-default-object.xml";
+
+			String path = System.getProperty(PORTAL_ADMINISTRATION_PATH)+ "/" + getRepositoryName() + "-default-object.xml";
             
             File defaultConfigFile= new File(path);
             if( defaultConfigFile.exists()) {
@@ -698,7 +702,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
 
     private File getConfigurationFile() {
-        return new File(System.getProperty("portal.configuration.path") + "configuration-" + getRepositoryName() + ".json");
+        return new File(System.getProperty(PORTAL_ADMINISTRATION_PATH) + "configuration-" + getRepositoryName() + ".json");
     }
 
 

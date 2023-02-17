@@ -124,6 +124,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.error.IPortalLogger;
+import org.osivia.portal.core.layouts.DynamicLayoutInfos;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -591,17 +592,57 @@ public class AjaxResponseHandler implements ResponseHandler {
                     String redirection =  request.getParameter("redirection");
                     updatePage.setPortalRedirection(redirection);
 
-                    // Regions
-                    Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+ 
+                    // Filter by visible regions  and sort by order
+                    DynamicLayoutInfos layoutInfos = getDynamicLayoutService().getLayoutInfos(controllerContext, page);
                     
-
-                    // Sort by order
+                    
                     List<Window> sortedByOrderWindows = new ArrayList<Window>();
-                    for (Iterator i = windows.iterator(); i.hasNext();) {
-                        sortedByOrderWindows.add((Window) i.next());
+                    for (Iterator i = refreshedWindows.iterator(); i.hasNext();) {
+                    	
+                    	Window window = (Window) i.next();
+                    	  
+                        NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+                        WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+
+                        String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
+                        if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+                            region = "maximized";
+                        }
+                            
+                            
+                        if( layoutInfos.getRegions().contains(region)  ||  "modal-region".equals(region))	{
+                        	sortedByOrderWindows.add(window);
+                        }	else	{
+                        	// Warn messages
+                        	boolean warn = true;
+                        	
+                        	// admin shouldn't appear in modals
+                        	if( "admin".equals(region) && layoutInfos.getRegions().contains("osivia-modal-region") )	{
+                        		warn = false;
+                        	}
+                        	
+                        	// Some window are hidden in maximized mode, it's just normal
+                        	if( layoutInfos.isMaximized())	{
+                        		warn = false;
+                        	}
+                        	
+                        	if(warn)	{
+                        		// otherwise warn
+                                log.warn("this window seems not to be present in any visible region, should check ... : "
+                                        + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));                        		
+                        	}
+                        	
+                        }
+                    	
                     }
 
-                    Collections.sort(sortedByOrderWindows, new OrderWindowComparator());                    
+                    Collections.sort(sortedByOrderWindows, new PriorityWindowComparator());                      
+                    
+                    // update regions
+                    
+                    
+                    
                     for (PortalObject window : sortedByOrderWindows) {
 
                         NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
@@ -648,13 +689,7 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     Set<PageResource> resources = new LinkedHashSet<PageResource>();
 
-                    // Sort by priority
-                    List<Window> sortedWindows = new ArrayList<Window>();
-                    for (Iterator i = refreshedWindows.iterator(); i.hasNext();) {
-                        sortedWindows.add((Window) i.next());
-                    }
 
-                    Collections.sort(sortedWindows, new PriorityWindowComparator());
 
                     /* Pre-portlet computings */
                     /*
@@ -677,7 +712,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                     String asyncWindow = request.getHeader("asyncWindow");
                     
                     //
-                    for (Window refreshedWindow : sortedWindows) {
+                    for (Window refreshedWindow : sortedByOrderWindows) {
                         try {
                             
                             boolean skipWindow = false;
@@ -1030,30 +1065,61 @@ public class AjaxResponseHandler implements ResponseHandler {
     
     
     
-
     private class PriorityWindowComparator implements Comparator<Window> {
 
         public int compare(Window w1, Window w2) {
 
-            String order1 = w1.getDeclaredProperty("osivia.sequence.priority");
-            String order2 = w2.getDeclaredProperty("osivia.sequence.priority");
+            String p1 = w1.getDeclaredProperty("osivia.sequence.priority");
+            String p2 = w2.getDeclaredProperty("osivia.sequence.priority");
 
 
-            if (order1 == null) {
-                if (order2 == null) {
-                    return w1.getName().compareTo(w2.getName());
+            if (p1 == null) {
+                if (p2 == null) {
+                    return compareOrder(w1, w2);
                 } else {
                     return 1;
                 }
-            } else if (order2 == null) {
+            } else if (p2 == null) {
                 return -1;
             } else {
-                return Integer.valueOf(order1).compareTo(Integer.valueOf(order2));
+            	return compareOrder(w1, w2);
             }
 
         }
+        
+        public int compareOrder(Window w1, Window w2) {
+        	   int result;
+               
+               Integer i1;
+               
+               try { 
+                   i1 = Integer.parseInt( w1.getDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER));
+               } catch(Exception e)    {
+                   i1 = null;
+               }
+               
+               Integer i2;
+               
+               try { 
+                   i2 = Integer.parseInt( w2.getDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER));
+               } catch(Exception e)    {
+                   i2 = null;
+               }
+               
+               if (i1 == null) {
+                   result = -1;
+               } else if (i2 == null) {
+                   result = 1;
+               } else {
+                   result = i1.compareTo(i2);
+               }
+               return result;
+        }
+        
 
     }
+    
+    
     
     private List<String> getAsynchronousPortlets()	{
     	if(asynchronousPortlets == null)	{

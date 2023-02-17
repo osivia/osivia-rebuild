@@ -33,7 +33,7 @@ import org.jboss.portal.theme.impl.JSPRendererContext;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.renderer.PageRendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
-
+import org.osivia.portal.core.constants.InternalConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -45,6 +45,7 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Tag handler for the region tag. <p>A region represents a subsection of a portal page. A region can host several
@@ -217,8 +218,13 @@ public class RegionTagHandler
    public void doTag() throws JspException, IOException {
        PageContext pageContext = (PageContext) this.getJspContext();
        HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-
-       Boolean layoutParsing = (Boolean) request.getAttribute(ThemeConstants.ATTR_LAYOUT_HTML_EXTRACTOR);
+       
+       Set<String> visibleRegions = (Set<String>) request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS);
+       if( visibleRegions != null)	{
+    	   visibleRegions.add(this.regionName);
+       }
+    	  
+       Boolean layoutParsing = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_PARSING);
        if (BooleanUtils.isNotTrue(layoutParsing)) {
            originalDoTag();
        }    else    {

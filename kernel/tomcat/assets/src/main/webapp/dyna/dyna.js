@@ -761,7 +761,9 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
     }
 
     // Save current scroll position
-    currentScroll = 0;
+    currentScroll = window.scrollY;
+
+       
 
     if ((eventToStop !== undefined) && (eventToStop !== null) && !(eventToStop.type === "popstate")) {
         eventToStop.preventDefault();

@@ -1,17 +1,11 @@
 package org.osivia.portal.core.layouts;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import java.util.Set;
 
 import org.jboss.portal.WindowState;
-import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.servlet.BufferingRequestWrapper;
 import org.jboss.portal.common.servlet.BufferingResponseWrapper;
 import org.jboss.portal.common.util.MarkupInfo;
@@ -28,27 +22,33 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
-import org.jboss.portal.theme.LayoutConstants;
-import org.jboss.portal.theme.LayoutInfo;
-import org.jboss.portal.theme.LayoutService;
-import org.jboss.portal.theme.PortalLayout;
-import org.jboss.portal.theme.ThemeConstants;
-import org.jboss.portal.theme.page.PageResult;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.core.constants.InternalConstants;
 
 public class DynamicLayoutService implements IDynamicLayoutService {
 
+	
     @Override
     public String getLayoutCode(ControllerContext controllerContext, Page page) throws ControllerException {
        
 //        String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);  
 //        String layoutCode = page.getProperty("osivia.layout."+layoutId+".code");
        
-        String layoutCode = checkLayout(controllerContext, page);
+        String layoutCode = (String) checkLayout(controllerContext, page, true);
         
         return layoutCode;
     }
+    
+
+
+	@Override
+	public   DynamicLayoutInfos getLayoutInfos(ControllerContext controllerContext, Page page) throws ControllerException {
+		DynamicLayoutInfos infos = (DynamicLayoutInfos) checkLayout(controllerContext, page, false);
+        
+        return infos;
+
+	}
+    
     
     
     /**
@@ -58,7 +58,8 @@ public class DynamicLayoutService implements IDynamicLayoutService {
      * @param page page
      * @throws ControllerException
      */
-    private String checkLayout(ControllerContext controllerContext, Page page) throws ControllerException {
+    @SuppressWarnings("unchecked")
+	private Object checkLayout(ControllerContext controllerContext, Page page, boolean code) throws ControllerException {
 
 
         // Server invocation
@@ -100,8 +101,18 @@ public class DynamicLayoutService implements IDynamicLayoutService {
             }
         }
         
+        
+        
+        
         if( maximized)
             rendition.getPageResult().setLayoutState("maximized");
+        
+        if( code == false)	{
+        	request.setAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS, new HashSet<String>());
+        	request.setAttribute(InternalConstants.ATTR_LAYOUT_PARSING, Boolean.TRUE);
+        	
+        }
+        
         
         try {
             rendition.render(markupInfo, dispatcher);
@@ -109,11 +120,14 @@ public class DynamicLayoutService implements IDynamicLayoutService {
             throw new RuntimeException(e);
         }
      
-        
-        return response.getContent();
+        if( code)
+        	return response.getContent();
+        else
+        	return new DynamicLayoutInfos( (Set<String>) request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS), maximized);
 
      }
-    
+
+
    
   
 }
