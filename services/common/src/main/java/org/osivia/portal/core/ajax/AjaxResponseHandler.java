@@ -113,6 +113,7 @@ import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.error.Debug;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.api.theming.AbstractRegionBean;
 import org.osivia.portal.api.theming.IRegionsThemingService;
@@ -707,6 +708,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                         if (templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
                             modal = true;
                     }
+                    
+                    
+
+                    // Global cache
+                    if (request.getUserPrincipal() == null) {
+                            // Anonymous home page
+                            if (PortalObjectUtils.isDefaultMemberPage(portalControllerContext))   {
+                                controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.useGlobalWindowCaches", "1");
+                            }
+                       }
                     
                     
                     String asyncWindow = request.getHeader("asyncWindow");

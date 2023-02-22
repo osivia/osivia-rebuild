@@ -23,6 +23,7 @@
 package org.osivia.portal.core.portlets.interceptors;
 
 import java.io.Serializable;
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -31,6 +32,7 @@ import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -68,7 +70,7 @@ import org.osivia.portal.api.locator.Locator;
  */
 public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 {
-
+    public static Map<String, CacheEntry> globalWindowCaches = new Hashtable<String, CacheEntry>();
     
    public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException
    {
@@ -197,13 +199,39 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
          }
          
+
+
+         //  Cache anonyme sur la page d'accueil
          
+         boolean globalCache = false;
+         if ((cachedEntry == null) && ((ctx != null) && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches")))) {
+             cachedEntry = globalWindowCaches.get(invocation.getWindowContext().getId());
+             if( cachedEntry != null)   {
+                 globalCache = true;
+                 String ts =  window.getPage().getDeclaredProperty("osivia.cms.page.timestamp");
+                 if( ts != null)    {
+                     // Cache CMS expiré
+                     if (cachedEntry.getCreationTs() < new Long( ts))   {
+                         cachedEntry = null; 
+                         globalCache = false;
+                     }
+                 }
+             }
+         }
+         
+         
+         
+
+         
+
+
          // Don't test for shared cache, because each time you change of navigation item
          // The page is re-created
-         if( cachedEntry != null && sharedCache == false)    {
-             if (cachedEntry.getCreationTs() < window.getUpdateTs())
-                 cachedEntry = null;
-         }
+           if( cachedEntry != null && (sharedCache == false && globalCache == false) )
+                 if (cachedEntry.getCreationTs() < window.getPage().getUpdateTs())
+                     cachedEntry = null;
+        
+      
 
 
         // CMS cache has been modified (portlet level)
@@ -292,7 +320,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          }
 
          boolean refresh = BooleanUtils.isTrue((Boolean)ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.refreshCaches"));
-         if( refresh && sharedCache) {
+         if( refresh && ( sharedCache || globalCache)) {
              refresh = false;
          }
          
@@ -381,6 +409,39 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
                        CacheEntry sharedCacheEntry = new CacheEntry(null, null, null, null,  fragment, expirationTimeMillis, System.currentTimeMillis(), validationToken);
                        userContext.setAttribute("sharedcache." + sharedID, sharedCacheEntry);
+                   }
+               } 
+               
+               
+               
+
+               // For other users
+               if ((expirationTimeMillis > 0) && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches"))) {
+
+
+                   Boolean skipNavigationControls = "1".equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.skipCacheNavigationControl"));
+
+                   boolean storeCache = true;
+
+                   if (!skipNavigationControls) {
+                       storeCache = false;
+
+                       // On controle que l'état permet une mise dans le cache global
+
+                       if (((navigationalState == null) || (((ParametersStateString) navigationalState).getSize() == 0))
+                               && ((windowState == null) || WindowState.NORMAL.equals(windowState)) && ((mode == null) || Mode.VIEW.equals(mode))) {
+                   
+                           storeCache = true;
+                       }
+                   }
+
+
+                   if (storeCache) {
+                       // Reload every minute
+                       CacheEntry sharedCacheEntry = new CacheEntry(null, null, WindowState.NORMAL, Mode.VIEW,  fragment, System.currentTimeMillis() + (60 * 1000), System.currentTimeMillis(), validationToken);
+
+
+                       globalWindowCaches.put(invocation.getWindowContext().getId(), sharedCacheEntry);
                    }
                }               
             }

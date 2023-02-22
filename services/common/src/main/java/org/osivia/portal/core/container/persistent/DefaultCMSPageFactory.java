@@ -21,6 +21,7 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Templateable;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.core.ajax.AjaxResponseHandler;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.ContainerContext;
@@ -86,7 +87,9 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
         CMSPage cmsPage = new CMSPage(container, containerContext, pageId, pageProperties, inheritedRegions, this);
  
         
-        
+        if( doc instanceof RepositoryDocument)  {
+            cmsPage.setDeclaredProperty("osivia.cms.page.timestamp", new Long(((RepositoryDocument) doc).getTimestamp()).toString());
+        }
         
         if (StringUtils.isEmpty(cmsPage.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME))) {
 
