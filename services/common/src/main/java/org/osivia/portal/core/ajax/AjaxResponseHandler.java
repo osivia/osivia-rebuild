@@ -623,6 +623,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                         		warn = false;
                         	}
                         	
+                            // content is a virtual window
+                            if( "content".equals(window.getName()) )    {
+                                warn = false;
+                            }
+                        	
                         	// Some window are hidden in maximized mode, it's just normal
                         	if( layoutInfos.isMaximized())	{
                         		warn = false;

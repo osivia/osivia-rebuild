@@ -8,6 +8,7 @@ import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.core.ajax.AjaxResponseHandler;
+import org.osivia.portal.core.imports.IPortalImportManager;
 import org.osivia.portal.core.sessions.CMSSessionRecycle;
 import org.osivia.portal.core.sessions.ICMSSessionStorage;
 
@@ -29,7 +30,7 @@ import javax.transaction.TransactionManager;
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 8786 $
  */
-public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSessionStorage {
+public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSessionStorage,IPortalImportManager {
 
     /** The current sessions. */
     ThreadLocal<Map<String, CMSSessionRecycle>> currentSessions = new ThreadLocal<Map<String, CMSSessionRecycle>>();
@@ -39,9 +40,23 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
 
     
     private static final Logger log = Logger.getLogger(CMSSessionInterceptor.class);
+    
+    private boolean pauseRequests = false;
 
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
         try {
+            
+            // Pause requests during imports
+            while( pauseRequests)   {
+                try {
+                    //log.info("stopping request");
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+             
+            
             invocation.invokeNext();
         } finally {
             Map<String, CMSSessionRecycle> sessions = currentSessions.get();
@@ -148,6 +163,24 @@ public class CMSSessionInterceptor extends ServerInterceptor implements ICMSSess
         
         return locale + "." + cmsContext.isPreview() + "." + cmsContext.isSuperUserMode() + "." + (cmsContext.getPortalControllerContext().getHttpServletRequest() != null);
         
+        
+    }
+    
+    @Override
+    public void stopRequests() {
+        pauseRequests = true;
+        
+        // wait for pending requests to stop
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }       
+        
+    }
+
+    @Override
+    public void restartRequests() {
+        pauseRequests = false;
         
     }
 }

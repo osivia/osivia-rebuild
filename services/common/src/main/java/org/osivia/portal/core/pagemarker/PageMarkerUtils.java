@@ -253,7 +253,8 @@ public class PageMarkerUtils {
 					
 					for( PageMarkerInfo info: list) {
 						if( info.getPageId().toString(PortalObjectPath.CANONICAL_FORMAT).contains(pageName))	{
-							logger.warn("non ajax request "+ requestPath);
+							//the user can manually refresh, no warn
+						    //logger.warn("non ajax request "+ requestPath);
 							
 							restorePageState(controllerContext, info.getViewState());
 							// In non ajax mode JBP will increment view_state in the response

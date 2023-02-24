@@ -12,6 +12,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -59,7 +61,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     ContainerContext containerContext = new ContainerContext();
 
 
-
+    protected static final Log log = LogFactory.getLog(StaticPortalObjectContainer.class);
 
     private ContentProviderRegistry contentProviderRegistry;
 
@@ -170,16 +172,26 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                         getContextNodes().remove(poid);
                     createDefaultContext(getContextNodes());
                     res = null;
+
+                    // search context
+                    if( id.getPath().getLength() == 0)
+                        res = contextNodes.get(id);
                     
                    
                 }
             }
          }
         
+        
+
+        
 
          if (res == null) {
 
-             String portalName = id.getPath().getName(0);
+             String portalName = "";
+             
+             portalName = id.getPath().getName(0);
+            
 
              PortalObjectPath portalPath = new PortalObjectPath("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
              PortalObjectId portalID = new PortalObjectId(id.getNamespace(), portalPath);

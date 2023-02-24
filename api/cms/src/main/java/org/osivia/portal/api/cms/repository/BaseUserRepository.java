@@ -36,6 +36,8 @@ import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.GroupService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.imports.IPortalImportManager;
 
 
 /**
@@ -243,6 +245,12 @@ public abstract class BaseUserRepository implements UserRepository {
 
     public void startInitBatch() {
         
+        IPortalImportManager portalImportManager = Locator.getService(IPortalImportManager.class);
+   
+        portalImportManager.stopRequests();
+        
+
+        
         clearCaches();
         
         batchMode = true;
@@ -269,7 +277,11 @@ public abstract class BaseUserRepository implements UserRepository {
             }
             
             batchMode = false;
+            
+            portalImportManager.restartRequests();            
         }
+        
+        
        
     }
 

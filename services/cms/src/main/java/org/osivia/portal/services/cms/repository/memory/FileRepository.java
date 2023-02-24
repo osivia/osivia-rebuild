@@ -97,9 +97,12 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     public File inputFile = null;
 
 
-    private FileUtils fileUtils = null;
+    private FileUtils fileUtils;
 
-    public String checksum = null;
+    private String lastChecksum;
+
+
+    
 
 
     public FileRepository(RepositoryFactory repositoryFactory,SharedRepositoryKey repositoryKey, String userName) {
@@ -113,7 +116,16 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
         
     }
 
-
+    public String getChecksum() {
+        return lastChecksum;
+    }
+    
+    
+    private void setChecksum( String checksum)  {
+        this.lastChecksum = checksum;
+    }
+    
+    
     @Override
     public void addDocument(String internalID, RepositoryDocument document) throws CMSException {
         getUserStorage().addDocument(internalID, document, batchMode);
@@ -499,13 +511,13 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
         ((MemoryUserStorage) getUserStorage()).initDocuments();
 
         if (inputFile != null) {
-            checksum = getFilesUtils().getCheckSum(inputFile);
+            setChecksum(getFilesUtils().getCheckSum(inputFile));
             importFile(inputFile);
             inputFile = null;
         } else {
             File file = getConfigurationFile();
             if (file.exists()) {
-                checksum = getFilesUtils().getCheckSum(file);
+                setChecksum( getFilesUtils().getCheckSum(file));
                 getFilesUtils().importFile(file);
             } else
                 importDefaultObject();
@@ -517,12 +529,14 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     }
 
     public void checkAndReload() {
-        File file = getConfigurationFile();
-        if (file.exists()) {
-            String newChecksum = getFilesUtils().getCheckSum(file);
-
-            if (!StringUtils.equals(newChecksum, checksum)) {
-                startInitBatch();
+        if( batchMode == false) {
+            File file = getConfigurationFile();
+            if (file.exists()) {
+                String newChecksum = getFilesUtils().getCheckSum(file);
+    
+                if (!StringUtils.equals(newChecksum, getChecksum())) {
+                    startInitBatch();
+                }
             }
         }
     }
@@ -671,7 +685,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
         File file = getConfigurationFile();
         if (file.exists()) {
-            checksum = getFilesUtils().getCheckSum(file);
+            setChecksum( getFilesUtils().getCheckSum(file));
         }
 
 
