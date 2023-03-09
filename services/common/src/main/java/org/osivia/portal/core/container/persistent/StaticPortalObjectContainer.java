@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.logging.Log;
@@ -57,7 +58,9 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 public class StaticPortalObjectContainer implements org.jboss.portal.core.model.portal.PortalObjectContainer {
 
 
-    Map<String, Map<PortalObjectId, PortalObject>> nodes;
+    private static final String PORTAL_NODES = "portal.nodes";
+
+
     ContainerContext containerContext = new ContainerContext();
 
 
@@ -108,8 +111,7 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
 
     @PostConstruct
     private void build() {
-       nodes = new ConcurrentHashMap();
-        
+
        listeners = new ConcurrentHashMap();
    }
     
@@ -269,14 +271,14 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
      * @return the context nodes
      */
     protected Map<PortalObjectId, PortalObject> getContextNodes() {
-        String sessionId = getTracker().getHttpRequest().getSession().getId();
-        Map currentContextNodes = nodes.get(sessionId);
+        HttpSession session = getTracker().getHttpRequest().getSession();
+        Map currentContextNodes = (Map)session.getAttribute(PORTAL_NODES);
         
         
         if (currentContextNodes == null) {
 
             currentContextNodes = new ConcurrentHashMap();
-            nodes.put(sessionId, currentContextNodes);
+            session.setAttribute(PORTAL_NODES, currentContextNodes);
             
             createDefaultContext(currentContextNodes);
         }
@@ -312,8 +314,9 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     
     protected ContextImplBase createContext(String nameSpace, String defaultPortalName) {
         
-        String sessionId = getTracker().getHttpRequest().getSession().getId();
-        Map<PortalObjectId, PortalObject> currentContextNodes = nodes.get(sessionId);
+         HttpSession session = getTracker().getHttpRequest().getSession();
+        Map currentContextNodes = (Map)session.getAttribute(PORTAL_NODES);
+
         
         PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
         long version = getCMSListener(nameSpace).getVersion();
@@ -347,8 +350,8 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     
     protected void checkContextNode(String nameSpace, String defaultPortalName) {
 
-        String sessionId = getTracker().getHttpRequest().getSession().getId();
-        Map<PortalObjectId, PortalObject> currentContextNodes = nodes.get(sessionId);
+        HttpSession session = getTracker().getHttpRequest().getSession();
+       Map currentContextNodes = (Map)session.getAttribute(PORTAL_NODES);
 
         PortalObjectPath contextPath = new PortalObjectPath("/", PortalObjectPath.CANONICAL_FORMAT);
         PortalObjectId contextId = new PortalObjectId(nameSpace, contextPath);
