@@ -137,6 +137,11 @@ public class HAService implements IHAService{
     }
   
     private void sendMsg( String name, String value)  {
+        
+        if( logger.isDebugEnabled())    {
+            logger.debug("send message "+ name + ":" + value);
+        }
+        
         Message msg = new Message();
         String buf = name;
         if( value != null)
@@ -167,7 +172,7 @@ public class HAService implements IHAService{
     @Override
     public void initPortalParameters() {
         portalParametersTs = System.currentTimeMillis();
-        logger.info("Send init parameters");
+
         sendMsg(INIT_PARAMETERS, null);
     }
     
