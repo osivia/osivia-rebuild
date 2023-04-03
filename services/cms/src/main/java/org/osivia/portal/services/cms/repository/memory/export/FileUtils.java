@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class FileUtils {
 
@@ -86,6 +87,7 @@ public class FileUtils {
 
     private ObjectMapper buildJSonMapper() {
         ObjectMapper om = new ObjectMapper();
+        om.enable(SerializationFeature.INDENT_OUTPUT);
         om.disable(MapperFeature.AUTO_DETECT_GETTERS);
         om.disable(MapperFeature.AUTO_DETECT_IS_GETTERS);
         om.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);

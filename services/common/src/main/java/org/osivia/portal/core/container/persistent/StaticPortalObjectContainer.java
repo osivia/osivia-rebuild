@@ -221,9 +221,16 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                  
                  List<NavigationItem> pageList = new ArrayList<>();
                  String pageId = id.getPath().getLastComponentName();
-
-                 NavigationItem pageNavigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(new UniversalID(portalID.getNamespace(), pageId));
+                 
                  PortalObjectPath pagePath = id.getPath();
+                 NavigationItem pageNavigation;
+                 try    {
+                     pageNavigation = getCMSService().getCMSSession(cmsContext).getNavigationItem(new UniversalID(portalID.getNamespace(), pageId));
+                 } catch( org.osivia.portal.api.cms.exception.CMSException e) {
+                     // Must be a window (can occur in case of lost of session)
+                     return null;
+                 }
+
 
                  while ((!pageNavigation.isRoot())) {
 
