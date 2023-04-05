@@ -18,14 +18,17 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -52,6 +55,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.content.IPublicationManager;
@@ -208,7 +212,13 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             handleMapping = false;
         }
         
-        
+        // The authentication is pending
+        // The defaut page will be intercepted by a project customizer (ViewPortalCommand)
+        // Without this a non portal command (for example, /content is never intercepted)
+        if ( request.getUserPrincipal() == null && request.getSession().getAttribute( "_const_cas_assertion_") != null && !BooleanUtils.isTrue( (Boolean) request.getSession().getAttribute( "auth_redirect_processed"))) {
+            handleMapping = false;
+        }
+
         
         if( handleMapping) {
              cmd = super.doMapping(controllerContext, invocation, host, contextPath, requestPath);
