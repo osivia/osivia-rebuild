@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.repository.configuration;
+package org.osivia.portal.cms.portlets.edition.repository.admin.configuration;
 
 import javax.portlet.PortletConfig;
 
@@ -10,6 +10,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.portlet.PortletAppUtils;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Jean-Sébastien Steux
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition.repository")
+@ComponentScan(basePackages = "org.osivia.portal.cms.portlets.edition.repository.admin")
 public class RepositoryConfiguration implements PortletConfigAware {
 
     @Autowired
@@ -75,7 +76,7 @@ public class RepositoryConfiguration implements PortletConfigAware {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setCache(true);
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/edition/repository/");
+        viewResolver.setPrefix("/WEB-INF/jsp/edition/repository/admin/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
@@ -105,14 +106,14 @@ public class RepositoryConfiguration implements PortletConfigAware {
         return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
     }
     
-    /**
-     * Get notifications service.
-     * 
-     * @return notifications service
-     */
+
     @Bean
     public INotificationsService getNotificationsService() {
         return Locator.getService( INotificationsService.MBEAN_NAME, INotificationsService.class);
     }
     
+    @Bean
+    public IPortalUrlFactory getPortalURLFactory() {
+        return Locator.getService(IPortalUrlFactory.class);
+    }
 }

@@ -153,7 +153,10 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
             	// Portlet -> might be a resourceRequest
             	if( ((ErrorResponse) response).getCause() instanceof PortletException)	{
             		controlContext.setResponse( response);
-            		portalControllerContext.getHttpServletRequest().setAttribute("osivia.no_redirection","1");
+            		// Portlet can set error redirection
+            		String noRedirection = (String) portalControllerContext.getHttpServletRequest().getAttribute("osivia.no_redirection");
+            		if( noRedirection == null)
+            		    portalControllerContext.getHttpServletRequest().setAttribute("osivia.no_redirection","1");
             		pageReponse = false;
             	}
             }

@@ -234,7 +234,7 @@
     </portlet>    
    
      <portlet>
-        <portlet-name>EditionRepositoryPortlet</portlet-name>
+        <portlet-name>EditionRepositoryAdminPortlet</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
         
         <init-param>
@@ -243,7 +243,32 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.portal.cms.portlets.edition.repository.configuration.RepositoryConfiguration</value>
+            <value>org.osivia.portal.cms.portlets.edition.repository.admin.configuration.RepositoryConfiguration</value>
+        </init-param>
+        
+        <expiration-cache>180</expiration-cache>
+        
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        
+        <portlet-info>
+            <title>CMS Repository Admin Portlet</title>
+        </portlet-info>
+    </portlet>
+    
+    <portlet>
+        <portlet-name>EditionRepositoryMergePortlet</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.portal.cms.portlets.edition.repository.merge.configuration.RepositoryConfiguration</value>
         </init-param>
         
         <expiration-cache>180</expiration-cache>
@@ -256,7 +281,7 @@
         <portlet-info>
             <title>CMS Repository Portlet</title>
         </portlet-info>
-    </portlet>
+    </portlet>    
    
   <portlet>
         <portlet-name>EditionAddPortlet</portlet-name>

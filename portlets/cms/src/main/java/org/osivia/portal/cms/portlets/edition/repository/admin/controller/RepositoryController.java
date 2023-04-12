@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.repository.controller;
+package org.osivia.portal.cms.portlets.edition.repository.admin.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -41,6 +43,7 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -79,6 +82,8 @@ public class RepositoryController extends GenericPortlet implements PortletConte
     /** Application context. */
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
 
     
 
@@ -212,7 +217,7 @@ public class RepositoryController extends GenericPortlet implements PortletConte
     }
 
 
-    private List<RepositoryBean> getRepositories(PortalControllerContext portalControllerContext) throws CMSException {
+    private List<RepositoryBean> getRepositories(PortalControllerContext portalControllerContext) throws PortalException {
         
         // Portal controller context
         CMSController ctrl = new CMSController(portalControllerContext);
@@ -222,6 +227,8 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         
         List<RepositoryBean> formRepositories = new ArrayList<>();
         
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         List<NativeRepository> repositories = cmsService.getUserRepositories(cmsContext);
         for(NativeRepository repository: repositories)  {
@@ -234,6 +241,15 @@ public class RepositoryController extends GenericPortlet implements PortletConte
            		if( repositoryManager)	{
 	                repositoryBean.setName( repositoryName);
 	                repositoryBean.setStreamable(repository instanceof StreamableRepository);
+	                
+	                Map<String, String> properties = new HashMap<>();
+	                String title = bundle.getString("MODIFY_REPOSITORY_MERGE_LABEL");
+	                properties.put("osivia.repository.name", repositoryName);
+
+	                String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryMergePortletInstance", title, "EditionRepositoryMergePortletInstance", properties,
+	                        new HashMap<>());
+	                
+	                repositoryBean.setMergeUrl(manageRepositoriesUrl);
 	                formRepositories.add(repositoryBean);
            		}
             }

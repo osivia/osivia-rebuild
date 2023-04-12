@@ -38,7 +38,7 @@
 		        									<portlet:param name="repositoryName" value="${repository.name}"/>
 		   										</portlet:resourceURL>	
 		   											                                	
-				                                <a href="${exportUrl}" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link text-truncate">
+				                                <a href="${exportUrl}" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link text-truncate d-flex">
 				                                  
 				                                                    <i class="glyphicons glyphicons-basic-square-upload"></i>
 				                                                    <strong class="d-inline"><op:translate key="MODIFY_REPOSITORY_EXPORT_LABEL"/></strong>
@@ -51,7 +51,7 @@
 									           <div>
 									               <form:input type="file" path="fileUpload['${repository.name}']" cssClass="file-import"
 									                           data-import-submit-id="${namespace}-file" data-import-repository-name-id="${namespace}-repositoryName" data-repository-name="${repository.name}" value="${browse}" />
-					                                <a href="#" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link text-truncate">
+					                                <a href="#" class="btn btn-link  btn-sm mb-1 ml-1  no-ajax-link text-truncate d-flex">
 					                                  
 					                                                    <i class="glyphicons glyphicons-basic-square-download"></i>
 					                                                    <strong class="d-inline"><op:translate key="MODIFY_REPOSITORY_IMPORT_LABEL"/></strong>
@@ -60,6 +60,18 @@
 									           </div>
 		                                	</c:if>
 		                                </div>
+		                                
+		                                <div class="col-sm-2 d-flex">
+                                            <c:if test="${repository.streamable}">
+                                               <div>
+                                                    <a href="${repository.mergeUrl}" class="btn btn-link  btn-sm mb-1 ml-1   text-truncate d-flex">
+                                                      
+                                                                        <i class="glyphicons glyphicons-basic-axes-three-dimensional"></i>
+                                                                        <strong class="d-inline"><op:translate key="MODIFY_REPOSITORY_MERGE_LABEL"/></strong>
+                                                    </a>        
+                                               </div>
+                                            </c:if>
+                                        </div>
 		                                
 		                            </div>
 	                        </div>

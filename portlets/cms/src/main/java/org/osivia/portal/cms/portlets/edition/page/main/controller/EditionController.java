@@ -744,7 +744,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         }
 
         // Text
-        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", title);
+        Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", title);
         item.add(text);
 
         toolbar.add(item);
@@ -860,7 +860,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         Element menu = DOM4JUtils.generateDivElement("dropdown");
         Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "halflings halflings-wrench");
         menuTitle.addAttribute(new QName("id"), "dropdownConfigurationMenu");
-        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
+        Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
         menuTitle.add(text);
 
             DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
@@ -882,8 +882,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
         Map<String, String> properties = new HashMap<>();
         String title = bundle.getString("MODIFY_REPOSITORY_ACTION");
         properties.put("osivia.title", title);
-
-        String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryPortletInstance", title, "EditionRepositoryPortletInstance", properties,
+        properties.put("osivia.hideTitle", "1");
+        
+        String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryAdminPortletInstance", title, "EditionRepositoryAdminPortletInstance", properties,
                 new HashMap<>());
         this.addToolbarItem(configurationList, manageRepositoriesUrl, "dropdown-link", bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", true);
 
@@ -914,7 +915,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
             Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-monitor");
             menuTitle.addAttribute(new QName("id"), "dropdownEditionMenu");
-            Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_EDITION"));
+            Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", bundle.getString("MODIFY_MENU_EDITION"));
             menuTitle.add(text);
             DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
             menu.add(menuTitle);
@@ -1037,7 +1038,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             Element menu = DOM4JUtils.generateDivElement("dropdown");
             Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-folder");
             menuTitle.addAttribute(new QName("id"), "spaceConfigurationMenu");
-            Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", bundle.getString("MODIFY_MENU_SPACE"));
+            Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", bundle.getString("MODIFY_MENU_SPACE"));
             menuTitle.add(text);
 
             DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");

@@ -1,4 +1,4 @@
-package org.osivia.portal.cms.portlets.edition.repository.controller;
+package org.osivia.portal.cms.portlets.edition.repository.admin.controller;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,13 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RepositoryForm {
+    
+    
     List<RepositoryBean> repositories;
     /** upload multipart file. */
     private Map fileUpload;
     
 
 
-    
     public List<RepositoryBean> getRepositories() {
         return repositories;
     }

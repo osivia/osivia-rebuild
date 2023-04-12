@@ -1,0 +1,417 @@
+package org.osivia.portal.cms.portlets.edition.repository.merge.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+import javax.annotation.PostConstruct;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONArray;
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONException;
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONObject;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.repository.BaseUserRepository;
+import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.NativeRepository;
+import org.osivia.portal.api.cms.service.StreamableRepository;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.error.Debug;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.portlet.context.PortletContextAware;
+
+
+/**
+ * Repository edition controller.
+ *
+ * @author Jean-Sébastien Steux
+ */
+@Controller
+@RequestMapping(value = "VIEW")
+@SessionAttributes("form")
+public class RepositoryController extends GenericPortlet implements PortletContextAware, ApplicationContextAware   {
+
+    private static final String SELECT_ELEMENTS_STEP = "select-elements";
+    private static final String DOWNLOAD_STEP = "download";
+    private static final String CHOOSE_FILE_STEP = "choose-file";
+
+
+    /** Portlet context. */
+    private PortletContext portletContext;
+
+
+    /** CMS service. */
+    @Autowired
+    private CMSService cmsService;
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
+
+
+    
+
+    /** Portlet config. */
+    @Autowired
+    private PortletConfig portletConfig;
+
+    @Autowired
+    private IBundleFactory bundleFactory;    
+    
+    @Autowired
+    INotificationsService notificationService;
+    
+    /** The logger. */
+    protected static Log logger = LogFactory.getLog(RepositoryController.class);
+
+    /**
+     * Constructor.
+     */
+    public RepositoryController() {
+        super();
+    }
+
+    /**
+     * Post-construct.
+     *
+     * @throws PortletException
+     */
+    @PostConstruct
+    public void postConstruct() throws PortletException {
+        super.init(this.portletConfig);
+    }
+    
+    
+    /**
+     * Default render mapping.
+     *
+     * @param request render request
+     * @param response render response
+     * @param count count request parameter.
+     * @return render view path
+     * @throws PortalException
+     */
+    @RenderMapping
+    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("form") RepositoryForm form) throws PortalException {
+        
+        String step =  request.getParameter("step");
+
+        if (StringUtils.isEmpty(step))
+            step =  CHOOSE_FILE_STEP;
+        
+        // Lost of session
+        if( form.getFileToMerge() == null) {
+            step =  CHOOSE_FILE_STEP;
+        }
+
+        
+        
+        // Portal controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
+        
+        if( CHOOSE_FILE_STEP.equals(step)) {
+            response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_FILE_TITLE_LABEL"));
+        }
+        
+        if( SELECT_ELEMENTS_STEP.equals(step)) {
+            response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_ELEMENT_SELECTIONS_LABEL"));
+        }
+        
+        if( DOWNLOAD_STEP.equals(step)) {
+            response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_DOWNLOAD_LABEL"));
+        }
+     
+          
+        return step;
+    }
+
+    /**
+     * Upload file action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form person edition form model attribute
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping(name = "submit", params = "upload-file")
+    public void uploadFile(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,   SessionStatus session)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+
+        // Temporary file
+        MultipartFile upload = (MultipartFile) form.getFileUpload();
+        
+        File f = File.createTempFile("merge", ".json");
+
+        try {
+           
+            upload.transferTo(f);
+            form.setFileToMerge(f);
+             
+            response.setRenderParameter("step", SELECT_ELEMENTS_STEP);
+
+        } catch (Exception e) {
+            
+            logger.error(Debug.stackTraceToString(  e ));
+            
+            
+            Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
+            String message = bundle.getString("MODIFY_REPOSITORY_IMPORT_ERROR",e.getMessage());        
+            notificationService.addSimpleNotification(portalCtx, message, NotificationsType.ERROR);
+             
+        } 
+
+    }
+    
+    @ActionMapping(name = "select")
+    public void select(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,   SessionStatus session)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        
+        // Lost of session
+        if( form.getFileToMerge() == null) {
+            response.setRenderParameter("step", CHOOSE_FILE_STEP);
+            return;
+        }
+        
+
+        
+        File f = File.createTempFile("merge", ".json");
+        FileOutputStream fileToMergeOutput = new FileOutputStream(f);
+        FileInputStream fileToMergeInput = new FileInputStream(form.getFileToMerge());
+        
+        try {
+           
+            // Portal controller context
+            CMSController ctrl = new CMSController(portalCtx);
+
+            CMSContext cmsContext = ctrl.getCMSContext();
+            cmsContext.setSuperUserMode(true);
+            
+            
+            String repositoryName = WindowFactory.getWindow(request).getProperty("osivia.repository.name");
+            
+            form.getMergeParams().setPagesId(new ArrayList<>(form.getMergedPages()));
+            
+            StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, repositoryName);
+            repository.merge(fileToMergeInput,  form.getMergeParams(), fileToMergeOutput);
+            
+            form.setFileDownload(f);
+            
+            response.setRenderParameter("step", DOWNLOAD_STEP);
+            
+            
+
+        } catch (Exception e) {
+            
+            logger.error(Debug.stackTraceToString(  e ));
+            
+            
+            Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
+            String message = bundle.getString("MODIFY_REPOSITORY_MERGE_ERROR",e.getMessage());        
+            notificationService.addSimpleNotification(portalCtx, message, NotificationsType.ERROR);
+            
+            response.setRenderParameter("step", SELECT_ELEMENTS_STEP);
+             
+        } finally   {
+            fileToMergeInput.close();
+            fileToMergeOutput.close();
+        }
+
+    }
+
+    
+    /**
+     * get Current space
+     * 
+     * @param portalCtx
+     * @return
+     * @throws CMSException
+     */
+    private NavigationItem getSpace(PortalControllerContext portalCtx) throws CMSException {
+        String repositoryName = WindowFactory.getWindow(portalCtx.getRequest()).getProperty("osivia.repository.name");
+
+
+        UniversalID id = new UniversalID(repositoryName, "DEFAULT");
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+        NavigationItem document = cmsService.getCMSSession(cmsContext).getNavigationItem(id);
+
+        return document;
+    }    
+     
+    
+     
+    /**
+     * copy file to response
+     *
+     */
+    @ResourceMapping("export")
+    public void export(ResourceRequest request, ResourceResponse response, @ModelAttribute("form") RepositoryForm form) throws PortletException, IOException {
+
+        
+        // Portal controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        
+        try {
+        
+        // Content type
+        response.setContentType("text/html");
+        response.setContentType("application/json;charset=UTF-8");
+        
+        String repositoryName = WindowFactory.getWindow(request).getProperty("osivia.repository.name");
+        
+        response.addProperty("Content-Disposition", "attachment; filename=\""+repositoryName+"-merge-"+new SimpleDateFormat("yy-MM-dd-hh-mm").format(new Date())+".json"+"\"");
+        
+        File f = form.getFileDownload();
+        FileInputStream in = new FileInputStream(f);
+        
+        IOUtils.copy(in, response.getPortletOutputStream());
+        } catch(Exception e) {
+            // Error redirection
+            portalCtx.getHttpServletRequest().setAttribute("osivia.no_redirection", "0");
+            throw e;
+        }
+    }
+
+
+ 
+    @Override
+    public void setPortletContext(PortletContext portletContext) {
+        this.portletContext = portletContext;
+    }
+
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    
+    private void browse(PortalControllerContext portalControllerContext, NavigationItem navItem, Map<String, String> pages) throws CMSException {
+        
+        pages.put(navItem.getDocumentId().getInternalID(), navItem.getTitle());
+        
+        // Children
+        if (!navItem.getChildren().isEmpty()) {
+              for (NavigationItem child : navItem.getChildren()) {
+                
+                this.browse(portalControllerContext, child, pages);
+             }
+
+        }
+    }
+    
+    /**
+     * Repository form model attribute.
+     *
+     * @param request portlet request
+     * @param response portlet response
+     * @return form
+     */
+    @ModelAttribute("form")
+    public RepositoryForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+
+        try {
+
+            RepositoryForm form = this.applicationContext.getBean(RepositoryForm.class);
+            
+           
+            
+            return form;
+
+        } catch ( Exception e) {
+            throw new PortletException(e);
+        }
+    }
+
+    
+    @ModelAttribute("pages")
+    public Map<String, String> getPages(PortletRequest request, PortletResponse response) throws PortletException {
+
+        // Portal controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        
+        try {
+
+            NavigationItem space = getSpace(portalCtx);
+            
+            Map<String, String> pages = new HashMap<>();
+            
+            browse(portalCtx,space, pages);
+            
+            // Sort by title
+            List<Entry<String, String>> list = new ArrayList<>(pages.entrySet());
+            list.sort(Entry.comparingByValue());
+
+            Map<String, String> result = new LinkedHashMap<String, String>();
+            for (Entry<String, String> entry : list) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+            
+            
+            return result;
+
+        } catch ( Exception e) {
+            throw new PortletException(e);
+        }
+    }
+
+}

@@ -10,5 +10,7 @@ public interface StreamableRepository {
     void saveTo(OutputStream out);
     
     void readFrom(InputStream in);
+    
+    void merge(InputStream in, MergeParameters params, OutputStream out) throws MergeException;
 
 }

@@ -204,6 +204,26 @@ $JQry(function() {
 });
 
 
+$JQry(function() {
+    
+    $JQry("input[data-merge]").each(function(index, element) {
+        var $element = $JQry(element);
+
+        if (!$element.data("loaded")) {
+            $element.change(function(event) {
+                var $target = $JQry(event.target);
+            
+                var $submit = $JQry("#" + $target.data("merge")); 
+                $submit.click();
+            });
+            
+            
+            
+            $element.data("loaded", true);
+        }
+    });
+    
+});
 
 
 

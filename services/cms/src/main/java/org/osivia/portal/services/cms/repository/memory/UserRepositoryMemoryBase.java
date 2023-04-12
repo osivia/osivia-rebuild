@@ -457,10 +457,12 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
         
         srcDoc.setParentInternalId(targetParent.getId().getInternalID());
         
+        batchMode = true;
+        updateDocument(srcDoc.getInternalID(), srcDoc);
+        updateDocument(srcParent.getInternalID(), srcParent);
+        batchMode = false;
+        updateDocument(targetParent.getInternalID(), targetParent);
         
-        getUserStorage().updateDocument(srcDoc.getInternalID(), srcDoc, true);
-        getUserStorage().updateDocument(srcParent.getInternalID(), srcParent, true);
-        getUserStorage().updateDocument(targetParent.getInternalID(), targetParent, false);
         
         if( supportPreview())   {
             publish(srcDoc.getInternalID(), true);

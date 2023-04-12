@@ -1,2 +1,4 @@
 
-.file-import {opacity:0;     position: absolute;}
+.file-import {opacity:0;     position: absolute; width: 100px}
+
+.file-merge {opacity:0;     position: absolute; }
