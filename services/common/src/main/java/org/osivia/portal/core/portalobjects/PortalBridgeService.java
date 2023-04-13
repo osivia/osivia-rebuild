@@ -255,14 +255,14 @@ public class PortalBridgeService implements PortalBridge {
 	public boolean isPageRepositoryManager(PortalControllerContext portalCtx) {
 		
 		Boolean repositoryManager;
-		PortalObjectId pageId = getPageId(portalCtx);
-		if( pageId != null)	{
+		UniversalID hostID = getHostPortalID(portalCtx.getHttpServletRequest());
+		if( hostID != null)	{
 			try {
 				HttpServletRequest request = portalCtx.getHttpServletRequest();
-				repositoryManager = (Boolean) request.getAttribute(Constants.ATTR_REPOSITORY_MANAGER+pageId.getNamespace());
+				repositoryManager = (Boolean) request.getAttribute(Constants.ATTR_REPOSITORY_MANAGER+hostID.getRepositoryName());
 				if( repositoryManager == null)	{
-					repositoryManager = cmsService.getCMSSession(new CMSContext(portalCtx)).isManager( pageId.getNamespace());
-					request.setAttribute(Constants.ATTR_REPOSITORY_MANAGER+pageId.getNamespace(), repositoryManager);
+					repositoryManager = cmsService.getCMSSession(new CMSContext(portalCtx)).isManager( hostID.getRepositoryName());
+					request.setAttribute(Constants.ATTR_REPOSITORY_MANAGER+hostID.getRepositoryName(), repositoryManager);
 				}
 			
 			} catch (CMSException e) {

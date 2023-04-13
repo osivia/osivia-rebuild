@@ -84,6 +84,12 @@
          <display-name xml:lang="fr">Portlet edition propriétés page</display-name>
          <instance-id>EditionPagePropertiesPortletInstance</instance-id>
          <portlet-ref>EditionPagePropertiesPortlet</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>         
 	      <preferences>
 	          <preference>
 	              <name>hide</name>
@@ -114,6 +120,12 @@
          <display-name xml:lang="fr">Portlet edition acls page</display-name>
          <instance-id>EditionPageAclsPortletInstance</instance-id>
          <portlet-ref>EditionPageAclsPortlet</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>            
 	      <preferences>
 	          <preference>
 	              <name>hide</name>
@@ -129,6 +141,12 @@
          <display-name xml:lang="fr">Portlet edition repository </display-name>
          <instance-id>EditionRepositoryAdminPortletInstance</instance-id>
          <portlet-ref>EditionRepositoryAdminPortlet</portlet-ref>
+        <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>         
 		 <preferences>
 	          <preference>
 	              <name>hide</name>
@@ -144,6 +162,12 @@
          <display-name xml:lang="fr">Portlet edition repository </display-name>
          <instance-id>EditionRepositoryMergePortletInstance</instance-id>
          <portlet-ref>EditionRepositoryMergePortlet</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>         
          <preferences>
               <preference>
                   <name>hide</name>
@@ -159,6 +183,12 @@
          <display-name xml:lang="fr">Portlet EditionAddPortlet</display-name>
          <instance-id>EditionAddPortletInstance</instance-id>
          <portlet-ref>EditionAddPortlet</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>            
 	      <preferences>
 	          <preference>
 	              <name>hide</name>
@@ -174,12 +204,12 @@
          <display-name xml:lang="fr">Portlet EditionModifyPortlet</display-name>
          <instance-id>EditionModifyPortletInstance</instance-id>
          <portlet-ref>EditionModifyPortlet</portlet-ref>
-          <security-constraint>
+         <security-constraint>
               <policy-permission>
                   <action-name>view</action-name>
-                  <unchecked />
+                  <role-name>Administrators</role-name>
               </policy-permission>
-          </security-constraint>
+          </security-constraint>   
  			<preferences>
 	          <preference>
 	              <name>hide</name>
@@ -195,6 +225,12 @@
          <display-name xml:lang="fr">Portlet EditionDeletePortlet</display-name>
          <instance-id>EditionDeletePortletInstance</instance-id>
          <portlet-ref>EditionDeletePortlet</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>            
 	      <preferences>
 	          <preference>
 	              <name>hide</name>
@@ -210,6 +246,12 @@
          <display-name xml:lang="fr">Portlet EditionModifyPortal</display-name>
          <instance-id>EditionModifySpaceInstance</instance-id>
          <portlet-ref>EditionModifySpace</portlet-ref>
+          <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>         
 	      <preferences>
 	          <preference>
 	              <name>hide</name>
@@ -225,6 +267,12 @@
          <display-name xml:lang="fr">Portlet Edition Arbre</display-name>
          <instance-id>EditionTreeInstance</instance-id>
          <portlet-ref>EditionTree</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>            
 	      <preferences>
 	          <preference>
 	              <name>hide</name>
@@ -243,6 +291,12 @@
          <display-name xml:lang="fr">Portlet renommage contenu</display-name>
          <instance-id>RenameInstance</instance-id>
          <portlet-ref>Rename</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>            
 	      <preferences>
 	          <preference>
 	              <name>hide</name>
