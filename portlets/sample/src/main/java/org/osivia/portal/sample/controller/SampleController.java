@@ -1,13 +1,22 @@
 package org.osivia.portal.sample.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+
 
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
@@ -18,13 +27,17 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
+import org.osivia.portal.api.windows.WindowFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 /**
@@ -121,6 +134,24 @@ public class SampleController implements PortletContextAware {
         return "react";
     }
     
+    @RenderMapping(params = "tab=6")
+    public String resource() {
+        return "resource";
+    }
+    
+    
+    /**
+     * copy file to response
+     *
+     */
+    @ResourceMapping("export")
+    public void export(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+
+        
+        if(true)
+            throw new PortletException("error test");
+    }
+
 
     /**
      * Action mapping

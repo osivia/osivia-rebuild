@@ -306,12 +306,7 @@ public class RepositoryController extends GenericPortlet implements PortletConte
     @ResourceMapping("export")
     public void export(ResourceRequest request, ResourceResponse response, @ModelAttribute("form") RepositoryForm form) throws PortletException, IOException {
 
-        
-        // Portal controller context
-        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-        
-        try {
-        
+   
         // Content type
         response.setContentType("text/html");
         response.setContentType("application/json;charset=UTF-8");
@@ -324,11 +319,7 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         FileInputStream in = new FileInputStream(f);
         
         IOUtils.copy(in, response.getPortletOutputStream());
-        } catch(Exception e) {
-            // Error redirection
-            portalCtx.getHttpServletRequest().setAttribute("osivia.no_redirection", "0");
-            throw e;
-        }
+
     }
 
 
