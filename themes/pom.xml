@@ -4,12 +4,12 @@
 
 
     <parent>
-        <groupId>org.osivia.portal</groupId>
+        <groupId>org.osivia.ajax-portal</groupId>
         <artifactId>osivia-portal-parent</artifactId>
         <version>5.2.5-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.osivia.portal.themes</groupId>
+    <groupId>org.osivia.ajax-portal.themes</groupId>
     <artifactId>osivia-portal-themes-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -30,14 +30,14 @@
             <!-- OSIVIA Portal API -->
             
             <dependency>
-                <groupId>org.osivia.portal.api</groupId>
+                <groupId>org.osivia.ajax-portal.api</groupId>
                 <artifactId>osivia-portal-api-common</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             
             <dependency>
-                <groupId>org.osivia.portal.api</groupId>
+                <groupId>org.osivia.ajax-portal.api</groupId>
                 <artifactId>osivia-portal-api-cms</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
@@ -52,12 +52,12 @@
         <!-- OSIVIA Portal API -->
         
         <dependency>
-            <groupId>org.osivia.portal.api</groupId>
+            <groupId>org.osivia.ajax-portal.api</groupId>
             <artifactId>osivia-portal-api-common</artifactId>
         </dependency>
         
         <dependency>
-            <groupId>org.osivia.portal.api</groupId>
+            <groupId>org.osivia.ajax-portal.api</groupId>
             <artifactId>osivia-portal-api-cms</artifactId>
         </dependency>
 

@@ -4,12 +4,12 @@
 
 
     <parent>
-        <groupId>org.osivia.portal</groupId>
+        <groupId>org.osivia.ajax-portal</groupId>
         <artifactId>osivia-portal-parent</artifactId>
         <version>5.2.5-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.osivia.portal.api</groupId>
+    <groupId>org.osivia.ajax-portal.api</groupId>
     <artifactId>osivia-portal-api-parent</artifactId>
     <packaging>pom</packaging>
 

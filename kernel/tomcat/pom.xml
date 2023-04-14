@@ -4,12 +4,12 @@
 
 
     <parent>
-        <groupId>org.osivia.portal.kernel</groupId>
+        <groupId>org.osivia.ajax-portal.kernel</groupId>
         <artifactId>osivia-portal-kernel-parent</artifactId>
         <version>5.2.5-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.osivia.portal.kernel.tomcat</groupId>
+    <groupId>org.osivia.ajax-portal.kernel.tomcat</groupId>
     <artifactId>osivia-portal-tomcat-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -35,7 +35,7 @@
         
             <!-- OSIVIA Portal kernel -->
             <dependency>
-                <groupId>org.osivia.portal.kernel</groupId>
+                <groupId>org.osivia.ajax-portal.kernel</groupId>
                 <artifactId>osivia-portal-kernel-common</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
@@ -43,13 +43,13 @@
             
             <!-- OSIVIA Portal services -->
             <dependency>
-                <groupId>org.osivia.portal.services</groupId>
+                <groupId>org.osivia.ajax-portal.services</groupId>
                 <artifactId>osivia-portal-services-common</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>org.osivia.portal.services</groupId>
+                <groupId>org.osivia.ajax-portal.services</groupId>
                 <artifactId>osivia-portal-services-cms</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
@@ -81,7 +81,7 @@
         <!-- OSIVIA Portal kernel -->
 
         <dependency>
-            <groupId>org.osivia.portal.kernel</groupId>
+            <groupId>org.osivia.ajax-portal.kernel</groupId>
             <artifactId>osivia-portal-kernel-common</artifactId>
         </dependency>
 

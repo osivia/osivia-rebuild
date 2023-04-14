@@ -4,7 +4,7 @@
     
     
     <parent>
-        <groupId>org.osivia.portal.kernel</groupId>
+        <groupId>org.osivia.ajax-portal.kernel</groupId>
         <artifactId>osivia-portal-kernel-parent</artifactId>
         <version>5.2.5-SNAPSHOT</version>
     </parent>
@@ -31,20 +31,20 @@
 
         <!-- OSIVIA Portal API -->
         <dependency>
-            <groupId>org.osivia.portal.api</groupId>
+            <groupId>org.osivia.ajax-portal.api</groupId>
             <artifactId>osivia-portal-api-common</artifactId>
         </dependency>
         
         
         <dependency>
-            <groupId>org.osivia.portal.kernel</groupId>
+            <groupId>org.osivia.ajax-portal.kernel</groupId>
             <artifactId>osivia-portal-kernel-jboss-compat</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 		
         <dependency>
-            <groupId>org.osivia.portal.kernel</groupId>
+            <groupId>org.osivia.ajax-portal.kernel</groupId>
             <artifactId>osivia-portal-kernel-jbp-lib</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

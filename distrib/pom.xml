@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.osivia.portal</groupId>
+        <groupId>org.osivia.ajax-portal</groupId>
         <artifactId>osivia-portal-parent</artifactId>
         <version>5.2.5-SNAPSHOT</version>
     </parent>
@@ -24,28 +24,28 @@
 
         <!-- OSIVIA Portal -->
         <dependency>
-            <groupId>org.osivia.portal.api</groupId>
+            <groupId>org.osivia.ajax-portal.api</groupId>
             <artifactId>osivia-portal-api-common</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         
         <dependency>
-            <groupId>org.osivia.portal.api</groupId>
+            <groupId>org.osivia.ajax-portal.api</groupId>
             <artifactId>osivia-portal-api-cms</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         
         <dependency>
-            <groupId>org.osivia.portal.kernel</groupId>
+            <groupId>org.osivia.ajax-portal.kernel</groupId>
             <artifactId>osivia-portal-kernel-jbp-lib</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         
         <dependency>
-            <groupId>org.osivia.portal.kernel.tomcat</groupId>
+            <groupId>org.osivia.ajax-portal.kernel.tomcat</groupId>
             <artifactId>osivia-portal-tomcat-lib</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
@@ -53,7 +53,7 @@
         
         
         <dependency>
-            <groupId>org.osivia.portal.ws</groupId>
+            <groupId>org.osivia.ajax-portal.ws</groupId>
             <artifactId>osivia-portal-ws</artifactId>
             <version>${project.version}</version>
             <type>war</type>
@@ -61,21 +61,21 @@
         
         
         <dependency>
-            <groupId>org.osivia.portal.portlets</groupId>
+            <groupId>org.osivia.ajax-portal.portlets</groupId>
             <artifactId>osivia-portal-portlets-sample</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
         
          <dependency>
-            <groupId>org.osivia.portal.portlets</groupId>
+            <groupId>org.osivia.ajax-portal.portlets</groupId>
             <artifactId>osivia-portal-portlets-cms</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency> 
 <!--        
          <dependency>
-            <groupId>org.osivia.portal.portlets</groupId>
+            <groupId>org.osivia.ajax-portal.portlets</groupId>
             <artifactId>osivia-portal-portlets-react</artifactId>
             <version>${project.version}</version>
             <type>war</type>
@@ -83,28 +83,28 @@
 -->        
         
         <dependency>
-            <groupId>org.osivia.portal.themes</groupId>
+            <groupId>org.osivia.ajax-portal.themes</groupId>
             <artifactId>osivia-portal-themes-generic</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>    
         
         <dependency>
-            <groupId>org.osivia.portal.kernel.tomcat</groupId>
+            <groupId>org.osivia.ajax-portal.kernel.tomcat</groupId>
             <artifactId>osivia-portal-tomcat-web</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>    
         
         <dependency>
-            <groupId>org.osivia.portal.kernel.tomcat</groupId>
+            <groupId>org.osivia.ajax-portal.kernel.tomcat</groupId>
             <artifactId>osivia-portal-tomcat-assets</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>    
                 
         <dependency>
-            <groupId>org.osivia.portal.kernel</groupId>
+            <groupId>org.osivia.ajax-portal.kernel</groupId>
             <artifactId>osivia-portal-kernel-spring-mvc-portlet</artifactId>
             <version>${project.version}</version>
             <type>jar</type>

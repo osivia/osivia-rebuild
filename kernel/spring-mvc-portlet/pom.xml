@@ -4,7 +4,7 @@
 
 
 	<parent>
-		<groupId>org.osivia.portal.kernel</groupId>
+		<groupId>org.osivia.ajax-portal.kernel</groupId>
 		<artifactId>osivia-portal-kernel-parent</artifactId>
 		<version>5.2.5-SNAPSHOT</version>
 	</parent>
