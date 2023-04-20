@@ -90,6 +90,10 @@ public class HeaderMetadatasAttributesService implements IHeaderMetadatasAttribu
         } 
         
         if( title == null ) {
+            title = page.getProperty("osivia.displayName");
+        }
+        
+        if( title == null ) {
             String contentId = page.getProperty("osivia.contentId");
             if (contentId != null) {
                 UniversalID id = new UniversalID(contentId);

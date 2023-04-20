@@ -14,9 +14,6 @@
 
 <portlet:actionURL name="select" var="submitUrl" />
 
-<div class="card bg-light my-3 p-2">
-   <span><op:translate key="MODIFY_REPOSITORY_MERGE_SELECT_HELP"/></span>
-</div>
 
 
 <form:form action="${submitUrl}" modelAttribute="form" >

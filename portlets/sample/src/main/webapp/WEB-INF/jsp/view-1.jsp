@@ -28,8 +28,11 @@
 <c:set var="tab" value="1" scope="request" />
 <jsp:include page="nav.jsp" />
 
+<div>
 
 <h1 class="h4">Onglet #1</h1>
+
+
 
 <p>  foo : ${foo} </p>
 
@@ -67,6 +70,8 @@
     <span >
        <a href="${startWindowCommand}" class="btn btn-secondary">startWindowCommand</a>
     </span>
+</div>
+
 </div>
 
 

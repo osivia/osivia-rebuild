@@ -6,11 +6,24 @@ public class RepositoryBean {
     String name;
     boolean streamable;
     private String mergeUrl;
+    private String version;
     
+  
+    
+    
+    public String getVersion() {
+        return version;
+    }
 
 
+
     
-    
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+
+
     public String getMergeUrl() {
         return mergeUrl;
     }

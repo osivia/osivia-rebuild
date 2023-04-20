@@ -148,9 +148,25 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
                 encodedToken = StringUtils.EMPTY;
             }
 
+            boolean pageReponse = true;
+            if( response instanceof ErrorResponse) {
+                // Portlet -> might be a resourceRequest
+                if( ((ErrorResponse) response).getCause() instanceof PortletException)  {
+                    controlContext.setResponse( response);
+                    // Portlet can set error redirection
+                    String noRedirection = (String) portalControllerContext.getHttpServletRequest().getAttribute("osivia.no_redirection");
+                    if( noRedirection == null)  {
+                        portalControllerContext.getHttpServletRequest().setAttribute("osivia.no_redirection","1");
+                    }
+                    pageReponse = false;
+                }
+            }
+            
+            if( pageReponse)
+                controlContext.setResponse(new RedirectionResponse(
+                        getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?httpCode=" + errDescriptor.getHttpErrCode() + "&token=" + encodedToken));
 
-            controlContext.setResponse(new RedirectionResponse(
-	                    getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?httpCode=" + errDescriptor.getHttpErrCode() + "&token=" + encodedToken));
+
 		}
 	}
 

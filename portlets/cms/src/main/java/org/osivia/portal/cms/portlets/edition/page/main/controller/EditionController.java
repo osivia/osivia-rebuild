@@ -973,12 +973,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
             this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text", true);
 
 
-            String deleteContentUrl;
-            properties = new HashMap<>();
-            ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
-
-            deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
-            this.addToolbarItem(editionList, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin", true);
+            if( !id.getInternalID().equals("PUBLISH"))  {
+                String deleteContentUrl;
+                properties = new HashMap<>();
+                ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
+    
+                deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
+                this.addToolbarItem(editionList, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin", true);
+            }
 
 
             if (document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace) {

@@ -242,6 +242,12 @@ public class RepositoryController extends GenericPortlet implements PortletConte
 	                repositoryBean.setName( repositoryName);
 	                repositoryBean.setStreamable(repository instanceof StreamableRepository);
 	                
+	                if( repository instanceof StreamableRepository)    {
+	                    repositoryBean.setVersion(((StreamableRepository) repository).getVersion());
+	                }
+	                else
+	                    repositoryBean.setVersion(null);
+	                
 	                Map<String, String> properties = new HashMap<>();
 	                String title = bundle.getString("MODIFY_REPOSITORY_MERGE_LABEL");
 	                properties.put("osivia.repository.name", repositoryName);

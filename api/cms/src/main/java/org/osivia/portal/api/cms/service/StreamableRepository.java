@@ -12,5 +12,7 @@ public interface StreamableRepository {
     void readFrom(InputStream in);
     
     void merge(InputStream in, MergeParameters params, OutputStream out) throws MergeException;
+    
+    public String getVersion();
 
 }

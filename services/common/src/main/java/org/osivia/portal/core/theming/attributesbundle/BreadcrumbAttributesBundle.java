@@ -222,6 +222,12 @@ public final class BreadcrumbAttributesBundle implements IInternalAttributesBund
 
 
         if( "template".equals(page.getProperty("osivia.pageType") )) {
+            
+            String title = page.getProperties().get("osivia.displayName");
+            if (title != null)  {
+                BreadcrumbItem contentItem = new BreadcrumbItem(title, null, "", true);
+                breadcrumb.getChildren().add(0,contentItem);
+            }
    
             
         }   else    {

@@ -13,7 +13,7 @@
 </c:set>
 
 <div class="card bg-light my-3 p-2">
-   <span><op:translate key="MODIFY_REPOSITORY_MERGE_CHOOSE_FILE_HELP"/></span>
+   <span>${helpMessage}</span>
 </div>
 
 <portlet:actionURL name="submit" var="submitUrl" />

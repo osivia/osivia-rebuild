@@ -17,7 +17,9 @@ import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.impl.api.node.PageURL;
+import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -68,7 +70,11 @@ public class DynamicService implements IDynamicService {
             properties.put(dynaKey, windowProperties.get(dynaKey));
         }
         
-        
+        InstanceDefinition instance = ctx.getController().getInstanceContainer().getDefinition(portletInstance);
+        if (instance == null) {
+            throw new RuntimeException("Instance \"" + portletInstance + "\" not defined");
+        }
+
        
         
 
@@ -109,33 +115,41 @@ public class DynamicService implements IDynamicService {
         
         ctx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);      
         
-        // Maj du breadcrumb
-        Breadcrumb breadcrumb = (Breadcrumb) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb");
-
-        if (breadcrumb == null) {
-            breadcrumb = new Breadcrumb();
-        }
-        else    {
-            breadcrumb.getChildren().clear();
-        }
-
-        // Ajout du nouvel item
-        PageURL url = new PageURL(pageId, ctx);
-
-        String name = properties.get("osivia.title");
-
-        BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), windowId, false);
+        if( !"0".equals(properties.get("osivia.addToBreadcrumb")) ){
         
-        // Task identifier
-        if (windowProperties != null) {
-            String taskId = windowProperties.get(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
-            item.setTaskId(taskId);
-        }            
-
-
-        breadcrumb.getChildren().add(item);
-
-        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", breadcrumb);
+            // Maj du breadcrumb
+            Breadcrumb breadcrumb = (Breadcrumb) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb");
+    
+            if (breadcrumb == null) {
+                breadcrumb = new Breadcrumb();
+            }
+            else    {
+                if (!"1".equals(properties.get("osivia.addToBreadcrumb"))) {
+                    breadcrumb.getChildren().clear();
+                }
+            }
+    
+            // Ajout du nouvel item
+            PageURL url = new PageURL(pageId, ctx);
+    
+            String name = properties.get("osivia.title");
+            if (name == null) {
+                name = instance.getDisplayName().getDefaultString();
+            }
+            
+            BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), windowId, false);
+            
+            // Task identifier
+            if (windowProperties != null) {
+                String taskId = windowProperties.get(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
+                item.setTaskId(taskId);
+            }            
+    
+    
+            breadcrumb.getChildren().add(item);
+    
+            ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", breadcrumb);
+        }
      
   
     }

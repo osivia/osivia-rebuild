@@ -5,8 +5,23 @@ public class RepositoryBean {
     
     String name;
     boolean streamable;
+    String version;
 
-     public boolean isStreamable() {
+     
+    public String getVersion() {
+        return version;
+    }
+
+
+
+    
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+
+
+    public boolean isStreamable() {
         return streamable;
     }
 

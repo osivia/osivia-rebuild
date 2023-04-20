@@ -27,7 +27,19 @@
 	                    <div class="d-flex align-items-center">
 	
 	                        <div class="flex-grow-1 my-1 mx-2">
-	                            <h5 class="card-title mb-1"><c:out value="${repository.name}" /></h5>
+
+
+
+
+	                            <h5 class="card-title mb-1">
+	                            
+	                                <c:out value="${repository.name}" />
+
+	                                <c:if test="${not empty repository.version}">
+	                                      <span class="badge rounded-pill bg-primary">${repository.version}</span>
+	                                </c:if>	                            
+	                            
+	                            </h5>
 		                            <div class="row">
 
  

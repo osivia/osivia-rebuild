@@ -12,10 +12,11 @@
 <c:set var="tab" value="2" scope="request" />
 <jsp:include page="nav.jsp" />
 
-
-<h1 class="h4">Onglet #2</h1>
-
-
 <div>
-    <a href="${fooUrl}" class="btn btn-default">Foo</a>
+	<h1 class="h4">Onglet #2</h1>
+	
+	
+	<div>
+	    <a href="${fooUrl}" class="btn btn-default">Foo</a>
+	</div>
 </div>

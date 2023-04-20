@@ -351,6 +351,9 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             	form.setModifiableId(false);
             }
             
+            if(document.getId().getInternalID().equals("PUBLISH"))
+                    form.setModifiableId(false);
+            
             form.setId( document.getInternalID());
             
      

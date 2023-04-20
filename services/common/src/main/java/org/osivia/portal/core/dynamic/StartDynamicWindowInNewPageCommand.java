@@ -168,11 +168,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             
 
 
-            // Page display names
-            Map<Locale, String> displayNames = new HashMap<Locale, String>();
-            if (this.displayName != null) {
-                displayNames.put(Locale.FRENCH, this.displayName);
-            }
+
 
 
 
@@ -190,6 +186,12 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             if ("normal".equals(this.dynaProps.get("osivia.windowState"))) {
                 properties.put("osivia.windowState", "normal");
             }
+
+            // Page display names
+            if (this.displayName != null) {
+                properties.put("osivia.displayName", this.displayName);
+            }
+            
             
             /* Make this page restorable */
              

@@ -1,9 +1,11 @@
 package org.osivia.portal.services.cms.repository.memory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -104,7 +106,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     private String lastChecksum;
 
 
-    
+    private String version = null;
 
 
     public FileRepository(RepositoryFactory repositoryFactory,SharedRepositoryKey repositoryKey, String userName) {
@@ -520,14 +522,36 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
             File file = getConfigurationFile();
             if (file.exists()) {
                 setChecksum( getFilesUtils().getCheckSum(file));
-                getFilesUtils().importFile(file);
+                importFile(file);
             } else
                 importDefaultObject();
         }
     }
 
     private void importFile(File importFile) {
+        
         getFilesUtils().importFile(importFile);
+        
+        /* compute version  : 1st line of META-INF/version.txt */
+
+        BufferedReader brTest = null;
+        try {
+            File versionFile = getVersionFile();
+            if (versionFile.exists()) {
+                brTest = new BufferedReader(new FileReader(getVersionFile()));
+                version = brTest.readLine();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (brTest != null)
+                try {
+                    brTest.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+
     }
 
     public void checkAndReload() {
@@ -720,11 +744,20 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     private File getConfigurationFile() {
         return new File(System.getProperty(PORTAL_ADMINISTRATION_PATH) + "configuration-" + getRepositoryName() + ".json");
     }
+    
+    private File getVersionFile() {
+        return new File(System.getProperty(PORTAL_ADMINISTRATION_PATH) + "META-INF/version.txt");
+    }
 
     @Override
     public void merge(InputStream in, MergeParameters params, OutputStream out) throws MergeException{
         getFilesUtils().merge(in, params, out);
         
+    }
+
+    @Override
+    public String getVersion() {
+        return version;
     }
 
 

@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -165,6 +166,9 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         
         if( CHOOSE_FILE_STEP.equals(step)) {
             response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_FILE_TITLE_LABEL"));
+            
+            String part2 = getHelpMessagePart2(bundle);
+            request.setAttribute("helpMessage", bundle.getString("MODIFY_REPOSITORY_MERGE_CHOOSE_FILE_HELP", part2));
         }
         
         if( SELECT_ELEMENTS_STEP.equals(step)) {
@@ -172,11 +176,26 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         }
         
         if( DOWNLOAD_STEP.equals(step)) {
+            
+            String part2 = getHelpMessagePart2(bundle);
+            request.setAttribute("helpMessage", bundle.getString("MODIFY_REPOSITORY_MERGE_DOWNLOAD_HELP", part2));
+            
             response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_DOWNLOAD_LABEL"));
         }
+        
+        
      
           
         return step;
+    }
+
+    private String getHelpMessagePart2(Bundle bundle) {
+        String helpUrl = System.getProperty("administration.forge.url");
+        String part2= bundle.getString("MODIFY_REPOSITORY_MERGE_GIT_HELP");
+        if( StringUtils.isNotEmpty(helpUrl))    {
+            part2= "<a href=\""+helpUrl+"\" target=\"_blank\">"+part2+"</a>";
+        }
+        return part2;
     }
 
     /**
@@ -306,19 +325,24 @@ public class RepositoryController extends GenericPortlet implements PortletConte
     @ResourceMapping("export")
     public void export(ResourceRequest request, ResourceResponse response, @ModelAttribute("form") RepositoryForm form) throws PortletException, IOException {
 
-   
-        // Content type
-        response.setContentType("text/html");
-        response.setContentType("application/json;charset=UTF-8");
-        
-        String repositoryName = WindowFactory.getWindow(request).getProperty("osivia.repository.name");
-        
-        response.addProperty("Content-Disposition", "attachment; filename=\""+repositoryName+"-merge-"+new SimpleDateFormat("yy-MM-dd-hh-mm").format(new Date())+".json"+"\"");
-        
-        File f = form.getFileDownload();
-        FileInputStream in = new FileInputStream(f);
-        
-        IOUtils.copy(in, response.getPortletOutputStream());
+        try {
+            response.setContentType("text/html");
+            response.setContentType("application/json;charset=UTF-8");
+
+            String repositoryName = WindowFactory.getWindow(request).getProperty("osivia.repository.name");
+
+            response.addProperty("Content-Disposition",
+                    "attachment; filename=\"" + repositoryName + "-merge-" + new SimpleDateFormat("yy-MM-dd-hh-mm").format(new Date()) + ".json" + "\"");
+
+            File f = form.getFileDownload();
+            FileInputStream in = new FileInputStream(f);
+
+            IOUtils.copy(in, response.getPortletOutputStream());
+        } catch (Exception e) {
+            PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+            portalCtx.getHttpServletRequest().setAttribute("osivia.no_redirection", "0");
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -390,7 +414,12 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             
             // Sort by title
             List<Entry<String, String>> list = new ArrayList<>(pages.entrySet());
-            list.sort(Entry.comparingByValue());
+            list.sort(Entry.comparingByValue( new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return o1.toUpperCase().compareTo(o2.toUpperCase());
+                }
+            }));
 
             Map<String, String> result = new LinkedHashMap<String, String>();
             for (Entry<String, String> entry : list) {

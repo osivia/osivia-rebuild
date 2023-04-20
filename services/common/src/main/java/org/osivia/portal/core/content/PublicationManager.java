@@ -528,16 +528,15 @@ public class PublicationManager implements IPublicationManager {
 							windowProperties, windowParams);
 				} else {
 					// Empty page (ex: link to procedure from mail, uncontextualized content, ...)
-					Map<Locale, String> displayNames = new HashMap<Locale, String>();
-					String displayName = "content";
-					if (StringUtils.isNotEmpty(displayName)) {
-						displayNames.put(Locale.FRENCH, displayName);
-					}
+					String displayName = null;
+				    if( doc != null)
+				        displayName = doc.getTitle();
 
 					UniversalID defaultPortalID = getCMSService().getDefaultPortal(cmsContext);
+
 					
 					StartDynamicWindowInNewPageCommand cmd = new StartDynamicWindowInNewPageCommand(
-							defaultPortalID, null, "content", instance,
+							defaultPortalID, null, displayName, instance,
 							windowProperties, new HashMap<>(), null);
 					UpdatePageResponse resp = (UpdatePageResponse) controllerContext.execute(cmd);
 
@@ -560,6 +559,8 @@ public class PublicationManager implements IPublicationManager {
 						windowProps.put(prop, initProps.get(prop).get(0));
 					}
 				}
+				
+				windowProps.put("osivia.addToBreadcrumb","0");
 
 				Map<String, String> windowParams = new HashMap<>();
 				Map<String, List<String>> initParams = PageParametersEncoder

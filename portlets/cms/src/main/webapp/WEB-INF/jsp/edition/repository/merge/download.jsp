@@ -22,6 +22,9 @@
 	<portlet:param name="repositoryName" value="${repository.name}" />
 </portlet:resourceURL>
 
+<div class="card bg-light my-3 p-2">
+   <span>${helpMessage}</span>
+</div>
 
 
 <div  class="mb-3 d-flex justify-content-center">

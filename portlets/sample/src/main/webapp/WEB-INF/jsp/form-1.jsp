@@ -15,7 +15,7 @@
 <c:set var="tab" value="4" scope="request" />
 <jsp:include page="nav.jsp" />
 
-
+<div>
 <h1 class="h4">Formulaire <small>Step #1</small></h1>
 
 
@@ -45,3 +45,5 @@
 <p>
     <a href="${actionURL}" class="btn btn-danger">Test</a>
 </p>
+
+</div>
