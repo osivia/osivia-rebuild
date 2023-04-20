@@ -293,9 +293,34 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             
             RepositoryForm form = this.applicationContext.getBean(RepositoryForm.class);
             
-            form.setRepositories(getRepositories(portalCtx));
 
             return form;
+
+        } catch ( Exception e) {
+            throw new PortletException(e);
+        }
+    }
+    
+    /**
+     * Repository index model attribute.
+     *
+     * @param request portlet request
+     * @param response portlet response
+     * @return form
+     */
+    @ModelAttribute("repositoryIndex")
+    public RepositoryIndex getIndex(PortletRequest request, PortletResponse response) throws PortletException {
+
+        try {
+
+            // Portal Controller context
+            PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+            
+            RepositoryIndex index = this.applicationContext.getBean(RepositoryIndex.class);
+            
+            index.setRepositories(getRepositories(portalCtx));
+
+            return index;
 
         } catch ( Exception e) {
             throw new PortletException(e);

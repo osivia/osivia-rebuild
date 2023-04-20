@@ -20,7 +20,7 @@
 	class="w-100">
 	
 	<ul class="list-unstyled">
-		<c:forEach var="repository" items="${form.repositories}" varStatus="status">
+		<c:forEach var="repository" items="${repositoryIndex.repositories}" varStatus="status">
 			<li>
 				<div class="card mb-2">
 	                <div class="card-body p-2">

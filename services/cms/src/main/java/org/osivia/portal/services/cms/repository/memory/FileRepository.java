@@ -106,8 +106,6 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     private String lastChecksum;
 
 
-    private String version = null;
-
 
     public FileRepository(RepositoryFactory repositoryFactory,SharedRepositoryKey repositoryKey, String userName) {
         super(repositoryFactory,repositoryKey, null, userName);
@@ -532,25 +530,7 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
         
         getFilesUtils().importFile(importFile);
         
-        /* compute version  : 1st line of META-INF/version.txt */
-
-        BufferedReader brTest = null;
-        try {
-            File versionFile = getVersionFile();
-            if (versionFile.exists()) {
-                brTest = new BufferedReader(new FileReader(getVersionFile()));
-                version = brTest.readLine();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (brTest != null)
-                try {
-                    brTest.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-        }
+       
 
     }
 
@@ -757,6 +737,27 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
     @Override
     public String getVersion() {
+        /* compute version  : 1st line of META-INF/version.txt */
+        String version = null;
+        
+        BufferedReader brTest = null;
+        try {
+            File versionFile = getVersionFile();
+            if (versionFile.exists()) {
+                brTest = new BufferedReader(new FileReader(getVersionFile()));
+                version = brTest.readLine();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (brTest != null)
+                try {
+                    brTest.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+        
         return version;
     }
 
