@@ -12,7 +12,7 @@
 	<portlet:namespace />
 </c:set>
 
-<div class="card bg-light my-3 p-2">
+<div class="card my-3 p-2">
    <span>${helpMessage}</span>
 </div>
 
