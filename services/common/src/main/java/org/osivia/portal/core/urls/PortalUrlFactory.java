@@ -480,8 +480,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl) throws PortalException {
-        //TODO
-        return redirectionUrl;
+        return "/delete";
     }
     
     /**

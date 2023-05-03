@@ -705,6 +705,11 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
             reload(history.state, null, true)
             return;
         }
+        
+        if (resp.location === "/delete") {
+            closeFancybox();
+            return;
+        }
 
         document.location = resp.location;
     }
