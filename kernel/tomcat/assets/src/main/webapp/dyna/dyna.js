@@ -181,8 +181,10 @@ function bilto(event) {
         if (source.disabled) {
             return;
         }
+        
 
-        if (!$source.hasClass("ajax-link") && $source.closest(".no-ajax-link").length) {
+
+        if (!$source.hasClass("ajax-link") && $source.closest(".no-ajax-link").length ) {
             return;
         }
 
@@ -204,8 +206,18 @@ function bilto(event) {
                 current = current.parentNode;
             }
 
+
             // Check we have a form and use it
             if (current.nodeName === 'FORM') {
+                 if( source.type === "submit")   { 
+                    if( $source.closest(".needs-validation") )  {
+                        if (!current.checkValidity()) {
+                            return;
+                        }
+                    }
+                }
+                
+                
                 const enctype = current.enctype;
 
                 // We don't handle file upload for now
@@ -574,6 +586,7 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
         // Save components state in history
         if (popping === undefined && resp.restore_url !== "" && preventHistory === false) {
             if (resp.push_history === "true") {
+                                
                 // update the current page
                 if (history.state != null) {
                     stateObject = history.state;
@@ -595,6 +608,18 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
                 if (componentStates !== undefined) {
                     newState.componentStates = componentStates;
                 }
+                
+                
+                // Previous page propagation
+                if( history.state != null) {
+                    
+                    stateObject = history.state;
+                    if( newPage == false)
+                        newState.previousUrl = stateObject.previousUrl;
+                    else
+                        newState.previousUrl = stateObject.fullUrl;
+                }   
+                
 
                 history.pushState(newState, "", resp.full_state_url);
             } else {
@@ -707,7 +732,7 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
         }
         
         if (resp.location === "/delete") {
-            closeFancybox();
+            reloadPrevious(history.state, null, true);
             return;
         }
 
@@ -794,6 +819,23 @@ function reload(state, event, refresh) {
     options.async = true;
     directAjaxCall(null, options, state.url, event, null, state, refresh);
 }
+
+function reloadPrevious(state, event, refresh) {
+    var options = new Object();
+    options.method = "get";
+    options.async = true;
+    
+    var url = "";
+    if(  state.previousUrl !== undefined)
+            url = state.previousUrl;
+        else
+            url = server_base_url;
+ 
+    directAjaxCall(null, options, url, event, null, state, refresh);
+    
+}
+
+
 
 
 window.onpopstate = function (event) {

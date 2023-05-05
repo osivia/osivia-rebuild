@@ -22,3 +22,48 @@ var $JQry = jQuery.noConflict();
 })(jQuery);
 
 
+// bs5 validation
+$JQry(function() {
+    $JQry('.needs-validation').each(function(index, element) {
+        var $element = $JQry(element),
+            loaded = $element.data("validation-loaded");
+
+        if (!loaded) {
+            
+            // prevent submission
+            element.addEventListener('submit', function(event) {
+                if (!element.checkValidity()) {
+ 
+                    // display feedback                   
+                    $element.find(':input').each(function(index, child){
+                         if( child.validationMessage)    {
+                               var $child = $JQry(child);
+                               $child.closest('.form-group').find('.invalid-feedback').each(function(index, msg){
+                                   
+                                   var message = child.validationMessage;
+                                   // Don't display required message (style is sufficient)
+                                   if($child.val() == "")
+                                        message = "";
+                                   var $msg = $JQry(msg);
+                                   $msg.text( message);
+                               });
+                        }
+                    });
+                    
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                element.classList.add('was-validated')
+            }, false)
+
+            $element.data("validation-loaded", true);
+        }
+    });
+});
+
+
+
+
+
+

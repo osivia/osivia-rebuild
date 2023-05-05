@@ -757,6 +757,16 @@
 			    <artifactId>xercesImpl</artifactId>
 			</dependency> 			
 		    
+		    
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat.version}</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+
+		    
 	</dependencies>
 
 
