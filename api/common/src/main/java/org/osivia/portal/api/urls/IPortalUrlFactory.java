@@ -222,6 +222,10 @@ public interface IPortalUrlFactory {
 
     String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl) throws PortalException;
 
+    /**
+     * {@inheritDoc}
+     */
+    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException;
 
     String getViewContentUrl(PortalControllerContext portalControllerContext, UniversalID id) ;
     
@@ -279,6 +283,8 @@ public interface IPortalUrlFactory {
 	 */
     @Deprecated
 	String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, boolean popup) throws PortalException;
+
+
 
 
 

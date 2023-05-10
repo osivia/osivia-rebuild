@@ -483,6 +483,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return "/delete";
     }
     
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException {
+        return getDestroyCurrentPageUrl(portalControllerContext, null);
+    }
+    
     /**
      * {@inheritDoc}
      */
