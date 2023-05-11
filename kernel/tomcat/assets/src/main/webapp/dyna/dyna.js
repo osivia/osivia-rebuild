@@ -700,8 +700,6 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
             synchronizeMetadatas();
 
 
-        $JQry(".notification-container").delay(10000).fadeOut(2000);
-
         for (id in resp.async_windows) {
             var url = resp.async_windows[id];
             // Set URL

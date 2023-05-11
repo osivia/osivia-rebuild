@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.sun.org.apache.xalan.internal.xsltc.DOM;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -186,44 +187,40 @@ public class NotificationsUtils {
         windowId.add(dynaWindowContent);
 
         if (notificationsList != null) {
+            // Toast container
+            Element toastContainer = DOM4JUtils.generateDivElement("toast-container top-0 end-0 p-3");
+            dynaWindowContent.add(toastContainer);
+
             for (Notifications notifications : notificationsList) {
                 NotificationsType type = notifications.getType();
+                boolean autohide = (type.getPriority() < NotificationsType.ERROR.getPriority());
 
-                // Notification container
-                Element notificationSpacer = DOM4JUtils.generateDivElement("notification-container");
-                dynaWindowContent.add(notificationSpacer);
-
-                // Alert
-                Element alert = DOM4JUtils.generateDivElement("alert alert-dismissible fade show " + type.getHtmlClass());
-                if (type.getPriority() < NotificationsType.ERROR.getPriority()) {
-                    DOM4JUtils.addDataAttribute(alert, "apart", StringUtils.EMPTY);
-                }
-                notificationSpacer.add(alert);
+                // Toast
+                Element toast = DOM4JUtils.generateDivElement("toast fade border-0 " + type.getHtmlClass());
+                DOM4JUtils.addAttribute(toast, "role", "alert");
+                DOM4JUtils.addDataAttribute(toast, "bs-autohide", String.valueOf(autohide));
+                DOM4JUtils.addDataAttribute(toast, "bs-delay", String.valueOf(5000));
+                DOM4JUtils.addAriaAttribute(toast, "live", "assertive");
+                DOM4JUtils.addAriaAttribute(toast, "atomic", String.valueOf(true));
+                toastContainer.add(toast);
 
                 if (notifications.getErrorCode() != null) {
-                    alert.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
+                    toast.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
                 }
 
-                // Close button
-                Element button = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn-close", "&times;");
-                DOM4JUtils.addAttribute(button, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
-                DOM4JUtils.addAttribute(button, HTMLConstants.DATA_DISMISS, "alert");
-                DOM4JUtils.addAttribute(button, HTMLConstants.ARIA_HIDDEN, "true");
-                alert.add(button);
+                // Toast flex container
+                Element toastFlex = DOM4JUtils.generateDivElement("d-flex align-items-center");
+                toast.add(toastFlex);
 
-                // Media
-                Element media = DOM4JUtils.generateDivElement("d-flex");
-                alert.add(media);
-
-                // Media left
-                if (type.getIcon() != null) {
-                    Element mediaLeft = DOM4JUtils.generateElement(HTMLConstants.DIV, "mr-3", null, type.getIcon(), null);
-                    media.add(mediaLeft);
+                // Toast icon
+                if (StringUtils.isNotEmpty(type.getIcon())) {
+                    Element toastIcon = DOM4JUtils.generateElement("div", "ms-2", null, type.getIcon(), null);
+                    toastFlex.add(toastIcon);
                 }
 
-                // Media body
-                Element mediaBody = DOM4JUtils.generateDivElement("align-self-center");
-                media.add(mediaBody);
+                // Toast body
+                Element toastBody = DOM4JUtils.generateDivElement("toast-body flex-grow-1");
+                toastFlex.add(toastBody);
 
                 // Messages
                 List<String> messages = notifications.getMessages();
@@ -233,11 +230,11 @@ public class NotificationsUtils {
                         String message = messages.get(0);
                         Element text = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, null);
                         messageHandling(text, message);
-                        mediaBody.add(text);
+                        toastBody.add(text);
                     } else {
                         // Multiple messages
-                        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-                        mediaBody.add(ul);
+                        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, "list-unstyled mb-0", null);
+                        toastBody.add(ul);
 
                         for (String message : messages) {
                             Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
@@ -246,6 +243,13 @@ public class NotificationsUtils {
                         }
                     }
                 }
+
+                // Toast close button
+                Element toastClose = DOM4JUtils.generateElement("button", "btn-close me-2", StringUtils.EMPTY);
+                DOM4JUtils.addAttribute(toastClose, "type", "button");
+                DOM4JUtils.addDataAttribute(toastClose, "bs-dismiss", "toast");
+                DOM4JUtils.addAriaAttribute(toastClose, "label", "Close");
+                toastFlex.add(toastClose);
             }
         }
 
