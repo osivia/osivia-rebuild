@@ -21,8 +21,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -46,12 +44,10 @@ import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
-import org.osivia.portal.api.cms.repository.model.shared.RepositorySpace;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ha.IHAService;
-import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -694,58 +690,19 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
-        addToolbarItem(toolbar, url, target, title, icon, false);
-    }
-
-    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon, boolean menu) {
-        // Base HTML classes
-        String baseHtmlClasses = "btn";
-
-        if (menu)
-            baseHtmlClasses = "dropdown-item";
-
+    protected void addToolbarItem(Element toolbar, String url, String title, String icon, boolean modal) {
         // Item
         Element item;
         if (StringUtils.isEmpty(url)) {
-            item = DOM4JUtils.generateLinkElement("#", null, null, baseHtmlClasses + " disabled", null, icon);
+            item = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-item disabled", title, icon);
+        } else if (modal) {
+            item = DOM4JUtils.generateLinkElement("javascript:", null, null, "dropdown-item", title, icon);
+            DOM4JUtils.addDataAttribute(item, "target", "#osivia-modal");
+            DOM4JUtils.addDataAttribute(item, "load-url", url);
+            DOM4JUtils.addDataAttribute(item, "title", title);
         } else {
-            // Data attributes
-            Map<String, String> data = new HashMap<>();
-            String onClick = null;
-
-            if ("#osivia-modal".equals(target)) {
-                data.put("target", "#osivia-modal");
-                data.put("load-url", url);
-                data.put("title", title);
-
-                url = "javascript:";
-                target = null;
-            } else if ("modal".equals(target)) {
-                data.put("bs-toggle", "modal");
-
-                target = null;
-            } else if ("dropdown-link".equals(target)) {
-                // HACKISH : link are not supported be dropdowns !
-                onClick = "bilto(event)";
-                target = null;
-            }
-
-
-            item = DOM4JUtils.generateLinkElement(url, target, onClick, baseHtmlClasses, null, icon);
-
-            // Title
-            DOM4JUtils.addAttribute(item, "title", title);
-
-            // Data attributes
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                DOM4JUtils.addDataAttribute(item, entry.getKey(), entry.getValue());
-            }
+            item = DOM4JUtils.generateLinkElement(url, null, "bilto(event)", "dropdown-item", title, icon);
         }
-
-        // Text
-        Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", title);
-        item.add(text);
 
         toolbar.add(item);
     }
@@ -753,48 +710,38 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
     protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status) throws PortletException {
         try {
-
             // Internationalization bundle
             Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
             String navigationId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
 
             // Toolbar
-            Element container = DOM4JUtils.generateDivElement(null);
-            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
-            container.add(toolbar);
+            Element container = DOM4JUtils.generateElement("ul", "navbar-nav", null);
 
             if (navigationId != null) {
                 UniversalID id = new UniversalID(navigationId);
 
                 CMSContext cmsContext = ctrl.getCMSContext();
 
-
                 Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
-                
+
                 Document space = cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
 
-
                 Boolean isAdministrator = (Boolean) portalControllerContext.getRequest().getAttribute(InternalConstants.ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME);
-
-
-
 
                 String templatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.templatePath");
                 String cmsTemplatePath = (String) portalControllerContext.getRequest().getAttribute("osivia.edition.cmsTemplatePath");
 
-
                 Personnalization personnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(id);
-                if( personnalization.isManageable())
-                	getConfigurationMenu(portalControllerContext, ctrl, bundle, toolbar, id, isAdministrator, templatePath, cmsTemplatePath);
-
+                if (personnalization.isManageable()) {
+                    this.getConfigurationMenu(portalControllerContext, ctrl, bundle, container, id, templatePath, cmsTemplatePath);
+                }
 
                 status.setPreview(cmsContext.isPreview());
 
                 NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
 
                 if (userRepository instanceof AdvancedRepository) {
-
                     AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
                     status.setSupportPreview(repository.supportPreview());
 
@@ -806,30 +753,24 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
                     status.setPageEdition(repository.supportPageEdition());
 
-
-
                     status.setSubtypes(personnalization.getSubTypes());
                     status.setManageable(personnalization.isManageable());
                     status.setModifiable(personnalization.isModifiable());
-                    status.setLiveSpace(BooleanUtils.isTrue(((Boolean)space.getProperties().get("osivia.connect.liveSpace"))));
-
+                    status.setLiveSpace(BooleanUtils.isTrue(((Boolean) space.getProperties().get("osivia.connect.liveSpace"))));
 
                     if (status.isManageable()) {
-                        getSpaceConfiguration(portalControllerContext, ctrl, bundle, toolbar, document, isAdministrator, cmsContext, repository);
+                        this.getSpaceConfiguration(portalControllerContext, ctrl, bundle, container, document, cmsContext, repository);
                     }
 
-                    if( getTemplateID( portalControllerContext,  id,  templatePath,  cmsTemplatePath) == null )	{
-	                    if (status.isModifiable()) {
-	                        getEditionMenu(portalControllerContext, ctrl, status, bundle, toolbar, id, cmsContext, document, repository, personnalization);
-	                    }
+                    if (getTemplateID(portalControllerContext, id, templatePath, cmsTemplatePath) == null) {
+                        if (status.isModifiable()) {
+                            this.getEditionMenu(portalControllerContext, ctrl, status, bundle, container, id, cmsContext, document, repository, personnalization);
+                        }
                     }
-
-
                 }
             }
 
             status.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
-
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -843,92 +784,71 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 throw new PortletException(e);
             }
 
-            status.setToolbar(new String(stream.toByteArray()));
-
-
-        } catch (
-
-        PortalException e) {
+            status.setToolbar(stream.toString());
+        } catch (PortalException e) {
             throw new PortletException(e);
         }
     }
 
 
-    private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, Boolean isAdministrator, String templatePath, String cmsTemplatePath) throws PortalException {
-        Element configurationList;
+    private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, String templatePath, String cmsTemplatePath) throws PortalException {
+        // Dropdown
+        Element dropdown = DOM4JUtils.generateElement("li", "nav-item dropdown", null);
+        toolbar.add(dropdown);
 
-        Element menu = DOM4JUtils.generateDivElement("dropdown");
-        Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "halflings halflings-wrench");
-        menuTitle.addAttribute(new QName("id"), "dropdownConfigurationMenu");
-        Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", bundle.getString("MODIFY_MENU_CONFIGURATION"));
-        menuTitle.add(text);
+        // Dropdown toggle button
+        Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle", bundle.getString("MODIFY_MENU_CONFIGURATION"), "glyphicons glyphicons-basic-wrench");
+        DOM4JUtils.addAttribute(dropdownToggle, "role", "button");
+        DOM4JUtils.addDataAttribute(dropdownToggle, "bs-toggle", "dropdown");
+        DOM4JUtils.addAriaAttribute(dropdownToggle, "expanded", String.valueOf(false));
+        dropdown.add(dropdownToggle);
 
-            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
-
-        menu.add(menuTitle);
-
-        configurationList = DOM4JUtils.generateDivElement("dropdown-menu");
-
-        configurationList.addAttribute(new QName("aria-labelledby"), "dropdownConfigurationMenu");
-        menu.add(configurationList);
+        // Dropdown menu
+        Element dropdownMenu = DOM4JUtils.generateElement("ul", "dropdown-menu", null);
+        dropdown.add(dropdownMenu);
 
 
-        Element menuRoot = DOM4JUtils.generateDivElement("");
-        menuRoot.add(menu);
-
-        toolbar.add(menuRoot);
-
-
+        // Repositories
         Map<String, String> properties = new HashMap<>();
         String title = bundle.getString("MODIFY_REPOSITORY_ACTION");
         properties.put("osivia.title", title);
         properties.put("osivia.hideTitle", "1");
-        
-        String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryAdminPortletInstance", title, "EditionRepositoryAdminPortletInstance", properties,
-                new HashMap<>());
-        this.addToolbarItem(configurationList, manageRepositoriesUrl, "dropdown-link", bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", true);
-
+        String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryAdminPortletInstance", title, "EditionRepositoryAdminPortletInstance", properties, new HashMap<>());
+        this.addToolbarItem(dropdownMenu, manageRepositoriesUrl, bundle.getString("MODIFY_REPOSITORY_ACTION"), "glyphicons glyphicons-basic-server", false);
 
         // init caches
         PortletURL initCacheUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
         initCacheUrl.setParameter(ActionRequest.ACTION_NAME, "initCaches");
+        this.addToolbarItem(dropdownMenu, initCacheUrl.toString(), bundle.getString("INIT_CACHES_ACTION"), "glyphicons glyphicons-basic-sync", false);
 
-        this.addToolbarItem(configurationList, initCacheUrl.toString(), "dropdown-link", bundle.getString("INIT_CACHES_ACTION"), "glyphicons glyphicons-basic-sync", true);
+        // Template
+        UniversalID templateID = getTemplateID(portalControllerContext, id, templatePath, cmsTemplatePath);
+        if (templateID != null) {
+            CMSContext cmsTemplateContext = ctrl.getCMSContext();
+            cmsTemplateContext.setPreview(false);
 
-        
-        
-        addTemplateLink(portalControllerContext, ctrl, bundle, configurationList, id, templatePath, cmsTemplatePath);
-
-
-
+            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext, templateID);
+            this.addToolbarItem(dropdownMenu, url, bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails", false);
+        }
     }
 
 
-    private void getEditionMenu(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status, Bundle bundle, Element toolbar, UniversalID id, CMSContext cmsContext, Document document, AdvancedRepository repository,
-            Personnalization personnalization) throws PortalException {
-
-
+    private void getEditionMenu(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status, Bundle bundle, Element toolbar, UniversalID id, CMSContext cmsContext, Document document, AdvancedRepository repository, Personnalization personnalization) throws PortalException {
         if (!repository.supportPreview() || cmsContext.isPreview()) {
+            // Dropdown
+            Element dropdown = DOM4JUtils.generateElement("li", "nav-item dropdown", null);
+            toolbar.add(dropdown);
 
-            // Text
-            Element menu = DOM4JUtils.generateDivElement("dropdown");
+            // Dropdown toggle button
+            Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle", bundle.getString("MODIFY_MENU_EDITION"), "glyphicons glyphicons-basic-monitor");
+            DOM4JUtils.addAttribute(dropdownToggle, "role", "button");
+            DOM4JUtils.addDataAttribute(dropdownToggle, "bs-toggle", "dropdown");
+            DOM4JUtils.addAriaAttribute(dropdownToggle, "expanded", String.valueOf(false));
+            dropdown.add(dropdownToggle);
 
-            Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-monitor");
-            menuTitle.addAttribute(new QName("id"), "dropdownEditionMenu");
-            Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", bundle.getString("MODIFY_MENU_EDITION"));
-            menuTitle.add(text);
-            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
-            menu.add(menuTitle);
-
-            Element editionList = DOM4JUtils.generateDivElement("dropdown-menu");
-            editionList.addAttribute(new QName("aria-labelledby"), "dropdownEditionMenu");
-
-            menu.add(editionList);
-
-            Element menuRoot = DOM4JUtils.generateDivElement("");
-            menuRoot.add(menu);
-
-            toolbar.add(menuRoot);
+            // Dropdown menu
+            Element dropdownMenu = DOM4JUtils.generateElement("ul", "dropdown-menu", null);
+            dropdown.add(dropdownMenu);
 
 
             // "${status.pageEdition && ( not status.supportPreview || status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
@@ -938,29 +858,26 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     hasPageSubtype = true;
             }
 
-
-            if ((!repository.supportPreview() || cmsContext.isPreview()) && hasPageSubtype) {
-                if (portalControllerContext.getResponse() instanceof RenderResponse) {
-                    PortletURL createPageUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
-                    createPageUrl.setParameter(ActionRequest.ACTION_NAME, "addPage");
-                    this.addToolbarItem(editionList, createPageUrl.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
-                }
+            if ((!repository.supportPreview() || cmsContext.isPreview()) && hasPageSubtype && portalControllerContext.getResponse() instanceof RenderResponse) {
+                PortletURL createPageUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+                createPageUrl.setParameter(ActionRequest.ACTION_NAME, "addPage");
+                this.addToolbarItem(dropdownMenu, createPageUrl.toString(), bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", false);
             }
 
 
             if (document instanceof Space || document instanceof Page) {
-                if( !repository.supportPreview())   {
+                if (!repository.supportPreview()) {
                     Map<String, String> properties = new HashMap<>();
                     ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());
-    
+
                     String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
-                    this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
-                }   else    {
+                    this.addToolbarItem(dropdownMenu, renameUrl, bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
+                } else {
                     Map<String, String> properties = new HashMap<>();
                     ctrl.addContentRefToProperties(properties, "osivia.properties.id", document.getId());
-    
+
                     String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionWebPagePropertiesPortletInstance", properties, PortalUrlType.MODAL);
-                    this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);                    
+                    this.addToolbarItem(dropdownMenu, renameUrl, bundle.getString("MODIFY_PAGE_PROPERTIES_ACTION"), "glyphicons glyphicons-basic-pencil", true);
                 }
             }
 
@@ -968,18 +885,17 @@ public class EditionController implements PortletContextAware, ApplicationContex
             Map<String, String> properties = new HashMap<>();
             ctrl.addContentRefToProperties(properties, "osivia.rename.id", id);
 
-
             String renameUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "RenameInstance", properties, PortalUrlType.MODAL);
-            this.addToolbarItem(editionList, renameUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text", true);
+            this.addToolbarItem(dropdownMenu, renameUrl, bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text", true);
 
 
-            if( !id.getInternalID().equals("PUBLISH"))  {
+            if (!id.getInternalID().equals("PUBLISH")) {
                 String deleteContentUrl;
                 properties = new HashMap<>();
                 ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
-    
+
                 deleteContentUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "DeleteContentPortletInstance", properties, PortalUrlType.MODAL);
-                this.addToolbarItem(editionList, deleteContentUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin", true);
+                this.addToolbarItem(dropdownMenu, deleteContentUrl, bundle.getString("MODIFY_PAGE_DELETE_ACTION"), "glyphicons glyphicons glyphicons-basic-bin", true);
             }
 
 
@@ -989,7 +905,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());
 
                     String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
-                    this.addToolbarItem(editionList, aclsUrl, "#osivia-modal", bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock", true);
+                    this.addToolbarItem(dropdownMenu, aclsUrl, bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock", true);
                 }
             }
 
@@ -1000,7 +916,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             ctrl.addContentRefToProperties(treeProperties, "osivia.move.id", document.getId());
 
             String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
-            this.addToolbarItem(editionList, treeUrl, "#osivia-modal", bundle.getString("MODIFY_MOVE_ACTION"), "glyphicons glyphicons-basic-list", true);
+            this.addToolbarItem(dropdownMenu, treeUrl, bundle.getString("MODIFY_MOVE_ACTION"), "glyphicons glyphicons-basic-list", true);
 
 
             if (cmsContext.isPreview()) {
@@ -1015,108 +931,65 @@ public class EditionController implements PortletContextAware, ApplicationContex
                 }
             }
 
-            if (repository.supportPreview() && personnalization.isModifiable() && cmsContext.isPreview()) {
-                if (portalControllerContext.getResponse() instanceof RenderResponse) {
-                    PortletURL publishURL = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
-                    publishURL.setParameter(ActionRequest.ACTION_NAME, "publish");
-                    this.addToolbarItem(editionList, publishURL.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_PUBLISH"), "glyphicons glyphicons-basic-globe", true);
-                }
+            if (repository.supportPreview() && personnalization.isModifiable() && cmsContext.isPreview() && portalControllerContext.getResponse() instanceof RenderResponse) {
+                PortletURL publishURL = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+                publishURL.setParameter(ActionRequest.ACTION_NAME, "publish");
+                this.addToolbarItem(dropdownMenu, publishURL.toString(), bundle.getString("MODIFY_PAGE_ACCESS_PUBLISH"), "glyphicons glyphicons-basic-globe", false);
             }
-            
-            if( status.isHavingPublication())   {
-                if (portalControllerContext.getResponse() instanceof RenderResponse) {
-                    PortletURL publishURL = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
-                    publishURL.setParameter(ActionRequest.ACTION_NAME, "unpublish");
-                    this.addToolbarItem(editionList, publishURL.toString(), "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_UNPUBLISH"), "glyphicons glyphicons-basic-globe-data", true);
-                }                
+
+            if (status.isHavingPublication() && portalControllerContext.getResponse() instanceof RenderResponse) {
+                PortletURL publishURL = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+                publishURL.setParameter(ActionRequest.ACTION_NAME, "unpublish");
+                this.addToolbarItem(dropdownMenu, publishURL.toString(), bundle.getString("MODIFY_PAGE_ACCESS_UNPUBLISH"), "glyphicons glyphicons-basic-globe-data", false);
             }
         }
     }
 
 
-    private void getSpaceConfiguration(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, Boolean isAdministrator, CMSContext cmsContext, AdvancedRepository repository) throws PortalException {
-        Element configurationList;
+    private void getSpaceConfiguration(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, CMSContext cmsContext, AdvancedRepository repository) throws PortalException {
+        // Dropdown
+        Element dropdown = DOM4JUtils.generateElement("li", "nav-item dropdown", null);
+        toolbar.add(dropdown);
 
-            Element menu = DOM4JUtils.generateDivElement("dropdown");
-            Element menuTitle = DOM4JUtils.generateLinkElement("#", null, null, "btn dropdown-toggle no-ajax-link", null, "glyphicons glyphicons-basic-folder");
-            menuTitle.addAttribute(new QName("id"), "spaceConfigurationMenu");
-            Element text = DOM4JUtils.generateElement("span", "d-none d-md-inline", bundle.getString("MODIFY_MENU_SPACE"));
-            menuTitle.add(text);
+        // Dropdown toggle button
+        Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle", bundle.getString("MODIFY_MENU_SPACE"), "glyphicons glyphicons-basic-folder");
+        DOM4JUtils.addAttribute(dropdownToggle, "role", "button");
+        DOM4JUtils.addDataAttribute(dropdownToggle, "bs-toggle", "dropdown");
+        DOM4JUtils.addAriaAttribute(dropdownToggle, "expanded", String.valueOf(false));
+        dropdown.add(dropdownToggle);
 
-            DOM4JUtils.addDataAttribute(menu, "bs-toggle", "dropdown");
-
-            menu.add(menuTitle);
-
-            configurationList = DOM4JUtils.generateDivElement("dropdown-menu");
-
-            configurationList.addAttribute(new QName("aria-labelledby"), "spaceConfigurationMenu");
-            menu.add(configurationList);
+        // Dropdown menu
+        Element dropdownMenu = DOM4JUtils.generateElement("ul", "dropdown-menu", null);
+        dropdown.add(dropdownMenu);
 
 
-            Element menuRoot = DOM4JUtils.generateDivElement("");
-            menuRoot.add(menu);
-
-            toolbar.add(menuRoot);
-
-
-            // Only one space if association with host
-            if( PortalObjectUtils.getHostPortalID(portalControllerContext.getHttpServletRequest()) == null)	{
-
-	            if ((!repository.supportPreview() || cmsContext.isPreview()) ) {
-	                if (portalControllerContext.getResponse() instanceof RenderResponse) {
-	                    PortletURL createSpaceUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
-	                    createSpaceUrl.setParameter(ActionRequest.ACTION_NAME, "addSpace");
-	                    this.addToolbarItem(configurationList, createSpaceUrl.toString(), "dropdown-link", bundle.getString("MODIFY_SPACE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true);
-	                }
-	            }
-            }
-
-            
-            // Space modification
-            String modifySpaceUrl;
-
-            String title = bundle.getString("MODIFY_SPACE_MODIFY_TITLE");
-
-            // Window properties
-            Map<String, String> spaceProperties = new HashMap<>();
-            spaceProperties.put("osivia.title", title);
-            spaceProperties.put("osivia.hideTitle", "1");
-            ctrl.addContentRefToProperties(spaceProperties, "osivia.space.id", document.getSpaceId());
-
-
-            modifySpaceUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionModifySpaceInstance", title, "EditionModifySpaceInstance", spaceProperties, new HashMap<>());
-
-
-            this.addToolbarItem(configurationList, modifySpaceUrl, "dropdown-link", bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-pencil", true);
-
-
-            Map<String, String> treeProperties = new HashMap<>();
-
-            ctrl.addContentRefToProperties(treeProperties, "osivia.space.id", document.getSpaceId());
-            ctrl.addContentRefToProperties(treeProperties, "osivia.browse.id", document.getId());
-
-            String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
-            this.addToolbarItem(configurationList, treeUrl, "#osivia-modal", bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true);
-
-    }
-
-
-    private void addTemplateLink(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, String templatePath, String cmsTemplatePath) {
-    	
-    	UniversalID templateID = getTemplateID( portalControllerContext,   id,  templatePath,  cmsTemplatePath);
-    	
-        if (templateID != null) {
-
-            CMSContext cmsTemplateContext = ctrl.getCMSContext();
-            cmsTemplateContext.setPreview(false);
-
-            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext, templateID);
-            this.addToolbarItem(toolbar, url, "dropdown-link", bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails", true);
+        // Only one space if association with host
+        if (PortalObjectUtils.getHostPortalID(portalControllerContext.getHttpServletRequest()) == null && (!repository.supportPreview() || cmsContext.isPreview()) && portalControllerContext.getResponse() instanceof RenderResponse) {
+            PortletURL createSpaceUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
+            createSpaceUrl.setParameter(ActionRequest.ACTION_NAME, "addSpace");
+            this.addToolbarItem(dropdownMenu, createSpaceUrl.toString(), bundle.getString("MODIFY_SPACE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", false);
         }
 
-    	
+
+        // Space modification
+        String modifySpaceUrl;
+        String title = bundle.getString("MODIFY_SPACE_MODIFY_TITLE");
+        // Window properties
+        Map<String, String> spaceProperties = new HashMap<>();
+        spaceProperties.put("osivia.title", title);
+        spaceProperties.put("osivia.hideTitle", "1");
+        ctrl.addContentRefToProperties(spaceProperties, "osivia.space.id", document.getSpaceId());
+        modifySpaceUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionModifySpaceInstance", title, "EditionModifySpaceInstance", spaceProperties, new HashMap<>());
+        this.addToolbarItem(dropdownMenu, modifySpaceUrl, bundle.getString("MODIFY_SPACE_MODIFY_LINK"), "glyphicons glyphicons-basic-pencil", false);
+
+        // Browse
+        Map<String, String> treeProperties = new HashMap<>();
+        ctrl.addContentRefToProperties(treeProperties, "osivia.space.id", document.getSpaceId());
+        ctrl.addContentRefToProperties(treeProperties, "osivia.browse.id", document.getId());
+        String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
+        this.addToolbarItem(dropdownMenu, treeUrl, bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true);
     }
-    
+
     
     private UniversalID getTemplateID(PortalControllerContext portalControllerContext, UniversalID id, String templatePath, String cmsTemplatePath) {
     	 UniversalID templateID = null;
