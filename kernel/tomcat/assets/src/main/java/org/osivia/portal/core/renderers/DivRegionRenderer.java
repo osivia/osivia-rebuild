@@ -169,7 +169,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                     String addPortletUrl = properties.getPagePropertiesMap().get("osivia.cms.edition.addPortletUrl."+rrc.getId());
 
                     
-                    markup.print("<a href=\"javascript:\" class=\"btn\" data-target=\"#osivia-modal\" data-load-url=\""+addPortletUrl+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_LIST")+"\">\n"
+                    markup.print("<a href=\"javascript:\" class=\"btn btn-link\" data-target=\"#osivia-modal\" data-load-url=\""+addPortletUrl+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_LIST")+"\">\n"
                     + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
                     + "        <span class=\"d-md-none\">"+bundle.getString("ADMIN_PORTLET_APP_LIST")+"</span>\n"
                     + "    </a>");
