@@ -13,23 +13,9 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.jboss.portal.api.PortalURL;
-import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.command.SignOutCommand;
@@ -37,26 +23,15 @@ import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
-import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.server.ServerInvocationContext;
-import org.jboss.portal.server.request.URLContext;
-import org.jboss.portal.server.request.URLFormat;
-import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
-import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.IDirProvider;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
-
-import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -64,7 +39,6 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
-import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.tasks.ITasksService;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -72,23 +46,19 @@ import org.osivia.portal.api.theming.IInternalAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.api.urls.PortalUrlType;
-
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSObjectPath;
-import org.osivia.portal.core.cms.CMSPublicationInfos;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.cms.Satellite;
 import org.osivia.portal.core.cms.edition.CMSEditionChangeModeCommand;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
-import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
-
 import org.osivia.portal.core.page.PortalURLImpl;
+
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -440,59 +410,51 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
     }
 
 
-    
     private String formatHTMLAdministration(ControllerContext context, Page page) throws org.osivia.portal.api.cms.exception.CMSException {
-    	
-
+        // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(context.getServerInvocation().getServerContext().getClientRequest());
 
         // Administration root element
         Element administration = DOM4JUtils.generateElement(HTMLConstants.UL, "navbar-nav", StringUtils.EMPTY);
 
         if (PageCustomizerInterceptor.isAdministrator(context)) {
-
-            // fonctionnal administration
+            // Functional administration
             String customAdminPage = page.getProperty("osivia.portal.admin.page");
-            if( customAdminPage != null)    {
-                
+            if (customAdminPage != null) {
                 String[] tokens = customAdminPage.split("/");
-                String pageInternalID = "";
-                for(String token: tokens)    {
-                    if( pageInternalID.length() > 0)
-                        pageInternalID+="_";
-                    pageInternalID += token.toUpperCase();
+                StringBuilder pageInternalID = new StringBuilder();
+                for (String token : tokens) {
+                    if (pageInternalID.length() > 0)
+                        pageInternalID.append("_");
+                    pageInternalID.append(token.toUpperCase());
                 }
-               
-                UniversalID myAccountDocumentId = new UniversalID( System.getProperty("osivia.repository.default"), pageInternalID);
 
-				String customAdminPageURL = urlFactory.getViewContentUrl(portalControllerContext, myAccountDocumentId);
-                
-                
-                Element functionalhome = DOM4JUtils.generateLinkElement(customAdminPageURL, null, null, "nav-link", "", "glyphicons glyphicons-basic-cogwheel");
-                administration.add(functionalhome);
+                UniversalID myAccountDocumentId = new UniversalID(System.getProperty("osivia.repository.default"), pageInternalID.toString());
+
+                String customAdminPageURL = urlFactory.getViewContentUrl(portalControllerContext, myAccountDocumentId);
+
+                Element functionalHomeContainer = DOM4JUtils.generateElement("li", "nav-item", null);
+                administration.add(functionalHomeContainer);
+
+                Element functionalHome = DOM4JUtils.generateLinkElement(customAdminPageURL, null, null, "nav-link", StringUtils.EMPTY, "glyphicons glyphicons-basic-cogwheel");
+                functionalHomeContainer.add(functionalHome);
             }
         }
-        
 
-        
-        if(  PortalObjectUtils.isPageRepositoryManager(portalControllerContext))	{
-            
+
+        if (PortalObjectUtils.isPageRepositoryManager(portalControllerContext)) {
             // CMS
             CMSEditionChangeModeCommand changeCmsEditionMode = new CMSEditionChangeModeCommand();
             PortalURL changeCmsEditionModeUrl = new PortalURLImpl(changeCmsEditionMode, context, false, null);
-              
-            Element cmsEditionMode = DOM4JUtils.generateLinkElement(changeCmsEditionModeUrl.toString(), null, null, "nav-link", "", "glyphicons glyphicons-basic-square-edit");
-            administration.add(cmsEditionMode);
-       }
-        
-       if (PageCustomizerInterceptor.isAdministrator(context)) {           
-            // Configuration menu dropdown element
-            Element configurationDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
-            administration.add(configurationDropdown);
 
-       }
+            Element cmsEditionModeContainer = DOM4JUtils.generateElement("li", "nav-item", null);
+            administration.add(cmsEditionModeContainer);
 
-     
+            Element cmsEditionMode = DOM4JUtils.generateLinkElement(changeCmsEditionModeUrl.toString(), null, null, "nav-link", StringUtils.EMPTY, "glyphicons glyphicons-basic-square-edit");
+            cmsEditionModeContainer.add(cmsEditionMode);
+        }
+
+
         // Write HTML content
         return DOM4JUtils.write(administration);
     }

@@ -1,109 +1,74 @@
-<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<%@ page contentType="text/html" isELIgnored="false"%>
-
-
-<portlet:defineObjects />
-
-<c:set var="namespace">
-	<portlet:namespace />
-</c:set>
+<%@ page contentType="text/html" isELIgnored="false" %>
 
 
-<portlet:actionURL name="switchMode" var="switchModeURL" />
-<portlet:actionURL name="home" var="homeURL" />
-<portlet:actionURL name="publish" var="publishURL" />
+<portlet:defineObjects/>
 
-<portlet:actionURL name="addPortlet" var="addPortletURL" />
-<portlet:actionURL name="addPortletNav" var="addPortletNavURL" />
-<portlet:actionURL name="addFolder" var="addFolderURL" />
-<portlet:actionURL name="addDocument" var="addDocumentURL" />
-<portlet:actionURL name="setACL" var="setACLURL" />
-<portlet:actionURL name="reload" var="setReloadURL" />
+<c:set var="namespace"><portlet:namespace/></c:set>
 
-<portlet:actionURL name="submit" var="submitUrl" />
-
-<nav class="edition p-1">
-
-	<form:form action="${submitUrl}" method="post" modelAttribute="form"
-		class="row w-100">
+<portlet:actionURL name="home" var="homeUrl"/>
+<portlet:actionURL name="switchMode" var="switchModeUrl" />
+<portlet:actionURL name="submit" var="submitUrl"/>
 
 
+<%--@elvariable id="status" type="org.osivia.portal.cms.portlets.edition.page.main.controller.EditionStatus"--%>
+<%--@elvariable id="form" type="org.osivia.portal.cms.portlets.edition.page.main.controller.EditionForm"--%>
+<nav class="navbar navbar-expand">
+	<div class="container-fluid">
+        <%--Home--%>
+		<ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="${homeUrl}" class="nav-link">
+                    <i class="glyphicons glyphicons-basic-home"></i>
+                    <span>Accueil</span>
+                </a>
+            </li>
+        </ul>
 
-		<div class="col-3  d-flex align-items-center">
-       		<a class ="pr-2" href="${homeURL}">
-				<i class="glyphicons glyphicons-basic-home"></i>
-			</a>
-			
+        <%--Preview selector--%>
+        <c:if test="${status.supportPreview && not status.liveSpace && status.modifiable}">
+            <div class="btn-group btn-group-sm">
+                <c:choose>
+                    <c:when test="${status.preview and status.havingPublication}">
+                        <a href="${switchModeUrl}" class="btn btn-success text-nowrap">
+                            <span>En ligne</span>
+                        </a>
+                        <a href="#" class="btn btn-warning text-nowrap">
+                            <span>&Eacute;dition</span>
+                        </a>
+                    </c:when>
 
-			<c:if test="${status.supportPreview && not status.liveSpace && status.modifiable}">
-				<c:if test="${status.preview}">
-					<div class="btn-group">
-						<c:if test="${status.havingPublication}">
-							<a href="${switchModeURL}" class="btn btn-sm btn-light my-1"
-								title="" data-toggle="tooltip" data-placement="bottom"
-								data-original-title="En ligne"> <span>En ligne</span>
-							</a>
-						</c:if>
-						<c:if test="${not status.havingPublication}">
-							<span class="btn btn-sm btn-light text-muted my-1">En
-								ligne</span>
+                    <c:when test="${status.preview}">
+                        <a href="#" class="btn btn-success text-nowrap">
+                            <span>En ligne</span>
+                        </a>
+                        <a href="#" class="btn btn-warning text-nowrap">
+                            <span>&Eacute;dition</span>
+                        </a>
+                    </c:when>
 
-						</c:if>
-						<span class="btn btn-sm btn-warning my-1">Edition</span>
-					</div>
-				</c:if>
+                    <c:otherwise>
+                        <a href="#" class="btn btn-success text-nowrap">
+                            <span>En ligne</span>
+                        </a>
+                        <a href="${switchModeUrl}" class="btn btn-warning text-nowrap">
+                            <span>Edition</span>
+                        </a>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </c:if>
 
-				<c:if test="${not status.preview}">
-					<div class="btn-group">
-						<span class="btn btn-sm btn-success   my-1">En ligne</span> <a
-							href="${switchModeURL}" class="btn btn-sm btn-light my-1"
-							title="" data-toggle="tooltip" data-placement="bottom"
-							data-original-title="En ligne"> <span>Edition</span>
-						</a>
-					</div>
-				</c:if>
-			</c:if>
-		</div>
-		<div class="col-8  d-flex align-items-center">
+        <%--Toolbar--%>
+        ${status.toolbar}
 
-			${status.toolbar}
-			
-
-<!--
-
-			<c:if test="${not  status.supportPreview ||  status.preview}">
-				<c:if test="${fn:containsIgnoreCase(status.subtypes, 'folder')}">
-					<span> <a href="${addFolderURL}"
-						class=" btn-sm btn-light m-1"> folder</a>
-					</span>
-				</c:if>
-				<c:if test="${fn:containsIgnoreCase(status.subtypes, 'document')}">
-					<span> <a href="${addDocumentURL}"
-						class=" btn-sm btn-light m-1"> document</a>
-					</span>
-				</c:if>
-			</c:if>
-
-
--->	
-
-			
-
-		</div>
-		<div class="col-1  d-flex align-items-center flex-row-reverse p-0">
-			<form:select path="locale" items="${status.locales}"
-				data-change-submit="${namespace}-update-locale" />
-
-			<input id="${namespace}-update-locale" type="submit"
-				name="update-locale" class="d-none">
-		</div>
-		
-		
-	</form:form>
-
+        <%--Locale selector--%>
+        <form:form action="${submitUrl}" method="post" modelAttribute="form" cssClass="d-flex">
+            <input id="${namespace}-update-locale" type="submit" name="update-locale" class="d-none">
+            <form:select path="locale" items="${status.locales}" cssClass="form-select" data-change-submit="${namespace}-update-locale"/>
+        </form:form>
+	</div>
 </nav>
-

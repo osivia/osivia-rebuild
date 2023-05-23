@@ -76,8 +76,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/portal-assets/js/modal.js'></script>");
 
         // Bootstrap
-        this.writeResource(out, "<script src='/portal-assets/components/bootstrap-5.2.2/bootstrap.bundle.min.js'></script>");
+        this.writeResource(out, "<script src='/portal-assets/components/bootstrap-5.3.0/bootstrap.bundle.min.js'></script>");
 //      this.writeResource(out,  "<script src='/portal-assets/js/bootstrap-integration.js'></script>");
+        this.writeResource(out, "<script src='/portal-assets/js/bootstrap-5-integration.js'></script>");
 
         // Fancytree
         this.writeResource(out, "<script src='/portal-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");
