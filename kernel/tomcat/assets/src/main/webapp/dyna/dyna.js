@@ -700,8 +700,6 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
             synchronizeMetadatas();
 
 
-        $JQry(".notification-container").delay(10000).fadeOut(2000);
-
         for (id in resp.async_windows) {
             var url = resp.async_windows[id];
             // Set URL
@@ -807,6 +805,13 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
         headers: headers,
         success: function (data, status, xhr) {
             onAjaxSuccess(data, callerId, null, popState, eventToStop, url);
+        },
+        error: function () {
+            // the simplest way to diagnostic is to refresh the whole page
+            if( history.state.fullUrl)
+                window.location = history.state.fullUrl;
+            else
+                alert("Serveur injoignable")
         }
     }
     $JQry.ajax(ajaxSettings);
