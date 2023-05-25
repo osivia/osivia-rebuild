@@ -2,9 +2,12 @@ package org.osivia.portal.core.ui.layout;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
+import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,14 +18,25 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.CMSContext;
+import org.osivia.portal.api.cms.CMSController;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
+import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.ui.layout.LayoutGroup;
 import org.osivia.portal.api.ui.layout.LayoutItem;
 import org.osivia.portal.api.ui.layout.LayoutItemsService;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.Name;
@@ -57,6 +71,13 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
      * Log.
      */
     private final Log log;
+
+
+    /**
+     * CMS service.
+     */
+    @Autowired
+    private CMSService cmsService;
 
 
     /**
@@ -190,7 +211,20 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
                 this.log.error(e.getLocalizedMessage());
             }
 
-            page.setDeclaredProperty(LAYOUT_GROUPS_PROPERTY, property);
+            // Page identifier
+            UniversalID pageId = new UniversalID(page.getProperty("osivia.navigationId"));
+            try {
+                // Page document
+                Document pageDocument = this.getPageDocument(portalControllerContext, pageId);
+                // Repository
+                AdvancedRepository repository = getRepository(portalControllerContext, pageDocument);
+
+                // Update page
+                pageDocument.getProperties().put(LAYOUT_GROUPS_PROPERTY, property);
+                repository.updateDocument(pageDocument.getId().getInternalID(), (RepositoryDocument) pageDocument);
+            } catch (CMSException e) {
+                this.log.error(e);
+            }
         }
     }
 
@@ -353,11 +387,7 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
             SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(portalControllerContext, window.getPage());
 
             // Computed window identifiers
-            List<String> computedWindowIds = selectedLayoutItems.getComputedWindowIds().get(group.getId());
-            if (computedWindowIds == null) {
-                computedWindowIds = new ArrayList<>();
-                selectedLayoutItems.getComputedWindowIds().put(group.getId(), computedWindowIds);
-            }
+            List<String> computedWindowIds = selectedLayoutItems.getComputedWindowIds().computeIfAbsent(group.getId(), k -> new ArrayList<>());
 
             if (!computedWindowIds.contains(windowId)) {
                 computedWindowIds.add(windowId);
@@ -463,6 +493,67 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
     }
 
 
+    private UniversalID getCurrentPageId(PortalControllerContext portalControllerContext) {
+        // Navigation identifier
+        String navigationId;
+        if (portalControllerContext.getRequest() == null) {
+            navigationId = null;
+        } else {
+            // Window
+            PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+
+            navigationId = window.getProperty("osivia.navigationId");
+        }
+
+        // Page identifier
+        UniversalID pageId;
+        if (StringUtils.isEmpty(navigationId)) {
+            pageId = null;
+        } else {
+            pageId = new UniversalID(navigationId);
+        }
+
+        return pageId;
+    }
+
+
+    /**
+     * Get page document.
+     *
+     * @param portalControllerContext portal controller context
+     * @param pageId                  page identifier
+     * @return document
+     */
+    private Document getPageDocument(PortalControllerContext portalControllerContext, UniversalID pageId) throws CMSException {
+        // CMS controller
+        CMSController cmsController = new CMSController(portalControllerContext);
+        // CMS context
+        CMSContext cmsContext = cmsController.getCMSContext();
+        // CMS session
+        CMSSession cmsSession = this.cmsService.getCMSSession(cmsContext);
+
+        // Page document
+        return cmsSession.getDocument(pageId);
+    }
+
+
+    /**
+     * Get repository.
+     *
+     * @param portalControllerContext portal controller context
+     * @param document                related document
+     * @return repository
+     */
+    private AdvancedRepository getRepository(PortalControllerContext portalControllerContext, Document document) throws CMSException {
+        // CMS controller
+        CMSController cmsController = new CMSController(portalControllerContext);
+        // CMS context
+        CMSContext cmsContext = cmsController.getCMSContext();
+
+        return TestRepositoryLocator.getTemplateRepository(cmsContext, document.getId().getRepositoryName());
+    }
+
+
     /**
      * Get current person.
      *
@@ -495,8 +586,19 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         if (page == null) {
             groups = null;
         } else {
+            // Page identifier
+            UniversalID pageId = ObjectUtils.defaultIfNull(this.getCurrentPageId(portalControllerContext), new UniversalID(page.getProperty("osivia.navigationId")));
+
             // Page property
-            String property = page.getDeclaredProperty(LAYOUT_GROUPS_PROPERTY);
+            String property;
+            try {
+                Document pageDocument = this.getPageDocument(portalControllerContext, pageId);
+
+                property = (String) pageDocument.getProperties().get(LAYOUT_GROUPS_PROPERTY);
+            } catch (CMSException e) {
+                property = null;
+                this.log.error(e);
+            }
 
             // Layout groups container
             LayoutGroupsContainer container;

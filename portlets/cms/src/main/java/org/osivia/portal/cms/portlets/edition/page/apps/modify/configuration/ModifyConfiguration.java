@@ -1,7 +1,5 @@
 package org.osivia.portal.cms.portlets.edition.page.apps.modify.configuration;
 
-import javax.portlet.PortletConfig;
-
 import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -9,6 +7,7 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +18,8 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import javax.portlet.PortletConfig;
 
 /**
  * Sample configuration.
@@ -31,7 +32,7 @@ public class ModifyConfiguration implements PortletConfigAware {
 
     @Autowired
     private ApplicationContext applicationContext;
-    
+
     /**
      * Constructor.
      */
@@ -42,11 +43,11 @@ public class ModifyConfiguration implements PortletConfigAware {
 
     @Override
     public void setPortletConfig(PortletConfig portletConfig) {
-            PortletAppUtils.registerApplication(portletConfig, applicationContext);            
+        PortletAppUtils.registerApplication(portletConfig, applicationContext);
 
     }
 
-    
+
     /**
      * Get view resolver.
      *
@@ -78,12 +79,12 @@ public class ModifyConfiguration implements PortletConfigAware {
     public CMSService getCMSService() {
         return Locator.getService(CMSService.class);
     }
-    
+
     @Bean
     public IPortalUrlFactory getPortalURLFactory() {
         return Locator.getService(IPortalUrlFactory.class);
     }
-    
+
     @Bean
     public IDynamicService getDynamicWindowService() {
         return Locator.getService(IDynamicService.class);
@@ -93,17 +94,25 @@ public class ModifyConfiguration implements PortletConfigAware {
     public IPreviewModeService getPreviewModeService() {
         return Locator.getService(IPreviewModeService.class);
     }
-    
+
     @Bean
     public ILocaleService getLocaleService() {
         return Locator.getService(ILocaleService.class);
     }
-    
+
     @Bean
     public IAppsService getAppsService() {
         return Locator.getService(IAppsService.class);
     }
-    
-    
-    
+
+    /**
+     * Get layout items service.
+     *
+     * @return layout items service
+     */
+    @Bean
+    public LayoutItemsService getLayoutItemsService() {
+        return Locator.getService(LayoutItemsService.class);
+    }
+
 }

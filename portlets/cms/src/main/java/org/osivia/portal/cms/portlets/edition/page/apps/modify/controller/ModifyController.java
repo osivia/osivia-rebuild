@@ -1,48 +1,25 @@
 package org.osivia.portal.cms.portlets.edition.page.apps.modify.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
+import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
+import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
-import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.api.cms.model.ModulesContainer;
-import org.osivia.portal.api.cms.model.Page;
-import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
+import org.osivia.portal.api.cms.model.*;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ui.layout.LayoutGroup;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.cms.portlets.rename.controller.RenameForm;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -56,8 +33,10 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
-import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
+import javax.portlet.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * CMS portlet edition properties
@@ -69,23 +48,39 @@ import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
 @SessionAttributes("form")
 public class ModifyController extends GenericPortlet implements PortletContextAware, ApplicationContextAware {
 
-    /** Portlet context. */
+    /**
+     * Application context.
+     */
+    private ApplicationContext applicationContext;
+
+    /**
+     * Portlet context.
+     */
     private PortletContext portletContext;
 
 
-    /** CMS service. */
+    /**
+     * CMS service.
+     */
     @Autowired
     private CMSService cmsService;
-    
 
+    /**
+     * Portal URL factory.
+     */
     @Autowired
-    private IPortalUrlFactory portalUrlFactory;    
+    private IPortalUrlFactory portalUrlFactory;
 
-    /** Application context. */
-    private ApplicationContext applicationContext;
+    /**
+     * Layout items service.
+     */
+    @Autowired
+    private LayoutItemsService layoutItemsService;
 
 
-    /** The logger. */
+    /**
+     * The logger.
+     */
     protected static Log logger = LogFactory.getLog(ModifyController.class);
 
     /**
@@ -99,9 +94,8 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     /**
      * Default render mapping.
      *
-     * @param request render request
+     * @param request  render request
      * @param response render response
-     * @param count count request parameter.
      * @return render view path
      * @throws PortalException
      */
@@ -113,23 +107,23 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
     /**
      * Modify portlet action
-     * 
+     *
      * @throws IOException
      */
     @ActionMapping(name = "modifyPortlet")
     public void modifyPortlet(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
 
-      PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         Document document = getDocument(portalControllerContext);
-        
+
         ModuleRef srcModule = getModule(portalControllerContext, document);
 
         if (StringUtils.isNoneEmpty(form.getTitle()))
             srcModule.getProperties().put("osivia.title", form.getTitle());
         else
             srcModule.getProperties().remove("osivia.title");
-        
+
         if (BooleanUtils.isTrue(form.isDisplayTitle()))
             srcModule.getProperties().remove("osivia.hideTitle");
         else
@@ -139,16 +133,24 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
             srcModule.getProperties().put("osivia.bootstrapPanelStyle", BooleanUtils.toStringTrueFalse(true));
         else
             srcModule.getProperties().remove("osivia.bootstrapPanelStyle");
-        
+
         if (BooleanUtils.isTrue(form.isHideIfEmpty()))
-            srcModule.getProperties().put("osivia.hideEmptyPortlet", "1");  
+            srcModule.getProperties().put("osivia.hideEmptyPortlet", "1");
         else
             srcModule.getProperties().remove("osivia.hideEmptyPortlet");
-      
+
         srcModule.getProperties().put("osivia.style", String.join(",", form.getStyles()));
 
+        // Linked layout item identifier
+        if (StringUtils.isEmpty(form.getLinkedLayoutItemId())) {
+            srcModule.getProperties().remove(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+        } else {
+            srcModule.getProperties().put(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY, form.getLinkedLayoutItemId());
+        }
+
+
         updateDocument(portalControllerContext, document);
-        
+
         String url = this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
         response.sendRedirect(url);
     }
@@ -194,12 +196,12 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
         Document document = getDocument(portalCtx);
         document.getSpaceId();
-        
+
         CMSController ctrl = new CMSController(portalCtx);
         CMSContext cmsContext = ctrl.getCMSContext();
         Space space = (Space) cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
         UniversalID templateId = space.getTemplateId();
-        if( templateId != null) {
+        if (templateId != null) {
             CMSContext cmsTemplateContext = ctrl.getCMSContext();
             cmsTemplateContext.setPreview(false);
             Page page = (Page) cmsService.getCMSSession(cmsTemplateContext).getDocument(templateId);
@@ -207,7 +209,7 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         }
         return space;
     }
-    
+
 
     private void updateDocument(PortalControllerContext portalCtx, Document document) throws CMSException {
 
@@ -242,7 +244,7 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     /**
      * Get form model attribute.
      *
-     * @param request portlet request
+     * @param request  portlet request
      * @param response portlet response
      * @return form
      */
@@ -252,28 +254,47 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
 
         Document document = getDocument(portalCtx);
-        
+
         ModuleRef srcModule = getModule(portalCtx, document);
 
 
         ModifyForm form = this.applicationContext.getBean(ModifyForm.class);
         form.setTitle(srcModule.getProperties().get("osivia.title"));
         form.setDisplayTitle(!StringUtils.equals(srcModule.getProperties().get("osivia.hideTitle"), "1"));
-        form.setDisplayPanel(BooleanUtils.toBoolean(srcModule.getProperties().get("osivia.bootstrapPanelStyle")));        
+        form.setDisplayPanel(BooleanUtils.toBoolean(srcModule.getProperties().get("osivia.bootstrapPanelStyle")));
         form.setHideIfEmpty(StringUtils.equals(srcModule.getProperties().get("osivia.hideEmptyPortlet"), "1"));
-        
+
         String sStyles = StringUtils.defaultString(srcModule.getProperties().get("osivia.style"));
         form.setStyles(Arrays.asList(sStyles.split(",")));
+
+        // Linked layout item identifier
+        String linkedLayoutItemId = srcModule.getProperties().get(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+        form.setLinkedLayoutItemId(linkedLayoutItemId);
 
         return form;
     }
 
-    
-    
+
     @ModelAttribute("stylesList")
-    protected List<String> getStyles(PortletRequest request, PortletResponse response) throws Exception {
+    public List<String> getStyles(PortletRequest request, PortletResponse response) throws Exception {
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
         return getTemplateSpace(portalCtx).getStyles();
+    }
+
+
+    /**
+     * Get layout groups.
+     *
+     * @param request  portlet request
+     * @param response portlet response
+     * @return layout groups
+     */
+    @ModelAttribute("layoutGroups")
+    public List<LayoutGroup> getLayoutGroups(PortletRequest request, PortletResponse response) throws PortalException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        return this.layoutItemsService.getGroups(portalControllerContext);
     }
 
 }

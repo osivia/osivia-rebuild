@@ -16,19 +16,22 @@
 
 <%--@elvariable id="form" type="org.osivia.portal.cms.portlets.edition.page.apps.modify.controller.ModifyForm"--%>
 <%--@elvariable id="stylesList" type="java.util.List"--%>
+<%--@elvariable id="layoutGroups" type="java.util.List"--%>
+<%--@elvariable id="layoutGroup" type="org.osivia.portal.api.ui.layout.LayoutGroup"--%>
 <form:form action="${url}" method="post" modelAttribute="form">
+    <%--Title--%>
     <div class="mb-3">
         <c:set var="placeholder"><op:translate key="MODIFY_PORTLET_TITLE"/></c:set>
         <form:label path="title" cssClass="form-label"><op:translate key="MODIFY_PORTLET_TITLE"/></form:label>
         <form:input path="title" cssClass="form-control" placeholder="${placeholder}" htmlEscape="true"/>
     </div>
 
+    <%--Display options--%>
     <div class="mb-3">
         <div class="form-check">
             <form:checkbox id="${namespace}-display-title" path="displayTitle" cssClass="form-check-input"/>
             <label for="${namespace}-display-title" class="form-check-label"><op:translate key="MODIFY_PORTLET_DISPLAY_TITLE"/></label>
         </div>
-
         <div class="form-check">
             <form:checkbox id="${namespace}-display-panel" path="displayPanel" cssClass="form-check-input"/>
             <label for="${namespace}-display-panel" class="form-check-label"><op:translate key="MODIFY_PORTLET_DISPLAY_PANEL"/></label>
@@ -39,20 +42,45 @@
         </div>
     </div>
 
+    <%--Styles--%>
     <div class="mb-3">
         <form:label path="styles" cssClass="form-label"><op:translate key="MODIFY_PORTLET_STYLES"/></form:label>
-        <c:forEach var="style" items="${stylesList}" varStatus="status">
-            <div class="form-check form-check-inline">
-                <form:checkbox id="${namespace}-style-${status.index}" path="styles" value="${style}" cssClass="form-check-input"/>
-                <label for="${namespace}-style-${status.index}" class="form-check-label">${style}</label>
-            </div>
-        </c:forEach>
-        <c:if test="${empty stylesList}">
-            <div class="form-text">
-                <span><op:translate key="MODIFY_PORTLET_NO_STYLE_AVAILABLE"/></span>
-            </div>
-        </c:if>
+        <c:choose>
+            <c:when test="${empty stylesList}">
+                <div class="form-text">
+                    <span><op:translate key="MODIFY_PORTLET_NO_STYLE_AVAILABLE"/></span>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div>
+                    <c:forEach var="style" items="${stylesList}" varStatus="status">
+                        <div class="form-check form-check-inline">
+                            <form:checkbox id="${namespace}-style-${status.index}" path="styles" value="${style}" cssClass="form-check-input"/>
+                            <label for="${namespace}-style-${status.index}" class="form-check-label">${style}</label>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:otherwise>
+        </c:choose>
     </div>
+
+    <%--Linked layout item--%>
+    <c:if test="${not empty layoutGroups}">
+        <div class="mb-3">
+            <form:label path="linkedLayoutItemId" cssClass="form-label"><op:translate key="MODIFY_PORTLET_LINKED_LAYOUT_ITEM"/></form:label>
+            <form:select path="linkedLayoutItemId" cssClass="form-select">
+                <form:option value=""><op:translate key="MODIFY_PORTLET_LINKED_LAYOUT_ITEM_OPTION_EMPTY"/></form:option>
+                    <c:forEach var="layoutGroup" items="${layoutGroups}">
+                        <optgroup label="${layoutGroup.label}">
+                            <c:forEach var="layoutItem" items="${layoutGroup.items}">
+                                <form:option value="${layoutItem.id}">${layoutItem.label}</form:option>
+                            </c:forEach>
+                        </optgroup>
+                    </c:forEach>
+            </form:select>
+            <div class="form-text"><op:translate key="MODIFY_PORTLET_LINKED_LAYOUT_ITEM_HELP"/></div>
+        </div>
+    </c:if>
 
     <%--Buttons--%>
     <div class="text-end">
