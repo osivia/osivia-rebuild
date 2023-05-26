@@ -676,15 +676,17 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
      */
     private LayoutGroupImpl getRelatedGroup(List<LayoutGroupImpl> groups, String id) {
         LayoutGroupImpl relatedGroup = null;
-        Iterator<LayoutGroupImpl> groupsIterator = groups.iterator();
-        while ((relatedGroup == null) && groupsIterator.hasNext()) {
-            LayoutGroupImpl group = groupsIterator.next();
-            if (CollectionUtils.isNotEmpty(group.getItems())) {
-                Iterator<LayoutItem> itemsIterator = group.getItems().iterator();
-                while ((relatedGroup == null) && itemsIterator.hasNext()) {
-                    LayoutItem item = itemsIterator.next();
-                    if (StringUtils.equals(id, item.getId())) {
-                        relatedGroup = group;
+        if (CollectionUtils.isNotEmpty(groups)) {
+            Iterator<LayoutGroupImpl> groupsIterator = groups.iterator();
+            while ((relatedGroup == null) && groupsIterator.hasNext()) {
+                LayoutGroupImpl group = groupsIterator.next();
+                if (CollectionUtils.isNotEmpty(group.getItems())) {
+                    Iterator<LayoutItem> itemsIterator = group.getItems().iterator();
+                    while ((relatedGroup == null) && itemsIterator.hasNext()) {
+                        LayoutItem item = itemsIterator.next();
+                        if (StringUtils.equals(id, item.getId())) {
+                            relatedGroup = group;
+                        }
                     }
                 }
             }
