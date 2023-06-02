@@ -188,7 +188,7 @@ public class NotificationsUtils {
 
         if (notificationsList != null) {
             // Toast container
-            Element toastContainer = DOM4JUtils.generateDivElement("toast-container top-0 end-0 p-3");
+            Element toastContainer = DOM4JUtils.generateDivElement("toast-container top-0 end-0 p-3 position-fixed");
             dynaWindowContent.add(toastContainer);
 
             for (Notifications notifications : notificationsList) {
