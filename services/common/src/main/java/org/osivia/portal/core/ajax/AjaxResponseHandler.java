@@ -292,6 +292,19 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // Obtain page
                 final Page page = (Page) portalObjectContainer.getObject(pageId);
 
+                
+                
+                // Check if current page is a modal
+                boolean modal = false;
+
+                if (page instanceof DynamicTemplatePage) {
+                    PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
+                    if (templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
+                        modal = true;
+                }
+                
+                
+                
                 Long lastUpdateTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateTs." + pageId.toString(PortalObjectPath.CANONICAL_FORMAT));
                 if (lastUpdateTs != null) {
                     if (page.getUpdateTs() > lastUpdateTs)
@@ -333,7 +346,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
                 // The windows marked dirty during the request
-                Set dirtyWindowIds = new HashSet();
+                Set<PortalObjectId> dirtyWindowIds = new HashSet<PortalObjectId>();
 
                 // Whether we need a full refresh or not
                 boolean fullRefresh = false;
@@ -392,7 +405,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                             }
 
                             // Collect the dirty window id
-                            dirtyWindowIds.add(key.getId());
+                            dirtyWindowIds.add((PortalObjectId)key.getId());
                         } else if (type == PageNavigationalState.class) {
 
                             PageNavigationalState pns = (PageNavigationalState) update.getNewValue();
@@ -564,6 +577,31 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 }
                             }
                         }
+                        
+
+                        // Edition
+                        try {
+                            if (!modal && previewModeService.isEditionMode(portalControllerContext)) {
+                                Window editionWindow = (Window) page.getChild("edition");
+                                if (editionWindow != null) {
+
+                                    PortalObjectId editionWindowId = editionWindow.getId();
+                                    if (!dirtyWindowIds.contains(editionWindowId)) {
+                                        dirtyWindowIds.add(editionWindowId);
+                                    }
+                                }
+                            }
+                        }
+
+                        catch (Exception e) {
+                            log.error("An error occured during the computation of edition window ");
+
+                            //
+                            fullRefresh = true;
+
+                        }
+
+                        
 
                         // Windows
 
@@ -704,16 +742,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                      * Constants.PORTLET_ATTR_PORTLET_PATH, null); }
                      */
 
-                    
-                    // Check if current page is a modal
-                    boolean modal = false;
 
-                    if (page instanceof DynamicTemplatePage) {
-                        PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
-                        if (templateId.getPath().getLastComponentName().equals("OSIVIA_PAGE_MODAL"))
-                            modal = true;
-                    }
-                    
                     
 
                     // Global cache
@@ -750,7 +779,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                             	 // Linked layout item
                                 String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
 
-                                if (StringUtils.isEmpty(linkedLayoutItemId) || this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId)) {
+                                if (StringUtils.isEmpty(linkedLayoutItemId) || this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId) || !this.layoutItemsService.isDefined(portalControllerContext, linkedLayoutItemId)){
                                 	
                                 	
                                 	String portletInstance = refreshedWindow.getContent().getURI();

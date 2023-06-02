@@ -446,20 +446,8 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
                     });
 
                     if (regionsModifications === false) {
-                        // Empty response + hidePortlet : reinitialize then window
-                        let emptyResponse = true;
-                        $srcContainer.find('.dyna-portlet').each(function () {
-                            emptyResponse = false;
-                        });
-
-                        if (emptyResponse === true) {
-                            // Copy the region content
-                            copyInnerHTML(srcContainer, dstContainer, "dyna-window-content");
-                        } else {
-                            // Copy the region content
-                            copyInnerHTML(srcContainer, dstContainer, "dyna-portlet");
-                            copyInnerHTML(srcContainer, dstContainer, "dyna-decoration");
-                        }
+                        // Copy the region content
+                        copyInnerHTML(srcContainer, dstContainer, "dyna-window-content");
                     }
 
                     if (newPage === false) {

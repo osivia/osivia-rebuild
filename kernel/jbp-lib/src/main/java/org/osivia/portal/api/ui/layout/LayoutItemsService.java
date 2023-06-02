@@ -98,6 +98,16 @@ public interface LayoutItemsService {
      * @throws PortalException
      */
     boolean isSelected(PortalControllerContext portalControllerContext, String itemId) throws PortalException;
+    
+    /**
+     * Check if layout item is defined.
+     *
+     * @param portalControllerContext portal controller context
+     * @param itemId                  layout item identifier
+     * @return true if layout item is selected
+     * @throws PortalException
+     */
+    boolean isDefined(PortalControllerContext portalControllerContext, String itemId) throws PortalException;
 
 
     /**

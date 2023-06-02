@@ -12,8 +12,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.server.ServerInvocation;
@@ -33,6 +35,7 @@ import org.osivia.portal.api.ui.layout.LayoutItem;
 import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
@@ -46,6 +49,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Layout items service implementation.
@@ -67,6 +71,11 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
     private static final String SELECTED_LAYOUT_ITEMS_ATTRIBUTE_SUFFIX = ".selected-layout-items";
 
 
+    /**
+     * layout items groups session attribute suffix.
+     */
+    private static final String LAYOUT_ITEMS_GROUPS_SUFFIX = ".layout-items-groups";
+    
     /**
      * Log.
      */
@@ -369,6 +378,31 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
 
         return selected;
     }
+    
+    
+    
+    @Override
+    public boolean isDefined(PortalControllerContext portalControllerContext, String itemId) {
+        // Selected layout item indicator
+        boolean defined = false;
+        
+        // Layout groups
+        List<LayoutGroupImpl> groups = this.getGroupsImpl(portalControllerContext);
+        
+        if ( CollectionUtils.isNotEmpty(groups)) {
+            for( LayoutGroup group: groups) {
+                List<LayoutItem> layoutItems = getItems( portalControllerContext, group.getId());
+                for( LayoutItem layoutItem : layoutItems) {
+                    if( layoutItem.getId().equals(itemId))  {
+                        defined = true;
+                    }
+                }
+            }
+
+        }
+
+        return defined;
+    }
 
 
     @Override
@@ -569,6 +603,52 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         return (Person) invocation.getAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2);
     }
 
+    
+
+    /**
+     * Get selected layout items.
+     *
+     * @param portalControllerContext portal controller context
+     * @param page                    current page
+     * @return selected layout items
+     */
+    
+    private List<LayoutGroupImpl> getGroupsImpl(PortalControllerContext portalControllerContext) {
+        
+        // Current page
+        Page page = this.getCurrentPage(portalControllerContext);
+        
+        if( page== null)
+            return null;
+        
+        // HTTP session
+        HttpSession session = this.getSession(portalControllerContext);
+
+        // Selected layout items
+        PageLayoutGroups layoutGroups = null;
+
+        // HTTP session attribute name
+        String name = page.getId().toString(PortalObjectPath.SAFEST_FORMAT) + LAYOUT_ITEMS_GROUPS_SUFFIX;
+
+        // HTTP session attribute
+        Object attribute = session.getAttribute(name);
+
+        // Has page been modified ?
+        if (attribute instanceof PageLayoutGroups) {
+            layoutGroups = (PageLayoutGroups) attribute;
+            if(layoutGroups.getTimestamp() < page.getUpdateTs())    {
+                layoutGroups = null;
+            }
+        }  
+        
+        if( layoutGroups == null) {
+            layoutGroups = computeLayouts(portalControllerContext, page);
+            session.setAttribute(name, layoutGroups );
+        }
+
+        return layoutGroups.getGroups();
+    }   
+    
 
     /**
      * Get layout groups implementation.
@@ -576,62 +656,57 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
      * @param portalControllerContext portal controller context
      * @return layout groups
      */
-    private List<LayoutGroupImpl> getGroupsImpl(PortalControllerContext portalControllerContext) {
-        // Current page
-        Page page = this.getCurrentPage(portalControllerContext);
-
+    private PageLayoutGroups computeLayouts(PortalControllerContext portalControllerContext, Page page) {
+        
         // Layout groups
         List<LayoutGroupImpl> groups;
 
-        if (page == null) {
+     // Page identifier
+        UniversalID pageId = ObjectUtils.defaultIfNull(this.getCurrentPageId(portalControllerContext), new UniversalID(page.getProperty("osivia.navigationId")));
+
+        // Page property
+        String property;
+        try {
+            Document pageDocument = this.getPageDocument(portalControllerContext, pageId);
+
+            property = (String) pageDocument.getProperties().get(LAYOUT_GROUPS_PROPERTY);
+        } catch (CMSException e) {
+            property = null;
+            this.log.error(e);
+        }
+
+        // Layout groups container
+        LayoutGroupsContainer container;
+
+        if (StringUtils.isEmpty(property)) {
+            container = null;
+        } else {
+            // JSON object mapper
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                container = mapper.readValue(property, LayoutGroupsContainer.class);
+               
+            } catch (JsonProcessingException e) {
+                container = null;
+                this.log.error(e.getLocalizedMessage());
+            }
+        }
+
+        if ((container == null) || CollectionUtils.isEmpty(container.getGroups())) {
             groups = null;
         } else {
-            // Page identifier
-            UniversalID pageId = ObjectUtils.defaultIfNull(this.getCurrentPageId(portalControllerContext), new UniversalID(page.getProperty("osivia.navigationId")));
+            groups = container.getGroups();
 
-            // Page property
-            String property;
-            try {
-                Document pageDocument = this.getPageDocument(portalControllerContext, pageId);
-
-                property = (String) pageDocument.getProperties().get(LAYOUT_GROUPS_PROPERTY);
-            } catch (CMSException e) {
-                property = null;
-                this.log.error(e);
-            }
-
-            // Layout groups container
-            LayoutGroupsContainer container;
-
-            if (StringUtils.isEmpty(property)) {
-                container = null;
-            } else {
-                // JSON object mapper
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    container = mapper.readValue(property, LayoutGroupsContainer.class);
-                } catch (JsonProcessingException e) {
-                    container = null;
-                    this.log.error(e.getLocalizedMessage());
-                }
-            }
-
-            if ((container == null) || CollectionUtils.isEmpty(container.getGroups())) {
-                groups = null;
-            } else {
-                groups = container.getGroups();
-
-                for (LayoutGroupImpl group : groups) {
-                    // Copy items implementation to generic items
-                    List<LayoutItemImpl> itemsImpl = group.getItemsImpl();
-                    if (CollectionUtils.isNotEmpty(itemsImpl)) {
-                        group.getItems().addAll(itemsImpl);
-                    }
+            for (LayoutGroupImpl group : groups) {
+                // Copy items implementation to generic items
+                List<LayoutItemImpl> itemsImpl = group.getItemsImpl();
+                if (CollectionUtils.isNotEmpty(itemsImpl)) {
+                    group.getItems().addAll(itemsImpl);
                 }
             }
         }
 
-        return groups;
+        return new PageLayoutGroups(System.currentTimeMillis(), groups);
     }
 
 
@@ -650,7 +725,7 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
             String currentItemId = selectedLayoutItems.getSelection().get(group.getId());
             if (StringUtils.isNotEmpty(currentItemId)) {
                 Iterator<? extends LayoutItem> iterator = group.getItems().iterator();
-                while ((currentItem == null)) {
+                while ((currentItem == null) && iterator.hasNext()) {
                     LayoutItem item = iterator.next();
                     if (StringUtils.equals(currentItemId, item.getId())) {
                         currentItem = item;

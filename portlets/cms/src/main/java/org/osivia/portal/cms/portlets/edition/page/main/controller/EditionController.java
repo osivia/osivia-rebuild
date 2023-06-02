@@ -797,7 +797,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         toolbar.add(dropdown);
 
         // Dropdown toggle button
-        Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle", bundle.getString("MODIFY_MENU_CONFIGURATION"), "glyphicons glyphicons-basic-wrench");
+        Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle no-ajax-link", bundle.getString("MODIFY_MENU_CONFIGURATION"), "glyphicons glyphicons-basic-wrench");
         DOM4JUtils.addAttribute(dropdownToggle, "role", "button");
         DOM4JUtils.addDataAttribute(dropdownToggle, "bs-toggle", "dropdown");
         DOM4JUtils.addAriaAttribute(dropdownToggle, "expanded", String.valueOf(false));
@@ -840,7 +840,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             toolbar.add(dropdown);
 
             // Dropdown toggle button
-            Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle", bundle.getString("MODIFY_MENU_EDITION"), "glyphicons glyphicons-basic-monitor");
+            Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle no-ajax-link", bundle.getString("MODIFY_MENU_EDITION"), "glyphicons glyphicons-basic-monitor");
             DOM4JUtils.addAttribute(dropdownToggle, "role", "button");
             DOM4JUtils.addDataAttribute(dropdownToggle, "bs-toggle", "dropdown");
             DOM4JUtils.addAriaAttribute(dropdownToggle, "expanded", String.valueOf(false));
@@ -952,7 +952,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         toolbar.add(dropdown);
 
         // Dropdown toggle button
-        Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle", bundle.getString("MODIFY_MENU_SPACE"), "glyphicons glyphicons-basic-folder");
+        Element dropdownToggle = DOM4JUtils.generateLinkElement("#", null, null, "nav-link dropdown-toggle  no-ajax-link", bundle.getString("MODIFY_MENU_SPACE"), "glyphicons glyphicons-basic-folder");
         DOM4JUtils.addAttribute(dropdownToggle, "role", "button");
         DOM4JUtils.addDataAttribute(dropdownToggle, "bs-toggle", "dropdown");
         DOM4JUtils.addAriaAttribute(dropdownToggle, "expanded", String.valueOf(false));
