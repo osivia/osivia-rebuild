@@ -64,7 +64,7 @@ $JQry(function() {
             loaded = $element.data("validation-loaded");
 
         if (!loaded) {
-             $element.find(':input').on('keyup change', function () {
+             $element.find(':input').on('input change', function () {
 
              window.setTimeout( fieldValidation ,              
                                 500,
