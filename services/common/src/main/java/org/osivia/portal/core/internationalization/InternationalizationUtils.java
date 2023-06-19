@@ -60,7 +60,7 @@ public class InternationalizationUtils {
         // Portal
         Portal portal = PortalObjectUtilsInternal.getPortal(portalObject);
         // Brand name internationalization key
-        String key = portal.getDeclaredProperty("osivia.brand.key");
+        String key = portal.getDefaultPage().getDeclaredProperty("osivia.brand.key");
         if (key == null) {
             key = "BRAND";
         }
