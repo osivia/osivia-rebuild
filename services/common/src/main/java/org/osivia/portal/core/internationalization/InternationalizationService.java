@@ -31,6 +31,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageProperties;
@@ -64,13 +65,17 @@ public class InternationalizationService implements IInternationalizationService
 
     @Override
     public IBundleFactory getBundleFactory(ClassLoader classLoader) {
-        return new BundleFactory(this, classLoader);
+        // return new BundleFactory(this, classLoader);
+        // this can lead to wrong references in the case the application is not reload (ie. not a portlet)
+        // Appears with toutatice-annuaire-v2 after portal reloading
+        //  by: java.lang.IllegalStateException: Impossible de charger [org.apache.commons.collections.keyvalue.MultiKey], ce chargeur de classes a déjà été arrêté
+        return new BundleFactory(Locator.getService(IInternationalizationService.class), classLoader);
     }
 
 
     @Override
     public IBundleFactory getBundleFactory(ClassLoader classLoader, ApplicationContext applicationContext) {
-        return new BundleFactory(this, classLoader, applicationContext);
+        return new BundleFactory(Locator.getService(IInternationalizationService.class), classLoader, applicationContext);
     }
 
 
