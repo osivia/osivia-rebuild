@@ -1033,8 +1033,8 @@ public class AjaxResponseHandler implements ResponseHandler {
             else {
                 return null;
             }
-        } catch (ControllerException e) {
-            throw new ResponseHandlerException(e);
+        } catch (Exception e) {
+            return handleAjaxError(controllerContext, new ErrorResponse(e, true)); 
         }
     }
 

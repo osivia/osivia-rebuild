@@ -795,11 +795,7 @@ function directAjaxCall(ajaxContext, options, url, eventToStop, callerId, popSta
             onAjaxSuccess(data, callerId, null, popState, eventToStop, url);
         },
         error: function () {
-            // the simplest way to diagnostic is to refresh the whole page
-            if( history.state.fullUrl)
-                window.location = history.state.fullUrl;
-            else
-                alert("Serveur injoignable")
+           alert("Erreur du serveur")
         }
     }
     $JQry.ajax(ajaxSettings);
