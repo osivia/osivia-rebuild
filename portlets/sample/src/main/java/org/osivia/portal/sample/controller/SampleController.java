@@ -17,7 +17,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
@@ -48,6 +49,9 @@ import org.springframework.web.portlet.context.PortletContextAware;
 @Controller
 @RequestMapping(value = "VIEW")
 public class SampleController implements PortletContextAware {
+    
+    protected static final Log logger = LogFactory.getLog(SampleController.class);
+
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -162,6 +166,7 @@ public class SampleController implements PortletContextAware {
      */
     @ActionMapping(name = "add")
     public void add(ActionRequest request, ActionResponse response, @RequestParam(name = "count") String count) {
+        logger.info("SamplePortlet Add");
         response.setRenderParameter("count", count);
     }
 
