@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.IDirDelegate;
 import org.osivia.portal.api.directory.v2.IDirService;
 import org.osivia.portal.api.locator.Locator;
@@ -117,6 +118,7 @@ public class DirHandler implements InvocationHandler {
 	 *            the delegate to set
 	 */
 	public void setDelegate(IDirDelegate delegate) {
+	    DirServiceFactory.lastDeploymentTimeStamp= System.currentTimeMillis();
 		this.delegate = delegate;
 	}
 

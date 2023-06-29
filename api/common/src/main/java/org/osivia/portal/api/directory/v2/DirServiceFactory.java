@@ -47,5 +47,10 @@ public class DirServiceFactory {
 
         return provider.getDirectoryTxManagerDelegate();
     }
-
+    
+    /**
+     * IDirService proxy don't support hot deploy...
+     * So this variable ensure us that the proxy is reliable
+     */
+    public static long lastDeploymentTimeStamp = 0L; 
 }

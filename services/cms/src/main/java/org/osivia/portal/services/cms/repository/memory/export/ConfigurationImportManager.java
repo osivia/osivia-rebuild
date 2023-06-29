@@ -30,8 +30,8 @@ public class ConfigurationImportManager implements IConfigurationImportManager {
     
     
     /** The watcher thread for modifications. */
-    private WatcherThread watcher;
-    
+
+    private Thread thread;
     
     @Autowired
     private ICMSServiceLocator cmsServiceLocator;
@@ -46,8 +46,8 @@ public class ConfigurationImportManager implements IConfigurationImportManager {
         
         logger.info("stop service ConfigurationImportManager");
         
-        if (watcher != null) {
-            watcher.endThread();
+        if (thread != null) {
+            thread.interrupt();
         }
     }
 
@@ -61,8 +61,8 @@ public class ConfigurationImportManager implements IConfigurationImportManager {
         logger.info("start service ConfigurationImportManager");
         
         // Start a watcher thread
-        watcher = new WatcherThread(this);
-        Thread thread = new Thread(watcher);
+        WatcherThread watcher = new WatcherThread(this);
+        thread = new Thread(watcher);
         thread.start();  
         
         
