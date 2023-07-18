@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.ajax-portal</groupId>
         <artifactId>osivia-portal-parent</artifactId>
-        <version>5.2.10-SNAPSHOT</version>
+        <version>5.2-jdk-up-SNAPSHOT</version>
     </parent>
 
     <artifactId>osivia-portal-distribution</artifactId>
@@ -276,6 +276,22 @@
 		    <version>1.3.04</version>
 		    <scope>compile</scope>
 		</dependency>   
+
+		<dependency>
+		    <groupId>jakarta.xml.bind</groupId>
+		    <artifactId>jakarta.xml.bind-api</artifactId>
+		</dependency>
+		
+		<!-- Runtime, com.sun.xml.bind module -->
+		<dependency>
+		    <groupId>org.glassfish.jaxb</groupId>
+		    <artifactId>jaxb-runtime</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.sun.istack</groupId>
+			<artifactId>istack-commons-runtime</artifactId>
+    	</dependency>
 
 		<dependency>
 		    <groupId>taglibs</groupId>

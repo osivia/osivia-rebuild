@@ -33,7 +33,10 @@
                 <include>org.jboss.portal.web:web-web</include>                
                 <include>xerces:xercesImpl</include>  
                 <include>xml-apis:xml-apis</include>  
-                <include>xml-resolver:xml-resolver</include>  
+                <include>xml-resolver:xml-resolver</include>
+                <include>jakarta.xml.bind:jakarta.xml.bind-api</include>
+                <include>org.glassfish.jaxb:jaxb-runtime</include>
+                <include>com.sun.istack:istack-commons-runtime</include>   
                 <include>taglibs:standard</include>  
                 <include>javax.transaction:jta</include>  
                 <include>org.osivia.ajax-portal.api:osivia-portal-api-common:jar:${project.version}</include>

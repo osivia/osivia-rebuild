@@ -5,7 +5,7 @@
 
 	<groupId>org.osivia.ajax-portal</groupId>
 	<artifactId>osivia-portal-parent</artifactId>
-	<version>5.2.10-SNAPSHOT</version>
+	<version>5.2-jdk-up-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 
@@ -167,9 +167,16 @@
         <junit.version>4.11</junit.version>
         <easymock.version>3.1</easymock.version>
         <powermock.version>1.6.5</powermock.version>
-        
+
+
+		<!-- XML (from java 11) -->
+        <jaxb-runtime.version>2.3.2</jaxb-runtime.version> 
+        <istack.version>2.16</istack.version> 
+                
         <!-- Tomcat -->
-        <tomcat.version>8.5.81</tomcat.version>        
+        <tomcat.version>8.5.81</tomcat.version>    
+        
+            
 
 
 
@@ -430,6 +437,25 @@
 
 			<!-- DOM -->
 
+		<dependency>
+			    <groupId>jakarta.xml.bind</groupId>
+			    <artifactId>jakarta.xml.bind-api</artifactId>
+			    <version>${jaxb-runtime.version}</version>
+			</dependency>
+			
+			<!-- Runtime, com.sun.xml.bind module -->
+			<dependency>
+			    <groupId>org.glassfish.jaxb</groupId>
+			    <artifactId>jaxb-runtime</artifactId>
+			    <version>${jaxb-runtime.version}</version>
+			</dependency>
+			
+			<dependency>
+			    <groupId>com.sun.istack</groupId>
+			    <artifactId>istack-commons-runtime</artifactId>
+			    <version>${istack.version}</version>
+    		</dependency>
+			
 			<dependency>
 				<groupId>dom4j</groupId>
 				<artifactId>dom4j</artifactId>
@@ -781,8 +807,8 @@
 					<version>3.3</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
-						<source>1.8</source>
-						<target>1.8</target>
+						<source>11</source>
+						<target>11</target>
 					</configuration>
 				</plugin>
 
