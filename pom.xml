@@ -133,11 +133,11 @@
 		<jboss-portal-web.version>1.2.0</jboss-portal-web.version>
 
 		<!-- Spring framework -->
-		<springframework.version>5.3.13</springframework.version>
-		<springframework.webmvc-portlet.version>4.2.6.RELEASE</springframework.webmvc-portlet.version>
+		<springframework.version>5.3.28</springframework.version>
+		<springframework.webmvc-portlet.version>4.3.30.RELEASE</springframework.webmvc-portlet.version>
 
         <org.springframework.ldap.version>2.3.4.RELEASE</org.springframework.ldap.version>		
-		<org.springframework.security.version>5.3.12.RELEASE</org.springframework.security.version>
+		<org.springframework.security.version>5.7.9</org.springframework.security.version>
 		<org.springframework.security.oauth2.version>2.0.18.RELEASE</org.springframework.security.oauth2.version>
 		<!-- Commons -->
 		<commons-lang3.version>3.4</commons-lang3.version>
@@ -405,6 +405,12 @@
 				<version>${org.springframework.security.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-crypto</artifactId>
+				<version>${org.springframework.security.version}</version>
+				<scope>provided</scope>
+			</dependency>			
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-taglibs</artifactId>
@@ -900,6 +906,47 @@
 					<arguments>-Prelease</arguments>
 				</configuration>
 			</plugin>
-      </build>
+		</plugins>
+	</build>
 	
+	
+	<profiles>
+    	<profile>
+	        <id>check</id>
+	        <build>
+	            <plugins>
+					<plugin>
+		              <groupId>org.owasp</groupId>
+		              <artifactId>dependency-check-maven</artifactId>
+		              <version>8.3.1</version>
+		              <executions>
+		                  <execution>
+		                      <goals>
+		                          <goal>check</goal>
+		                      </goals>
+		                  </execution>
+		              </executions>
+		            </plugin>					
+				</plugins>
+			</build>
+    	</profile>
+	</profiles>
+	
+	
+	<reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>8.3.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

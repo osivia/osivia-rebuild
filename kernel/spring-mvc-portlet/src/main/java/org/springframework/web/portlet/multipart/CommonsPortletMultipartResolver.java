@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2015 the original author or authors.
+ * Copyright 2002-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ import org.springframework.web.portlet.util.PortletUtils;
 
 /**
  * {@link PortletMultipartResolver} implementation for
- * <a href="http://commons.apache.org/proper/commons-fileupload">Apache Commons FileUpload</a>
+ * <a href="https://commons.apache.org/proper/commons-fileupload">Apache Commons FileUpload</a>
  * 1.2 or above.
  *
  * <p>Provides "maxUploadSize", "maxInMemorySize" and "defaultEncoding" settings as
@@ -156,8 +156,11 @@ public class CommonsPortletMultipartResolver extends CommonsFileUploadSupport
 		catch (FileUploadBase.SizeLimitExceededException ex) {
 			throw new MaxUploadSizeExceededException(fileUpload.getSizeMax(), ex);
 		}
+		catch (FileUploadBase.FileSizeLimitExceededException ex) {
+			throw new MaxUploadSizeExceededException(fileUpload.getFileSizeMax(), ex);
+		}
 		catch (FileUploadException ex) {
-			throw new MultipartException("Could not parse multipart portlet request", ex);
+			throw new MultipartException("Failed to parse multipart portlet request", ex);
 		}
 	}
 

@@ -41,8 +41,6 @@ import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-
-
 /**
  * Convenience methods for retrieving the root {@link WebApplicationContext} for
  * a given {@link PortletContext}. This is useful for programmatically accessing
@@ -219,7 +217,7 @@ public abstract class PortletApplicationContextUtils {
 	public static void initPortletPropertySources(MutablePropertySources propertySources, ServletContext servletContext,
 			PortletContext portletContext, PortletConfig portletConfig) {
 
-		Assert.notNull(propertySources, "propertySources must not be null");
+		Assert.notNull(propertySources, "'propertySources' must not be null");
 		WebApplicationContextUtils.initServletPropertySources(propertySources, servletContext);
 
 		if (portletContext != null && propertySources.contains(StandardPortletEnvironment.PORTLET_CONTEXT_PROPERTY_SOURCE_NAME)) {

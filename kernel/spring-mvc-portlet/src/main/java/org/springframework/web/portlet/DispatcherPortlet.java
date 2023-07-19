@@ -132,7 +132,7 @@ import org.springframework.web.servlet.ViewResolver;
  */
 public class DispatcherPortlet extends FrameworkPortlet {
 
-    /**
+	/**
 	 * Well-known name for the PortletMultipartResolver object in the bean factory for this namespace.
 	 */
 	public static final String MULTIPART_RESOLVER_BEAN_NAME = "portletMultipartResolver";
@@ -687,7 +687,7 @@ public class DispatcherPortlet extends FrameworkPortlet {
 				throw ex;
 			}
 		}
-		catch (Error err) {
+		catch (Throwable err) {
 			PortletException ex =
 					new PortletException("Error occured during request processing: " + err.getMessage(), err);
 			// Trigger after-completion for thrown exception.
@@ -800,7 +800,7 @@ public class DispatcherPortlet extends FrameworkPortlet {
 			triggerAfterRenderCompletion(mappedHandler, interceptorIndex, request, response, ex);
 			throw ex;
 		}
-		catch (Error err) {
+		catch (Throwable err) {
 			PortletException ex =
 					new PortletException("Error occured during request processing: " + err.getMessage(), err);
 			// Trigger after-completion for thrown exception.
@@ -891,7 +891,7 @@ public class DispatcherPortlet extends FrameworkPortlet {
 			triggerAfterResourceCompletion(mappedHandler, interceptorIndex, request, response, ex);
 			throw ex;
 		}
-		catch (Error err) {
+		catch (Throwable err) {
 			PortletException ex =
 					new PortletException("Error occured during request processing: " + err.getMessage(), err);
 			// Trigger after-completion for thrown exception.
@@ -965,7 +965,7 @@ public class DispatcherPortlet extends FrameworkPortlet {
 				throw ex;
 			}
 		}
-		catch (Error err) {
+		catch (Throwable err) {
 			PortletException ex =
 					new PortletException("Error occured during request processing: " + err.getMessage(), err);
 			// Trigger after-completion for thrown exception.
