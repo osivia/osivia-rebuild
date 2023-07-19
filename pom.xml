@@ -174,7 +174,7 @@
         <istack.version>2.16</istack.version> 
                 
         <!-- Tomcat -->
-        <tomcat.version>8.5.81</tomcat.version>    
+        <tomcat.version>9.0.78</tomcat.version>    
         
             
 
@@ -869,8 +869,8 @@
                             <additionalOption>-Xdoclint:none</additionalOption>
                         </additionalOptions>
                     </configuration>
-                </plugin>				
-
+                </plugin>	
+                
 			</plugins>
 		</pluginManagement>
 
@@ -900,7 +900,6 @@
 					<arguments>-Prelease</arguments>
 				</configuration>
 			</plugin>
-		</plugins>
-	</build>
-
+      </build>
+	
 </project>

@@ -57,7 +57,7 @@ public class TomcatWebAppContext implements WebAppContext {
             this.commandServlet.setLoadOnStartup(0);
             this.commandServlet.setServletClass(CommandServlet.class.getName());
             this.context.addChild(this.commandServlet);
-            this.context.addServletMapping("/jbossportlet", "JBossServlet");
+            this.context.addServletMappingDecoded("/jbossportlet", "JBossServlet", false);
         } catch (Exception e) {
             this.cleanup();
             throw e;

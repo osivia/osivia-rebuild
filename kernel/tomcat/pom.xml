@@ -19,7 +19,7 @@
 
 
     <properties>
-        <tomcat.version>8.0.53</tomcat.version>
+        <tomcat.version>9.0.78</tomcat.version>
     </properties>
 
 
