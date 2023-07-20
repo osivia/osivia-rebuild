@@ -813,8 +813,8 @@
 					<version>3.3</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
-						<source>11</source>
-						<target>11</target>
+						<source>17</source>
+						<target>17</target>
 					</configuration>
 				</plugin>
 
