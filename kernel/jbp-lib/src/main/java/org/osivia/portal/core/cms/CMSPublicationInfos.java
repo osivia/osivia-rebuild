@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ser.ArraySerializers;
+
 import org.osivia.portal.api.cms.repository.UserData;
 
 /**

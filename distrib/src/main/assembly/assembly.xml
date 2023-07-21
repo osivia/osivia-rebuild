@@ -26,7 +26,7 @@
                 <include>javax.activation:activation</include>
                 <include>javax.ccpp:ccpp</include>
                 <include>javax.portlet:portlet-api</include>
-                <include>dom4j:dom4j</include> 
+                <include>org.dom4j:dom4j</include> 
                 <include>quartz:quartz</include>   
                 <include>org.jgroups:jgroups</include> 
                 <include>org.jboss.portal.portlet:portlet-portlet</include>
