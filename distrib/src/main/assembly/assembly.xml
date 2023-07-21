@@ -64,7 +64,8 @@
              	<include>org.springframework.ldap:spring-ldap-core</include>     
                 <include>net.sf.ehcache:ehcache</include> 
                 <include>aopalliance:aopalliance</include>   
-                <include>javax.servlet:jstl</include>
+                <include>org.apache.taglibs:taglibs-standard-spec</include>
+                <include>org.apache.taglibs:taglibs-standard-impl</include>
                 <include>javax.mail:mail</include>     
                  <!-- Rest services --> 
                 <include>org.apache.httpcomponents:httpclient</include>
