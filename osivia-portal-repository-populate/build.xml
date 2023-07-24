@@ -5,12 +5,6 @@
 	<property name="jboss-portal.portlet.version" value="2.0.9"/>
 	<property name="common-common.version" value="1.2.5"/>
 	<property name="web-web.version" value="1.2.0"/>
-	<property name="activation.version" value="1.0.2"/>
-	<property name="apache-xerces.version" value="2.9.1"/>
-	<property name="jboss-unit.version" value="1.2.3"/>	
-    <property name="json-lib.version" value="2.4"/> 	
-    <property name="oswego.version" value="1.3.4"/> 	
-	<property name="jta.version" value="1.0.1B"/> 
 	<property name="apache.version" value="8.5.81"/>
 
 
@@ -115,7 +109,6 @@
           target: build              
          ================================= -->
 	<target name="deploy-libs" description="registers libs into maven local repo">
-        <maven-deploy-file-no-source file="json-lib-${json-lib.version}" groupId="net.sf.json-lib" artifactId="json-lib" version="${json-lib.version}" />
 
 
 		<maven-deploy-file file="common-common-1.2.5" groupId="org.jboss.portal.common" artifactId="common-common" version="${common-common.version}" />
@@ -128,11 +121,7 @@
 		<maven-deploy-file file="portlet-controller-${jboss-portal.portlet.version}" groupId="org.jboss.portal.portlet" artifactId="portlet-controller" version="${jboss-portal.portlet.version}" />
         <maven-deploy-file file="portlet-portlet-${jboss-portal.portlet.version}" groupId="org.jboss.portal.portlet" artifactId="portlet-portlet" version="${jboss-portal.portlet.version}" />
 		<maven-deploy-file file="portlet-mc-2.0.9" groupId="org.jboss.portal.portlet" artifactId="portlet-mc" version="${jboss-portal.portlet.version}" />
-		
-		<maven-deploy-file-no-source file="concurrent-1.3.4" groupId="oswego-concurrent" artifactId="concurrent" version="${oswego.version}" />
-		<maven-deploy-file-no-source file="jta-1.0.1B" groupId="javax.transaction" artifactId="jta" version="${jta.version}" />
-		<maven-deploy-file-no-source file="activation-1.0.2" groupId="javax.activation" artifactId="activation" version="${activation.version}" />
-		
+
 		<maven-deploy-zip file="tomcat-bundle-${apache.version}" groupId="org.apache.tomcat" artifactId="tomcat-bundle" version="${apache.version}" packaging="zip"/>
 	</target>
 </project>
