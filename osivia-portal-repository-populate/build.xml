@@ -8,33 +8,10 @@
 	<property name="activation.version" value="1.0.2"/>
 	<property name="apache-xerces.version" value="2.9.1"/>
 	<property name="jboss-unit.version" value="1.2.3"/>	
-			
-	
-	
-	
-	
-	<macrodef name="maven-deploy-file">
-	   <attribute name="file"/>
-	   <attribute name="groupId"/>
-	   <attribute name="artifactId"/>
-	   <attribute name="version"/>
-	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
-	   
-	   <sequential>
-		   	<echo>mvn @{command-line}</echo>
-		   	
-		   	<!-- Window exec command : -->
-		   	<exec executable="cmd.exe" osfamily="Windows" >
-				<arg line="/c mvn.bat @{command-line}"/>
-			</exec>
-			
-		   	<!-- Linux et Unix exec command : -->
-		   	<exec executable="mvn" os="Linux,Unix">
-				<arg line="@{command-line}"/>
-			</exec>	   	
-	   </sequential>
-	</macrodef>
+    <property name="json-lib.version" value="2.4"/> 	
+    <property name="oswego.version" value="1.3.4"/> 	
+	<property name="jta.version" value="1.0.1B"/> 
+	<property name="apache.version" value="8.5.81"/>
 
 
 
@@ -44,7 +21,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -67,7 +44,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -91,7 +68,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="pom"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.pom -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.pom -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -109,25 +86,53 @@
 	</macrodef>	
 
 	
+   <macrodef name="maven-deploy-zip">
+       <attribute name="file"/>
+       <attribute name="groupId"/>
+       <attribute name="artifactId"/>
+       <attribute name="version"/>
+       <attribute name="packaging" default="zip"/>     
+       <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.zip -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
+       
+       <sequential>
+            <echo>mvn @{command-line}</echo>
+            
+            <!-- Window exec command : -->
+            <exec executable="cmd.exe" osfamily="Windows" >
+                <arg line="/c mvn.bat @{command-line}"/>
+            </exec>
+            
+            <!-- Linux et Unix exec command : -->
+            <exec executable="mvn" os="Linux,Unix">
+                <arg line="@{command-line}"/>
+            </exec>     
+       </sequential>
+    </macrodef>
+	
+	
+	
 	<!-- ================================= 
           target: build              
          ================================= -->
 	<target name="deploy-libs" description="registers libs into maven local repo">
+        <maven-deploy-file-no-source file="json-lib-${json-lib.version}" groupId="net.sf.json-lib" artifactId="json-lib" version="${json-lib.version}" />
+
+
 		<maven-deploy-file file="common-common-1.2.5" groupId="org.jboss.portal.common" artifactId="common-common" version="${common-common.version}" />
 		<maven-deploy-file file="common-portal-1.2.5" groupId="org.jboss.portal.common" artifactId="common-portal" version="${common-common.version}" />
 		<maven-deploy-file file="common-mc-1.2.5" groupId="org.jboss.portal.common" artifactId="common-mc" version="${common-common.version}" />
 		<maven-deploy-pom file="module-parent-1.2.0" groupId="org.jboss.portal.web" artifactId="module-parent" version="${web-web.version}" />
 		
 		<maven-deploy-file file="web-web-1.2.0" groupId="org.jboss.portal.web" artifactId="web-web" version="${web-web.version}" />
-		<maven-deploy-file file="portlet-controller-2.0.9" groupId="org.jboss.portal.portlet" artifactId="portlet-controller" version="${jboss-portal.portlet.version}" />
+		
+		<maven-deploy-file file="portlet-controller-${jboss-portal.portlet.version}" groupId="org.jboss.portal.portlet" artifactId="portlet-controller" version="${jboss-portal.portlet.version}" />
+        <maven-deploy-file file="portlet-portlet-${jboss-portal.portlet.version}" groupId="org.jboss.portal.portlet" artifactId="portlet-portlet" version="${jboss-portal.portlet.version}" />
 		<maven-deploy-file file="portlet-mc-2.0.9" groupId="org.jboss.portal.portlet" artifactId="portlet-mc" version="${jboss-portal.portlet.version}" />
-		<maven-deploy-file file="activation-1.0.2" groupId="javax.activation" artifactId="activation" version="${activation.version}" />
 		
-		<maven-deploy-file-no-source file="xercesImpl-2.9.1" groupId="apache-xerces" artifactId="xercesImpl" version="${apache-xerces.version}" />
-		<maven-deploy-file-no-source file="xml-apis-2.9.1" groupId="apache-xerces" artifactId="xml-apis" version="${apache-xerces.version}" />
-		<maven-deploy-file-no-source file="resolver-2.9.1" groupId="apache-xerces" artifactId="resolver" version="${apache-xerces.version}" />
+		<maven-deploy-file-no-source file="concurrent-1.3.4" groupId="oswego-concurrent" artifactId="concurrent" version="${oswego.version}" />
+		<maven-deploy-file-no-source file="jta-1.0.1B" groupId="javax.transaction" artifactId="jta" version="${jta.version}" />
+		<maven-deploy-file-no-source file="activation-1.0.2" groupId="javax.activation" artifactId="activation" version="${activation.version}" />
 		
-		<maven-deploy-file-no-source file="jboss-unit-1.2.3" groupId="org.jboss.unit" artifactId="jboss-unit" version="${jboss-unit.version}" />
-	
+		<maven-deploy-zip file="tomcat-bundle-${apache.version}" groupId="org.apache.tomcat" artifactId="tomcat-bundle" version="${apache.version}" packaging="zip"/>
 	</target>
 </project>
