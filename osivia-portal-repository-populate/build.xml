@@ -6,6 +6,7 @@
 	<property name="common-common.version" value="1.2.5"/>
 	<property name="web-web.version" value="1.2.0"/>
 	<property name="apache.version" value="8.5.81"/>
+	<property name="activation.version" value="1.0.2"/>
 
 
 
@@ -15,7 +16,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -38,7 +39,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url}"/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -62,7 +63,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="pom"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.pom -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.pom -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url}"/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -86,7 +87,7 @@
        <attribute name="artifactId"/>
        <attribute name="version"/>
        <attribute name="packaging" default="zip"/>     
-       <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.zip -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/osivia-thirdparty"/>
+       <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file}.zip -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
        
        <sequential>
             <echo>mvn @{command-line}</echo>
@@ -110,7 +111,9 @@
          ================================= -->
 	<target name="deploy-libs" description="registers libs into maven local repo">
 
+        <maven-deploy-file file="activation-1.0.2" groupId="javax.activation" artifactId="activation" version="${activation.version}" />
 
+		
 		<maven-deploy-file file="common-common-1.2.5" groupId="org.jboss.portal.common" artifactId="common-common" version="${common-common.version}" />
 		<maven-deploy-file file="common-portal-1.2.5" groupId="org.jboss.portal.common" artifactId="common-portal" version="${common-common.version}" />
 		<maven-deploy-file file="common-mc-1.2.5" groupId="org.jboss.portal.common" artifactId="common-mc" version="${common-common.version}" />
