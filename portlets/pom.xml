@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.osivia.ajax-portal</groupId>
         <artifactId>osivia-portal-parent</artifactId>
-        <version>5.2.10-rc5</version>
+        <version>5.2.10-rc6-SNAPSHOT</version>
     </parent>
 
     <groupId>org.osivia.ajax-portal.portlets</groupId>
