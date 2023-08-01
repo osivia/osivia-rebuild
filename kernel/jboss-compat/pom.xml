@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.osivia.ajax-portal.kernel</groupId>
         <artifactId>osivia-portal-kernel-parent</artifactId>
-        <version>5.2.10-rc6</version>
+        <version>5.2.10-rc7-SNAPSHOT</version>
     </parent>
     
     <artifactId>osivia-portal-kernel-jboss-compat</artifactId>
