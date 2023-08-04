@@ -12,7 +12,9 @@
 
 	<macrodef name="maven-execute-deploy">
 	        <attribute name="command-line"/>
+		
 	        <sequential>
+	        	<local name="command"/>
 	            <condition property="command" value="deploy:deploy-file @{command-line}" else="deploy:deploy-file -s ${thirdparty-settings} @{command-line}">
 	                <not>  
 	                   <isset property="thirdparty-settings"/>
