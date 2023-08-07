@@ -182,7 +182,7 @@
         <quartz.version>1.5.2</quartz.version>
         <jgroups.version>4.2.20.Final</jgroups.version>		
         <!-- Java Melody -->
-        <java-melody.version>1.3</java-melody.version>        
+        <java-melody.version>1.3.1</java-melody.version>        
         
         <!-- REST -->
         <json.version>2.4</json.version>
