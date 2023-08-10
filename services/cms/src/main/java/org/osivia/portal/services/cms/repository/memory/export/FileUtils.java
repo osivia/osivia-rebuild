@@ -85,10 +85,20 @@ public class FileUtils {
     }
 
     public String getCheckSum(File importFile) {
+    	InputStream in = null;
         try {
-            return DigestUtils.md5Hex(new FileInputStream(importFile));
+        	in = new FileInputStream(importFile);
+       	
+            return DigestUtils.md5Hex(in.readAllBytes());
         } catch (Exception e) {
             return null;
+        } finally	{
+        	if(in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					 log.error(e);
+				}
         }
     }
 

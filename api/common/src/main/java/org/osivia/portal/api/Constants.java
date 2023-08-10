@@ -171,6 +171,8 @@ public final class Constants {
     public static final String PORTLET_ATTR_USER_DATAS_REFRESH_TS = "osivia.userDatas.refreshTimestamp";
     /** HTTP request. */
     public static final String PORTLET_ATTR_HTTP_REQUEST = "osivia.httpRequest";
+    /** HTTP request. */
+    public static final String PORTLET_ATTR_HTTP_RESPONSE = "osivia.httpResponse";
     /** Space configuration request. */
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
     /** Redirection URL  */

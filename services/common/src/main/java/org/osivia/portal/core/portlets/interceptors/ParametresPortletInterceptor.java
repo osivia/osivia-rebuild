@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.jboss.portal.common.invocation.Scope;
@@ -151,6 +152,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                // HTTP Request
                 HttpServletRequest httpRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
                 attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
+                
+                // HTTP REsponse
+                HttpServletResponse httpResponse = controllerContext.getServerInvocation().getServerContext().getClientResponse();
+                attributes.put(Constants.PORTLET_ATTR_HTTP_RESPONSE, httpResponse);
 
                 Boolean refresh =  PageProperties.getProperties().isCheckingSpaceContents() || PageProperties.getProperties().isRefreshingPage(); 
                  

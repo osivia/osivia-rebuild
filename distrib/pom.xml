@@ -53,6 +53,13 @@
         
         
         <dependency>
+            <groupId>org.osivia.ajax-portal</groupId>
+            <artifactId>osivia-portal-oauth2</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
+                
+        <dependency>
             <groupId>org.osivia.ajax-portal.ws</groupId>
             <artifactId>osivia-portal-ws</artifactId>
             <version>${project.version}</version>
@@ -394,13 +401,23 @@
           <scope>compile</scope>
          </dependency>            
          
-                      
-         
           <dependency>
           <groupId>org.springframework.security.oauth</groupId>
           <artifactId>spring-security-oauth2</artifactId>
           <scope>compile</scope>
+         </dependency>                       
+         
+          <dependency>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-oauth2-client</artifactId>
+          <scope>compile</scope>
          </dependency>  
+         
+          <dependency>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-oauth2-core</artifactId>
+          <scope>compile</scope>
+         </dependency>          
          
         <dependency>
             <groupId>org.springframework</groupId>

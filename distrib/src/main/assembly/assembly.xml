@@ -43,6 +43,7 @@
                 <include>org.osivia.ajax-portal.api:osivia-portal-api-cms:jar:${project.version}</include>
                 <include>org.osivia.ajax-portal.kernel:osivia-portal-kernel-jbp-lib:jar:${project.version}</include>
                 <include>org.osivia.ajax-portal.kernel.tomcat:osivia-portal-tomcat-lib:jar:${project.version}</include>
+                <include>org.osivia.ajax-portal:osivia-portal-oauth2:jar:${project.version}</include>                
                 <include>org.springframework:spring-aop</include>
                 <include>org.springframework:spring-beans</include>
                 <include>org.springframework:spring-context</include>
@@ -59,7 +60,9 @@
                 <include>org.springframework.security:spring-security-config</include>   
                 <include>org.springframework.security:spring-security-crypto</include>                           
                 <include>org.springframework.security:spring-security-taglibs</include>              
-                <include>org.springframework.security.oauth:spring-security-oauth2</include> 
+                <include>org.springframework.security:spring-security-oauth2-client</include> 
+                <include>org.springframework.security:spring-security-oauth2-core</include>                 
+                <include>org.springframework.security.oauth:spring-security-oauth2</include>                 
              	<include>org.springframework.ldap:spring-ldap-core</include>  
              	<include>org.springframework.ldap:spring-ldap-core</include>     
                 <include>net.sf.ehcache:ehcache</include> 
