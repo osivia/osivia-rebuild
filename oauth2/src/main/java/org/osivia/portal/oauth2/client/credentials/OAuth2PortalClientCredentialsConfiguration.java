@@ -117,9 +117,11 @@ public class OAuth2PortalClientCredentialsConfiguration {
                         authorizedClientRepository.saveAuthorizedClient(expiringAuthorizedClient, principal, servletRequest, servletResponse);
 
                     }
+                    
+                    log.info("token " + authorizedClient.getAccessToken().getTokenValue());
                 }
 
-                log.info("token " + authorizedClient.getAccessToken().getTokenValue());
+                
             }
 
             return execution.execute(request, body);
