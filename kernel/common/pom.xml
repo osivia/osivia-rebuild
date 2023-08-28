@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.osivia.ajax-portal.kernel</groupId>
         <artifactId>osivia-portal-kernel-parent</artifactId>
-        <version>5.2-jdk-up-RC2</version>
+        <version>5.2-jdk-up-SNAPSHOT</version>
     </parent>
     
     <artifactId>osivia-portal-kernel-common</artifactId>

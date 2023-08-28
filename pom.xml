@@ -5,7 +5,7 @@
 
 	<groupId>org.osivia.ajax-portal</groupId>
 	<artifactId>osivia-portal-parent</artifactId>
-	<version>5.2-jdk-up-RC2</version>
+	<version>5.2-jdk-up-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 
