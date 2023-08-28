@@ -116,6 +116,8 @@
 	</distributionManagement>
 
 
+
+
 	<properties>
 		<!-- Javax -->
 		<javax-servlet-api.version>3.1.0</javax-servlet-api.version>
@@ -971,6 +973,29 @@
 				</plugins>
 			</build>
     	</profile>
+    	
+
+         <profile>
+            <id>forge-ci</id>       
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>            
+            <distributionManagement>
+                <repository>
+                    <id>${releaseRepoId}</id>
+                    <name>Internal releases repository</name>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>${releaseRepoUrl}</url>
+                </repository>
+                <snapshotRepository>
+                    <id>${snapshotRepoId}</id>
+                    <name>Internal snapshots repository</name>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>${snapshotRepoUrl}</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+
 	</profiles>
 	
 	
