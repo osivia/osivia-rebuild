@@ -5,7 +5,7 @@
 	<property name="jboss-portal.portlet.version" value="2.0.9"/>
 	<property name="common-common.version" value="1.2.5"/>
 	<property name="web-web.version" value="1.2.0"/>
-	<property name="apache.version" value="8.5.81"/>
+	<property name="apache.version" value="9.0.78"/>
 	<property name="activation.version" value="1.0.2"/>
 
 
@@ -95,6 +95,8 @@
           target: build              
          ================================= -->
 	<target name="deploy-libs" description="registers libs into maven local repo">
+		
+		<echo>deploying lib with ant ${ant.version}</echo> 
 
         <maven-deploy-file file="activation-1.0.2" groupId="javax.activation" artifactId="activation" version="${activation.version}" />
 

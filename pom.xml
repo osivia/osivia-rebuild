@@ -61,6 +61,7 @@
 
 
 	<modules>
+        <module>osivia-portal-repository-populate</module>
 		<module>api</module>
 		<module>services</module>
 		<module>kernel</module>
