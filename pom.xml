@@ -218,12 +218,14 @@
 				<version>${javax-portlet-api.version}</version>
 				<scope>provided</scope>
 			</dependency>
+
 			<dependency>
 			    <groupId>org.apache.taglibs</groupId>
 			    <artifactId>taglibs-standard-spec</artifactId>
 			    <version>${taglib.version}</version>
 			    <scope>provided</scope>
 			</dependency>
+
 			<dependency>
 			    <groupId>org.apache.taglibs</groupId>
 			    <artifactId>taglibs-standard-impl</artifactId>
