@@ -24,6 +24,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardHost;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.web.RequestDispatchCallback;
 import org.jboss.portal.web.command.CommandDispatcher;
@@ -253,6 +254,25 @@ public class TomcatServletContainerContext implements ServletContainerContext, C
      * @param context standard context
      */
     private void unregisterContext(StandardContext context) {
+        
+        if( context.getParent() instanceof StandardHost)    {
+            
+            StandardHost hostContext = (StandardHost) context.getParent();
+            ContainerListener[] listeners = hostContext.findContainerListeners();
+            
+            // In tomcat 9, the current context is not the last listener
+            // This leads to following error in case of redeployement
+            //      org.apache.catalina.mapper.Mapper - Pas de contexte trouvé [/osivia-portal-portlets-sample]
+            
+            if( listeners.length > 0)   {
+                if( ! (listeners[listeners.length - 1] instanceof TomcatServletContainerContext))   {
+                    hostContext.removeContainerListener(this);
+                    hostContext.addContainerListener(this);                   
+                }
+            }
+
+        }
+        
         if (this.monitoredContexts.contains(context.getName())) {
             this.monitoredContexts.remove(context.getName());
 
