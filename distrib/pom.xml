@@ -52,13 +52,7 @@
         </dependency>        
         
         
-        <dependency>
-            <groupId>org.osivia.ajax-portal</groupId>
-            <artifactId>osivia-portal-oauth2</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
-                
+               
         <dependency>
             <groupId>org.osivia.ajax-portal.ws</groupId>
             <artifactId>osivia-portal-ws</artifactId>

@@ -1,4 +1,4 @@
-package org.osivia.portal.oauth2.client.credentials;
+package org.osivia.portal.core.oauth2.client;
 
 
 import java.util.List;

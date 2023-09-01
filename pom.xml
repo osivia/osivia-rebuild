@@ -68,7 +68,6 @@
 		<module>portlets</module>
 		<module>themes</module>
 		<module>ws</module>
-		<module>oauth2</module>
 		<module>osivia-portal-dependencies</module>
 		<module>osivia-portal-dependencies-test</module>
 		<module>distrib</module>		

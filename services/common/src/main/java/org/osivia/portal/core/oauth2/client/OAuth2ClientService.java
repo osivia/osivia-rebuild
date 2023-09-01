@@ -1,4 +1,4 @@
-package org.osivia.portal.oauth2.client.credentials;
+package org.osivia.portal.core.oauth2.client;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.oauth2.client.IOAuth2ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -31,30 +31,52 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-@Configuration
-public class OAuth2PortalClientCredentialsConfiguration {
 
+
+/**
+ * OAuth2 client service implementation.
+ *
+ * @author Jean-Sébastien Steux
+ */
+@Service(IOAuth2ClientService.MBEAN_NAME)
+public class OAuth2ClientService implements IOAuth2ClientService {
+
+    /** Customization service. */
+
+    
     private static String OAUTH2_ACCESS_CLIENT_SECRET_KEY = "portal.security.oauth2.client.client-secret";
     private static String OAUTH2_ACCESS_CLIENT_ID_KEY = "portal.security.oauth2.client.client-id";
     private static String OAUTH2_ACCESS_TOKEN_URI_KEY = "portal.security.oauth2.client.token-uri";
     private static String OAUTH2_SKIP_AUTHENTICATION = "portal.security.oauth2.skip";
     private static String OAUTH2_EXPIRATION_DELAY = "portal.security.oauth2.tokens.expiration";
 
+
+
     private final int minExpirationDelay;
 
     private final Log log;
 
-    public OAuth2PortalClientCredentialsConfiguration() {
+    public OAuth2ClientService() {
         this.log = LogFactory.getLog(this.getClass());
 
         // force expiration delay (tests only)
         minExpirationDelay = Integer.getInteger(OAUTH2_EXPIRATION_DELAY, -1);
     }
 
+    @Autowired OAuth2AuthorizedClientInterceptor interceptor;
+
+    @Override
+    public RestTemplate getPortalClientCredentialRestTemplate() {
+        RestTemplate rest = new RestTemplate();
+        rest.getInterceptors().add(interceptor);
+        return rest;
+    }
+    
     @Bean
     OAuth2AuthorizedClientManager authorizeClientManager(ClientRegistrationRepository clients, OAuth2AuthorizedClientRepository authorizedClients) {
 
@@ -107,7 +129,7 @@ public class OAuth2PortalClientCredentialsConfiguration {
                         OAuth2AccessToken existingToken = authorizedClient.getAccessToken();
 
                         // + 60.000 because of test in {@link ClientCredentialsOAuth2AuthorizedClientProvider }
-                        Instant expiration = Instant.ofEpochMilli(System.currentTimeMillis() + minExpirationDelay + 60000);
+                        Instant expiration = Instant.ofEpochMilli(System.currentTimeMillis() + (minExpirationDelay * 1000) + 60000);
 
                         TestAccessToken expiringAccessToken = new TestAccessToken(existingToken.getTokenType(), existingToken.getTokenValue(),
                                 existingToken.getIssuedAt(), expiration, existingToken.getScopes());
@@ -127,14 +149,7 @@ public class OAuth2PortalClientCredentialsConfiguration {
             return execution.execute(request, body);
         }
     }
-
-    @Bean
-    public RestTemplate rest(OAuth2AuthorizedClientInterceptor interceptor) {
-        RestTemplate rest = new RestTemplate();
-        rest.getInterceptors().add(interceptor);
-        return rest;
-    }
-
+    
     @Bean
     public OAuth2AuthorizedClientRepository getAuth2ClientRepository() {
         return new OAuth2SharedAuthorizedClientRepository();
