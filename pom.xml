@@ -5,7 +5,7 @@
 
 	<groupId>org.osivia.ajax-portal</groupId>
 	<artifactId>osivia-portal-parent</artifactId>
-	<version>5.2-jdk-up-SNAPSHOT</version>
+	<version>5.2.12-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 
@@ -832,13 +832,6 @@
 			</dependency> 			
 		    
 		    
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>${tomcat.version}</version>
-                <type>jar</type>
-                <scope>provided</scope>
-            </dependency>
 
 		    
 	</dependencies>

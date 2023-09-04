@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.ajax-portal</groupId>
         <artifactId>osivia-portal-parent</artifactId>
-        <version>5.2-jdk-up-SNAPSHOT</version>
+        <version>5.2.12-SNAPSHOT</version>
     </parent>
 
     <artifactId>osivia-portal-distribution</artifactId>
@@ -341,11 +341,6 @@
           <scope>compile</scope>
          </dependency>
          
-         <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-aop</artifactId>
-          <scope>compile</scope>
-         </dependency>         
          
          <dependency>
           <groupId>org.springframework</groupId>
@@ -359,11 +354,11 @@
           <scope>compile</scope>
          </dependency>
          
-	        <dependency>
-	            <groupId>org.springframework</groupId>
-	            <artifactId>spring-context-support</artifactId>
-	            <scope>compile</scope>
-	        </dependency>     
+	      <dependency>
+	       <groupId>org.springframework</groupId>
+	       <artifactId>spring-context-support</artifactId>
+	       <scope>compile</scope>
+	      </dependency>     
 	            
           <dependency>
           <groupId>org.springframework.security</groupId>
