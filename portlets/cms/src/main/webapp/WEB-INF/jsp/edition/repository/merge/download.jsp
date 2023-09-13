@@ -22,6 +22,10 @@
 	<portlet:param name="repositoryName" value="${repository.name}" />
 </portlet:resourceURL>
 
+<div class="h5">
+   <span><op:translate key="MODIFY_REPOSITORY_MERGE_DOWNLOAD_LABEL"/></span>
+</div>
+
 <div class="card my-3 p-2">
    <span>${helpMessage}</span>
 </div>

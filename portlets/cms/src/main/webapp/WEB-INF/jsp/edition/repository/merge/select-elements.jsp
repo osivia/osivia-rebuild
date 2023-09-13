@@ -14,7 +14,9 @@
 
 <portlet:actionURL name="select" var="submitUrl" />
 
-
+<div class="h5">
+   <span><op:translate key="MODIFY_REPOSITORY_MERGE_ELEMENT_SELECTIONS_LABEL"/></span>
+</div>
 
 <form:form action="${submitUrl}" modelAttribute="form" >
     

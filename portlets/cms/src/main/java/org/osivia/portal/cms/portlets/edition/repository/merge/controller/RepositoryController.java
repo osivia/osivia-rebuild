@@ -49,6 +49,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.MergeException;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.StreamableRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -165,22 +166,17 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
         
         if( CHOOSE_FILE_STEP.equals(step)) {
-            response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_FILE_TITLE_LABEL"));
-            
+           
             String part2 = getHelpMessagePart2(bundle);
             request.setAttribute("helpMessage", bundle.getString("MODIFY_REPOSITORY_MERGE_CHOOSE_FILE_HELP", part2));
         }
         
-        if( SELECT_ELEMENTS_STEP.equals(step)) {
-            response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_ELEMENT_SELECTIONS_LABEL"));
-        }
-        
+
         if( DOWNLOAD_STEP.equals(step)) {
             
             String part2 = getHelpMessagePart2(bundle);
             request.setAttribute("helpMessage", bundle.getString("MODIFY_REPOSITORY_MERGE_DOWNLOAD_HELP", part2));
-            
-            response.setTitle(bundle.getString("MODIFY_REPOSITORY_MERGE_DOWNLOAD_LABEL"));
+           
         }
         
         
@@ -278,10 +274,7 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             
             
 
-        } catch (Exception e) {
-            
-            logger.error(Debug.stackTraceToString(  e ));
-            
+        } catch (MergeException e) {
             
             Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
             String message = bundle.getString("MODIFY_REPOSITORY_MERGE_ERROR",e.getMessage());        
@@ -289,7 +282,12 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             
             response.setRenderParameter("step", SELECT_ELEMENTS_STEP);
              
-        } finally   {
+        } catch(Exception e)    {
+            throw new PortletException(e);
+        }
+        
+        
+        finally   {
             fileToMergeInput.close();
             fileToMergeOutput.close();
         }

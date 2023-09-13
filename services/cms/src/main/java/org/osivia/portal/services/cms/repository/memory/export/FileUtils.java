@@ -371,6 +371,8 @@ public class FileUtils {
                 // Insert new Document
                 ExportRepositoryDocument documentToSave = saveDocument((MemoryRepositoryDocument) documentToAdd, documents, false);
                 if( newParent != null)  {
+                    if( newParent.getDoc().children == null)
+                        newParent.getDoc().children = new ArrayList<ExportRepositoryDocument>();
                     if (newOrder != -1)
                         newParent.getDoc().children.add(newOrder, documentToSave);
                     else
@@ -402,7 +404,7 @@ public class FileUtils {
             ObjectWriter ow = om.writer();
             ow.writeValue(out, mergeOutDatas);
         } catch (Exception e) {
-            throw new MergeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
 
 
