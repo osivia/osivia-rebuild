@@ -31,8 +31,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.producers.test.TestRepository;
-import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
+
 
 /**
  * Sample controller.
