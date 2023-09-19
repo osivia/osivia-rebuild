@@ -68,7 +68,7 @@
     <c:if test="${not empty layoutGroups}">
         <div class="mb-3">
             <form:label path="linkedLayoutItemId" cssClass="form-label"><op:translate key="MODIFY_PORTLET_LINKED_LAYOUT_ITEM"/></form:label>
-            <form:select path="linkedLayoutItemId" cssClass="form-select">
+            <form:select path="linkedLayoutItemId" cssClass="form-select" disabled="${not form.supportTabSelection}">
                 <form:option value=""><op:translate key="MODIFY_PORTLET_LINKED_LAYOUT_ITEM_OPTION_EMPTY"/></form:option>
                     <c:forEach var="layoutGroup" items="${layoutGroups}">
                         <optgroup label="${layoutGroup.label}">

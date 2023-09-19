@@ -19,4 +19,10 @@ public interface IAppsService {
      */
     public List<App> getApps( PortalControllerContext portalCtx);
 
+    /**
+     * Get application by Id
+     * 
+     * @return
+     */
+    App getApp(PortalControllerContext portalCtx, String appId); 
 }

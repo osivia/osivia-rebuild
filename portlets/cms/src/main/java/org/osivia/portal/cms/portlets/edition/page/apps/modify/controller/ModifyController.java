@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.apps.App;
+import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
@@ -35,6 +37,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.portlet.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,6 +80,8 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     @Autowired
     private LayoutItemsService layoutItemsService;
 
+    @Autowired
+    IAppsService appServices;
 
     /**
      * The logger.
@@ -142,10 +147,12 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         srcModule.getProperties().put("osivia.style", String.join(",", form.getStyles()));
 
         // Linked layout item identifier
-        if (StringUtils.isEmpty(form.getLinkedLayoutItemId())) {
-            srcModule.getProperties().remove(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
-        } else {
-            srcModule.getProperties().put(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY, form.getLinkedLayoutItemId());
+        if( form.isSupportTabSelection())   {
+            if (StringUtils.isEmpty(form.getLinkedLayoutItemId())) {
+                srcModule.getProperties().remove(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+            } else {
+                srcModule.getProperties().put(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY, form.getLinkedLayoutItemId());
+            }
         }
 
 
@@ -270,6 +277,12 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         // Linked layout item identifier
         String linkedLayoutItemId = srcModule.getProperties().get(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
         form.setLinkedLayoutItemId(linkedLayoutItemId);
+        
+        App app = appServices.getApp(portalCtx, srcModule.getModuleId());
+        if( app != null)
+            form.setSupportTabSelection(app.isSupportTabSelection());
+        else
+            form.setSupportTabSelection(true);
 
         return form;
     }

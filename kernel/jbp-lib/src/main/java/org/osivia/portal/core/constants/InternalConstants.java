@@ -326,6 +326,9 @@ public final class InternalConstants {
 
     /** Hide portlet in menu property name. */
     public static final String HIDE_PORTLET_IN_MENU_PROPERTY = "hide";
+    
+    /** Support tab selection in modify window. */
+    public static final String SUPPORT_TAB_SELECTION_PROPERTY = "supportTabSelection";
 
 
     public static final String USER_DOMAINS_ATTRIBUTE = "osivia.user.domains";

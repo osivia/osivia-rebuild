@@ -154,9 +154,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             out.print("<div class=\"cms-edition-droppable border border-primary my-2 clearfix d-flex\" data-drop-url=\""+dropUrl+"\">");            
             
             // Add
-            out.print("<a href=\"javascript:\" class=\"btn btn-link\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_LIST")+"\">\n"
+            out.print("<a href=\"javascript:\" title=\""+bundle.getString("ADD_APPLICATION")+"\"  class=\"btn btn-link\" data-target=\"#osivia-modal\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.addPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_LIST")+"\">\n"
             + "        <i class=\"glyphicons glyphicons-basic-square-empty-plus\"></i>\n"
-            + "        <span class=\"d-md-none\">"+bundle.getString("ADD")+"</span>\n"
+            + "        <span class=\"d-md-none\">"+bundle.getString("ADD_APPLICATION")+"</span>\n"
             + "    </a>");
             
 
@@ -164,7 +164,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             
             // Edit
             
-            out.print("<a class=\"btn btn-link\" href=\"javascript:\" title=\""+bundle.getString("EDIT")+"\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.modityPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_EDIT")+"\" data-target=\"#osivia-modal\">\n"
+            String editName = bundle.getString("EDIT");
+            String displayName = properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.appDisplayName");
+            if( displayName != null) {
+                displayName.replaceAll("\"", "'");
+            }   else    {
+                displayName = "";
+            }
+                
+            editName = editName + " " +displayName.replaceAll("\"", "'");
+            
+            out.print("<a class=\"btn btn-link\" href=\"javascript:\" title=\""+editName+"\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.modityPortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_EDIT")+"\" data-target=\"#osivia-modal\">\n"
             + "      <i class=\"glyphicons glyphicons-basic-wrench\"></i>\n"
             + "    </a>");
                             
@@ -172,12 +182,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             
             
             // Portlet administration display command
+            String adminName = bundle.getString("ADMIN");
+            adminName = adminName + " " +displayName.replaceAll("\"", "'");
+            
             Collection<ActionRendererContext> actions = wrc.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
             for (ActionRendererContext action : actions) {
                 if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
                     String displayAdminURL = action.getURL() + "&windowstate=maximized";
                     
-                    out.print("<a href=\""+displayAdminURL+"\" class=\"btn btn-link\">\n"
+                    out.print("<a href=\""+displayAdminURL+"\" title=\""+adminName+"\" class=\"btn btn-link\">\n"
                             + "        <i class=\"glyphicons glyphicons-basic-cogwheel\"></i>\n"
                             + "        <span class=\"d-md-none\">"+bundle.getString("PARAMS")+"</span>\n"
                             + "    </a>");                    
@@ -187,8 +200,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             }
 
             // Delete
+
+            String deleteName = bundle.getString("DELETE");
+            deleteName = deleteName + " " +displayName.replaceAll("\"", "'");
             
-            out.print("<a class=\"btn btn-link\" href=\"javascript:\" title=\""+bundle.getString("DELETE")+"\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.deletePortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_DELETE")+"\" data-target=\"#osivia-modal\">\n"
+            out.print("<a class=\"btn btn-link\" href=\"javascript:\" title=\""+deleteName+"\" data-load-url=\""+properties.getWindowProperty(wrc.getId(),"osivia.cms.edition.deletePortletUrl")+"\" data-title=\""+bundle.getString("ADMIN_PORTLET_APP_DELETE")+"\" data-target=\"#osivia-modal\">\n"
             + "      <i class=\"glyphicons glyphicons-basic-bin\"></i>\n"
             + "    </a>");
                             

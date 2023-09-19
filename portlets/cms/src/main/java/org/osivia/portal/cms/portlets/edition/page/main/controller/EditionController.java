@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.io.HTMLWriter;
-
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.CMSContext;
@@ -38,6 +37,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
+import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Page;
 import org.osivia.portal.api.cms.model.Personnalization;
 import org.osivia.portal.api.cms.model.Space;
@@ -54,10 +54,12 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
+
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.cms.portlets.edition.page.apps.modify.controller.BreadcrumbItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -737,7 +739,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     this.getConfigurationMenu(portalControllerContext, ctrl, bundle, container, id, templatePath, cmsTemplatePath);
                 }
 
-                status.setPreview(cmsContext.isPreview());
+                status.setBreadcrumb(computeBreadcrumb(portalControllerContext, cmsContext));
 
                 NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
 
@@ -791,6 +793,52 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
+        protected List<BreadcrumbItem> computeBreadcrumb(PortalControllerContext portalControllerContext, CMSContext cmsContext) throws PortletException {
+            
+            List<BreadcrumbItem> breacrumb = new ArrayList<>();
+            
+            try {
+                String navigationId = WindowFactory.getWindow(portalControllerContext.getRequest()).getPageProperty("osivia.navigationId");
+               
+                if ((navigationId != null)) {
+                    
+                    // current document
+                    UniversalID contentId = new UniversalID(navigationId);
+                    
+                    
+                    // first navigation item
+                    NavigationItem navItem = cmsService.getCMSSession(cmsContext).getNavigationItem(contentId);
+                    
+                    
+                     // Browse navigation tree
+                    if( navItem != null) {
+                        
+                      
+                        
+                       boolean isRoot = false;
+                       do {
+                           breacrumb.add(0, new BreadcrumbItem( navItem.getDocumentId().getInternalID(), navItem.getTitle()));                            
+                            if( ! navItem.isRoot())
+                                navItem = navItem.getParent();
+                            else
+                                isRoot = true;
+                        } while( ! isRoot);
+                    }
+               }
+            } catch (Exception e) {
+                throw new PortletException(e);
+            }
+         
+            return breacrumb;
+    }
+        
+        
+        
+         
+    
+    
+    
+    
     private void getConfigurationMenu(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, UniversalID id, String templatePath, String cmsTemplatePath) throws PortalException {
         // Dropdown
         Element dropdown = DOM4JUtils.generateElement("li", "nav-item dropdown", null);

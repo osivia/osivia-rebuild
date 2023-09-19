@@ -14,6 +14,10 @@ public class ModifyForm {
     private boolean displayTitle;
     private boolean displayPanel;
     private boolean hideIfEmpty;
+    private boolean supportTabSelection;
+    
+    
+   
     private List<String> styles;
     /**
      * Linked layout item identifier.
@@ -76,4 +80,14 @@ public class ModifyForm {
     public void setLinkedLayoutItemId(String linkedLayoutItemId) {
         this.linkedLayoutItemId = linkedLayoutItemId;
     }
+    
+    public boolean isSupportTabSelection() {
+        return supportTabSelection;
+    }
+    
+    public void setSupportTabSelection(boolean supportTabSelection) {
+        this.supportTabSelection = supportTabSelection;
+    }
+
+    
 }

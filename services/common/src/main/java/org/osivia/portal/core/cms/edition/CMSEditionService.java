@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.impl.model.content.portlet.PortletContent;
+import org.jboss.portal.core.model.content.Content;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -19,6 +21,8 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.apps.App;
+import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
@@ -56,7 +60,8 @@ public class CMSEditionService {
     IPreviewModeService previewModeService;
     @Autowired
     ILocaleService localeService;
-
+    @Autowired
+    IAppsService appServices;
     private CMSService cmsService;
 
 
@@ -210,6 +215,19 @@ public class CMSEditionService {
                     String editPortletUrl;
                     editPortletUrl = this.portalUrlFActory.getStartPortletUrl(portalControllerContext, "EditionModifyPortletInstance", props, PortalUrlType.MODAL);
                     properties.setWindowProperty(windowId, "osivia.cms.edition.modityPortletUrl", editPortletUrl);
+                    
+                    Content content = window.getContent();
+                    if (content instanceof PortletContent)
+                    {
+                       PortletContent portletContent = (PortletContent)content;
+                       String instanceId = portletContent.getInstanceRef();
+                       App app = appServices.getApp(portalControllerContext, instanceId);
+                       if( app != null) {
+                           properties.setWindowProperty(windowId, "osivia.cms.edition.appDisplayName", app.getDisplayName());
+                       }
+                    }
+                    
+                    
                 }
 
             }

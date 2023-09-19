@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
+import org.osivia.portal.cms.portlets.edition.page.apps.modify.controller.BreadcrumbItem;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 /**
  * The Class EditionStatus.
@@ -27,10 +27,7 @@ public class EditionStatus {
     public String toolbar = null;
     public boolean liveSpace = false;
 
-
-
-
-
+    public List<BreadcrumbItem> breadcrumb = new ArrayList<>(); 
 
 
 
@@ -50,6 +47,21 @@ public class EditionStatus {
     
     public void setLocales(Map<String, String> locales) {
         this.locales = locales;
+    }
+
+    
+    public List<BreadcrumbItem> getBreadcrumb() {
+        return breadcrumb;
+    }
+
+
+
+
+
+
+    
+    public void setBreadcrumb(List<BreadcrumbItem> breadcrumb) {
+        this.breadcrumb = breadcrumb;
     }
 
 

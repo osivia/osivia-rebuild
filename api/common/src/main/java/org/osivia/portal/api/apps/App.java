@@ -17,7 +17,11 @@ public class App {
     /** icon location */        
     public String iconLocation;
     
+    /** show in add menu */     
+    private boolean showInAdministrationMenu = false;
     
+    /** show tab selection */     
+    private boolean supportTabSelection = false;
     
     public String getIconLocation() {
         return iconLocation;
@@ -29,6 +33,26 @@ public class App {
     
     public String getId() {
         return id;
+    }
+    
+    
+    public boolean isShowInAdministrationMenu() {
+        return showInAdministrationMenu;
+    }
+
+    
+    public void setShowInAdministrationMenu(boolean showInAdministrationMenu) {
+        this.showInAdministrationMenu = showInAdministrationMenu;
+    }
+
+    
+    public boolean isSupportTabSelection() {
+        return supportTabSelection;
+    }
+
+    
+    public void setSupportTabSelection(boolean supportTabSelection) {
+        this.supportTabSelection = supportTabSelection;
     }
 
     public App( String id, String displayName, String iconLocation) {

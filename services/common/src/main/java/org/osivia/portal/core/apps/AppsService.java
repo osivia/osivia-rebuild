@@ -27,18 +27,19 @@ public class AppsService implements IAppsService {
 
     @Autowired
     InstanceContainer instanceContainer;
-
-    
     
     @Override
-    public List<App> getApps(PortalControllerContext portalCtx) {
+    public App getApp(PortalControllerContext portalCtx, String appId) {
         
 
-        List<App> apps = new ArrayList<>();
         Locale locale = portalCtx.getHttpServletRequest().getLocale();
-        for (InstanceDefinition instance : instanceContainer.getDefinitions()) {
+        InstanceDefinition instance = instanceContainer.getDefinition(appId);
+        
+        if(instance != null)    {
 
-
+            boolean showInAdministrationMenu = true;
+            boolean supportTabSelection = true;
+            
             Portlet portlet;
             try {
                 PropertyMap properties = instance.getProperties();
@@ -46,15 +47,22 @@ public class AppsService implements IAppsService {
                     List<String> hideProperties = properties.get(InternalConstants.HIDE_PORTLET_IN_MENU_PROPERTY);
                     if ((hideProperties != null) && (hideProperties.contains(String.valueOf(true)))) {
                         // Hide portlet in menu
-                        continue;
+                        showInAdministrationMenu = false;
                     }
+                    
+                    List<String> supportTabSelectionProp = properties.get(InternalConstants.SUPPORT_TAB_SELECTION_PROPERTY);
+                    if ((supportTabSelectionProp != null) && (supportTabSelectionProp.contains(String.valueOf(false)))) {
+                        // Hide portlet in menu
+                        supportTabSelection = false;
+                    }
+                    
                 }
 
                 portlet = instance.getPortlet();
   
             } catch (PortletInvokerException e) {
                 // Portlet undeployed
-                continue;
+                return null;
             }
             
             // Portlet icon
@@ -67,16 +75,39 @@ public class AppsService implements IAppsService {
             }
 
             App app = new App(instance.getId(), instance.getDisplayName().getString(locale, true), iconLocation);
-            apps.add(app);
             
+            app.setShowInAdministrationMenu(showInAdministrationMenu);
+            app.setSupportTabSelection(supportTabSelection);            
             
-            Collections.sort(apps, new Comparator<App>() {
-                @Override
-                public int compare(App p1, App p2) {
-                    return p1.getDisplayName().compareTo(p2.getDisplayName());
-                }
-            });
+            return app;
         }
+        
+        else 
+            return null;
+
+    }
+    
+    
+    @Override
+    public List<App> getApps(PortalControllerContext portalCtx) {
+        
+
+        List<App> apps = new ArrayList<>();
+        for (InstanceDefinition instance : instanceContainer.getDefinitions()) {
+            App app = getApp(portalCtx, instance.getId());
+            
+            if( app != null)
+                apps.add(app);
+            
+
+        }
+        
+        Collections.sort(apps, new Comparator<App>() {
+            @Override
+            public int compare(App p1, App p2) {
+                return p1.getDisplayName().compareTo(p2.getDisplayName());
+            }
+        });        
         return apps;
     }
 

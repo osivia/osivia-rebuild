@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.apps.App;
 import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
@@ -243,7 +244,16 @@ public class AddController extends GenericPortlet implements PortletContextAware
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
 
         AddForm form = this.applicationContext.getBean(AddForm.class);
-        form.setApps(appServices.getApps(portalCtx));
+        
+        List<App> apps = appServices.getApps(portalCtx);
+        
+        List<App> filteredApps = new ArrayList<>();
+        for( App app: apps) {
+            if( app.isShowInAdministrationMenu())
+                filteredApps.add(app);
+        }
+
+        form.setApps(filteredApps);
 
 
         return form;
