@@ -21,7 +21,7 @@
 <div class="portal-properties-administration">
 
 
-	<div class="d-flex flex-row-reverse mb-2">
+	<div class="d-flex flex-row-reverse my-2">
 	
 	 	<button type="submit" class="btn btn-primary">
             <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
@@ -45,6 +45,12 @@
 	</div>
 	
 </div>
-
+    <div class="d-flex flex-row-reverse my-2">
+    
+        <button type="submit" class="btn btn-primary">
+            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
+        </button>
+    
+    </div>
 		<input type="submit" class="d-none">	
 </form:form>

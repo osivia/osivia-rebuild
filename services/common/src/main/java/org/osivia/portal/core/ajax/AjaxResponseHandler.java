@@ -630,6 +630,15 @@ public class AjaxResponseHandler implements ResponseHandler {
                     
                     String redirection =  request.getParameter("redirection");
                     updatePage.setPortalRedirection(redirection);
+                    
+                    
+                    if( modal == false) {
+                        if (page instanceof DynamicTemplatePage) {
+                            PortalObjectId templateId = ((DynamicTemplatePage) page).getTemplateId();
+                            updatePage.setMainPageId(templateId.getPath().getLastComponentName());
+                        }
+                    }
+                    
 
  
                     // Filter by visible regions  and sort by order

@@ -54,7 +54,9 @@ public class UpdatePageStateResponse extends DynaResponse {
     private String restoreUrl;
     private String fullStateUrl;
     private String portalRedirection=null;
-    
+    private String mainPageId;    
+
+
 
 
 
@@ -189,5 +191,16 @@ public class UpdatePageStateResponse extends DynaResponse {
 		return asyncWindows;
 	}
 
+
+    
+    public String getMainPageId() {
+        return mainPageId;
+    }
+
+
+    
+    public void setMainPageId(String mainPageId) {
+        this.mainPageId = mainPageId;
+    }
 
 }

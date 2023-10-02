@@ -21,6 +21,9 @@ $JQry(function () {
             distance: 10,
             revert: "invalid",
             revertDuration: 200,
+            scroll: true, 
+            scrollSpeed: 1000,
+            scrollSensitivity: 200,
 
 
             start: function (event, ui) {

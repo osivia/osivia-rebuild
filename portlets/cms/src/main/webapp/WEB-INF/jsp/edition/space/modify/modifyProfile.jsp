@@ -40,14 +40,6 @@
         </div>
     </spring:bind>
     
-    <spring:bind path="profile.virtualUser">
-        <div class="form-group">
-            <form:label path="profile.virtualUser"><op:translate key="MODIFY_PROFILE_VIRTUALUSER_LABEL" /></form:label>
-            <form:input path="profile.virtualUser" required="required" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
-            <form:errors path="profile.virtualUser" cssClass="invalid-feedback" />
-        </div>
-    </spring:bind>
-
     <%--Buttons--%>
     <div class="float-end">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

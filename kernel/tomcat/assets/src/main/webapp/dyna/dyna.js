@@ -570,6 +570,8 @@ function onAjaxSuccess(responseText, callerId, multipart, popState, eventToStop,
         } else {
             portal_redirection = null;
         }
+        
+        updateDebugInfos(resp);
 
         // Save components state in history
         if (popping === undefined && resp.restore_url !== "" && preventHistory === false) {
@@ -1255,6 +1257,26 @@ function removeFromHead(href) {
         }
     }
 }
+
+
+function updateDebugInfos( resp) {
+
+    if(resp.main_page_id != null)   {
+        let parent = document.querySelector(".debug-container");
+        
+        if (parent == null ) {
+            let body = document.querySelector("body");
+             // Prepare new window
+            const newWindowDiv = document.createElement("div");
+            newWindowDiv.className = "debug-container d-none";
+            body.appendChild(newWindowDiv);
+            
+            parent = newWindowDiv;
+        }
+        
+        parent.innerHTML = "PAGE_ID:" +resp.main_page_id;
+    }
+ }
 
 
 function synchronizeMetadatas() {
