@@ -21,9 +21,13 @@ $JQry(function () {
             distance: 10,
             revert: "invalid",
             revertDuration: 200,
+            opacity: 1,
+            cursor: "move",
+            cursorAt: { top: -5, left: -5 }   ,   
+            
             scroll: true, 
-            scrollSpeed: 1000,
-            scrollSensitivity: 200,
+            scrollSpeed: 500,
+            scrollSensitivity: 50,
 
 
             start: function (event, ui) {

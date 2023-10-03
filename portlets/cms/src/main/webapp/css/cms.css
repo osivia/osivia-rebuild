@@ -2,3 +2,13 @@
 .file-import {opacity:0;     position: absolute; width: 100px}
 
 .file-merge {opacity:0;     position: absolute; }
+
+.cms-edition-draggable {   
+	max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.ui-draggable-dragging{
+    z-index: 10000;
+}
