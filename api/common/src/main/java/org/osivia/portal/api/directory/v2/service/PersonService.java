@@ -108,4 +108,6 @@ public interface PersonService extends IDirService {
      */
     boolean isPortalAdministrator(PortalControllerContext portalControllerContext) throws PortalException;
 
+    
+    public Person refreshPerson(String uid);
 }
