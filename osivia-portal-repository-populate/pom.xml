@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.osivia.ajax-portal</groupId>
         <artifactId>osivia-portal-parent</artifactId>
-        <version>5.2.15-SNAPSHOT</version>
+        <version>5.2.15</version>
     </parent>
     
 	<groupId>org.osivia.portal.third-party</groupId>
     <artifactId>osivia-portal-repository-populate</artifactId>
     <packaging>pom</packaging>
-    <version>5.2.15-SNAPSHOT</version>
+    <version>5.2.15</version>
     <name>OSIVIA Portal - Repository populate</name>
 
 <!--
