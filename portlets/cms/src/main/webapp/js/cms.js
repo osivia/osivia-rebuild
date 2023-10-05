@@ -26,7 +26,7 @@ $JQry(function () {
             cursorAt: { top: -5, left: -5 }   ,   
             
             scroll: true, 
-            scrollSpeed: 500,
+            scrollSpeed: 200,
             scrollSensitivity: 50,
 
 
