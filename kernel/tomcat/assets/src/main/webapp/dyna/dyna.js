@@ -246,6 +246,7 @@ function bilto(event) {
                 } else {
                     if (!(event.type === "popstate")) {
                         event.preventDefault();
+                        event.stopPropagation();
                     }
 
                     const $form = $JQry(current);
