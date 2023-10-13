@@ -105,7 +105,17 @@ public class AppsService implements IAppsService {
         Collections.sort(apps, new Comparator<App>() {
             @Override
             public int compare(App p1, App p2) {
-                return p1.getDisplayName().compareTo(p2.getDisplayName());
+                if( p1.getDisplayName() == null) {
+                    if( p2.getDisplayName() == null)
+                        return 0;
+                    else
+                        return -1;
+                }   else    {
+                    if( p2.getDisplayName() == null)
+                        return 1;
+                    else 
+                        return p1.getDisplayName().compareTo(p2.getDisplayName());
+                }
             }
         });        
         return apps;
