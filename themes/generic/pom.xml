@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.osivia.ajax-portal.themes</groupId>
         <artifactId>osivia-portal-themes-parent</artifactId>
-        <version>1.0.0-RC2</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     
     <artifactId>osivia-portal-themes-generic</artifactId>
