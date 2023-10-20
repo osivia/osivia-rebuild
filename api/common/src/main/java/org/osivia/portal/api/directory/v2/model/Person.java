@@ -154,6 +154,23 @@ public interface Person {
      * @param uid UID
      */
     void setUid(String uid);
+    
+    
+    /**
+     * Get Toutatice UID.
+     * 
+     * @return UID
+     */
+    String getUidInit();
+
+
+    /**
+     * Set Toutatice UID.
+     * 
+     * @param uid UID
+     */
+    void setUidInit(String uid);
+
 
 
     /**
