@@ -108,6 +108,16 @@ $JQry(function() {
 				$target.removeData("footer");
 				$target.removeData("size");
 				$target.removeData("backdrop");
+				$target.removeAttr("data-load-url");
+				$target.removeAttr("data-load-callback-function");
+				$target.removeAttr("data-load-callback-function-args");
+				$target.removeAttr("data-callback-function");
+				$target.removeAttr("data-callback-function-args");
+				$target.removeAttr("data-callback-url");
+				$target.removeAttr("data-title");
+				$target.removeAttr("data-footer");
+				$target.removeAttr("data-size");
+				$target.removeAttr("data-backdrop");
 			});
 			
 			$element.on("hidden.bs.modal", function(event) {
