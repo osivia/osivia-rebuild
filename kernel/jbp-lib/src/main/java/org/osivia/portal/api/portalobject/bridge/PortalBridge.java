@@ -174,6 +174,15 @@ public interface PortalBridge {
 		public boolean checkIfRepositoryIsCompatibleWithHost(HttpServletRequest request, String repository);
 
 
+	      /**
+         * Return the territory code associated to current host
+         * 
+         * @param request
+         * @return
+         */
+        String getHostTerritoryCode(HttpServletRequest request);
+
+
 
 
 }

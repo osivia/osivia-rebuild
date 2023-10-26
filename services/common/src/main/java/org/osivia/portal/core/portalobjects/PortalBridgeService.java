@@ -193,6 +193,31 @@ public class PortalBridgeService implements PortalBridge {
 		}
 		return charteCtx;
 	}
+	
+	
+	   @Override
+	    public String getHostTerritoryCode(HttpServletRequest request) {
+	        String hostName = request.getHeader("osivia-virtual-host");
+	        String territoryCode = null;
+
+	        if (StringUtils.isNotEmpty(hostName)) {
+	            try {
+	                URI uri = new URI(hostName);
+	                String domain = uri.getHost();
+
+	                String sDefaultPortalId = System.getProperty(OSIVIA_CMS_URL_MAPPING + domain);
+	                if (StringUtils.isNotEmpty(sDefaultPortalId)) {
+	                    UniversalID defaultPortalId = new UniversalID(sDefaultPortalId);
+	                    territoryCode = System.getProperty(
+	                            "osivia.cms.repository." + defaultPortalId.getRepositoryName() + ".territorycode");
+	                }
+	            } catch (URISyntaxException e) {
+	                logger.error("can't parse host :" + e.getMessage());
+	            }
+	        }
+	        return territoryCode;
+	    }
+	
 
 	@Override
 	public UniversalID getHostPortalID(HttpServletRequest request) {
