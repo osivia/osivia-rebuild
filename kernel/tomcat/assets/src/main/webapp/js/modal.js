@@ -80,6 +80,7 @@ $JQry(function() {
 				var callbackFunction = $target.data("callback-function");
 				var callbackFunctionArgs = $target.data("callback-function-args");
 				var callbackUrl = $target.data("callback-url");
+				var reloadOnClose = $target.data("reload-on-close");
 				
 				$window.unbind("load");	
 					
@@ -98,12 +99,17 @@ $JQry(function() {
 					directAjaxCall(container, options, callbackUrl, eventToStop, callerId);
 				}
 				
+				if( reloadOnClose) {
+                    reload(history.state, null, false);
+                }
+				
 				$target.removeData("load-url");
 				$target.removeData("load-callback-function");
 				$target.removeData("load-callback-function-args");
 				$target.removeData("callback-function");
 				$target.removeData("callback-function-args");
 				$target.removeData("callback-url");
+				$target.removeData("reload-on-close");
 				$target.removeData("title");
 				$target.removeData("footer");
 				$target.removeData("size");
@@ -165,6 +171,7 @@ $JQry(function() {
 				var callbackFunction = $target.data("callback-function");
 				var callbackFunctionArgs = $target.data("callback-function-args");
 				var callbackUrl = $target.data("callback-url");
+				var reloadOnClose = $target.data("reload-on-close");
 				var title = $target.data("title");
 				var footer = $target.data("footer");
                 var size = $target.data("size");
@@ -177,6 +184,7 @@ $JQry(function() {
 				$modal.data("callback-function", callbackFunction);
 				$modal.data("callback-function-args", callbackFunctionArgs);
 				$modal.data("callback-url", callbackUrl);
+				$modal.data("reload-on-close", reloadOnClose);
 				$modal.data("title", title);
 				$modal.data("footer", footer);
 				$modal.data("size", size);

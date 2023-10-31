@@ -14,6 +14,11 @@
 
 <portlet:actionURL name="startWindow" var="startWindowURL">
 </portlet:actionURL>
+
+<portlet:actionURL name="refresh" var="refreshSafranCommand">
+</portlet:actionURL>
+
+
 <portlet:actionURL name="goToPage" var="goToPageURL">
 </portlet:actionURL>
 <portlet:actionURL name="throwException" var="throwExceptionURL">
@@ -70,6 +75,17 @@
     <span >
        <a href="${startWindowCommand}" class="btn btn-secondary">startWindowCommand</a>
     </span>
+    
+        <span >
+       <a href="${refreshSafranCommand}" class="btn btn-secondary">refresh</a>
+    </span>
+    
+     
+    <a class="btn btn-link" href="javascript:" title="Popup" data-load-url="${openInPopupUrl}" data-title="Popup" data-target="#osivia-modal" data-reload-on-close="true">
+      popup
+    </a>
+   
+    
 </div>
 
 </div>

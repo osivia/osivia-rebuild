@@ -115,6 +115,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.api.refresh.IRefreshService;
 import org.osivia.portal.api.theming.AbstractRegionBean;
 import org.osivia.portal.api.theming.IRegionsThemingService;
 import org.osivia.portal.api.theming.IRenderedRegions;
@@ -133,6 +134,7 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RestorePageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.refresh.RefreshService;
 import org.osivia.portal.core.resources.ResourceHandler;
 import org.osivia.portal.core.theming.IPageHeaderResourceService;
 import org.osivia.portal.core.theming.RenderedRegions;
@@ -522,6 +524,26 @@ public class AjaxResponseHandler implements ResponseHandler {
                         log.error("Unable to determine if window is dirty.", e);
                         dirtyWindowIds.add(window.getId());
                     }
+                    
+                    
+                    
+                    // refresh by instanceName
+                    String portletInstance = ((Window) window).getContent().getURI();
+                    if (portletInstance != null) {
+                        Long refreshTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refresh.instance." + portletInstance);
+                        if (refreshTs != null) {
+                            Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
+                                    "osivia.ajax.visible.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                            if (lastSentTs == null || (lastSentTs < refreshTs) ) {
+                                if (!dirtyWindowIds.contains(window.getId())) {
+                                    dirtyWindowIds.add(window.getId());
+                                }
+                             // Needed for spring models
+                             controllerContext.setAttribute(Scope.REQUEST_SCOPE,
+                                        "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
+                            }
+                        }
+                    }
                 }
 
                 if (!fullRefresh) {
@@ -784,6 +806,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                             if( skipWindow == false)    {
                             
                             	WindowRendition rendition;
+                            	boolean visible = true;
                             	
                             	 // Linked layout item
                                 String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
@@ -823,6 +846,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     MarkupResponse markupResponse = new MarkupResponse(null, StringUtils.EMPTY, null);
                                     // Window rendition
                                     rendition = new WindowRendition(windowProperties, WindowState.NORMAL, Mode.VIEW, supportedWindowStates, supportedModes, markupResponse);
+                                    
+                                    visible = false;
                                 }                            	
                             	
                             	
@@ -839,7 +864,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                         //
                                         res.addWindowContext(wc);
     
-                                        this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wc);
+                                        this.refreshWindowContext(controllerContext, layout, updatePage, resources, res, wc, visible);
     
                                     } else {
                                         // TODO:display error
@@ -1061,7 +1086,13 @@ public class AjaxResponseHandler implements ResponseHandler {
         return new AjaxResponse(dresp);
     }
 
+    
     private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, Set<PageResource> resources, PageResult res, WindowContext wc) throws Exception {
+         refreshWindowContext(controllerContext, layout, updatePage, resources, res, wc, true);
+    
+    }
+    
+    private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, Set<PageResource> resources, PageResult res, WindowContext wc, boolean visible) throws Exception {
 
         // Server invocation
         ServerInvocation invocation = controllerContext.getServerInvocation();
@@ -1114,7 +1145,8 @@ public class AjaxResponseHandler implements ResponseHandler {
         updatePage.addFragment(wc.getId(), buffer.toString());
 
         controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.ajax.ts." + wc.getId(), System.currentTimeMillis());
-
+        if( visible)
+            controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.ajax.visible.ts." + wc.getId(), System.currentTimeMillis());
     }
     
     

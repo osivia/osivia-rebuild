@@ -3,6 +3,7 @@ package org.osivia.portal.sample.configuration;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.refresh.IRefreshService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -58,4 +59,10 @@ public class SampleConfiguration {
         return Locator.getService(IDynamicService.class);
     }
 
+    @Bean
+    public IRefreshService getRefreshService() {
+        return Locator.getService(IRefreshService.class);
+    }
+
+    
 }

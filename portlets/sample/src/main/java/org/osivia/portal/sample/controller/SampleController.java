@@ -26,6 +26,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.refresh.IRefreshService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -73,6 +74,9 @@ public class SampleController implements PortletContextAware {
     @Autowired
     IPortalUrlFactory portalUrlFactory;
     
+    @Autowired   
+    IRefreshService refreshService;
+    
     
     /**
      * Constructor.
@@ -114,6 +118,9 @@ public class SampleController implements PortletContextAware {
         
         request.setAttribute("pageURL",portalUrlFactory.getViewContentUrl(portalCtx, new CMSContext(portalCtx),pageId));
         */
+        
+        String openInPopupUrl = portalUrlFactory.getStartPortletUrl(portalCtx, "SampleInstance", properties, PortalUrlType.MODAL);
+        request.setAttribute("openInPopupUrl", openInPopupUrl);
         
         request.setAttribute("user", request.getRemoteUser());
         
@@ -193,7 +200,11 @@ public class SampleController implements PortletContextAware {
         request.setAttribute("osivia.pagePath", "/portalA/simple-ajax");
     }
 
+    @ActionMapping("refresh")
+    public void refresh(ActionRequest request, ActionResponse response) throws PortalException {
 
+        PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
+        refreshService.applyRefreshStrategy(portalCtx, IRefreshService.REFRESH_STRATEGY_SAFRAN);    }
     @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;

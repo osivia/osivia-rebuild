@@ -8,6 +8,8 @@
       <portlet-name>Sample</portlet-name>
       <header-content>
         <link rel="stylesheet" type="text/css" href="/css/sample.css" media="screen"/>
+        <script type="text/javascript" src="/js/sample.js"></script>
+        
 <!-- REACT_MODULES -->
         <link rel="stylesheet" type="text/css" href="/js/react2/static/css/main.a6b8b413.chunk.css" media="screen"/>       
 		<script type="text/javascript" src="/js/react2/static/js/2.6e60ee63.chunk.js"></script>

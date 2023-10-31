@@ -21,7 +21,7 @@
                                 <div class="dyna-window-content">
                                     <div class="p-4 text-center">
                                         <div class="spinner-border" role="status">
-                                            <span class="sr-only">Loading...</span>
+                                            <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </div>
                                 </div>
