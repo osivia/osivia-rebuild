@@ -16,6 +16,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -157,12 +158,19 @@ public class SampleController implements PortletContextAware {
      */
     @ResourceMapping("export")
     public void export(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
-
-        
         if(true)
             throw new PortletException("error test");
     }
 
+    
+    /**
+     * copy file to response
+     *
+     */
+    @ResourceMapping("notFound")
+    public void notFound(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        response.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(HttpServletResponse.SC_NOT_FOUND));
+    }
 
     /**
      * Action mapping
@@ -204,7 +212,10 @@ public class SampleController implements PortletContextAware {
     public void refresh(ActionRequest request, ActionResponse response) throws PortalException {
 
         PortalControllerContext portalCtx = new PortalControllerContext(portletContext, request, response);
-        refreshService.applyRefreshStrategy(portalCtx, IRefreshService.REFRESH_STRATEGY_SAFRAN);    }
+        refreshService.applyRefreshStrategy(portalCtx, IRefreshService.REFRESH_STRATEGY_SAFRAN);    
+    }
+    
+    
     @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;

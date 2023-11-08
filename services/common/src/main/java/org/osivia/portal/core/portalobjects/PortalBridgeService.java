@@ -238,8 +238,8 @@ public class PortalBridgeService implements PortalBridge {
 
 		if (StringUtils.isNotEmpty(sDefaultPortal))
 			return new UniversalID(sDefaultPortal);
-		else
-			return null;
+		else  
+			throw new RuntimeException("No mapping is defined in portal.properties for host "+ hostName);
 	}
 
 	@Override

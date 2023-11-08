@@ -53,6 +53,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.portlet.ResourceResponse;
+
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 12953 $
@@ -171,6 +173,15 @@ public class ControllerResponseFactory
       else if (response instanceof ContentResponse)
       {
          ContentResponse contentResponse = (ContentResponse)response;
+  
+         /*
+         ResponseProperties errors = contentResponse.getProperties();
+         if( errors != null)    {
+             if( errors.getTransportHeaders().getValue(ResourceResponse.HTTP_STATUS_CODE) != null)  {
+                 return new UnavailableResourceResponse("resource", false);
+             }
+         }
+         */
 
          //
          int type = contentResponse.getType();

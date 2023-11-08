@@ -12,8 +12,13 @@
 <jsp:include page="nav.jsp" />
 
 <portlet:resourceURL id="export" var="exportUrl"/>
-
+<portlet:resourceURL id="notFound" var="notFoundUrl"/>
 
 <div>
     <a href="${exportUrl}" class="btn btn-default no-ajax-link">Ressource </a>
+</div>
+
+
+<div>
+    <a href="${notFoundUrl}" class="btn btn-default no-ajax-link">Not found </a>
 </div>
