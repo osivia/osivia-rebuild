@@ -151,6 +151,13 @@ public class DynamicService implements IDynamicService {
             ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", breadcrumb);
         }
      
+        
+        // Remove portlets cache
+
+        AttributeResolver resolver = ctx.getAttributeResolver(Scope.PRINCIPAL_SCOPE);
+        String scopeKey = "cached_markup." + windowId;    
+        resolver.setAttribute(scopeKey, null);            
+        
   
     }
 
