@@ -259,7 +259,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                         portalId = targetRestoreIdObject;
                     } else {
                         PortalObjectPath parentPath = targetRestoreIdObject.getPath().getParent();
-                        portalId = new PortalObjectId("", parentPath);
+                        portalId = new PortalObjectId(targetRestoreIdObject.getNamespace(), parentPath);
                     }
 
                     // Restore the page
