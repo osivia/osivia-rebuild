@@ -1,9 +1,12 @@
 package org.osivia.portal.core.container.persistent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +26,8 @@ import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Templateable;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.core.ajax.AjaxResponseHandler;
 import org.osivia.portal.core.container.persistent.StaticPortalObjectContainer.ContainerContext;
 import org.osivia.portal.api.cms.model.Page;
@@ -95,8 +100,10 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
             // If no parent theme, reinit the current theme
             String parentTheme = parent.getProperty(ThemeConstants.PORTAL_PROP_THEME);
-            if (parentTheme == null)
+            if (parentTheme == null)    {
+                log.error("can't fin parent theme for page " +navItem.getDocumentId() + " " +cmsContext.isPreview());
                 cmsPage.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME, "generic");
+            }
             
         }
             
@@ -109,21 +116,62 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 */
     }
 
+    void checkAndAddWindow(CMSPage page, Map windows, ModuleRef moduleRef, int order ) {
+
+        HttpServletRequest request = cmsContext.getPortalControllerContext().getHttpServletRequest();
+        
+        boolean rolesChecked = false;
+        
+        // Check if window is restricted to a role
+        
+        List<String> roles = new ArrayList<String>();
+        String sRoles = StringUtils.defaultString(moduleRef.getProperties().get("osivia.roles"));
+        if( StringUtils.isNotEmpty(sRoles)) {
+            roles = Arrays.asList(sRoles.split(","));
+            for (String role : roles) {
+                if (request.isUserInRole(role)) {
+                    rolesChecked = true;
+                }
+            }
+        }   else    {
+            rolesChecked = true;
+        }
+        
+        boolean onlyVisibleInEditionMode;
+        
+        if( rolesChecked == true)    {
+            onlyVisibleInEditionMode = false;
+        }   else    {
+            PortalControllerContext portalControllerContext = new PortalControllerContext(request);
+            boolean isAdministrator = portalControllerContext.getHttpServletRequest().isUserInRole("Administrators");
+            if ((PortalObjectUtils.isPageRepositoryManager(portalControllerContext) || isAdministrator)) {
+                // Only show in preview mode
+                onlyVisibleInEditionMode = true;
+             }  else {
+                onlyVisibleInEditionMode = false;
+            }
+        }  
+        
+        if( rolesChecked || onlyVisibleInEditionMode)
+            page.addWindow(windows, moduleRef, order++, onlyVisibleInEditionMode);
+    }
 
     @Override
     public void createCMSWindows(CMSPage page, Map windows) {
+        
         int order = 0;
         if (doc instanceof Space) {
             for (ModuleRef moduleRef : ((Space) doc).getModuleRefs()) {
-                page.addWindow(windows, moduleRef, order++);
+                checkAndAddWindow( page, windows, moduleRef, order++);
             }
         }
 
         if (doc instanceof Page) {
             for (ModuleRef moduleRef : ((Page) doc).getModuleRefs()) {
-                page.addWindow(windows, moduleRef, order++);
+                checkAndAddWindow( page, windows, moduleRef, order++);
             }
         }
+        
     }
 
     @Override

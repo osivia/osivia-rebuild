@@ -200,7 +200,6 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
     private List<Profile> getSpaceProfiles(PortalControllerContext portalCtx) throws CMSException {
 
         Document document = getDocument(portalCtx);
-        document.getSpaceId();
 
         CMSController ctrl = new CMSController(portalCtx);
         CMSContext cmsContext = ctrl.getCMSContext();

@@ -23,6 +23,10 @@ public class ModifyForm {
      * Linked layout item identifier.
      */
     private String linkedLayoutItemId;
+    private List<String> profiles;
+
+    
+
 
 
     /**
@@ -89,5 +93,14 @@ public class ModifyForm {
         this.supportTabSelection = supportTabSelection;
     }
 
+   
+    public List<String> getProfiles() {
+        return profiles;
+    }
+
     
+    public void setProfiles(List<String> profiles) {
+        this.profiles = profiles;
+    }
+
 }

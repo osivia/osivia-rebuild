@@ -82,6 +82,20 @@
         </div>
     </c:if>
 
+    <div class="mb-3">
+        <form:label path="profiles" cssClass="form-label"><op:translate key="MODIFY_PORTLET_CONDITION_DISPLAY_LABEL" /></form:label>
+        <div class="form-group row">
+            <c:forEach var="profile" items="${profilesList}">
+                <div class="col-md-6">
+	                <div class="form-check">
+	                    <form:checkbox path="profiles" value="${profile.name}" cssClass="form-check-input"/>
+	                    <form:label path="profiles" cssClass="form-check-label" >${profile.name}</form:label>
+	                </div>
+               </div>
+            </c:forEach>
+        </div>
+    </div>        
+
     <%--Buttons--%>
     <div class="text-end">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -508,6 +509,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }
 
 
+                
+                // Contextual window that must be recalculated
+                // even if their have not changed
                 for (PortalObject window : page.getChildren(PortalObject.WINDOW_MASK)) {
 
                     // Linked layout item
@@ -544,6 +548,17 @@ public class AjaxResponseHandler implements ResponseHandler {
                             }
                         }
                     }
+                    
+                    
+                    if("true".equals(window.getDeclaredProperty(("osivia.onlyInEditionMode")))) {
+                        if (!dirtyWindowIds.contains(window.getId())) {
+                           dirtyWindowIds.add(window.getId());
+                        }
+                    }
+                    
+                    
+                    
+                    
                 }
 
                 if (!fullRefresh) {
@@ -801,20 +816,45 @@ public class AjaxResponseHandler implements ResponseHandler {
                             	if(!StringUtils.equals(asyncWindow, refreshedWindow.getName()))
                             		skipWindow = true;
                             }
-                            	
+                            
+                           	
                             
                             if( skipWindow == false)    {
                             
                             	WindowRendition rendition;
                             	boolean visible = true;
                             	
-                            	 // Linked layout item
-                                String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
 
-                                if (StringUtils.isEmpty(linkedLayoutItemId) || this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId) || !this.layoutItemsService.isDefined(portalControllerContext, linkedLayoutItemId)){
-                                	
-                                	
-                                	String portletInstance = refreshedWindow.getContent().getURI();
+                            	/* At this point there are some windows that we want to force as hidden
+                            	 * because they may have been visible but must not be shown now
+                            	 */
+                                
+                                boolean hide = false;
+                                
+                                
+                                
+                                // admin mode
+                                if("true".equals((refreshedWindow.getDeclaredProperty("osivia.onlyInEditionMode")))) {
+                                    if( !previewModeService.isEditionMode(portalControllerContext) )
+                                        hide = true;
+                                }
+
+                                // Linked layout item
+                                String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+                                if (hide == false) {
+                                    if (StringUtils.isNotEmpty(linkedLayoutItemId)) {
+                                        if (!this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId)
+                                                && this.layoutItemsService.isDefined(portalControllerContext, linkedLayoutItemId)) {
+                                            hide = true;
+                                        }   else    {
+                                            this.layoutItemsService.markWindowAsRendered(portalControllerContext, refreshedWindow);
+                                        }
+                                    }
+                                }
+
+  
+                                if ( hide == false){
+                                 	String portletInstance = refreshedWindow.getContent().getURI();
                                 	
                                 	if( !StringUtils.equals(asyncWindow, refreshedWindow.getName()) && getAsynchronousPortlets().contains(portletInstance))	{
                                         
@@ -831,10 +871,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                     RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
                                     rendition = rwc.render(controllerContext);
 
-                                    if (StringUtils.isNotEmpty(linkedLayoutItemId)) {
-                                        this.layoutItemsService.markWindowAsRendered(portalControllerContext, refreshedWindow);
-                                    }
-                                	
+                               	
                                 } else {
                                     // Window properties
                                     Map<String, String> windowProperties = new HashMap<>();

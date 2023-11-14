@@ -173,8 +173,8 @@ public  class  CMSPage extends PageImplBase {
         Map<String, String> editionProperties = new ConcurrentHashMap<>();
         editionProperties.put("osivia.hideTitle", "1");
         editionProperties.put("osivia.sequence.priority", "1");
-        ModuleRef edition = new ModuleRef("edition", "admin", "EditionInstance", editionProperties);
-        this.addWindow(windows, edition, 0);
+        ModuleRef edition = new ModuleRef("edition", "admin", "EditionInstance",  editionProperties);
+        this.addWindow(windows, edition, 0, false);
 		
 		
 		/* CMS Windows */
@@ -189,7 +189,7 @@ public  class  CMSPage extends PageImplBase {
 
 	
   
-    protected void addWindow(Map windows, ModuleRef module, int order) {
+    protected void addWindow(Map windows, ModuleRef module, int order, boolean onlyInEditionMode) {
 
         PortalObjectPath winPath = new PortalObjectPath(
                 pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + module.getWindowName(),
@@ -203,6 +203,9 @@ public  class  CMSPage extends PageImplBase {
         win.setObjectNode(winNode);
         win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, module.getRegion());
         win.setDeclaredProperty(ThemeConstants.PORTAL_PROP_ORDER, Integer.toString(order));
+        if( onlyInEditionMode)    {
+            win.setDeclaredProperty("osivia.onlyInEditionMode", "true");
+        }
         
         for( String propName : module.getProperties().keySet()) {
             win.setDeclaredProperty(propName, module.getProperties().get(propName));

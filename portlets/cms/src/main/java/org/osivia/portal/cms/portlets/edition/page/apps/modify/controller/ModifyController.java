@@ -2,6 +2,8 @@ package org.osivia.portal.cms.portlets.edition.page.apps.modify.controller;
 
 import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -154,6 +156,22 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
                 srcModule.getProperties().put(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY, form.getLinkedLayoutItemId());
             }
         }
+        
+        
+        List<Profile> profiles = getSpaceProfiles(portalControllerContext);
+        List<String> roles = new ArrayList<>();
+       
+        for (String formProfile : form.getProfiles()) {
+             for (Profile profile : profiles) {
+                    if (formProfile.equals(profile.getName())) {
+                        roles.add( profile.getRole());
+                 }
+             }
+        }
+        if (CollectionUtils.isNotEmpty(roles))
+            srcModule.getProperties().put("osivia.roles", String.join(",", roles));
+        else
+            srcModule.getProperties().remove("osivia.roles");           
 
 
         updateDocument(portalControllerContext, document);
@@ -248,6 +266,40 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         this.applicationContext = applicationContext;
     }
 
+    
+    private List<Profile> getSpaceProfiles(PortalControllerContext portalCtx) throws CMSException {
+
+        Document document = getDocument(portalCtx);
+
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+        Space space = (Space) cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
+        UniversalID templateId = space.getTemplateId();
+        if (templateId != null) {
+            CMSContext cmsTemplateContext = ctrl.getCMSContext();
+            cmsTemplateContext.setPreview(false);
+            Page page = (Page) cmsService.getCMSSession(cmsTemplateContext).getDocument(templateId);
+            space = (Space) cmsService.getCMSSession(cmsTemplateContext).getDocument(page.getSpaceId());
+        }
+
+        List<Profile> profiles = space.getProfiles();
+        return profiles;
+    }
+    
+    
+    
+    
+    @ModelAttribute("profilesList")
+    protected List<Profile> getProfilesList(PortletRequest request, PortletResponse response) throws Exception {
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+
+        List<Profile> profiles = getSpaceProfiles(portalCtx);
+        profiles.removeIf(profile -> StringUtils.isEmpty(profile.getRole()));
+
+
+        return profiles;
+    }
+    
     /**
      * Get form model attribute.
      *
@@ -283,6 +335,26 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
             form.setSupportTabSelection(app.isSupportTabSelection());
         else
             form.setSupportTabSelection(true);
+        
+        // Display role
+        List<String> formProfiles = new ArrayList<>();
+        List<String> roles = new ArrayList<String>();
+        String sRoles = StringUtils.defaultString(srcModule.getProperties().get("osivia.roles"));
+        if( StringUtils.isNotEmpty(sRoles)) {
+            roles = Arrays.asList(sRoles.split(","));
+        }
+        
+        List<Profile> profiles = getSpaceProfiles(portalCtx);
+        for (String role : roles) {
+            for (Profile profile : profiles) {
+                if (StringUtils.equals(role, profile.getRole())) {
+                    formProfiles.add(profile.getName());
+                }
+            }
+       }
+        
+
+        form.setProfiles(formProfiles);        
 
         return form;
     }
