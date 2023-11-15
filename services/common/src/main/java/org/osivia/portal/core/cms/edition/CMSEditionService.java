@@ -173,7 +173,7 @@ public class CMSEditionService {
 
 
         try {
-            if (cmsEditionUrl != null && !window.getName().equals("edition")) {
+            if (cmsEditionUrl != null && ! ("1".equals(window.getDeclaredProperty("osivia.customizedWindow")))) {
                 
                 List<String> cmsRegions;
                 String sCmsRegions =  page.getProperties().get("cms.regions");
@@ -189,8 +189,8 @@ public class CMSEditionService {
                 
                 String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
 
-
-                    if( (dynaPage.getCmsTemplateID() != null && cmsRegions.contains(region))
+                
+                if( (dynaPage.getCmsTemplateID() != null && cmsRegions.contains(region))
                             ||
                         (dynaPage.getCmsTemplateID() == null && !cmsRegions.contains(region))) {                    
                     properties.setWindowProperty(windowId, InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, String.valueOf(true));

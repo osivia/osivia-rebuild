@@ -155,8 +155,9 @@
       <property name="PortalAuthorizationManagerFactory" ref="portal:service=PortalAuthorizationManagerFactory"/>
       <property name="AuthorizationDomainRegistry" ref="portal:service=AuthorizationDomainRegistry"/>
       -->
-       <property name="Tracker" ref="osivia:service=Tracker"/>      
-      <property name="ContentProviderRegistry" ref="portal:service=ContentProviderRegistry"/>
+        <property name="Tracker" ref="osivia:service=Tracker"/>      
+        <property name="ContentProviderRegistry" ref="portal:service=ContentProviderRegistry"/>
+        <property name="CustomizationService" ref="osivia:service=CustomizationService"/>      
    </bean>
    
        

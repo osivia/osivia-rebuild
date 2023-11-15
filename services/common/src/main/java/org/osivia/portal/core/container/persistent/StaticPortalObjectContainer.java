@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -17,9 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
-import org.jboss.portal.core.controller.ControllerContext;
-
-
 import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.content.spi.ContentProvider;
 import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
@@ -32,25 +28,22 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.jems.hibernate.ContextObject;
 import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 import org.jboss.portal.theme.ThemeConstants;
-import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.NavigationItem;
-import org.osivia.portal.api.cms.service.CMSContentEvent;
-import org.osivia.portal.api.cms.service.CMSEvent;
-import org.osivia.portal.api.cms.service.CMSRepositoryEvent;
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.service.CMSService;
-import org.osivia.portal.api.cms.service.RepositoryListener;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.repository.IRepositoryCustomizer;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
 import org.osivia.portal.core.content.IPublicationManager;
-import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.tracker.ITracker;
-import org.osivia.portal.api.cms.model.Space;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 
@@ -67,6 +60,9 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
     protected static final Log log = LogFactory.getLog(StaticPortalObjectContainer.class);
 
     private ContentProviderRegistry contentProviderRegistry;
+    
+    /** Customization service. */
+    private ICustomizationService customizationService;
 
     public ContentProviderRegistry getContentProviderRegistry() {
         return contentProviderRegistry;
@@ -587,6 +583,38 @@ public class StaticPortalObjectContainer implements org.jboss.portal.core.model.
                 return null;
             }
         }
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    public List<ModuleRef> customizeModules (String repositoryName) {
+        
+        Map<String, Object> attributes = new HashMap<String, Object>();
+        attributes.put(IRepositoryCustomizer.CUSTOMIZER_ATTRIBUTE_REPOSITORY, repositoryName);
+        CustomizationContext context = new CustomizationContext(attributes);
+
+        // Customizer invocation
+        this.customizationService.customize(IRepositoryCustomizer.CUSTOMIZER_ID, context);
+        return ( List<ModuleRef>) attributes.get(IRepositoryCustomizer.CUSTOMIZER_ATTRIBUTE_ADDITIONAL_MODULES);
+
+    }
+
+    /**
+     * Getter for customizationService.
+     *
+     * @return the customizationService
+     */
+    public ICustomizationService getCustomizationService() {
+        return this.customizationService;
+    }
+
+    /**
+     * Setter for customizationService.
+     *
+     * @param customizationService the customizationService to set
+     */
+    public void setCustomizationService(ICustomizationService customizationService) {
+        this.customizationService = customizationService;
     }
 
 }

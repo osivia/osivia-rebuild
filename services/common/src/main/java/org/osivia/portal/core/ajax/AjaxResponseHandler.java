@@ -511,7 +511,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 
                 // Contextual window that must be recalculated
-                // even if their have not changed
+                // even if they have not changed
+                
                 for (PortalObject window : page.getChildren(PortalObject.WINDOW_MASK)) {
 
                     // Linked layout item
@@ -679,6 +680,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
  
                     // Filter by visible regions  and sort by order
+                    
+                    
                     DynamicLayoutInfos layoutInfos = getDynamicLayoutService().getLayoutInfos(controllerContext, page);
                     
                     
@@ -717,6 +720,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                         		warn = false;
                         	}
                         	
+                            // Customized window can't check layout at creation
+                            if( "1".equals(window.getDeclaredProperty( "osivia.customizedWindow" )))  {
+                                warn = false;
+                            }
+                        	
                         	if(warn)	{
                         		// otherwise warn
                                 log.warn("this window seems not to be present in any visible region, should check ... : "
@@ -730,9 +738,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                     Collections.sort(sortedByOrderWindows, new PriorityWindowComparator());                      
                     
                     // update regions
-                    
-                    
-                    
+                     
                     for (PortalObject window : sortedByOrderWindows) {
 
                         NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());

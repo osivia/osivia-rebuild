@@ -40,7 +40,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
     CMSService cmsService;
     CMSContext cmsContext;
     Document doc;
-
+    StaticPortalObjectContainer container;
     
     private static final Logger log = Logger.getLogger(DefaultCMSPageFactory.class);
 
@@ -56,6 +56,7 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
     public DefaultCMSPageFactory(StaticPortalObjectContainer container, ContainerContext containerContext, PortalObject parent, CMSService cmsService,
             CMSContext cmsContext, NavigationItem navItem) throws CMSException {
+        this.container = container;
         this.cmsService = cmsService;
         this.cmsContext = cmsContext;
         this.navItem = navItem;
@@ -70,9 +71,8 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
 
         // Create default page
         String path = parent.getId().getPath().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + pageName;
+
         Map<String, String> pageProperties = new HashMap<>();
-//        pageProperties.put(ThemeConstants.PORTAL_PROP_LAYOUT, "generic-2cols");
-//        pageProperties.put(ThemeConstants.PORTAL_PROP_THEME, "generic");
         pageProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, "true");
         
         // Add doc properties
@@ -106,17 +106,10 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
             }
             
         }
-            
-/*
-        for (NavigationItem child : navItem.getChildren()) {
-            org.jboss.portal.core.model.portal.Page page = (org.jboss.portal.core.model.portal.Page) container.getObject(pageId);
-            DefaultCMSPageFactory.createCMSPage(container, containerContext, page, cmsService, cmsContext, child);
-
-        }
-*/
+           
     }
 
-    void checkAndAddWindow(CMSPage page, Map windows, ModuleRef moduleRef, int order ) {
+    void checkRolesAndAddWindow(CMSPage page, Map windows, ModuleRef moduleRef, int order ) {
 
         HttpServletRequest request = cmsContext.getPortalControllerContext().getHttpServletRequest();
         
@@ -156,22 +149,53 @@ public class DefaultCMSPageFactory implements CMSPageFactory {
             page.addWindow(windows, moduleRef, order++, onlyVisibleInEditionMode);
     }
 
+    
+    
+    
+    
     @Override
     public void createCMSWindows(CMSPage page, Map windows) {
         
-        int order = 0;
+        List<ModuleRef> modulesList;
+        
         if (doc instanceof Space) {
-            for (ModuleRef moduleRef : ((Space) doc).getModuleRefs()) {
-                checkAndAddWindow( page, windows, moduleRef, order++);
-            }
-        }
+            modulesList = ((Space) doc).getModuleRefs() ;
+        } else if (doc instanceof Page) {
+            modulesList = ((Page) doc).getModuleRefs() ;
+        }   else
+            modulesList = new ArrayList<>();
+        
+        addModules(modulesList, page, windows);
+    }
 
-        if (doc instanceof Page) {
-            for (ModuleRef moduleRef : ((Page) doc).getModuleRefs()) {
-                checkAndAddWindow( page, windows, moduleRef, order++);
+
+    private int addModules(List<ModuleRef> modulesList, CMSPage page, Map windows) {
+        int order = 0;
+        
+        // template modules
+        for (ModuleRef moduleRef : modulesList) {
+            checkRolesAndAddWindow( page, windows, moduleRef, order++);
+        }
+       
+        
+        // customized additional modules
+        HttpServletRequest request = cmsContext.getPortalControllerContext().getHttpServletRequest();
+        
+        UniversalID portalId = PortalObjectUtils.getHostPortalID(request);
+        List<ModuleRef> additionalModules = container.customizeModules(portalId.getRepositoryName());
+        
+        if( additionalModules != null)  {
+            for (ModuleRef moduleRef : additionalModules) {
+                               
+                Map<String,String> properties = new HashMap<>(moduleRef.getProperties());
+                properties.put( "osivia.customizedWindow" , "1");
+             
+                ModuleRef adaptedModule = new ModuleRef(moduleRef.getWindowName(),moduleRef.getRegion(), moduleRef.getModuleId(), properties);
+                checkRolesAndAddWindow( page, windows, adaptedModule, order++);
             }
         }
         
+        return order;
     }
 
     @Override
