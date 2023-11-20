@@ -58,6 +58,8 @@ public class FileUtils {
 
         FileInputStream importStream;
         try {
+            log.info("importFile "+ importFile.getPath());
+            
             importStream = new FileInputStream(importFile);
         } catch (FileNotFoundException e1) {
             throw new RuntimeException(e1);
@@ -70,7 +72,7 @@ public class FileUtils {
                 importDocument(doc, null, null);
             }
 
-            log.info("importFile");
+            
 
         } catch (Exception e) {
             throw new RuntimeException(e);
