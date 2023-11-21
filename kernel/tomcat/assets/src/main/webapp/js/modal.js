@@ -1,9 +1,9 @@
 $JQry(function() {
-	
+
 	$JQry("#osivia-modal").each(function(index, element) {
 		var $element = $JQry(element);
 		var loaded = $element.data("loaded");
-		
+
 		if (!loaded) {
 			$element.on("show.bs.modal", function(event) {
 				var $target = $JQry(event.target);
@@ -12,9 +12,9 @@ $JQry(function() {
 				var $footer = $dialog.find(".modal-footer");
 				var $clone = $target.children(".modal-clone");
 				var $window = $dialog.find(".dyna-window");
-				
-				
-				
+
+
+
                 var url = $target.data("load-url");
  				var callbackFunction = $target.data("load-callback-function");
 				var callbackFunctionArgs = $target.data("load-callback-function-args");
@@ -27,25 +27,25 @@ $JQry(function() {
 					$header.find(".modal-title").text(title);
 					$header.removeClass("d-none");
 				}
-				
+
 				// Footer
 				if (footer) {
 					$footer.removeClass("d-none");
 				}
-				
+
 				// Body
 				$window.children().clone().appendTo($clone);
 				url = url.replace("/session/","/session/"+session_check+"/");
 
 				// Save state
 				$element.data("saved_state", view_state);
-				
+
 				$window.load(url, function(response, status, xhr) {
-					
+
 					// Handle redirections due to login
 					if( !response.includes("modal_do_not_delete"))
 						window.top.location.reload(true);
-					
+
 					// (ajax call) eq. footer
 				    var options = new Object();
 						// We have a get
@@ -54,8 +54,8 @@ $JQry(function() {
 				    options.asynchronous = false;
 					directAjaxCall(null,options, url, null);
 
-					
-					
+
+
 					if (callbackFunction) {
 						window[callbackFunction](callbackFunctionArgs);
 					}
@@ -81,13 +81,16 @@ $JQry(function() {
 				var callbackFunctionArgs = $target.data("callback-function-args");
 				var callbackUrl = $target.data("callback-url");
 				var reloadOnClose = $target.data("reload-on-close");
-				
-				$window.unbind("load");	
-					
+
+				$window.unbind("load");
+
+				// Restore state
+				view_state = $element.data("saved_state");
+
 				if (callbackFunction) {
 					window[callbackFunction](callbackFunctionArgs);
 				}
-				
+
 				if (callbackUrl) {
 					var container = null,
                         options = {
@@ -95,14 +98,14 @@ $JQry(function() {
                         },
                         eventToStop = null,
                         callerId = null;
-				
+
 					directAjaxCall(container, options, callbackUrl, eventToStop, callerId);
 				}
-				
-				if( reloadOnClose) {
+
+				if (reloadOnClose) {
                     reload(history.state, null, false);
                 }
-				
+
 				$target.removeData("load-url");
 				$target.removeData("load-callback-function");
 				$target.removeData("load-callback-function-args");
@@ -120,12 +123,13 @@ $JQry(function() {
 				$target.removeAttr("data-callback-function");
 				$target.removeAttr("data-callback-function-args");
 				$target.removeAttr("data-callback-url");
+				$target.removeAttr("data-reload-on-close");
 				$target.removeAttr("data-title");
 				$target.removeAttr("data-footer");
 				$target.removeAttr("data-size");
 				$target.removeAttr("data-backdrop");
 			});
-			
+
 			$element.on("hidden.bs.modal", function(event) {
 				var $target = $JQry(event.target);
                 var $dialog = $target.find(".modal-dialog");
@@ -133,14 +137,14 @@ $JQry(function() {
 				var $footer = $dialog.find(".modal-footer");
 				var $clone = $target.children(".modal-clone");
 				var $window = $dialog.find(".dyna-window");
-				
+
 				// Header
 				$header.addClass("d-none");
 				$header.find(".modal-title").empty();
-				
+
 				// Footer
 				$footer.addClass("d-none");
-				
+
 				// Body
 				$window.empty();
 				$clone.children().appendTo($window);
@@ -148,20 +152,17 @@ $JQry(function() {
 
 				// Size
                 $dialog.removeClass("modal-xl modal-lg modal-sm");
-                
-                // Restore state
-                view_state = $element.data("saved_state");
 			});
-			
+
 			$element.data("loaded", true);
 		}
 	});
-	
-	
+
+
 	$JQry("[data-target='#osivia-modal']").each(function(index, element) {
 		var $element = $JQry(element);
 		var loaded = $element.data("loaded");
-		
+
 		if (!loaded) {
 			$element.click(function(event) {
 				var $target = $JQry(event.target).closest("a, button");
@@ -177,7 +178,7 @@ $JQry(function() {
                 var size = $target.data("size");
                 var backdrop = $target.data("backdrop");
 				var $modal = $JQry("#osivia-modal");
-	
+
 				$modal.data("load-url", loadUrl);
 				$modal.data("load-callback-function", loadCallbackFunction);
 				$modal.data("load-callback-function-args", loadCallbackFunctionArgs);
@@ -192,16 +193,16 @@ $JQry(function() {
 
 				$modal.modal("show"); // FIXME
 			});
-			
+
 			$element.data("loaded", true);
 		}
 	});
-	
-	
+
+
 	$JQry("#osivia-modal [data-close-modal=true]").each(function(index, element) {
 		var $modal = $JQry("#osivia-modal");
-		
+
 		$modal.modal("hide"); // FIXME
 	});
-	
+
 });
