@@ -33,6 +33,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.controller.command.response.ResourceHttpError;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.controller.command.response.SignOutResponse;
 import org.jboss.portal.core.controller.command.response.StreamContentResponse;
@@ -183,6 +184,13 @@ public class OtherResponseHandler implements ResponseHandler
 
          //
          return HTTPResponse.sendNotFound();
+      }
+      else if (controllerResponse instanceof ResourceHttpError)
+      {
+          ResourceHttpError errorResponse = (ResourceHttpError)controllerResponse;
+
+
+         return HTTPResponse.sendStatus(errorResponse.getGetHttpCode());
       }
       else
       {

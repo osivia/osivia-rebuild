@@ -175,6 +175,12 @@ public abstract class HTTPResponse extends HandlerResponse
    {
       return sendStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
    }
+   
+   public static HTTPResponse sendStatus(final int statusCode)
+   {
+      return sendStatus(statusCode, "");
+   }
+
 
    private static HTTPResponse sendStatus(final int statusCode, final String message)
    {

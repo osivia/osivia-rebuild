@@ -27,6 +27,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.controller.command.response.ResourceHttpError;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
@@ -168,6 +169,31 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 
 
 		}
+        
+        
+        // Ressource http error
+        if( response instanceof ResourceHttpError) {
+            
+            boolean pageReponse = true;
+            
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+
+            controlContext.setResponse( response);
+             // Portlet can set error redirection
+             String noRedirection = (String) portalControllerContext.getHttpServletRequest().getAttribute("osivia.no_redirection");
+             if( noRedirection == null)  {
+                 portalControllerContext.getHttpServletRequest().setAttribute("osivia.no_redirection","1");
+             }
+             pageReponse = false;
+
+     
+     
+             if( pageReponse)
+                 controlContext.setResponse(new RedirectionResponse(
+                 getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?httpCode=" + ((ResourceHttpError) response).getGetHttpCode()));
+  
+        }      
+        
 	}
 
 

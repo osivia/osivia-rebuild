@@ -30,6 +30,7 @@ import org.jboss.portal.common.util.MultiValuedPropertyMap;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.controller.command.response.ResourceHttpError;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.controller.command.response.SignOutResponse;
 import org.jboss.portal.core.controller.command.response.StreamContentResponse;
@@ -174,17 +175,21 @@ public class ControllerResponseFactory
       {
          ContentResponse contentResponse = (ContentResponse)response;
   
-         /*
+
          ResponseProperties errors = contentResponse.getProperties();
          if( errors != null)    {
+             String resourceStatus = errors.getTransportHeaders().getValue(ResourceResponse.HTTP_STATUS_CODE);
+            
              if( errors.getTransportHeaders().getValue(ResourceResponse.HTTP_STATUS_CODE) != null)  {
-                 return new UnavailableResourceResponse("resource", false);
+                 return new ResourceHttpError(Integer.parseInt(resourceStatus));
              }
          }
-         */
+
 
          //
          int type = contentResponse.getType();
+         
+
          if (type == ContentResponse.TYPE_EMPTY)
          {
             throw new NotYetImplemented("handling of empty ContentResponse");

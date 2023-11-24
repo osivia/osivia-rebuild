@@ -171,6 +171,15 @@ public class SampleController implements PortletContextAware {
     public void notFound(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
         response.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(HttpServletResponse.SC_NOT_FOUND));
     }
+    
+    /**
+     * copy file to response
+     *
+     */
+    @ResourceMapping("forbidden")
+    public void forbidden(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        response.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(HttpServletResponse.SC_FORBIDDEN));
+    }
 
     /**
      * Action mapping
