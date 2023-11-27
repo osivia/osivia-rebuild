@@ -60,6 +60,15 @@ public class PageMarkerInfo implements Serializable {
 
     /** Page marker. */
     private final String viewState;
+    
+    /** Page marker. */
+    private Integer pageFirstViewState;
+
+
+    
+
+
+
 
 
     /**
@@ -242,5 +251,18 @@ public class PageMarkerInfo implements Serializable {
     public void setBreadcrumb(Breadcrumb breadcrumb) {
         this.breadcrumb = breadcrumb;
     }
+
+    
+    
+    public Integer getPageFirstViewState() {
+        return pageFirstViewState;
+    }
+
+
+    
+    public void setPageFirstViewState(Integer pageFirstViewState) {
+        this.pageFirstViewState = pageFirstViewState;
+    }
+    
     
 }

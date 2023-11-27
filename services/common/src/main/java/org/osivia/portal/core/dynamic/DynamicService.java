@@ -39,6 +39,7 @@ import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.core.container.dynamic.DynamicPortalObjectContainer;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.springframework.stereotype.Service;
 
@@ -227,6 +228,14 @@ public class DynamicService implements IDynamicService {
         
         // Maj du breadcrumb
         ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", null);
+        
+        Integer viewState =  PageMarkerUtils.getViewState(ctx);
+        if( viewState != null)  {
+            ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "pageFirstViewState", viewState);
+        }
+        
+        
+        
 
         return pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
 

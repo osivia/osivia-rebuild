@@ -20,6 +20,8 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.DelegatingURLFactoryService;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
+import org.jboss.portal.portlet.ParametersStateString;
+import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
@@ -50,21 +52,31 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 
 
         boolean pageMarkerInsertion = false;
+        Integer pageMarker = null;
         
         // Ressource with ID must preserve navigation context
-       if (cmd instanceof InvokePortletWindowResourceCommand) {
-            pageMarkerInsertion = false;
-
-            if (((InvokePortletWindowResourceCommand) cmd).getCacheability() != CacheLevel.FULL) {
-                pageMarkerInsertion = true;
-            }
-        }
+        if (cmd instanceof InvokePortletWindowResourceCommand) {
+           
+           pageMarkerInsertion = true;
+           
+           InvokePortletWindowResourceCommand resCmd = ((InvokePortletWindowResourceCommand) cmd);
+           StateString resState = resCmd.getResourceState();
+           if( resState != null && resState instanceof ParametersStateString) {
+               String cache = ((ParametersStateString) resState).getValue("_cacheScope");
+               if( "PAGE".equals(cache))    {
+                    // Cache inside current page
+                    pageMarker = (Integer) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "pageFirstViewState");
+               }
+           }
+         }
 
 
 
         if (pageMarkerInsertion) {
-
-            Integer pageMarker = PageMarkerUtils.getViewState(controllerContext);
+            
+            if( pageMarker == null) {
+                pageMarker = PageMarkerUtils.getViewState(controllerContext);
+            }
 
 
             if ((url != null) && (pageMarker != null)) {

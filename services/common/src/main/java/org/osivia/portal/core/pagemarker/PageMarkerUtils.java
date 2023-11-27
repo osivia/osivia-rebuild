@@ -139,7 +139,11 @@ public class PageMarkerUtils {
                 }                
                   
                 
-                
+                // Set first view state
+                Integer firstViewState =   (Integer) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pageFirstViewState");
+                if( firstViewState != null)  {
+                    markerInfo.setPageFirstViewState(firstViewState);
+                }               
 
                 // Mémorisation marker dans la session
                 Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "markers");
@@ -350,6 +354,12 @@ public class PageMarkerUtils {
                 breadcrumb.getChildren().add(bi);
             }
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "breadcrumb", breadcrumb);
+        }
+        
+        // Restauration first view state
+        Integer viewState =  markerInfo.getPageFirstViewState();
+        if( viewState != null)  {
+            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "pageFirstViewState", viewState);
         }
         
         return page;

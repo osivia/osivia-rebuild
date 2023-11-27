@@ -3,6 +3,7 @@ package org.osivia.portal.sample.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -181,6 +182,26 @@ public class SampleController implements PortletContextAware {
         response.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(HttpServletResponse.SC_FORBIDDEN));
     }
 
+    
+    /**
+     * copy file to response
+     *
+     */
+    @ResourceMapping("cachedResource")
+    public void cache(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        File file = new File(portletContext.getResource("/WEB-INF/classes/grass.png").getFile());
+        FileInputStream in = new FileInputStream(file);
+        byte[] imgData = in.readAllBytes();
+        response.setContentType("image/x-png");
+        OutputStream o = response.getPortletOutputStream();
+        o.write(imgData);
+        o.flush();
+        o.close();
+        in.close();
+
+    }
+
+    
     /**
      * Action mapping
      *
