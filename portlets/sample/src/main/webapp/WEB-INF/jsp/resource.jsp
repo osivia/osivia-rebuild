@@ -14,6 +14,7 @@
 <portlet:resourceURL id="export" var="exportUrl"/>
 <portlet:resourceURL id="notFound" var="notFoundUrl"/>
 <portlet:resourceURL id="forbidden" var="forbiddenUrl"/>
+
 <portlet:resourceURL id="cachedResource" var="cachedResourceUrl">
     <portlet:param name="_cacheScope" value="PAGE"/>
 </portlet:resourceURL>

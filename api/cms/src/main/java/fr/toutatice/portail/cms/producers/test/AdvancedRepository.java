@@ -7,6 +7,7 @@ import java.util.Map;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
+import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.NativeRepository;
@@ -61,4 +62,6 @@ public interface AdvancedRepository extends NativeRepository {
     void setStyles(String id, List<String> styles) throws CMSException;
     
     void setTemplateId( String id, UniversalID templateID) throws CMSException;
+
+    void addPage(String id, String name, String parentId, Map<String, Object> properties, List<ModuleRef> modules, List<String> acls) throws CMSException;
 }

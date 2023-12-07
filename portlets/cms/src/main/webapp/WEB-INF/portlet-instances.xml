@@ -98,6 +98,27 @@
 	      </preferences>          
       </instance>      
    </deployment> 
+<deployment>    
+      <if-exists>overwrite</if-exists>   
+      <instance>
+         <display-name xml:lang="en">CMS create page portlet</display-name>
+         <display-name xml:lang="fr">Portlet création page</display-name>
+         <instance-id>CreationPagePortletInstance</instance-id>
+         <portlet-ref>CreationPagePortlet</portlet-ref>
+         <security-constraint>
+              <policy-permission>
+                  <action-name>view</action-name>
+                  <role-name>Administrators</role-name>
+              </policy-permission>
+          </security-constraint>         
+          <preferences>
+              <preference>
+                  <name>hide</name>
+                  <value>true</value>
+              </preference>
+          </preferences>          
+      </instance>      
+   </deployment>    
    <deployment>    
    	  <if-exists>overwrite</if-exists>   
       <instance>

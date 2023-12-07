@@ -692,7 +692,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    protected void addToolbarItem(Element toolbar, String url, String title, String icon, boolean modal) {
+    protected void addToolbarItem(Element toolbar, String url, String title, String icon, boolean modal, String size) {
         // Item
         Element item;
         if (StringUtils.isEmpty(url)) {
@@ -702,12 +702,22 @@ public class EditionController implements PortletContextAware, ApplicationContex
             DOM4JUtils.addDataAttribute(item, "target", "#osivia-modal");
             DOM4JUtils.addDataAttribute(item, "load-url", url);
             DOM4JUtils.addDataAttribute(item, "title", title);
+            if( size != null)
+                DOM4JUtils.addDataAttribute(item, "size", size);
         } else {
             item = DOM4JUtils.generateLinkElement(url, null, "bilto(event)", "dropdown-item", title, icon);
         }
 
         toolbar.add(item);
     }
+    
+    
+    protected void addToolbarItem(Element toolbar, String url, String title, String icon, boolean modal) {
+        addToolbarItem( toolbar,  url,  title,  icon,  modal, null); 
+    }
+
+    
+    
 
 
     protected void refreshStatus(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status) throws PortletException {
@@ -907,9 +917,14 @@ public class EditionController implements PortletContextAware, ApplicationContex
             }
 
             if ((!repository.supportPreview() || cmsContext.isPreview()) && hasPageSubtype && portalControllerContext.getResponse() instanceof RenderResponse) {
-                PortletURL createPageUrl = ((RenderResponse) portalControllerContext.getResponse()).createActionURL();
-                createPageUrl.setParameter(ActionRequest.ACTION_NAME, "addPage");
-                this.addToolbarItem(dropdownMenu, createPageUrl.toString(), bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", false);
+                
+                Map<String, String> properties = new HashMap<>();
+                ctrl.addContentRefToProperties(properties, "osivia.space.id", document.getSpaceId());
+
+
+                String createPageUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "CreationPagePortletInstance", properties, PortalUrlType.MODAL);
+                this.addToolbarItem(dropdownMenu, createPageUrl, bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true, "lg");
+
             }
 
 

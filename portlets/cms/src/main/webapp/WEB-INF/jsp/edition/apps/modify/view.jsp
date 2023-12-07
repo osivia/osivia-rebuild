@@ -29,7 +29,7 @@
     <%--Display options--%>
     <div class="mb-3">
         <div class="form-check">
-            <form:checkbox id="${namespace}-display-title" path="displayTitle" cssClass="form-check-input"/>
+            <form:checkbox id="${namespace}-display-title" path="displayTitle" data-toggle="fancytree" cssClass="form-check-input"/>
             <label for="${namespace}-display-title" class="form-check-label"><op:translate key="MODIFY_PORTLET_DISPLAY_TITLE"/></label>
         </div>
         <div class="form-check">

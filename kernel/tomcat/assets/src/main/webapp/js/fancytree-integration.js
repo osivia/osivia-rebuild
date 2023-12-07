@@ -144,7 +144,10 @@ $JQry(document).ready(function() {
 
 		if (!$element.data("fancytree-loaded")) {
 			var url = $element.data("lazyloadingurl");
-			
+			var disabled = false;   
+			var attrDisabled = $element.data("disabled");
+			if( attrDisabled == true)
+			     disabled = true;     
 			
 			
 			var options = {
@@ -155,6 +158,7 @@ $JQry(document).ready(function() {
 					tabbable : false,
 					titlesTabbable : false,
 					toggleEffect : false,
+					disabled: disabled,
 
 					filter : {
 						mode : "hide"

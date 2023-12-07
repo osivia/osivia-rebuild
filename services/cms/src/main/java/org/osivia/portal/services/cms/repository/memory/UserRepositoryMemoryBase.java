@@ -333,6 +333,19 @@ public abstract class UserRepositoryMemoryBase extends BaseUserRepository implem
      }
     
     @Override
+    public void addPage(String id, String name, String parentId, Map<String, Object> properties, List<ModuleRef> modules, List<String> acls) throws CMSException {
+        
+        RepositoryDocument parent = getSharedDocument(parentId);
+        
+        MemoryRepositoryPage page;
+        page =  new MemoryRepositoryPage(this, id, name, null, parentId, parent.getSpaceId().getInternalID(), new ArrayList<String>(), properties, modules);
+        page.setACL(acls);
+       
+        addDocument(id, page);
+     }
+    
+    
+    @Override
     public void renameDocument(String id,String title) throws CMSException {
         
         
