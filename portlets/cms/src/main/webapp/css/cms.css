@@ -13,3 +13,27 @@
 .ui-draggable-dragging{
     z-index: 10000;
 }
+
+.browse .fancytree-title    {
+	width: 100%;
+}
+
+.browse.single-list .fancytree-title  .page-id  {
+    min-width: 600px;
+}
+
+.browse.single-list .fancy-scrollable  {
+    min-width: 1000px;
+
+}
+
+
+.browse.double-list .fancytree-title  .page-id  {
+    min-width: 600px;
+}
+
+.browse.double-list .fancy-scrollable  {
+    min-width: 900px;
+
+}
+

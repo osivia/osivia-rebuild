@@ -16,41 +16,66 @@
 
 <form:form action="${url}" method="post" modelAttribute="form">
 
+<portlet:renderURL var="tabProfilesUrl">
+    <portlet:param name="tab" value="profiles"/>
+</portlet:renderURL>
+
+<portlet:renderURL var="tabStylesUrl">
+    <portlet:param name="tab" value="styles"/>
+</portlet:renderURL>
+
+<%-- Preserve tab on submit --%>
+<input type="hidden" name="tab" value="${tab}"/>
 
 
 <div class="portal-properties-administration">
 
 
-	<div class="d-flex flex-row-reverse my-2">
-	
-	 	<button type="submit" class="btn btn-primary">
-            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
-        </button>
-	
-	</div>
+
 	
    <div data-ajax-region="portal-properties-administration-vars-region">
  	    <input type="hidden" name="sortSrc"/>
 		<input type="hidden" name="sortTarget"/>
 		<input type="hidden" name="formAction"/>  
    </div>
+   
+   <ul class="nav nav-tabs"> 
+        <li class="nav-item">
+                <a class="nav-link <c:if test="${empty tab or tab eq 'profiles'}">active</c:if>" href="${tabProfilesUrl}"><op:translate key="MODIFY_SPACE_PROFILES" /></a>
+        </li>
+
+        <li class="nav-item">
+                <a class="nav-link <c:if test="${tab eq 'styles'}">active</c:if>" href="${tabStylesUrl}"><op:translate key="MODIFY_SPACE_STYLES" /></a>
+        </li>
+    </ul> 
+
+    <div class="d-flex flex-row-reverse">
     
-    <div class="row">
-	     <div class="col-md-6">                    
-	   		<%@ include file="profiles.jspf" %>	
-		</div>
-		 <div class="col-md-6">
+        <div class="m-2">
+	        <button type="submit" class="btn btn-primary">
+	            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
+	        </button>
+        </div>
+    
+    </div>    
+    
+    <c:if test="${empty tab or tab eq 'profiles'}">
+ 	   		<%@ include file="profiles.jspf" %>	
+    </c:if>
+    <c:if test="${tab eq 'styles'}">
 		 	<%@ include file="styles.jspf" %>	
-		</div>
-	</div>
-	
-</div>
-    <div class="d-flex flex-row-reverse my-2">
+	 </c:if>
+
+    <div class="d-flex flex-row-reverse">
     
-        <button type="submit" class="btn btn-primary">
-            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
-        </button>
-    
+        <div class="m-2">
+	        <button type="submit" class="btn btn-primary">
+	            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
+	        </button>
+	        <input type="submit" class="d-none">
+        </div> 
     </div>
-		<input type="submit" class="d-none">	
+           	 
+</div>
+
 </form:form>

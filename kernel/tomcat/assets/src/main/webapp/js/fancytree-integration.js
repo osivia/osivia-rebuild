@@ -338,6 +338,13 @@ $JQry(document).ready(function() {
 	$JQry(".fancytree input[type=text]").on("input", filterTree);
 	
 	
+    $JQry(".filter-fancytree-by-selector").keyup(filterTreeBySelector);
+    $JQry(".filter-fancytree-by-selector").on("input", filterTreeBySelector);   
+
+	
+	
+	
+	
 	$JQry(".fancytree button").click(function(event) {
 		var $target = $JQry(event.target),
 			$tree = $target.closest(".fancytree"),
@@ -400,8 +407,9 @@ $JQry(document).ready(function() {
 function filterTree(event) {
 	var $target = $JQry(event.target),
 		value = $target.val(),
-		tree = $target.closest(".fancytree").fancytree("getTree"),
-		expand = $target.data("expand");
+		expand = $target.data("expand"),
+		tree= $target.closest(".fancytree").fancytree("getTree");
+		
 
 	if (value === "") {
 		clearFilter(tree, expand);
@@ -418,6 +426,31 @@ function filterTree(event) {
 		}, false);
 	}
 }
+
+
+function filterTreeBySelector (event) {
+    var $target = $JQry(event.target),
+        value = $target.val(),
+        expand = $target.data("expand"),
+        tree = $target.closest(".selector").find(".fancytree").fancytree("getTree");
+
+  
+    if (value === "") {
+        clearFilter(tree, expand);
+    } else {
+        tree.filterNodes(function(node) {
+            var match = (node.title !== undefined) && (node.title.toLowerCase().indexOf(value.toLowerCase()) > -1);
+            if (match) {
+                node.makeVisible({
+                    noAnimation : true,
+                    scrollIntoView : false
+                });
+            }
+            return match;
+        }, false);
+    }
+}
+
 
 
 /**

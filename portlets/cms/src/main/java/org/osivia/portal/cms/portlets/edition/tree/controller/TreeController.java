@@ -256,7 +256,7 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         if (root || !navItem.getChildren().isEmpty()) {
             object.put("expanded", "true");
         }
-        object.put("title", navItem.getTitle());
+        object.put("title", "<div class=\"d-flex justify-content-between\">"+ "<div class=\"text-truncate\">"+navItem.getTitle()+"</div>" + "<div class=\"page-id\">["+navItem.getDocumentId().getInternalID()+"]</div> </div>");
         object.put("href", portalUrlFactory.getViewContentUrl(portalControllerContext, navItem.getDocumentId()));
         object.put("path", navItem.getDocumentId().toString());
         if( navItem.getDocumentId().equals(pageId))
@@ -285,7 +285,8 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
             object.put("expanded", "true");
         }
 
-        object.put("title", navItem.getTitle());
+         object.put("title", "<div class=\"d-flex justify-content-between\">"+ "<div class=\"text-truncate\">"+navItem.getTitle()+"</div>" + "<div class=\"page-id\">["+navItem.getDocumentId().getInternalID()+"]</div> </div>");
+
         object.put("path", navItem.getDocumentId().toString());
         
         if( navItem.getDocumentId().equals(pageId))
@@ -324,11 +325,6 @@ public class TreeController extends GenericPortlet implements PortletContextAwar
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-
-        if (StringUtils.isEmpty(form.getTarget())) {
-            ObjectError error = new FieldError("target", "target", bundle.getString("MODIFY_MOVE_MANDATORY_TARGET"));
-            result.addError(error);
-        }
 
         if (StringUtils.isEmpty(form.getTarget())) {
             ObjectError error = new FieldError("target", "target", bundle.getString("MODIFY_MOVE_MANDATORY_TARGET"));

@@ -56,34 +56,43 @@
 	</portlet:resourceURL>
 	
 	
-	<div class="row">
-	   <div class="col-md-6">
+	<div class="row ">
+	   <div class="col-md-6 browse double-list">
 	       <div class="card h-100">
                <div class="h-100 flex-column d-flex card-body">
                     <div class="card-title">
                         <h6><op:translate key="MODIFY_PAGE_CREATION_SELECT_MODEL" /></h6>
                     </div>   	       
 	                <div class="form-group m-0 flex-grow-1 d-flex flex-column">
-			             <div class="selector">
-						    <div class="fancytree fancytree-selector" data-lazyloadingurl="${modelUrl}" data-disabled="${form.noModel ? 'true' : 'false'}">
-						        <form:hidden path="model" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
-						        <div class="mb-3">
-						            <label for="${namespace}-filter" class="form-label"><op:translate key="MODIFY_FILTER" /></label>
-						            <input id="${namespace}-filter" type="text" data-expand="true" class="form-control">
-						        </div>
-						    </div>
+			             <div class="selector flex-grow-1">
+
+                            <div class="mb-3">
+                                <label for="${namespace}-filter" class="form-label"><op:translate key="MODIFY_FILTER" /></label>
+                                <input id="${namespace}-filter" type="text" data-expand="true" class="filter-fancytree-by-selector form-control">
+                            </div>
+                                        
+                            <div class="overflow-auto">  
+                                <div class="fancy-scrollable">
+								    <div class="fancytree fancytree-selector" data-lazyloadingurl="${modelUrl}" data-disabled="${form.noModel ? 'true' : 'false'}">
+								        <form:hidden path="model" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
+
+								    </div>
+                                </div>
+                            </div>   
 		                </div>
+
 		                <div class="flex-grow-1 d-flex align-items-end">
                             <div class="form-check">
                                   <form:checkbox id="${namespace}-no-model" path="noModel" cssClass="form-check-input" data-toggle="fancytree"/>
                                   <label for="${namespace}-no-model" class="form-check-label"><op:translate key="MODIFY_PAGE_CREATION_NO_MODEL"/></label>
                             </div>
-                         </div>			                
+                         </div>		
+	                
 	               </div>
 		        </div>
             </div>
 		</div>	
-       <div class="col-md-6">
+       <div class="col-md-6 browse double-list">
             <div class="card h-100">
 
                 <div class="h-100 flex-column d-flex card-body">
@@ -91,20 +100,26 @@
 	                    <h6><op:translate key="MODIFY_PAGE_CREATION_SELECT_TARGET" /></h6>
 	                </div>     
 	                <div class="form-group m-0 flex-grow-1 d-flex flex-column">           
-     		            <div class="selector">
+     		            <div class="selector flex-grow-1">
 			                 <spring:bind path="target">
 
 			                     <form:hidden path="target" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
 			                     <form:errors path="target" cssClass="invalid-feedback" /> 
 	
-			                 </spring:bind>    
-		    
-			                <div class="fancytree fancytree-selector" data-lazyloadingurl="${targetUrl}">
-			                    <div class="mb-3">
-			                        <label for="${namespace}-filter" class="form-label"><op:translate key="MODIFY_FILTER" /></label>
-			                        <input id="${namespace}-filter" type="text" data-expand="true" class="form-control">
-			                    </div>
-			                </div>
+			                 </spring:bind>  
+
+                            <div class="mb-3">
+                                <label for="${namespace}-filter" class="form-label"><op:translate key="MODIFY_FILTER" /></label>
+                                <input id="${namespace}-filter" type="text" data-expand="true" class="form-control">
+                            </div>
+                                        			                 
+			                <div class="overflow-auto">  
+		                        <div class="fancy-scrollable">
+					                <div class="fancytree fancytree-selector" data-lazyloadingurl="${targetUrl}">
+
+					                </div>
+				                </div>
+				            </div>    
 			             </div>
 		            </div>
 		        </div>

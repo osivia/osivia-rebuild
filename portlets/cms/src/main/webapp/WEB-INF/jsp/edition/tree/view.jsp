@@ -13,12 +13,22 @@
 <portlet:resourceURL id="browse" var="browseUrl"/>
 
 
-<div class="browse">
-	<div class="fancytree fancytree-links" data-lazyloadingurl="${browseUrl}">
-		<div class="mb-3">
-			<label for="${namespace}-filter" class="form-label"><op:translate key="MODIFY_FILTER" /></label>
-			<input id="${namespace}-filter" type="text" data-expand="true" class="form-control">
-		</div>
+<div class="browse single-list">
+    
+    
+    <div class="selector">
+    
+    
+        <div class="mb-3">
+            <label for="${namespace}-filter" class="form-label"><op:translate key="MODIFY_FILTER" /></label>
+            <input id="${namespace}-filter" type="text" data-expand="true" class="filter-fancytree-by-selector form-control">
+        </div>
+	    <div class="overflow-auto">  
+            <div class="fancy-scrollable">
+	           <div class="fancytree fancytree-links" data-lazyloadingurl="${browseUrl}">
+	        </div>
+	    </div>
+	           
 	</div>
 </div>
 

@@ -24,20 +24,31 @@
 
 <form:form action="${url}" method="post" modelAttribute="form">
 
+    <div class="browse single-list">
 	
-	<div class="move selector">
-		<spring:bind path="target">
-			<div class="fancytree fancytree-selector"
-				data-lazyloadingurl="${browseUrl}">
-				<p><op:translate key="MODIFY_MOVE_SELECT_PAGE" /></p>
-				<form:hidden path="target" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
-				<form:errors path="target" cssClass="invalid-feedback my-2" />
-				<div class="d-flex align-items-center my-2">
-					<op:translate key="MODIFY_FILTER" />
-					<input type="text" data-expand="true" class="ml-2 flex-grow-1">
-				</div>
-			</div>
- 		</spring:bind>			
+		<div class="move selector">
+		
+		    <p><op:translate key="MODIFY_MOVE_SELECT_PAGE" /></p>
+		
+			<div class="form-group">
+	            <span class="form-label"><op:translate key="MODIFY_FILTER" /></span>
+	            <input type="text" data-expand="true" class="ml-2 flex-grow-1 form-control filter-fancytree-by-selector">
+	        </div>
+		
+			<spring:bind path="target">
+				<div class="overflow-auto">  
+	                <div class="fancy-scrollable">
+					    <div class="fancytree fancytree-selector"
+						data-lazyloadingurl="${browseUrl}">
+							
+							<form:hidden path="target" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
+							<form:errors path="target" cssClass="invalid-feedback my-2" />
+					    </div>
+					</div>
+			    </div>
+	 		</spring:bind>			
+		</div>
+	
 	</div>
 
 

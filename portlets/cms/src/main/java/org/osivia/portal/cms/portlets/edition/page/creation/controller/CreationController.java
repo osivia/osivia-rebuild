@@ -406,7 +406,7 @@ public class CreationController extends GenericPortlet implements PortletContext
         if (root || !navItem.getChildren().isEmpty()) {
             object.put("expanded", "true");
         }
-        object.put("title", navItem.getTitle());
+        object.put("title", "<div class=\"d-flex justify-content-between\">"+ "<div class=\"text-truncate\">"+navItem.getTitle()+"</div>" + "<div class=\"page-id\">["+navItem.getDocumentId().getInternalID()+"]</div> </div>");
         object.put("path", nodeId);
         
         if( nodeId.equals(currentId))

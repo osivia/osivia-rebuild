@@ -923,7 +923,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
 
                 String createPageUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "CreationPagePortletInstance", properties, PortalUrlType.MODAL);
-                this.addToolbarItem(dropdownMenu, createPageUrl, bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true, "lg");
+                this.addToolbarItem(dropdownMenu, createPageUrl, bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true, "xl");
 
             }
 
@@ -979,7 +979,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             ctrl.addContentRefToProperties(treeProperties, "osivia.move.id", document.getId());
 
             String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
-            this.addToolbarItem(dropdownMenu, treeUrl, bundle.getString("MODIFY_MOVE_ACTION"), "glyphicons glyphicons-basic-list", true);
+            this.addToolbarItem(dropdownMenu, treeUrl, bundle.getString("MODIFY_MOVE_ACTION"), "glyphicons glyphicons-basic-list", true, "lg");
 
 
             if (cmsContext.isPreview()) {
@@ -1050,7 +1050,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         ctrl.addContentRefToProperties(treeProperties, "osivia.space.id", document.getSpaceId());
         ctrl.addContentRefToProperties(treeProperties, "osivia.browse.id", document.getId());
         String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
-        this.addToolbarItem(dropdownMenu, treeUrl, bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true);
+        this.addToolbarItem(dropdownMenu, treeUrl, bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true,"lg");
     }
 
     

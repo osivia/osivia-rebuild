@@ -145,6 +145,22 @@ $JQry(function() {
             });
             $sortable.disableSelection();
 
+
+            $selects = $element.find('select.move-select');
+            $selects.on('change', function()
+            {
+                $this = $JQry(this);
+                $link = $this.siblings( ".moveLink" );
+                href =  $link.attr('href');
+                href = href + "&destIndex="+ this.value;
+                $link.attr('href', href);
+                $link.click();
+                
+
+            });
+            
+
+
             $element.data("loaded", true);
         }
     });

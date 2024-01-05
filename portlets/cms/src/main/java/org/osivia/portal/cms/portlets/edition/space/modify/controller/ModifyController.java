@@ -122,6 +122,14 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute("form") ModifyForm form) throws PortalException, PortletException, IOException {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
+       
+        
+        String tab = request.getParameter("tab");
+        if( StringUtils.isNotEmpty(tab))    {
+            request.setAttribute("tab", request.getParameter("tab"));
+            reloadForm(request, response, form);
+            
+        }
         request.setAttribute( "urls", getUrls(request, response, form));
 
         if (portalControllerContext.getHttpServletRequest().getAttribute("ajax") != null)   {
@@ -216,17 +224,15 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-        int index = Integer.parseInt(request.getParameter("index"));
-        String direction = request.getParameter("direction");
+        int srcIndex = Integer.parseInt(request.getParameter("srcIndex"));
+        int destIndex = Integer.parseInt(request.getParameter("destIndex"));
+
         
-        Profile profile = form.getProfiles().get(index);
-        form.getProfiles().remove(index);
+        Profile profile = form.getProfiles().get(srcIndex);
+        form.getProfiles().remove(srcIndex);
         
-        if("up".equals(direction))  {
-            form.getProfiles().add(index -1, profile);
-        }   else    {
-            form.getProfiles().add(index + 1, profile);
-        }
+        form.getProfiles().add(destIndex, profile);
+
         
 
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
@@ -237,17 +243,15 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-        int index = Integer.parseInt(request.getParameter("index"));
-        String direction = request.getParameter("direction");
+        int srcIndex = Integer.parseInt(request.getParameter("srcIndex"));
+        int destIndex = Integer.parseInt(request.getParameter("destIndex"));
         
-        String style  = form.getStyles().get(index);
-        form.getStyles().remove(index);
+        String style  = form.getStyles().get(srcIndex);
+        form.getStyles().remove(srcIndex);
         
-        if("up".equals(direction))  {
-            form.getStyles().add(index -1, style);
-        }   else    {
-            form.getStyles().add(index + 1, style);
-        }
+
+        form.getStyles().add(destIndex, style);
+
         
 
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
@@ -292,6 +296,13 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     
     @ActionMapping(name = "modifyPortal")
     public void modifyPortal(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
+        
+        
+        String tab = request.getParameter("tab");
+        if( StringUtils.isNotEmpty(tab))    {
+            response.setRenderParameter("tab", tab);
+        }
+        
         
         // Portal Controller context
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
@@ -366,6 +377,19 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
 
         return form;
+    }
+    
+    
+    public void reloadForm(PortletRequest request, PortletResponse response,  ModifyForm form) throws PortletException, IOException, PortalException {
+        // Portal Controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+
+        Space space = (Space) getDocument(portalCtx);
+
+        
+        form.setProfiles(new ArrayList<>(space.getProfiles()));
+        form.setStyles(new ArrayList<>(space.getStyles()));
+
     }
 
 

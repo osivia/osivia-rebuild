@@ -3,21 +3,18 @@
 
 <div data-ajax-region="portal-properties-administration-profile-region">
 
-<div class="portal-properties-administration-profile portal-properties-administration-list card">
+<div class="portal-properties-administration-profile portal-properties-administration-list card border-0">
 
-	<div class="card-body">
+	<div class="p-3">
 
-		<div class="card-title h6">
-			<span><op:translate key="MODIFY_SPACE_PROFILES"/></span>
-		</div>
 				
 		<ul class="list-unstyled portal-properties-administration-list-sortable" data-action="sortProfile">
 		<c:forEach var="profile" items="${form.profiles}" varStatus="status">
 				<li>
 					<div class="card mb-2">
 		                <div class="card-body p-2">
-		                    <div class="d-flex align-items-center">
-		                        <div class="">
+		                    <div class="row align-items-center">
+		                        <div class="col-md-1">
 		                            <a href="javascript:"
 		                               class="d-block p-2 text-secondary no-ajax-link portal-properties-administration-list-sortable-handle">
 		                                <i class="glyphicons glyphicons-basic-sort"></i>
@@ -26,66 +23,65 @@
 		                            </a>
 		                        </div>
 		
-		                        <div class="flex-grow-1 my-1 mx-2">
+		                        <div class="col-md-4">
 		                            <h5 class="card-title mb-1"><c:out value="${profile.name}" /></h5>
-		                            <div class="ml-n3">
-		                                 <%--Modify--%>
-		                                <a href="javascript:" class="btn link-primary  btn-sm mb-1 ml-1  no-ajax-link" data-toggle="modal"
-		                                   data-target="#osivia-modal" 
-		                                   data-load-url="${urls.modifyProfileUrls[status.index]}">
-		                                                    <i class="glyphicons glyphicons-basic-square-edit"></i>
-		                                                    <strong class="d-none d-md-inline"><op:translate key="MODIFY_PROFILE_MODIF_LABEL"/></strong>
-		                                </a>
-		                                
-		
-	                                    <%--Delete--%>
-	                                    <portlet:actionURL name="deleteProfile" var="deleteProfileUrl">
-	                                    	<portlet:param name="index" value="${status.index}" />
-	                                    </portlet:actionURL>
-		                                    
-		                                <a href="${deleteProfileUrl}" class="btn link-primary btn-sm mb-1 ml-1 ">
-	                                         <i class="glyphicons glyphicons-basic-bin"></i>
-	                                         <strong class="d-none d-md-inline"><op:translate
-	                                                 key="MODIFY_PROFILE_DELETE_LABEL"/></strong>
-		                                </a>
-		
-		                                
-		                            </div>
 		                        </div>
+		                        
+                                <div class="col-md-1">
+                                    <c:if test="${not empty profile.url}">
+                                        <i class="glyphicons glyphicons-basic-home"></i>
+                                    </c:if>
+                                </div>		                        
 		
-		                        <div class="align-self-stretch">
-		                            <div class="d-flex flex-column justify-content-between h-100">
-		                                <div>
-		                                    <c:if test="${not status.first}">
-		                                        <portlet:actionURL name="moveProfile" var="moveUpUrl">
-		                                            <portlet:param name="index" value="${status.index}"/>
-		                                            <portlet:param name="direction" value="up"/>
-		                                        </portlet:actionURL>
-		                                        <a href="${moveUpUrl}" class="btn link-primary btn-sm">
-		                                            <i class="glyphicons glyphicons-basic-arrow-up"></i>
-		                                            <span class="visually-hidden"><op:translate
-		                                                    key="MODIFY_PROFILE_MOVE_UP"/></span>
-		                                        </a>
-		                                    </c:if>
-		                                </div>
+		                        <div class="col-md-4">
+		                              <div class="ml-n3">
+                                         <%--Modify--%>
+                                        <a href="javascript:" class="btn link-primary btn-sm  mb-1 ml-1  no-ajax-link" data-toggle="modal"
+                                           data-target="#osivia-modal" 
+                                           data-load-url="${urls.modifyProfileUrls[status.index]}">
+                                                            <i class="glyphicons glyphicons-basic-square-edit"></i>
+                                                            <strong class="d-none d-md-inline"><op:translate key="MODIFY_PROFILE_MODIF_LABEL"/></strong>
+                                        </a>
+                                        
+        
+                                        <%--Delete--%>
+                                        <portlet:actionURL name="deleteProfile" var="deleteProfileUrl">
+                                            <portlet:param name="index" value="${status.index}" />
+                                        </portlet:actionURL>
+                                            
+                                        <a href="${deleteProfileUrl}" class="btn link-primary btn-sm mb-1 ml-1 ">
+                                             <i class="glyphicons glyphicons-basic-bin"></i>
+                                             <strong class="d-none d-md-inline"><op:translate
+                                                     key="MODIFY_PROFILE_DELETE_LABEL"/></strong>
+                                        </a>
+        
+                                        
+                                    </div>
+                                </div>                                    
 		
-		                                <div>
-		                                    <c:if test="${not status.last}">
-		                                        <portlet:actionURL name="moveProfile" var="moveDownUrl">
-		                                            <portlet:param name="index" value="${status.index}"/>
-		                                            <portlet:param name="direction" value="down"/>
-		                                        </portlet:actionURL>
-		                                        <a href="${moveDownUrl}" class="btn link-primary btn-sm">
-		                                            <i class="glyphicons glyphicons-basic-arrow-down"></i>
-		                                            <span class="visually-hidden"><op:translate
-		                                                    key="MODIFY_PROFILE_MOVE_DOWN"/></span>
-		                                        </a>
-		                                    </c:if>
-		                                </div>
-		                            </div>
+		
+		
+		                        <div class="col-md-2">
+		                        
+		                            <portlet:actionURL name="moveProfile" var="moveProfileUrl">
+                                         <portlet:param name="srcIndex" value="${status.index}" />
+                                    </portlet:actionURL>
+		                        
+		                            <select class="form-select move-select">
+                                        <%--Move--%>
+                            
+	                                     <c:forEach var="order" items="${form.profiles}" varStatus="orderStatus">
+	                                            <c:set var="selected" value=""/>
+											    <c:if test="${status.index == orderStatus.index}">
+											            <c:set var="selected" value="selected='selected'"/>
+											    </c:if>
+  	                                           <option value="${orderStatus.index}"  ${selected} >${orderStatus.index + 1 } </option>
+	                                     </c:forEach>
+                                    </select>
+                                    <a href="${moveProfileUrl}" class="moveLink d-none"></a> 
 		                        </div>
 		                    </div>
-		                </div>
+
 		            </div>	
 				</li>
 			</c:forEach>
