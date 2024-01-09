@@ -1,11 +1,13 @@
 package org.osivia.portal.core.dynamic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -21,6 +23,7 @@ import org.osivia.portal.core.content.ViewContentCommand;
 public class RestorablePageUtils {
 
     private static String PREFIX = "_dyn_";
+    private static String SHORT_PREFIX = "__ID__";
 
     private static final String TEMPLATE_ID = "templateId:";
     private static final String CONTENT_PATH = "content:";
@@ -31,10 +34,14 @@ public class RestorablePageUtils {
     public static boolean isRestorable(String completeName) {
         if (completeName.startsWith(PREFIX))
             return true;
+        if (completeName.startsWith(SHORT_PREFIX))
+            return true;        
         return false;
     }
 
     public static void restore(ControllerContext controllerContext, PortalObjectId portalId, String completeName) {
+        
+        if( completeName.startsWith(PREFIX))    {
 
         String templateId = null;
  
@@ -75,7 +82,8 @@ public class RestorablePageUtils {
             
             UniversalID parentId = new UniversalID(portalId.getNamespace() , portalId.getPath().getName(0));
             restoreCmd = new ViewContentCommand(contentId, locale, isPreviewing, props, params, parentId, completeName);
-          }        
+          }     
+        
 
 
         try {
@@ -84,11 +92,66 @@ public class RestorablePageUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        
+             
+        
+        
+        }   
+        
+        
+        if( completeName.startsWith(SHORT_PREFIX))    {
+
+            // Non _dyn
+            String id = completeName.substring(SHORT_PREFIX.length());
+            
+            Map<String, String> props = new HashMap<>();
+            UniversalID parentId = new UniversalID(portalId.getNamespace() , portalId.getPath().getName(0));
+            String contentId = portalId.getNamespace()+"/"+id;
+            Locale locale = new Locale("fr");
+            ControllerCommand restoreCmd = new ViewContentCommand(contentId, locale, false, props, new HashMap<>(), parentId, completeName);
+            try {
+                if( restoreCmd != null)
+                    controllerContext.execute(restoreCmd);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
     }
 
     public static String createRestorableName(ControllerContext controllerContext, String businessName,  String contentId, Map displayNames,
             Map<String, String> props, Map<String, String> params) {
 
+        
+        /*
+        
+osivia.contentId=ac-rennes:DEFAULT_TEMPLATES_MENTIONSLEGALES
+osivia.content.preview=false
+osivia.navigationId=ac-rennes:DEFAULT_TEMPLATES_MENTIONSLEGALES
+osivia.content.locale=fr
+osivia.spaceId=ac-rennes:DEFAULT
+
+
+
+        */
+        
+        boolean noParams;
+        if( params == null || params.size() == 0)   {
+            noParams = true;
+        }   else    {
+            noParams = false;
+        }
+        
+        if( noParams && props.size() == 5 
+                && (StringUtils.isNotEmpty(props.get("osivia.contentId")))
+                && (StringUtils.equals(props.get("osivia.content.preview"),"false"))
+                && (StringUtils.equals(props.get("osivia.navigationId"), props.get("osivia.contentId")))
+                && (StringUtils.equals(props.get("osivia.content.locale"),"fr"))   
+                && (StringUtils.isNotEmpty(props.get("osivia.spaceId")))
+                )
+            return SHORT_PREFIX + props.get("osivia.contentId").split(":")[1];
+                
+        
         
         String completePageName = "";
 

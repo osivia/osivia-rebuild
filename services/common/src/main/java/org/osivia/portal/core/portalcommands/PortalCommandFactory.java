@@ -29,6 +29,7 @@ import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -377,17 +378,25 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             handleAjaxReload = true;
         }
 
-        /*
+        
         // navigation inside the modal after session losed
         if( requestPath.startsWith("/templates/OSIVIA_PORTAL_UTILS") && !StringUtils.equals(currentServerCheck, browserSession)) {
             if( ! (cmd instanceof InvokePortletWindowResourceCommand))
-                browserReload = true;
+                returnToDefaultPage = true;
         }
-        */
+        
         
         // back after a session losed
         if( cmd instanceof RestorePageCommand && !StringUtils.equals(currentServerCheck, browserSession) )    {
-            returnToDefaultPage = true;
+            PortalObjectId pageId = ((RestorePageCommand) cmd).getPageId();
+            if( pageId != null) {
+                cmd = new ViewPageCommand(pageId);
+                String url = controllerContext.renderURL(cmd, null, null);
+                request.setAttribute("osivia.full_refresh_url", url);
+                
+            }   else    {
+                returnToDefaultPage = true;
+            }
         }
         
         
@@ -422,6 +431,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         if( returnToDefaultPage) {
             // only use case : home page
+            
+            /*
             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
             UniversalID defaultPortalId;
             try {
@@ -434,6 +445,14 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             //request.setAttribute("osivia.full_refresh_url", "/refresh");
             request.setAttribute("osivia.full_refresh_url", url);
             System.out.println("portalcommandfactory full refresh");
+            */
+            
+            Portal portal = controllerContext.getController().getPortalObjectContainer().getContext().getDefaultPortal();
+            cmd = new ViewPortalCommand(portal.getId());
+            String url = controllerContext.renderURL(cmd, null, null);  
+            request.setAttribute("osivia.full_refresh_url", url);
+            
+            
         }
 
   

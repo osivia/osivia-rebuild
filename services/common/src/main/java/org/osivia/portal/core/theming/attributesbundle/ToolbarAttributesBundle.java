@@ -435,7 +435,8 @@ public final class ToolbarAttributesBundle implements IInternalAttributesBundle 
         if (PortalObjectUtils.isPageRepositoryManager(portalControllerContext)) {
             // CMS
             CMSEditionChangeModeCommand changeCmsEditionMode = new CMSEditionChangeModeCommand();
-            PortalURL changeCmsEditionModeUrl = new PortalURLImpl(changeCmsEditionMode, context, false, null);
+            changeCmsEditionMode.setPageId(page.getId());
+            PortalURL changeCmsEditionModeUrl = new PortalURLImpl(changeCmsEditionMode, context, true, null);
 
             Element cmsEditionModeContainer = DOM4JUtils.generateElement("li", "nav-item", null);
             administration.add(cmsEditionModeContainer);

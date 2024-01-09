@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
+import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
@@ -103,11 +104,14 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
      
         if (cmd instanceof RestorePageCommand) {
+            RestorePageCommand command = (RestorePageCommand) cmd;
             
             AbstractServerURL asu = new AbstractServerURL();
             asu.setPortalRequestPath(this.path);
 
             asu.setParameterValue("action", "restore");
+            if( command.getPageId() != null)
+                asu.setParameterValue("pageId", command.getPageId().toString(PortalObjectPath.SAFEST_FORMAT));          
             return asu;
         }
        
@@ -209,13 +213,15 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
         // Change edition Mode
         if (cmd instanceof CMSEditionChangeModeCommand) {
-
+            CMSEditionChangeModeCommand command = (CMSEditionChangeModeCommand) cmd;
 
             AbstractServerURL asu = new AbstractServerURL();
             asu.setPortalRequestPath(this.path);
             asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, ("changeEditionMode"));
 
-           
+            if( command.getPageId() != null)
+                asu.setParameterValue("pageId", command.getPageId().toString(PortalObjectPath.SAFEST_FORMAT));
+            
             return asu;
         }
         

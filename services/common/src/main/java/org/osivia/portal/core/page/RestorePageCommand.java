@@ -38,6 +38,7 @@ public  class RestorePageCommand extends ControllerCommand {
     private static final CommandInfo info = new ActionCommandInfo(false);
     
 
+    PortalObjectId pageId = null;
 
     public RestorePageCommand() {
         super();
@@ -50,6 +51,15 @@ public  class RestorePageCommand extends ControllerCommand {
     @Override
     public CommandInfo getInfo() {
         return info;
+    }
+    
+    
+    public void setPageId(PortalObjectId pageId) {
+        this.pageId = pageId;
+    }
+    
+    public PortalObjectId getPageId() {
+        return this.pageId;
     }
     
 

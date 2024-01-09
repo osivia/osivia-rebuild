@@ -126,6 +126,7 @@ import org.osivia.portal.core.cms.edition.CMSEditionService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.container.dynamic.DynamicTemplatePage;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.layouts.DynamicLayoutInfos;
 import org.osivia.portal.core.layouts.DynamicLayoutService;
@@ -293,8 +294,21 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // }
 
                 // Obtain page
-                final Page page = (Page) portalObjectContainer.getObject(pageId);
-
+                Page page = (Page) portalObjectContainer.getObject(pageId);
+                
+                
+                
+                // Session lost
+                // page can be null if the the command is a non portal command (ie CMSEditionChange)
+                if(  page == null)  {
+                    String pageName = pageId.getPath().getLastComponentName();
+                    if (RestorablePageUtils.isRestorable(pageName)) {
+                        String portalPath = pageId.getPath().getName(0);
+                        PortalObjectId portalId = PortalObjectId.parse(pageId.getNamespace(), "/" + portalPath, PortalObjectPath.CANONICAL_FORMAT);
+                        RestorablePageUtils.restore(controllerContext, portalId, pageName);
+                        page = (Page) portalObjectContainer.getObject(pageId);
+                    }
+                }
                 
                 
                 // Check if current page is a modal
@@ -660,7 +674,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                     UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId());
                     updatePage.setSessionCheck((String) request.getSession().getAttribute(InternalConstants.SESSION_CHECK));
 
-                    RestorePageCommand restoreCmd = new RestorePageCommand();
+                    RestorePageCommand restoreCmd = new RestorePageCommand( );
+                    restoreCmd.setPageId(page.getId());
+                    
                     updatePage.setRestoreUrl(controllerContext.renderURL(restoreCmd, null, null));
 
                     ViewPageCommand vpc = new ViewPageCommand(pageId);

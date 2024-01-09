@@ -29,6 +29,8 @@ import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.core.cms.edition.CMSEditionChangeModeCommand;
@@ -159,10 +161,17 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 
                 
                 if ("restore".equals(action)) {
+                        
+                
  
                         // Nuxeo command
                         RestorePageCommand command = this.applicationContext.getBean(RestorePageCommand.class);
-                        
+                        if( parameterMap.get("pageId") != null) {
+                            String sPageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                            PortalObjectId poid = PortalObjectId.parse(sPageId, PortalObjectPath.SAFEST_FORMAT);
+                            
+                            command.setPageId(poid);
+                        }
                          return command;
 
                 }      
@@ -256,7 +265,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }    
                 
                 if ("changeEditionMode".equals(action)) {
-                        return new CMSEditionChangeModeCommand();
+                    CMSEditionChangeModeCommand editionCommand = new CMSEditionChangeModeCommand();
+                    if( parameterMap.get("pageId") != null) {
+                        String sPageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        PortalObjectId poid = PortalObjectId.parse(sPageId, PortalObjectPath.SAFEST_FORMAT);
+                        
+                        editionCommand.setPageId(poid);
+                    }
+                   return editionCommand;
                 }                   
                 
                 
