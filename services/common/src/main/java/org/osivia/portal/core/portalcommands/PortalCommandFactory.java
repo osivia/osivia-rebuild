@@ -298,10 +298,13 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                      PortalObjectId poid = ((ViewPortalCommand) cmd).getTargetId();
                      String portalName = poid.getPath().getLastComponentName();
                      // TODO : manage locale and state
+/*
                      int index = portalName.indexOf(IPublicationManager.PAGEID_CTX);
                      if( index != -1)
                     	 portalName = portalName.substring(0, index);
+*/
                      portalId = new UniversalID(poid.getNamespace(), portalName);
+
                  } 
   
                  if( request.getUserPrincipal() == null)	{

@@ -51,6 +51,12 @@ public class CreationFormValidator implements Validator {
             errors.rejectValue("id", "MODIFY_PAGE_CREATION_ID_INVALID");
         }
         
+        if( id.startsWith("_ID_"))  {
+            errors.rejectValue("id", "MODIFY_PAGE_CREATION_ID_INVALID_START");
+        }
+            
+        
+        
     }
 
 }

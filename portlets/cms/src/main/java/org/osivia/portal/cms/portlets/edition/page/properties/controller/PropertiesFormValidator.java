@@ -48,6 +48,10 @@ public class PropertiesFormValidator implements Validator {
             errors.rejectValue("id", "MODIFY_PAGE_PROPERTIES_ID_INVALID");
         }
         
+        if( id.startsWith("_ID_"))  {
+            errors.rejectValue("id", "MODIFY_PAGE_PROPERTIES_ID_INVALID_START");
+        }
+        
     }
 
 }

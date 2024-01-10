@@ -116,7 +116,7 @@ public class PublicationManager implements IPublicationManager {
 			space = getCMSService().getCMSSession(cmsContext).getDocument(navigation.getSpaceId());
 
 			String spaceTemplateID = space.getId().getInternalID();
-
+/*
 			spaceTemplateID += IPublicationManager.PAGEID_CTX;
 			if (cmsContext.isPreview()) {
 				spaceTemplateID += IPublicationManager.PAGEID_ITEM_SEPARATOR + IPublicationManager.PAGEID_PREVIEW
@@ -124,6 +124,7 @@ public class PublicationManager implements IPublicationManager {
 			}
 			spaceTemplateID += IPublicationManager.PAGEID_ITEM_SEPARATOR + IPublicationManager.PAGEID_LOCALE
 					+ IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
+*/					
 
 			String spacePath = space.getId().getRepositoryName() + ":" + "/" + spaceTemplateID + "/"
 					+ DefaultCMSPageFactory.getRootPageName();
@@ -395,6 +396,7 @@ public class PublicationManager implements IPublicationManager {
 					}
 
 					String pageDynamicID = "space_" + navigation.getSpaceId().getInternalID();
+					/*
 					pageDynamicID += IPublicationManager.PAGEID_CTX;
 					if (cmsContext.isPreview()) {
 						pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR + IPublicationManager.PAGEID_PREVIEW
@@ -402,6 +404,7 @@ public class PublicationManager implements IPublicationManager {
 					}
 					pageDynamicID += IPublicationManager.PAGEID_ITEM_SEPARATOR + IPublicationManager.PAGEID_LOCALE
 							+ IPublicationManager.PAGEID_VALUE_SEPARATOR + cmsContext.getlocale();
+							*/
 
 					if (parentID == null) {
 						if ("false".equals(space.getProperties().get("osivia.connect.templated")))

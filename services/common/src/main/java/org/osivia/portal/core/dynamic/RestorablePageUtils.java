@@ -23,7 +23,7 @@ import org.osivia.portal.core.content.ViewContentCommand;
 public class RestorablePageUtils {
 
     private static String PREFIX = "_dyn_";
-    private static String SHORT_PREFIX = "__ID__";
+    private static String SHORT_PREFIX = "_ID_";
 
     private static final String TEMPLATE_ID = "templateId:";
     private static final String CONTENT_PATH = "content:";
