@@ -278,7 +278,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // Changes have been commited during the restore page state
                 // ctx.getChanges doesn't contain modified windows
                 // for examples, maximized window is not considered ads dirty
-                if (commeand instanceof RestorePageCommand) {
+                if (commeand instanceof RestorePageCommand || commeand instanceof ViewPageCommand) {
                     pageChange = true;
                 }
 

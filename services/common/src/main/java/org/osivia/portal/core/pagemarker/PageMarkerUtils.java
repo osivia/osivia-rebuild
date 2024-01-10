@@ -393,7 +393,37 @@ public class PageMarkerUtils {
     }
     
     
-    
+    @SuppressWarnings("unchecked")
+    public static PageMarkerInfo getPageLastViewState( ControllerContext controllerContext, String pageName) {
+
+           
+
+            Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
+            
+            // Tri pour avoir les markers les plus récents
+            List<PageMarkerInfo> list = new LinkedList<PageMarkerInfo>(markers.values());
+
+            Collections.sort(list, new Comparator<PageMarkerInfo>() {
+
+                public int compare(PageMarkerInfo o1, PageMarkerInfo o2) {
+                    return - o1.getLastTimeStamp().compareTo(o2.getLastTimeStamp());
+                }
+            });
+            
+            
+            for( PageMarkerInfo info: list) {
+                if( info.getPageId().toString(PortalObjectPath.CANONICAL_FORMAT).contains(pageName))    {
+                    //the user can manually refresh, no warn
+                    //logger.warn("non ajax request "+ requestPath);
+                    
+                    return info;
+                }
+            }
+
+
+
+        return null;
+    }
 
 
 }

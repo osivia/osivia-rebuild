@@ -64,6 +64,7 @@ import org.osivia.portal.core.content.ViewContentCommand;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RestorePageCommand;
+import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtilsInternal;
 import org.osivia.portal.core.profiles.IProfileManager;
@@ -315,10 +316,24 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                  
 	                 Profile profile = getProfileManager().getMainProfile(portalCtx, portalId);
 	                 
-	                 if( profile != null && profile.getUrl() != null)
+	                 if( profile != null && profile.getUrl() != null)  {
+
+	                     // preserve parameters and cache on home page
+	                     
+	                     PageMarkerInfo pm = PageMarkerUtils.getPageLastViewState(controllerContext, profile.getUrl());
+	                     if( pm != null) {
+	                         PageMarkerUtils.restorePageState( controllerContext,  pm.getViewState());
+	                         return new ViewPageCommand(pm.getPageId());
+	                     }
+	                     
 	                     redirectId = new UniversalID(portalId.getRepositoryName(), profile.getUrl());
+
+
+	                 }
 	                 else 
 	                     redirectId = portalId;
+	                 
+	                 
                  }
                  
             } catch (CMSException e) {
