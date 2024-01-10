@@ -29,7 +29,8 @@
 		                        
                                 <div class="col-md-1">
                                     <c:if test="${not empty profile.url}">
-                                        <i class="glyphicons glyphicons-basic-home"></i>
+                                        <i class="glyphicons glyphicons-basic-home" title="<op:translate
+                                                key="MODIFY_SPACE_PROFILE_URL"/>"></i>
                                     </c:if>
                                 </div>		                        
 		
