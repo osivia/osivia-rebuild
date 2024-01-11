@@ -406,7 +406,19 @@ public class PageMarkerUtils {
             Collections.sort(list, new Comparator<PageMarkerInfo>() {
 
                 public int compare(PageMarkerInfo o1, PageMarkerInfo o2) {
-                    return - o1.getLastTimeStamp().compareTo(o2.getLastTimeStamp());
+                    if( o1.getLastTimeStamp() != null ) {
+                        if( o2.getLastTimeStamp() != null)  {
+                            return - o1.getLastTimeStamp().compareTo(o2.getLastTimeStamp());
+                        }   else    {
+                            return - 1;
+                        }
+                    } else  {
+                        if( o2.getLastTimeStamp() != null)  {
+                            return 1;
+                        }   else    {
+                            return 0;
+                        }
+                    }
                 }
             });
             

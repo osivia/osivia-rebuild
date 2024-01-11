@@ -405,6 +405,9 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         
         // back after a session losed
+        // The explicit page ID must be taken if set because the PortalObjectUtils.getPageID 
+        // at the restore command runtime is not relevant
+        
         if( cmd instanceof RestorePageCommand && !StringUtils.equals(currentServerCheck, browserSession) )    {
             PortalObjectId pageId = ((RestorePageCommand) cmd).getPageId();
             if( pageId != null) {
@@ -416,6 +419,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 returnToDefaultPage = true;
             }
         }
+        
+        
         
         
         
