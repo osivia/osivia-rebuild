@@ -300,8 +300,13 @@ public class PageMarkerUtils {
         
         Page page = null;
         if (markerInfo.getPageId() != null) {
-            page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
+            try {
+                page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
+            } catch(Exception e)    {
+                // Can occur if right have changed or if page has been deleted
+             }
             
+            if( page != null)   {
             poc.setDynamicWindows(markerInfo.getDynamicWindows());
             
             // Restauration des etats des windows
@@ -327,6 +332,7 @@ public class PageMarkerUtils {
                     NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, child.getId());
 
                     controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+                    }
                 }
             }
             

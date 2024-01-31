@@ -303,7 +303,14 @@ public class PublicationManager implements IPublicationManager {
 					Document space = getCMSService().getCMSSession(cmsContext).getDocument(navigation.getSpaceId());
 
 					// Get previous pns in same space
-					Page oldPage = PortalObjectUtilsInternal.getPage(controllerContext);
+					Page oldPage = null;
+					
+					try    {
+					oldPage = PortalObjectUtilsInternal.getPage(controllerContext);
+					} catch( Exception e) {
+					    // Can occur if right have been modified on previous page
+					    
+					}
 					if (oldPage != null) {
 						String sSpaceId = oldPage.getProperty("osivia.spaceId");
 						if (spaceId != null) {
