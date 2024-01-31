@@ -27,7 +27,11 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.NoSuchResourceException;
+import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
+import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
+import org.osivia.portal.api.cms.exception.DocumentNotFoundException;
 
 /**
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
@@ -44,6 +48,19 @@ public class ResourceAcquisitionInterceptor extends ControllerInterceptor
       catch (NoSuchResourceException e)
       {
          return new UnavailableResourceResponse(e.getRef(), false);
+      }
+      catch(RuntimeException e) {
+          
+          if( cmd instanceof PortalObjectCommand)   {
+              if( e.getCause() instanceof DocumentNotFoundException)  {
+                  return new UnavailableResourceResponse(((PortalObjectCommand) cmd).getTargetId().toString(), false);
+              } else if( e.getCause() instanceof DocumentForbiddenException)    {
+                  return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
+              }
+          }
+             
+          throw e;
+              
       }
 
       //
