@@ -12,6 +12,7 @@ import org.osivia.portal.api.cms.UpdateInformations;
 import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.exception.DocumentForbiddenException;
+import org.osivia.portal.api.cms.exception.DocumentNotFoundException;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.repository.BaseUserStorage;
 import org.osivia.portal.api.cms.repository.UserData;
@@ -118,11 +119,14 @@ public class MemoryUserStorage extends BaseUserStorage {
         try {
         RepositoryDocument doc = getDocuments().get(internalID);
         if( doc == null)
-            throw new CMSException();
+            throw new DocumentNotFoundException();
         return doc.duplicate();
 
         } catch(Exception e)    {
-            throw new CMSException(e);
+            if( e instanceof CMSException)
+                throw (CMSException) e;
+            else
+                throw new CMSException(e);
         }
     }
 
