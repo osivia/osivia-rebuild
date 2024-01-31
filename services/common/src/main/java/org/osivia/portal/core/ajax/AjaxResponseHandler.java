@@ -55,6 +55,8 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
+import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
 import org.jboss.portal.core.controller.handler.AjaxResponse;
 import org.jboss.portal.core.controller.handler.CommandForward;
 import org.jboss.portal.core.controller.handler.HTTPResponse;
@@ -1134,14 +1136,21 @@ public class AjaxResponseHandler implements ResponseHandler {
 
     private HandlerResponse handleAjaxError(ControllerContext controllerContext, ControllerResponse controllerResponse) {
         
-    	if( controllerResponse instanceof ErrorResponse)
+        String errorCode = "";
+        
+        if( controllerResponse instanceof SecurityErrorResponse )   {
+            errorCode += "?httpCode=403";
+        }   else  if( controllerResponse instanceof UnavailableResourceResponse )  {
+            errorCode += "?httpCode=404";
+        }   else 
+    	if( controllerResponse instanceof ErrorResponse )
     		log.error(Debug.stackTraceToString( ((ErrorResponse) controllerResponse).getCause() ));
         
         String themeId = getPortalObjectContainer().getContext().getDefaultPortal().getProperty(ThemeConstants.PORTAL_PROP_THEME);
         PageService pageService = controllerContext.getController().getPageService();
         ThemeService themeService = pageService.getThemeService();
         PortalTheme theme = themeService.getThemeById(themeId);                
-        UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(theme.getThemeInfo().getContextPath()+"/error/errorPage.jsp");
+        UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(theme.getThemeInfo().getContextPath()+"/error/errorPage.jsp"+errorCode);
         return new AjaxResponse(dresp);
     }
 
