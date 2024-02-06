@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.osivia.ajax-portal.api</groupId>
         <artifactId>osivia-portal-api-parent</artifactId>
-        <version>5.2.28-SNAPSHOT</version>
+        <version>5.2.28</version>
     </parent>
     
     <artifactId>osivia-portal-api-cms</artifactId>
