@@ -73,20 +73,13 @@
                                         
                             <div class="overflow-auto">  
                                 <div class="fancy-scrollable">
-								    <div class="fancytree fancytree-selector" data-lazyloadingurl="${modelUrl}" data-disabled="${form.noModel ? 'true' : 'false'}">
+								    <div class="fancytree fancytree-selector" data-lazyloadingurl="${modelUrl}" >
 								        <form:hidden path="model" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
 
 								    </div>
                                 </div>
                             </div>   
 		                </div>
-
-		                <div class="flex-grow-1 d-flex align-items-end">
-                            <div class="form-check">
-                                  <form:checkbox id="${namespace}-no-model" path="noModel" cssClass="form-check-input" data-toggle="fancytree"/>
-                                  <label for="${namespace}-no-model" class="form-check-label"><op:translate key="MODIFY_PAGE_CREATION_NO_MODEL"/></label>
-                            </div>
-                         </div>		
 	                
 	               </div>
 		        </div>

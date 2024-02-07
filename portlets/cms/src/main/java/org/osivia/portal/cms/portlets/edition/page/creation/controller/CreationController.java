@@ -195,7 +195,7 @@ public class CreationController extends GenericPortlet implements PortletContext
                     AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, space.getSpaceId().getRepositoryName());
 
 
-                    if( StringUtils.isNotEmpty(form.getModel()) && form.isNoModel() == false)    {
+                    if( StringUtils.isNotEmpty(form.getModel()) )    {
                         MemoryRepositoryPage model = (MemoryRepositoryPage) getDocument( portalControllerContext, form.getModel());
                         Map<String,Object> newProps = new LinkedHashMap<>();
                         newProps.putAll(model.getProperties());

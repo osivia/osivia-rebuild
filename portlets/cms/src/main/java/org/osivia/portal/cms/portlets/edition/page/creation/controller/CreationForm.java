@@ -12,7 +12,6 @@ public class CreationForm {
     
     private String id;
     private String displayName;
-    private boolean noModel = false;
     private String model;
     private String target;    
 
@@ -35,14 +34,7 @@ public class CreationForm {
         this.displayName = displayName;
     }
 
-    public boolean isNoModel() {
-        return noModel;
-    }
 
-    
-    public void setNoModel(boolean noModel) {
-        this.noModel = noModel;
-    }
 
 
     public String getModel() {

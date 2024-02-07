@@ -197,7 +197,26 @@ $JQry(document).ready(function() {
 						if (data.targetType == "expander") {
 							return true;
 						} else {
-							return data.node.data.acceptable;
+                            var activeNode = $element.fancytree("getActiveNode");
+                            if( activeNode){
+                                    var path = data.node.data.path;
+                                    var oldPath = activeNode.data.path;
+                                    if( path == oldPath){
+                                        activeNode.setActive(false);
+                                        
+                                    var $selector = data.tree.$div.closest(".selector"),
+                                    $input = $selector.find("input.selector-value");
+                                    
+                                    $input.val("");
+                                    $selector.find("input.selector-label").val("");    
+                                    $selector.find(".collapse").collapse('hide')                                      
+                                        
+                                        
+                                    return false;
+                                    }
+                            }
+                           
+                            return data.node.data.acceptable;
 						}
 					},
 					
