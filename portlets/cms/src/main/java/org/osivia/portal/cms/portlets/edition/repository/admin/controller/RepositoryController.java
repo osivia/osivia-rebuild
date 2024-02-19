@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +28,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
@@ -36,6 +38,8 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.NativeRepository;
+import org.osivia.portal.api.cms.service.StreamableCheckResult;
+import org.osivia.portal.api.cms.service.StreamableCheckResults;
 import org.osivia.portal.api.cms.service.StreamableRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.error.Debug;
@@ -48,12 +52,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
@@ -69,6 +75,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
 @Controller
 @RequestMapping(value = "VIEW")
 @SessionAttributes("form")
+
 public class RepositoryController extends GenericPortlet implements PortletContextAware, ApplicationContextAware   {
 
     /** Portlet context. */
@@ -128,10 +135,19 @@ public class RepositoryController extends GenericPortlet implements PortletConte
      * @throws PortalException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response) throws PortalException {
-        return "view";
+    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("form") RepositoryForm form) throws PortalException {
+         if( StringUtils.equals(request.getParameter("step"),"validation-import"))
+             return  "validation-import";
+         else
+             return "view";
     }
 
+    
+    
+    
+    
+    
+    
     /**
      * Upload file action mapping.
      * 
@@ -142,14 +158,12 @@ public class RepositoryController extends GenericPortlet implements PortletConte
      * @throws IOException
      */
     @ActionMapping(name = "submit", params = "upload-file")
-    public void uploadFile(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,  @RequestParam("repositoryName") String repositoryName,  SessionStatus session)
+    public void uploadFile(ActionRequest request, ActionResponse response,   @ModelAttribute("form") RepositoryForm form,  @RequestParam("repositoryName") String repositoryName,  SessionStatus session)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
 
-        // Temporary file
-
-        MultipartFile upload = (MultipartFile) form.getFileUpload().get(repositoryName);
         try {
            
             // Portal controller context
@@ -159,9 +173,110 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             cmsContext.setSuperUserMode(true);
             
             
-            StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, repositoryName);
-            repository.readFrom(upload.getInputStream());
+            /* Duplicate the upload file */
             
+            MultipartFile upload = (MultipartFile) form.getFileUpload().get(repositoryName);
+            form.setRepositoryChecked(repositoryName);
+            
+            File duplicateFile = File.createTempFile(repositoryName, ".json");
+            
+            java.nio.file.Files.copy(
+                    upload.getInputStream(), 
+                    duplicateFile.toPath(), 
+                    StandardCopyOption.REPLACE_EXISTING);
+            
+            form.setDuplicateFile(duplicateFile);
+              
+            /* Check the file */
+            
+            form.setRepositoryChecked(repositoryName);
+            
+            
+            StreamableCheckResults results = null;
+            
+            FileInputStream fis = null;
+            try {
+                    CheckedItems checkedItems = new CheckedItems();
+                    
+                    StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, form.getRepositoryChecked());
+                    fis = new FileInputStream(form.getDuplicateFile());
+         
+                    // Call the service
+                    results = repository.checkInputFile(fis);
+                    
+                    boolean ok = true;
+
+                    for ( StreamableCheckResult item : results.getItems()) {
+                        if( item.isOk() == false)   {
+                            ok = false;
+                        }
+                    }
+                    
+                    checkedItems.setOk(ok);
+                    
+                    if( ok)  {
+                        checkedItems.setConfirmationMessage(bundle.getString("MODIFY_REPOSITORY_IMPORT_CONFIRM_MSG",  
+                                ((MultipartFile) form.getFileUpload().get(form.getRepositoryChecked())).getOriginalFilename(),
+                                form.getRepositoryChecked()
+                                ));  
+                    }
+
+            
+                    checkedItems.setResults(results);
+                    form.setCheckedItems(checkedItems);
+                    
+            }  finally   {
+                if( fis != null)    {
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        throw new PortletException(e);
+                    }
+                }
+            }
+            
+            
+            response.setRenderParameter("step", "validation-import");
+
+
+        } catch (Exception e) {
+            logger.error(Debug.stackTraceToString(  e ));
+            
+
+            String message = bundle.getString("MODIFY_REPOSITORY_IMPORT_ERROR",e.getMessage());        
+            notificationService.addSimpleNotification(portalCtx, message, NotificationsType.ERROR);
+            
+        }
+
+    }
+
+   
+    
+    @ActionMapping(name = "confirm-import")
+    public void confirm(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,   SessionStatus session)
+            throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+
+        // Temporary file
+
+        FileInputStream fis = null;
+        
+        try {
+           
+            // Portal controller context
+            CMSController ctrl = new CMSController(portalCtx);
+
+            CMSContext cmsContext = ctrl.getCMSContext();
+            cmsContext.setSuperUserMode(true);
+            
+
+            StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, form.getRepositoryChecked());
+            
+            fis = new FileInputStream(form.getDuplicateFile());
+            repository.readFrom(fis);
+         
+             
             Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());  
             String message = bundle.getString("MODIFY_REPOSITORY_IMPORT_SUCCESS");        
             notificationService.addSimpleNotification(portalCtx, message, NotificationsType.SUCCESS);
@@ -176,12 +291,24 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             String message = bundle.getString("MODIFY_REPOSITORY_IMPORT_ERROR",e.getMessage());        
             notificationService.addSimpleNotification(portalCtx, message, NotificationsType.ERROR);
              
+        }  finally   {
+            if( fis != null)    {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    throw new PortletException(e);
+                }
+            }
         }
 
     }
-
-     
     
+    @ActionMapping(name = "cancel-import")
+    public void cancelImport(ActionRequest request, ActionResponse response,   SessionStatus session)
+            throws PortletException, IOException {
+    
+        session.setComplete();
+     }
      
     /**
      * Load page resource mapping.
@@ -300,6 +427,12 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             throw new PortletException(e);
         }
     }
+    
+
+    
+    
+
+    
     
     /**
      * Repository index model attribute.

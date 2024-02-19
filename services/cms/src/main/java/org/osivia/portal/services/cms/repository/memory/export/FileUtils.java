@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryDocument;
 import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryFolder;
@@ -30,11 +32,15 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.MergeException;
 import org.osivia.portal.api.cms.service.MergeParameters;
+import org.osivia.portal.api.cms.service.StreamableCheckResult;
+import org.osivia.portal.api.cms.service.StreamableCheckResults;
 import org.osivia.portal.services.cms.repository.memory.FileRepository;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -54,6 +60,10 @@ public class FileUtils {
     }
 
 
+    
+    
+    
+    
     public void importFile(File importFile) {
 
         FileInputStream importStream;
@@ -261,6 +271,164 @@ public class FileUtils {
         for (NavigationItem child: navItem.getChildren())   {
             sortByOrder( child,params, modifiedPages);
         }
+    }
+    
+    
+    public StreamableCheckResults checkFile(InputStream in) {
+        ObjectMapper om = buildJSonMapper();
+        StreamableCheckResults res = new StreamableCheckResults();
+        
+        
+        
+        try {
+            ExportRepositoryBean inDatas = om.readValue(in, ExportRepositoryBean.class);
+            res.getItems().add(new StreamableCheckResult("FORMAT", true, null));
+            
+            checkProfileUnicity(res, inDatas);
+            
+            checkPageUnicity(res, inDatas);
+            
+            checkPagePUBLISH(res, inDatas);
+            
+         } 
+        catch (StreamReadException e) {
+            res.getItems().add(new StreamableCheckResult("FORMAT", false, e.getMessage()));
+        }
+        catch (DatabindException e) {
+            res.getItems().add(new StreamableCheckResult("FORMAT", false, e.getMessage()));
+        }
+        catch (IOException e) {
+            res.getItems().add(new StreamableCheckResult("FORMAT", false, e.getMessage()));
+        }
+        
+
+        return res;
+        
+    }
+
+
+
+    private void checkProfileUnicity(StreamableCheckResults res, ExportRepositoryBean inDatas) {
+        /* Controle profils */
+        
+        boolean profilesChecked = true;
+        
+        List<String> errorProfiles = new ArrayList<>();
+        Set<String> storedProfiles = new HashSet<>();
+        List<Profile> readProfiles = inDatas.documents.get(0).profiles;
+        for(Profile profile: readProfiles)   {
+            if( storedProfiles.contains(profile.getName())) {
+                errorProfiles.add(profile.getName());
+            }
+            storedProfiles.add(profile.getName());
+        }
+        
+        
+        String profileMessage = "";
+        if( errorProfiles.size() > 0)  {
+            profilesChecked = false;
+            
+            StringBuffer profilesList = new StringBuffer();
+            for( String errorProfile : errorProfiles)   {
+                if( profilesList.length() > 0)  {
+                    profilesList.append(",");
+                }
+                profilesList.append(errorProfile);
+            }
+            
+            
+            if( errorProfiles.size() == 1) {
+                profileMessage = "Profil "+profilesList.toString()+" en double";
+            }   else    {
+                profileMessage = "Profils "+profilesList.toString()+" en double";
+            }
+            
+        }
+        
+        res.getItems().add(new StreamableCheckResult("PROFILE_UNICITY", profilesChecked, profileMessage));
+    }
+    
+    
+    private void getPagesId(ExportRepositoryDocument doc,  List<String> pages)    {
+        pages.add(doc.id);
+
+        if( doc.children != null) {
+            for( ExportRepositoryDocument child : doc.children)   {
+                getPagesId( child, pages);
+            }
+        }
+     }
+    
+
+
+    private void checkPageUnicity(StreamableCheckResults res, ExportRepositoryBean inDatas) {
+        /* Controle profils */
+        
+        boolean pageChecked = true;
+        
+        List<String> errorPages = new ArrayList<>();
+        Set<String> storedPages = new HashSet<>();
+        
+        // Read pages
+        List<String> readPages = new ArrayList<String>();
+        getPagesId(inDatas.documents.get(0), readPages);
+        for(String pageId: readPages)   {
+            if( storedPages.contains(pageId)) {
+                errorPages.add(pageId);
+            }
+            storedPages.add(pageId);
+        }
+        
+        // Set message
+        String pageMessage = "";
+        if( errorPages.size() > 0)  {
+            pageChecked = false;
+            
+            StringBuffer pagesList = new StringBuffer();
+            for( String errorPage : errorPages)   {
+                if( pagesList.length() > 0)  {
+                    pagesList.append(",");
+                }
+                pagesList.append(errorPage);
+            }
+            
+            
+            if( errorPages.size() == 1) {
+                pageMessage = "Page "+pagesList.toString()+" en double";
+            }   else    {
+                pageMessage = "Pages "+pagesList.toString()+" en double";
+            }
+            
+        }
+        
+        res.getItems().add(new StreamableCheckResult("PAGE_UNICITY", pageChecked, pageMessage));
+    }
+    
+    
+    private void checkPagePUBLISH(StreamableCheckResults res, ExportRepositoryBean inDatas) {
+        /* Controle profils */
+        
+        boolean pageChecked = false;
+        
+        
+        // Read pages
+        List<String> readPages = new ArrayList<String>();
+        getPagesId(inDatas.documents.get(0), readPages);
+        for(String pageId: readPages)   {
+            if( pageId.equals("PUBLISH")) {
+                pageChecked = true;
+            }
+        }
+        
+        // Set message
+        String pageMessage = "";
+
+        if( pageChecked == false)   {
+            pageMessage = "Page PUBLISH manquante";
+        }
+
+        
+        res.getItems().add(new StreamableCheckResult("PAGE_PUBLISH", pageChecked, pageMessage));
     }
     
     /**

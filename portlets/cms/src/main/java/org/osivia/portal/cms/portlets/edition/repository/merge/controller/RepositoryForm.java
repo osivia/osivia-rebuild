@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.osivia.portal.api.cms.service.MergeParameters;
+import org.osivia.portal.cms.portlets.edition.repository.admin.controller.CheckedItems;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -26,8 +27,20 @@ public class RepositoryForm {
     private MergeParameters mergeParams = new MergeParameters();
     private Set<String> mergedPages = new HashSet<String>();
     
+    private CheckedItems checkedItems;
     
     
+    public CheckedItems getCheckedItems() {
+        return checkedItems;
+    }
+
+  
+    public void setCheckedItems(CheckedItems checkedItems) {
+        this.checkedItems = checkedItems;
+    }
+
+
+
     public Set<String> getMergedPages() {
         return mergedPages;
     }

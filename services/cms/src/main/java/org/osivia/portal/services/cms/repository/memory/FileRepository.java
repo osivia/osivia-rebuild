@@ -58,6 +58,7 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositorySpace;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.MergeException;
 import org.osivia.portal.api.cms.service.MergeParameters;
+import org.osivia.portal.api.cms.service.StreamableCheckResults;
 import org.osivia.portal.api.cms.service.StreamableRepository;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.services.cms.repository.memory.export.ExportRepositoryBean;
@@ -720,6 +721,12 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
 
     }
 
+    
+    
+    
+    
+    
+    
 
     private File getConfigurationFile() {
         return new File(System.getProperty(PORTAL_ADMINISTRATION_PATH) + "configuration-" + getRepositoryName() + ".json");
@@ -733,6 +740,12 @@ public class FileRepository extends UserRepositoryMemoryBase implements Streamab
     public void merge(InputStream in, MergeParameters params, OutputStream out) throws MergeException{
         getFilesUtils().merge(in, params, out);
         
+    }
+
+    @Override
+    public StreamableCheckResults checkInputFile(InputStream in) {
+        return getFilesUtils().checkFile(in);
+
     }
 
     @Override

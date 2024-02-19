@@ -227,7 +227,24 @@ $JQry(function() {
 		}
 	});
 	
+	
 });
+
+
+function importModalSubmit(element) {
+    const modalElement = element.closest('.modal');
+
+    // Hide modal
+    const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
+    bootstrapModal.hide();
+
+    // Submit form
+    const submit = modalElement.querySelector('input[type=submit]');
+    submit.click();
+    
+
+}
+
 
 
 $JQry(function() {

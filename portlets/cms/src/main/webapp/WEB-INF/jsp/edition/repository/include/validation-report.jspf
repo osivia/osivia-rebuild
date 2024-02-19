@@ -1,0 +1,14 @@
+            <div class="m-3 d-flex justify-content-center">
+                <table class="table">
+                          <c:forEach var="item" items="${form.checkedItems.results.items}" varStatus="status">
+                                <c:set var="resultStyle" value="${item.ok ? 'table-success':'table-danger'}" />
+                                 <tr class="${resultStyle}">
+                                    <td style="min-width: 120px">
+                                        <span ><op:translate key="MODIFY_REPOSITORY_VALIDATION_${item.checkCode}"/></span>
+                                    </td>
+                                    <td>
+                                        <span>${item.errorComplement}</span>
+                                    </td>                           
+                          </c:forEach>
+                  </table>
+            </div>

@@ -13,8 +13,8 @@
 </c:set>
 
 
-
 <portlet:actionURL name="submit" var="submitUrl" />
+
 
 <form:form action="${submitUrl}" method="post" modelAttribute="form" enctype="multipart/form-data"
 	class="w-100">
@@ -27,8 +27,6 @@
 	                    <div class="d-flex align-items-center">
 	
 	                        <div class="flex-grow-1 my-1 mx-2">
-
-
 
 
 	                            <h5 class="card-title mb-1">
@@ -94,10 +92,12 @@
 		</c:forEach>
 	</ul>
 	
+	
+	
 	<input id="${namespace}-file" type="submit" name="upload-file" class="d-none">
 	<input id="${namespace}-repositoryName" type="hidden" name="repositoryName" >
+
 	
 </form:form>
-
 
 

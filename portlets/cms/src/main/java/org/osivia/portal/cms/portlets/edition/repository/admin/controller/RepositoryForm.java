@@ -17,11 +17,38 @@ public class RepositoryForm {
     
     
 
+    public RepositoryForm() {
+        super();
+    }
+
+
+
     private Map fileUpload;
+    private String repositoryChecked = null;
+    private File duplicateFile = null;
+    private CheckedItems checkedItems;
+      
     
+    public CheckedItems getCheckedItems() {
+        return checkedItems;
+    }
+
+    
+    public void setCheckedItems(CheckedItems checkedItems) {
+        this.checkedItems = checkedItems;
+    }
 
 
+    public String getRepositoryChecked() {
+        return repositoryChecked;
+    }
+
     
+    public void setRepositoryChecked(String repositoryChecked) {
+        this.repositoryChecked = repositoryChecked;
+    }
+
+
     public Map getFileUpload() {
         return fileUpload;
     }
@@ -33,6 +60,16 @@ public class RepositoryForm {
     }
 
 
+    
+    public File getDuplicateFile() {
+        return duplicateFile;
+    }
+
+
+    
+    public void setDuplicateFile(File duplicateFile) {
+        this.duplicateFile = duplicateFile;
+    }
     
      
 }

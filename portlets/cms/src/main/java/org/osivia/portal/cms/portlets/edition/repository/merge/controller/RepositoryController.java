@@ -51,6 +51,8 @@ import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.MergeException;
 import org.osivia.portal.api.cms.service.NativeRepository;
+import org.osivia.portal.api.cms.service.StreamableCheckResult;
+import org.osivia.portal.api.cms.service.StreamableCheckResults;
 import org.osivia.portal.api.cms.service.StreamableRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.error.Debug;
@@ -60,6 +62,7 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.cms.portlets.edition.repository.admin.controller.CheckedItems;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -90,7 +93,7 @@ public class RepositoryController extends GenericPortlet implements PortletConte
     private static final String SELECT_ELEMENTS_STEP = "select-elements";
     private static final String DOWNLOAD_STEP = "download";
     private static final String CHOOSE_FILE_STEP = "choose-file";
-
+    private static final String VALIDATION_FILE_STEP = "validation-file";
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -213,13 +216,43 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         MultipartFile upload = (MultipartFile) form.getFileUpload();
         
         File f = File.createTempFile("merge", ".json");
-
+        
+        FileInputStream fis = null;
+        
         try {
            
             upload.transferTo(f);
             form.setFileToMerge(f);
-             
-            response.setRenderParameter("step", SELECT_ELEMENTS_STEP);
+            
+           StreamableCheckResults results = null;
+            
+           CheckedItems checkedItems = new CheckedItems();
+           
+           // Portal controller context
+           CMSController ctrl = new CMSController(portalCtx);
+
+           CMSContext cmsContext = ctrl.getCMSContext();
+           cmsContext.setSuperUserMode(true);
+                    
+           StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, WindowFactory.getWindow(request).getProperty("osivia.repository.name"));
+           fis = new FileInputStream(f);
+ 
+           // Call the check service
+           results = repository.checkInputFile(fis);
+            
+           boolean ok = true;
+
+           for ( StreamableCheckResult item : results.getItems()) {
+                if( item.isOk() == false)   {
+                    ok = false;
+                }
+           }
+                    
+           checkedItems.setOk(ok);
+           checkedItems.setResults(results);
+           form.setCheckedItems(checkedItems);
+            
+           response.setRenderParameter("step", VALIDATION_FILE_STEP);
 
         } catch (Exception e) {
             
@@ -231,8 +264,37 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             notificationService.addSimpleNotification(portalCtx, message, NotificationsType.ERROR);
              
         } 
+        
+        finally   {
+            if( fis != null)    {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    throw new PortletException(e);
+                }
+            }
+        }
+        
 
     }
+    
+    
+    
+    @ActionMapping(name = "confirm-validation")
+    public void confirmValidation(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,   SessionStatus session)
+            throws PortletException, IOException {    
+    
+        response.setRenderParameter("step", SELECT_ELEMENTS_STEP);
+    }
+    
+    @ActionMapping(name = "cancel-validation")
+    public void cancelValidation(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,   SessionStatus session)
+            throws PortletException, IOException {    
+    
+        response.setRenderParameter("step", CHOOSE_FILE_STEP);
+    }
+    
+    
     
     @ActionMapping(name = "select")
     public void select(ActionRequest request, ActionResponse response, @ModelAttribute("form") RepositoryForm form,   SessionStatus session)
