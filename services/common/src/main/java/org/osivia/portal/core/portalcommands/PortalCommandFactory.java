@@ -22,7 +22,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.jboss.portal.Mode;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
@@ -43,6 +44,8 @@ import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowReso
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationResponse;
 import org.osivia.portal.api.cms.CMSContext;
@@ -323,6 +326,24 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 	                     PageMarkerInfo pm = PageMarkerUtils.getPageLastViewState(controllerContext, profile.getUrl());
 	                     if( pm != null) {
 	                         PageMarkerUtils.restorePageState( controllerContext,  pm.getViewState());
+	                         
+	                         // If admin or max, return to normal view
+	                         Page page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(pm.getPageId());
+	                             
+                             // Restauration des etats des windows
+                             for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
+                                 Window child = (Window) po;
+                                 NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, child.getId());
+                                 WindowNavigationalState ws = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+                                 
+                                 if( ws != null && (!ws.getWindowState().equals(WindowState.NORMAL) || (!ws.getMode().equals(Mode.VIEW)) ))    {
+                                     WindowNavigationalState newWs = new WindowNavigationalState(WindowState.NORMAL, Mode.VIEW, null, null);
+                                     controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newWs);
+                                 }
+                                 
+                             }
+	                         
+	                         
 	                         return new ViewPageCommand(pm.getPageId());
 	                     }
 	                     
