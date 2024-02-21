@@ -3,6 +3,7 @@ package org.osivia.portal.cms.portlets.edition.page.apps.add.configuration;
 import javax.portlet.PortletConfig;
 
 import org.osivia.portal.api.apps.IAppsService;
+import org.osivia.portal.api.blacklist.IBlackListService;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
 import org.osivia.portal.api.locale.ILocaleService;
@@ -104,6 +105,9 @@ public class AddConfiguration implements PortletConfigAware {
         return Locator.getService(IAppsService.class);
     }
     
-    
+    @Bean
+    public IBlackListService getBlackListService() {
+        return Locator.getService(IBlackListService.class);
+    }   
     
 }

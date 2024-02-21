@@ -1,12 +1,11 @@
 package org.osivia.portal.cms.portlets.edition.page.apps.add.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -20,15 +19,14 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.http.Cookie;
-
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.apps.App;
 import org.osivia.portal.api.apps.IAppsService;
+import org.osivia.portal.api.blacklist.IBlackListService;
+import org.osivia.portal.api.blacklist.IBlackListableElement;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
@@ -36,10 +34,8 @@ import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
-import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -54,6 +50,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
+
 
 import fr.toutatice.portail.cms.producers.test.AdvancedRepository;
 import fr.toutatice.portail.cms.producers.test.TestRepositoryLocator;
@@ -85,12 +82,13 @@ public class AddController extends GenericPortlet implements PortletContextAware
     @Autowired
     IAppsService appServices;
 
+    @Autowired    
+    IBlackListService blackListService;
+    
     /** Portlet config. */
     @Autowired
     private PortletConfig portletConfig;
     
-    /** blackList portlets **/
-    Map<String,List<String>> mBlackListedLines = new ConcurrentHashMap<>();
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(AddController.class);
@@ -274,82 +272,21 @@ public class AddController extends GenericPortlet implements PortletContextAware
             }
         }
 
-        // Apply black list
-        UniversalID hostID = PortalObjectUtils.getHostPortalID(portalCtx.getHttpServletRequest());
-        String hostName = hostID.getRepositoryName();
+        filteredApps = blackListService.filterByBlacklist(portalCtx, "portlet", filteredApps,  new IBlackListableElement<App>() {
+             @Override
+            public String getId(App a) {
+                 return a.getId();
 
-        
-        
-        boolean extendedMode = false;
-        
-        Cookie[] cookies = portalCtx.getHttpServletRequest().getCookies();
-        if( cookies != null)    {
-            for(int i=0;i < cookies.length; i++)    {
-                Cookie cookie= cookies[i];
-                if( cookie.getName().equals("osivia.admin.extendedMode")) {
-                    extendedMode = BooleanUtils.toBoolean(cookie.getValue());
-                }
             }
-        }
-        
-        
-        
-        if( extendedMode == false) {
-            List<String> blackListedLines = getBlacklistedLines(hostName);
-    
-            if( blackListedLines.size() > 0)    {
-                
-                List<App> nonBlackListed = new ArrayList<>();
-                for( App app: filteredApps) {     
-                    if( ! blackListedLines.contains(app.getId())) {
-                        nonBlackListed.add(app);
-                    }
-                }
-                
-                filteredApps = nonBlackListed;
-            }
-        }
+        } );
 
-        
-        
-        
-        
+         
         form.setApps(filteredApps);
 
 
         return form;
     }
 
-    /**
-     * Get blacklisted portlets for a host
-     * @param hostName
-     * @return
-     * @throws PortletException
-     */
-    private List<String> getBlacklistedLines(String hostName) throws PortletException {
-        List<String> blackListedLines = mBlackListedLines.get(hostName);
-        if (blackListedLines == null) {
-            try {
-                String extension = hostName;
-                if( extension == null)  {
-                    extension = "";
-                }
-                else    {
-                    extension = "-" + extension;
-                }
-                blackListedLines = Files.readAllLines(Paths.get("/opt/portal/conf/portlets-blacklist" + extension + ".txt"));
-            } catch (IOException e) {
-                if (e instanceof NoSuchFileException) {
-                    // No backlist
-                    blackListedLines = new ArrayList<String>();
-                } else {
-                    throw new PortletException(e);
-                }
-            }
-            mBlackListedLines.put(hostName, blackListedLines);
-        }
-        return blackListedLines;
-    }
-
+   
 
 }
