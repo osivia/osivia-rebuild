@@ -122,14 +122,12 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute("form") ModifyForm form) throws PortalException, PortletException, IOException {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-       
-        
         String tab = request.getParameter("tab");
         if( StringUtils.isNotEmpty(tab))    {
             request.setAttribute("tab", request.getParameter("tab"));
             reloadForm(request, response, form);
-            
         }
+
         request.setAttribute( "urls", getUrls(request, response, form));
 
         if (portalControllerContext.getHttpServletRequest().getAttribute("ajax") != null)   {
@@ -148,6 +146,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         String profile = request.getParameter("profile");
 
         form.getProfiles().add( new ObjectMapper().readValue(URLDecoder.decode(profile, "UTF-8"), Profile.class));
+        
+        saveProfiles(portalControllerContext,form);
+        response.setRenderParameter("tab", "profiles");
  
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
     }
@@ -161,6 +162,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         String profile = request.getParameter("style");
 
         form.getStyles().add( new ObjectMapper().readValue(URLDecoder.decode(profile, "UTF-8"), String.class));
+        
+        saveStyles(portalControllerContext,form);
+        response.setRenderParameter("tab", "styles");
  
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
     }
@@ -176,6 +180,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         form.getProfiles().remove(index);
 
         form.getProfiles().add(index, new ObjectMapper().readValue(URLDecoder.decode(profile, "UTF-8"), Profile.class));
+        
+        saveProfiles(portalControllerContext,form);
+        response.setRenderParameter("tab", "profiles");
  
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
     }
@@ -191,6 +198,10 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         form.getStyles().remove(index);
 
         form.getStyles().add(index, new ObjectMapper().readValue(URLDecoder.decode(style, "UTF-8"), String.class));
+        
+        
+        saveStyles(portalControllerContext,form);
+        response.setRenderParameter("tab", "styles");
  
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
     }
@@ -203,6 +214,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         
         int index = Integer.parseInt(request.getParameter("index"));
         form.getProfiles().remove(index);
+        
+        saveProfiles(portalControllerContext,form);
+        response.setRenderParameter("tab", "profiles");
 
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
        }
@@ -214,6 +228,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         
         int index = Integer.parseInt(request.getParameter("index"));
         form.getStyles().remove(index);
+        
+        saveStyles(portalControllerContext,form);
+        response.setRenderParameter("tab", "styles");
 
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
        }
@@ -233,7 +250,8 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         
         form.getProfiles().add(destIndex, profile);
 
-        
+        saveProfiles(portalControllerContext,form);
+        response.setRenderParameter("tab", "profiles");
 
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
        }
@@ -252,7 +270,8 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
         form.getStyles().add(destIndex, style);
 
-        
+        saveStyles(portalControllerContext,form);
+        response.setRenderParameter("tab", "styles");
 
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);
        }    
@@ -270,8 +289,12 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         
         int target = Integer.parseInt(sortTarget);
         
-        
         form.getProfiles().add(target,srcprofile);
+        
+        saveProfiles(portalControllerContext,form);
+        response.setRenderParameter("tab", "profiles");
+        
+
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);        
    }
     
@@ -291,23 +314,14 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         
         
         form.getStyles().add(target,srcStyle);
+        saveStyles(portalControllerContext,form);
+        
+        response.setRenderParameter("tab", "styles");
+        
         portalControllerContext.getHttpServletRequest().setAttribute("ajax", Boolean.TRUE);        
    }
     
-    @ActionMapping(name = "modifyPortal")
-    public void modifyPortal(ActionRequest request, ActionResponse response, @ModelAttribute("form") ModifyForm form) throws PortletException, CMSException, IOException {
-        
-        
-        String tab = request.getParameter("tab");
-        if( StringUtils.isNotEmpty(tab))    {
-            response.setRenderParameter("tab", tab);
-        }
-        
-        
-        // Portal Controller context
-        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-
-        
+    private void saveProfiles( PortalControllerContext portalCtx, ModifyForm form) throws CMSException, PortletException {
         CMSController ctrl = new CMSController(portalCtx); 
         
         PortalWindow window = WindowFactory.getWindow(portalCtx.getRequest());
@@ -317,14 +331,39 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), id.getRepositoryName());
 
         if( repository instanceof AdvancedRepository) {
-
             ((AdvancedRepository) repository).setProfiles(id.getInternalID(), form.getProfiles());
+        }
+        
+        try {
+            reloadForm(portalCtx.getRequest(), portalCtx.getResponse(), form);
+        } catch (Exception e) {
+           throw new PortletException( e);
+           
+        }
+        
+    }
+    
+    private void saveStyles( PortalControllerContext portalCtx, ModifyForm form) throws CMSException, PortletException {
+        CMSController ctrl = new CMSController(portalCtx); 
+        
+        PortalWindow window = WindowFactory.getWindow(portalCtx.getRequest());
+        String spaceId = window.getProperty("osivia.space.id");
+        UniversalID id = new UniversalID(spaceId);
+
+        AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(ctrl.getCMSContext(), id.getRepositoryName());
+
+        if( repository instanceof AdvancedRepository) {
             ((AdvancedRepository) repository).setStyles(id.getInternalID(), form.getStyles());
         }
-
-
-   }
-    
+        
+        try {
+            reloadForm(portalCtx.getRequest(), portalCtx.getResponse(), form);
+        } catch (Exception e) {
+           throw new PortletException( e);
+           
+        }
+        
+    }
     
     
     

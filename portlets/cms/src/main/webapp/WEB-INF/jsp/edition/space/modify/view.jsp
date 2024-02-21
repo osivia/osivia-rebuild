@@ -24,13 +24,8 @@
     <portlet:param name="tab" value="styles"/>
 </portlet:renderURL>
 
-<%-- Preserve tab on submit --%>
-<input type="hidden" name="tab" value="${tab}"/>
-
 
 <div class="portal-properties-administration">
-
-
 
 	
    <div data-ajax-region="portal-properties-administration-vars-region">
@@ -48,16 +43,7 @@
                 <a class="nav-link <c:if test="${tab eq 'styles'}">active</c:if>" href="${tabStylesUrl}"><op:translate key="MODIFY_SPACE_STYLES" /></a>
         </li>
     </ul> 
-
-    <div class="d-flex flex-row-reverse">
     
-        <div class="m-2">
-	        <button type="submit" class="btn btn-primary">
-	            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
-	        </button>
-        </div>
-    
-    </div>    
     
     <c:if test="${empty tab or tab eq 'profiles'}">
  	   		<%@ include file="profiles.jspf" %>	
@@ -65,16 +51,12 @@
     <c:if test="${tab eq 'styles'}">
 		 	<%@ include file="styles.jspf" %>	
 	 </c:if>
+	 
+	 <input type="submit" class="d-none">
+	 
+	 <div class="d-flex flex-row-reverse"/>
 
-    <div class="d-flex flex-row-reverse">
-    
-        <div class="m-2">
-	        <button type="submit" class="btn btn-primary">
-	            <span><op:translate key="MODIFY_SPACE_APPLY_LABEL" /></span>
-	        </button>
-	        <input type="submit" class="d-none">
-        </div> 
-    </div>
+
            	 
 </div>
 
