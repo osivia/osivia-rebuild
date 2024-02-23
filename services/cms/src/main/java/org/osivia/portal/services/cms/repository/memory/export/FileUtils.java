@@ -313,39 +313,39 @@ public class FileUtils {
         
         boolean profilesChecked = true;
         
-        List<String> errorProfiles = new ArrayList<>();
-        Set<String> storedProfiles = new HashSet<>();
+        List<String> errorRoles = new ArrayList<>();
+        Set<String> storedRoles = new HashSet<>();
         List<Profile> readProfiles = inDatas.documents.get(0).profiles;
         for(Profile profile: readProfiles)   {
-            if( storedProfiles.contains(profile.getName())) {
-                errorProfiles.add(profile.getName());
+            if( storedRoles.contains(profile.getRole())) {
+                errorRoles.add(profile.getRole());
             }
-            storedProfiles.add(profile.getName());
+            storedRoles.add(profile.getRole());
         }
         
         
         String profileMessage = "";
-        if( errorProfiles.size() > 0)  {
+        if( errorRoles.size() > 0)  {
             profilesChecked = false;
             
-            StringBuffer profilesList = new StringBuffer();
-            for( String errorProfile : errorProfiles)   {
-                if( profilesList.length() > 0)  {
-                    profilesList.append(",");
+            StringBuffer rolesDisplayList = new StringBuffer();
+            for( String errorProfile : errorRoles)   {
+                if( rolesDisplayList.length() > 0)  {
+                    rolesDisplayList.append(",");
                 }
-                profilesList.append(errorProfile);
+                rolesDisplayList.append(errorProfile);
             }
             
             
-            if( errorProfiles.size() == 1) {
-                profileMessage = "Profil "+profilesList.toString()+" en double";
+            if( errorRoles.size() == 1) {
+                profileMessage = "Rôle "+rolesDisplayList.toString()+" référencé dans plusieurs profils";
             }   else    {
-                profileMessage = "Profils "+profilesList.toString()+" en double";
+                profileMessage = "Rôles "+rolesDisplayList.toString()+" référencés dans plusieurs profils";
             }
             
         }
         
-        res.getItems().add(new StreamableCheckResult("PROFILE_UNICITY", profilesChecked, profileMessage));
+        res.getItems().add(new StreamableCheckResult("ROLE_UNICITY", profilesChecked, profileMessage));
     }
     
     
