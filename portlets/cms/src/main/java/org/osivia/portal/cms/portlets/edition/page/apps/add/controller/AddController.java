@@ -25,8 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.apps.App;
 import org.osivia.portal.api.apps.IAppsService;
-import org.osivia.portal.api.blacklist.IBlackListService;
-import org.osivia.portal.api.blacklist.IBlackListableElement;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
@@ -35,6 +33,8 @@ import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.ModuleRef;
 import org.osivia.portal.api.cms.model.ModulesContainer;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.components.IComponentService;
+import org.osivia.portal.api.components.IComponentElement;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
@@ -83,7 +83,7 @@ public class AddController extends GenericPortlet implements PortletContextAware
     IAppsService appServices;
 
     @Autowired    
-    IBlackListService blackListService;
+    IComponentService componentService;
     
     /** Portlet config. */
     @Autowired
@@ -272,7 +272,7 @@ public class AddController extends GenericPortlet implements PortletContextAware
             }
         }
 
-        filteredApps = blackListService.filterByBlacklist(portalCtx, "portlet", filteredApps,  new IBlackListableElement<App>() {
+        filteredApps = componentService.filterByComponentList(portalCtx, "portlet", filteredApps,  new IComponentElement<App>() {
              @Override
             public String getId(App a) {
                  return a.getId();
