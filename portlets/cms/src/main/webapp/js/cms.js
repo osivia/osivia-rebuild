@@ -85,6 +85,8 @@ $JQry(function () {
     }
 });
 
+
+
 $JQry(function() {
     $JQry(".portal-properties-administration-list").each(function(index, element) {
         var $element = $JQry(element);
@@ -231,6 +233,10 @@ $JQry(function() {
 });
 
 
+
+
+
+
 function importModalSubmit(element) {
     const modalElement = element.closest('.modal');
 
@@ -269,6 +275,42 @@ $JQry(function() {
 });
 
 
+$JQry(function () {
+    'use strict';
+
+    const propertiesElements = document.querySelectorAll('.portal-properties-administration');
+    propertiesElements.forEach(propertyElement => {
+        if (!propertyElement.dataset.loaded) {
+            const modalElements = propertyElement.querySelectorAll(".confirmation-modal");
+            modalElements.forEach(modalElement => {
+                modalElement.addEventListener('show.bs.modal', event => {
+                    // Update form action
+                    const form = modalElement.querySelector('form');
+                    form.action = event.relatedTarget.dataset.confirmationUrl;
+                    
+                    const message = modalElement.querySelector('.confirmationMessage');
+                    message.innerHTML = event.relatedTarget.dataset.confirmationMsg;
+                    
+                });
+            });
+
+            propertyElement.dataset.loaded = 'true';
+        }
+    });
+});
+
+
+function confirmModalSubmit(element) {
+    const modalElement = element.closest('.modal');
+
+    const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
+    bootstrapModal.hide();
+    
+
+    // Submit form
+    const submit = modalElement.querySelector('input[type=submit]');
+    submit.click();
+}
 
 
 

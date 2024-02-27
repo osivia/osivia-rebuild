@@ -49,12 +49,18 @@
                                         <portlet:actionURL name="deleteProfile" var="deleteProfileUrl">
                                             <portlet:param name="index" value="${status.index}" />
                                         </portlet:actionURL>
-                                            
-                                        <a href="${deleteProfileUrl}" class="btn link-primary btn-sm mb-1 ml-1 ">
-                                             <i class="glyphicons glyphicons-basic-bin"></i>
+                                        
+                                        
+                                       
+
+						                   <a href="javascript:" class="input-confirmation-modal btn  link-primary btn-sm mb-1 ml-1 " data-confirmation-url="${deleteProfileUrl}" data-confirmation-msg="<op:translate key='MODIFY_SPACE_CONFIRM_PROFILE_DELETE_MSG' args='${profile.name}' />" data-bs-toggle="modal" data-bs-target="#${namespace}-confirmation-modal">
+						                       <i class="glyphicons glyphicons-basic-bin"></i>
                                              <strong class="d-none d-md-inline"><op:translate
                                                      key="MODIFY_PROFILE_DELETE_LABEL"/></strong>
-                                        </a>
+						                  </a>
+
+                                        
+                                            
         
                                         
                                     </div>
@@ -102,4 +108,6 @@
  
     	</div>
     </div>
-</div>    
+    
+
+</div>
