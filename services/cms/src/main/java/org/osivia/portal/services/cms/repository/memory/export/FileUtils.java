@@ -313,39 +313,89 @@ public class FileUtils {
         
         boolean profilesChecked = true;
         
-        List<String> errorRoles = new ArrayList<>();
-        Set<String> storedRoles = new HashSet<>();
+
         List<Profile> readProfiles = inDatas.documents.get(0).profiles;
-        for(Profile profile: readProfiles)   {
-            if( storedRoles.contains(profile.getRole())) {
-                errorRoles.add(profile.getRole());
-            }
-            storedRoles.add(profile.getRole());
-        }
-        
         
         String profileMessage = "";
-        if( errorRoles.size() > 0)  {
-            profilesChecked = false;
-            
-            StringBuffer rolesDisplayList = new StringBuffer();
-            for( String errorProfile : errorRoles)   {
-                if( rolesDisplayList.length() > 0)  {
-                    rolesDisplayList.append(",");
-                }
-                rolesDisplayList.append(errorProfile);
+        
+        
+        /* Profile name unicity */
+        
+
+        List<String> errorProfiles = new ArrayList<>();
+        Set<String> storedProfiles = new HashSet<>();
+        
+        for(Profile profile: readProfiles)   {
+            if( storedProfiles.contains(profile.getName())) {
+                errorProfiles.add(profile.getName());
             }
-            
-            
-            if( errorRoles.size() == 1) {
-                profileMessage = "Rôle "+rolesDisplayList.toString()+" référencé dans plusieurs profils";
-            }   else    {
-                profileMessage = "Rôles "+rolesDisplayList.toString()+" référencés dans plusieurs profils";
-            }
-            
+            storedProfiles.add(profile.getName());
         }
         
-        res.getItems().add(new StreamableCheckResult("ROLE_UNICITY", profilesChecked, profileMessage));
+        
+        
+        if( errorProfiles.size() > 0)  {
+            profilesChecked = false;
+            
+            StringBuffer profilesDiplayList = new StringBuffer();
+            for( String errorProfile : errorProfiles)   {
+                if( profilesDiplayList.length() > 0)  {
+                    profilesDiplayList.append(",");
+                }
+                profilesDiplayList.append(errorProfile);
+            }
+            
+            
+            if( errorProfiles.size() == 1) {
+                profileMessage = "Profil " + profilesDiplayList + " en double";
+            }   else    {
+                profileMessage = "Profils " + profilesDiplayList + " en double";
+            }
+        }
+        
+        
+        /* Roles Unicity */
+
+        if( profilesChecked) {
+
+            List<String> errorRoles = new ArrayList<>();
+            Set<String> storedRoles = new HashSet<>();
+            
+            for(Profile profile: readProfiles)   {
+                if( StringUtils.isNotEmpty(profile.getRole()))  {
+                    if( storedRoles.contains(profile.getRole())) {
+                        errorRoles.add(profile.getRole());
+                    }
+                storedRoles.add(profile.getRole());
+                }
+            }
+            
+            
+            
+            if( errorRoles.size() > 0)  {
+                profilesChecked = false;
+                
+                StringBuffer rolesDisplayList = new StringBuffer();
+                for( String errorProfile : errorRoles)   {
+                    if( rolesDisplayList.length() > 0)  {
+                        rolesDisplayList.append(",");
+                    }
+                    rolesDisplayList.append(errorProfile);
+                }
+                
+                
+                if( errorRoles.size() == 1) {
+                    profileMessage = "Rôle "+rolesDisplayList.toString()+" référencé dans plusieurs profils";
+                }   else    {
+                    profileMessage = "Rôles "+rolesDisplayList.toString()+" référencés dans plusieurs profils";
+                }
+            }
+        }
+        
+
+        
+        
+        res.getItems().add(new StreamableCheckResult("PROFILE_UNICITY", profilesChecked, profileMessage));
     }
     
     
