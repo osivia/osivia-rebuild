@@ -22,12 +22,17 @@
  ******************************************************************************/
 package org.jboss.portal.core.controller.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.SignOutResponse;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 
 /**
  * A global signout.
@@ -66,6 +71,26 @@ public class SignOutCommand extends ControllerCommand
 
    public ControllerResponse execute() throws ControllerException
    {
+      if( location == null) {
+          ControllerContext controllerContext = this.getControllerContext();
+
+          PortalControllerContext portalCtx = new PortalControllerContext(controllerContext.getServerInvocation().getServerContext().getClientRequest());
+ 
+          // Apply black list
+          UniversalID hostID = PortalObjectUtils.getHostPortalID(portalCtx.getHttpServletRequest());
+          
+          if( hostID != null) {
+
+              String propertyName = "osivia.cms.repository."+hostID.getRepositoryName()+".logout.url";
+              String locationProp = System.getProperty(propertyName);
+              if( StringUtils.isNotEmpty(locationProp)) {
+                  location = locationProp;
+              }
+          }   
+
+
+      }
+       
       if (location != null)
       {
          return new SignOutResponse(location);

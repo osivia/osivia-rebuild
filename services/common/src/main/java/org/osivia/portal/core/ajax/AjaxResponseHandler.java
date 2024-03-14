@@ -1120,10 +1120,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(((RedirectionResponse) controllerResponse).getLocation());
                 return new AjaxResponse(dresp);
 
-            }  else if (controllerResponse instanceof ErrorResponse) {
+                }  else if (controllerResponse instanceof ErrorResponse) {
                 return handleAjaxError(controllerContext, controllerResponse);  
-             }
-            
+                }  else if (controllerResponse instanceof UnavailableResourceResponse) {
+                return handleAjaxError(controllerContext, controllerResponse);  
+             }            
 
             else {
                 return null;
