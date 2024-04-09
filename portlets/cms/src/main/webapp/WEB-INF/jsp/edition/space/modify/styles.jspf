@@ -59,7 +59,7 @@
                                          <portlet:param name="srcIndex" value="${status.index}" />
                                     </portlet:actionURL>
                                 
-                                    <select class="form-select move-select">
+                                    <select class="form-control  form-select move-select">
                                         <%--Move--%>
                             
                                          <c:forEach var="order" items="${form.styles}" varStatus="orderStatus">

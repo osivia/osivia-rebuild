@@ -48,7 +48,7 @@
          </c:if>
 
                      <div class="form-group col-md-6">
-                         <div class="form-check text-truncate">
+                         <div class="form-check ">
                              <form:checkbox path="mergedPages" value="${page.key}" cssClass="form-check-input" />
                              <div class="d-flex w-100">
                                 <div class="col-6 text-truncate ">${page.value}</div>
