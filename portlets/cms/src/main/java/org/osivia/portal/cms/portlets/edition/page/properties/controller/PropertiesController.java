@@ -225,14 +225,6 @@ public class PropertiesController extends GenericPortlet implements PortletConte
 	                    else
 	                        document.getProperties().remove(OSIVIA_PAGE_CATEGORY);
                     }
-                    
-                    // Selectors propagation
-                    if (form.isSelectorsPropagation()) {
-                    	document.getProperties().put(OSIVIA_CMS_PROPAGATE_SELECTORS, "1");
-                    } else if (document.getProperties().get(OSIVIA_CMS_PROPAGATE_SELECTORS) != null) {
-                    	document.getProperties().remove(OSIVIA_CMS_PROPAGATE_SELECTORS);
-                    }
-                    
 
 
                     ((AdvancedRepository) repository).updateDocument(form.getId(), document);
@@ -415,11 +407,6 @@ public class PropertiesController extends GenericPortlet implements PortletConte
             form.setThemes(formThemes);
             
             
-
-            // Selectors propagation page indicator
-            Boolean selectorsPropagation = "1".equals((String) document.getProperties().get(OSIVIA_CMS_PROPAGATE_SELECTORS));
-            form.setSelectorsPropagation(selectorsPropagation);
-
             // categories (optional)
             String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
 

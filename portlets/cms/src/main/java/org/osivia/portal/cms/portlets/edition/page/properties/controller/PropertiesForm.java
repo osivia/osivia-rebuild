@@ -20,9 +20,6 @@ public class PropertiesForm {
     private String themeId;
     private String category;
 
-    private boolean selectorsPropagation;
-
-
 
 
 	private Map<String, String> layouts;
@@ -103,14 +100,7 @@ public class PropertiesForm {
         this.id = id;
     }
 
-	public boolean isSelectorsPropagation() {
-		return selectorsPropagation;
-	}
 
-
-	public void setSelectorsPropagation(boolean selectorsPropagation) {
-		this.selectorsPropagation = selectorsPropagation;
-	}
 
     public boolean isModifiableId() {
 		return modifiableId;

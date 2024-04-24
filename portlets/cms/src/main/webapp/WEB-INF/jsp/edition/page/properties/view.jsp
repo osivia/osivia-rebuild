@@ -45,11 +45,6 @@
      </div>	     
      
      
-     <div class="form-group form-check">
-         <form:checkbox path="selectorsPropagation" cssClass="form-check-input" />
-         <form:label path="selectorsPropagation" cssClass="form-check-label" ><op:translate key="MODIFY_PAGE_PROPERTIES_SELECTORS_PROPAGATION_LABEL" /></form:label>
-      </div> 
-
 	  <c:if test="${not empty form.categories}">     
 	     <div class="form-group">
 	         <form:label path="category"><op:translate key="MODIFY_PAGE_PROPERTIES_CATEGORY_LABEL" /></form:label>

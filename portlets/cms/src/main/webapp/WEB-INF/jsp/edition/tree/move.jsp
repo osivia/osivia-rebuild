@@ -4,8 +4,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal"
 	prefix="op"%>
-<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice"
-	prefix="ttc"%>
 <%@ page contentType="text/html" isELIgnored="false"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
