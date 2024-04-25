@@ -553,29 +553,35 @@ public class FileUtils {
 
                 // Determine new order according to order in current repository
                 
-                if (newParent != null) {
+                if (newParent != null && newParent.getDoc().children != null) {
                     NavigationItem documentToAddParent = repository.getNavigationItem(((MemoryRepositoryDocument) documentToAdd).getParentInternalId());
 
 
                     List<NavigationItem> documentToAddParentChildren = new ArrayList<>(documentToAddParent.getChildren());
                     Collections.reverse(documentToAddParentChildren);
                     
+                    boolean endSearchTargetIndex = false;
                     boolean foundChild = false;
                     for (NavigationItem documentToAddParentChild : documentToAddParentChildren) {
                         // Search for source child
                         if (documentToAddParentChild.getDocumentId().getInternalID().equals(internalId))
                             foundChild = true;
                         else {
-
-                            // search  if we have reached the current element 
-                            // but none of the preceding doc has been found
-                            if (foundChild && newOrder == -1) {
+                            // continue to search until we find
+                            // a document positioned before the current document
+                            if (!endSearchTargetIndex) {
                                 int i = 0;
                                 // Search for destination child
                                 for (ExportRepositoryDocument newChild : newParent.getDoc().children) {
                                     if ( newChild.id.equals(documentToAddParentChild.getDocumentId().getInternalID())) {
-                                         // the new item is positionned after the detination doc
-                                         newOrder = i + 1;
+                                        if (!foundChild)  
+                                            // the new item is positionned before the detination doc
+                                            newOrder = i;
+                                        else    {
+                                           // the new item is positionned after the detination doc
+                                           newOrder = i + 1;
+                                           endSearchTargetIndex = true;
+                                        }
                                     }
                                     i++;
                                 }
@@ -593,7 +599,7 @@ public class FileUtils {
                     if (newOrder != -1)
                         newParent.getDoc().children.add(newOrder, documentToSave);
                     else
-                        newParent.getDoc().children.add(0, documentToSave);
+                        newParent.getDoc().children.add( documentToSave);
                 }   else    {
                     mergeOutDatas.documents.remove(0);
                     outRoot = documentToSave;
@@ -630,21 +636,29 @@ public class FileUtils {
                     List<Profile> orderedChildren = new ArrayList<Profile>( currentProfiles);
                     Collections.reverse(orderedChildren);
                     
+                    boolean endSearchTargetIndex = false;
                     for (Profile profileToFind : orderedChildren) {
                         // Search for source child
                         if (profileToFind.getName().equals(profileName)) {
                             foundChild = true;
                         } else {
-                            // search  if we have reached the current element 
-                            // but none of the preceding doc has been found
-                            if (foundChild && newOrder == -1) {
+                            // continue to search until we find
+                            // a document positioned before the current document
+                            if (! endSearchTargetIndex) {
                                 int i = 0;
                                 // Search for destination child
                                 for (Profile newChild : outProfiles) {
                                     if (newChild.getName().equals(profileToFind.getName())) {
+                                        if (!foundChild)  
+                                            // the new item is positionned before the detination doc
+                                            newOrder = i;
+                                        else    {
                                             // the new item is positionned after the detination doc
                                             newOrder = i + 1;
+                                            endSearchTargetIndex = true;
+                                        }
                                     }
+
                                     i++;
                                 }
                             }
@@ -658,7 +672,7 @@ public class FileUtils {
                     if (newOrder != -1)
                         outProfiles.add(newOrder, profileToSave);
                     else
-                        outProfiles.add(0, profileToSave);
+                        outProfiles.add( profileToSave);
                     
                 }
             
