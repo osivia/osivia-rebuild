@@ -23,10 +23,36 @@ public class RepositoryForm {
     private MultipartFile fileUpload;
     private File fileToMerge;
     private File fileDownload;
-
-    private MergeParameters mergeParams = new MergeParameters();
-    private Set<String> mergedPages = new HashSet<String>();
     
+    boolean mergeStyles;
+    private Set<String> mergedPages = new HashSet<String>();
+    private Set<String> mergedProfiles = new HashSet<String>();
+    
+    
+    
+    public Set<String> getMergedProfiles() {
+        return mergedProfiles;
+    }
+
+
+    
+    public void setMergedProfiles(Set<String> mergedProfiles) {
+        this.mergedProfiles = mergedProfiles;
+    }
+
+
+    public boolean isMergeStyles() {
+        return mergeStyles;
+    }
+
+   
+    public void setMergeStyles(boolean mergeStyles) {
+        this.mergeStyles = mergeStyles;
+    }
+    
+
+
+
     private CheckedItems checkedItems;
     
     
@@ -73,9 +99,7 @@ public class RepositoryForm {
     }
 
     
-    public MergeParameters getMergeParams() {
-        return mergeParams;
-    }
+
 
     
     public MultipartFile getFileUpload() {

@@ -46,10 +46,15 @@ import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.model.Document;
 import org.osivia.portal.api.cms.model.NavigationItem;
+import org.osivia.portal.api.cms.model.Page;
+import org.osivia.portal.api.cms.model.Profile;
+import org.osivia.portal.api.cms.model.Space;
 import org.osivia.portal.api.cms.repository.BaseUserRepository;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.MergeException;
+import org.osivia.portal.api.cms.service.MergeParameters;
 import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.cms.service.StreamableCheckResult;
 import org.osivia.portal.api.cms.service.StreamableCheckResults;
@@ -325,10 +330,14 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             
             String repositoryName = WindowFactory.getWindow(request).getProperty("osivia.repository.name");
             
-            form.getMergeParams().setPagesId(new ArrayList<>(form.getMergedPages()));
+            MergeParameters mergeParams = new MergeParameters();
+            mergeParams.setPagesId(new ArrayList<>(form.getMergedPages()));
+            mergeParams.setMergeProfiles(new ArrayList<>(form.getMergedProfiles()));
+            mergeParams.setMergeStyles(form.isMergeStyles());
+            
             
             StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, repositoryName);
-            repository.merge(fileToMergeInput,  form.getMergeParams(), fileToMergeOutput);
+            repository.merge(fileToMergeInput,  mergeParams, fileToMergeOutput);
             
             form.setFileDownload(f);
             
@@ -376,6 +385,23 @@ public class RepositoryController extends GenericPortlet implements PortletConte
         return document;
     }    
      
+    
+    /**
+     * get Current space
+     * 
+     * @param portalCtx
+     * @return
+     * @throws CMSException
+     */
+    private Space getSpaceDocument(PortalControllerContext portalCtx) throws CMSException {
+
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+
+        Space space = (Space) cmsService.getCMSSession(cmsContext).getDocument(getSpace(portalCtx).getDocumentId());
+
+        return space;
+    } 
     
      
     /**
@@ -448,9 +474,31 @@ public class RepositoryController extends GenericPortlet implements PortletConte
 
             RepositoryForm form = this.applicationContext.getBean(RepositoryForm.class);
             
-           
-            
             return form;
+       } catch ( Exception e) {
+            throw new PortletException(e);
+        }
+    }
+
+    private List<String> getSpaceProfiles(PortalControllerContext portalCtx) throws CMSException {
+        Space space = getSpaceDocument(portalCtx);
+        List<String> profiles = new ArrayList<String>();
+        for(Profile profile: space.getProfiles())   {
+            profiles.add(profile.getName());
+        }
+        return profiles;
+    }
+    
+    
+    @ModelAttribute("profiles")
+    public List<String> getProfiles(PortletRequest request, PortletResponse response) throws PortletException {
+
+        // Portal controller context
+        PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+        
+        try {
+           
+            return getSpaceProfiles(portalCtx);
 
         } catch ( Exception e) {
             throw new PortletException(e);

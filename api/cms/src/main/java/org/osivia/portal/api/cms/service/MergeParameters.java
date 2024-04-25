@@ -2,10 +2,22 @@ package org.osivia.portal.api.cms.service;
 
 import java.util.List;
 
+import org.osivia.portal.api.cms.model.Profile;
+
 public class MergeParameters {
     
     boolean mergeStyles;
-    boolean mergeProfiles;
+    List<String> mergeProfiles;
+    
+    public List<String> getMergeProfiles() {
+        return mergeProfiles;
+    }
+
+    
+    public void setMergeProfiles(List<String> mergeProfiles) {
+        this.mergeProfiles = mergeProfiles;
+    }
+
     List<String> pagesId;
     
     public boolean isMergeStyles() {
@@ -16,13 +28,7 @@ public class MergeParameters {
         this.mergeStyles = mergeStyles;
     }
     
-    public boolean isMergeProfiles() {
-        return mergeProfiles;
-    }
-    
-    public void setMergeProfiles(boolean mergeProfiles) {
-        this.mergeProfiles = mergeProfiles;
-    }
+
     
     public List<String> getPagesId() {
         return pagesId;

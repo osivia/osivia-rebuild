@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -558,6 +559,7 @@ public class FileUtils {
 
                     List<NavigationItem> documentToAddParentChildren = new ArrayList<>(documentToAddParent.getChildren());
                     Collections.reverse(documentToAddParentChildren);
+                    
                     boolean foundChild = false;
                     for (NavigationItem documentToAddParentChild : documentToAddParentChildren) {
                         // Search for source child
@@ -565,20 +567,15 @@ public class FileUtils {
                             foundChild = true;
                         else {
 
-                            // continue if
-                            // - we don't have reached the current element
-                            // - we have reached the current element but no preceding doc is found
-                            if (!foundChild || newOrder == -1) {
+                            // search  if we have reached the current element 
+                            // but none of the preceding doc has been found
+                            if (foundChild && newOrder == -1) {
                                 int i = 0;
                                 // Search for destination child
                                 for (ExportRepositoryDocument newChild : newParent.getDoc().children) {
-                                    if (newOrder == -1 && newChild.id.equals(documentToAddParentChild.getDocumentId().getInternalID())) {
-                                        if (!foundChild)
-                                            // the new item is positionned before the detination doc
-                                            newOrder = i;
-                                        else
-                                            // the new item is positionned after the detination doc
-                                            newOrder = i + 1;
+                                    if ( newChild.id.equals(documentToAddParentChild.getDocumentId().getInternalID())) {
+                                         // the new item is positionned after the detination doc
+                                         newOrder = i + 1;
                                     }
                                     i++;
                                 }
@@ -596,7 +593,7 @@ public class FileUtils {
                     if (newOrder != -1)
                         newParent.getDoc().children.add(newOrder, documentToSave);
                     else
-                        newParent.getDoc().children.add(documentToSave);
+                        newParent.getDoc().children.add(0, documentToSave);
                 }   else    {
                     mergeOutDatas.documents.remove(0);
                     outRoot = documentToSave;
@@ -614,8 +611,62 @@ public class FileUtils {
             }
             
 
-            if (params.isMergeProfiles())
-                outRoot.profiles = ((Space) documents.get("DEFAULT")).getProfiles();
+         
+            if (params.getMergeProfiles().size() > 0)   {
+                
+                List<Profile> outProfiles = new ArrayList<Profile>(outRoot.profiles);
+                List<Profile> currentProfiles = ((Space) documents.get("DEFAULT")).getProfiles();
+                
+                
+                for (String profileName : params.getMergeProfiles()) {
+ 
+                    // Remove old profile if exists
+                    outProfiles.removeIf(profile -> profile.getName().equals(profileName));
+
+                    // Determine new order according to order in current repository
+                    int newOrder = -1;
+                    boolean foundChild = false;
+
+                    List<Profile> orderedChildren = new ArrayList<Profile>( currentProfiles);
+                    Collections.reverse(orderedChildren);
+                    
+                    for (Profile profileToFind : orderedChildren) {
+                        // Search for source child
+                        if (profileToFind.getName().equals(profileName)) {
+                            foundChild = true;
+                        } else {
+                            // search  if we have reached the current element 
+                            // but none of the preceding doc has been found
+                            if (foundChild && newOrder == -1) {
+                                int i = 0;
+                                // Search for destination child
+                                for (Profile newChild : outProfiles) {
+                                    if (newChild.getName().equals(profileToFind.getName())) {
+                                            // the new item is positionned after the detination doc
+                                            newOrder = i + 1;
+                                    }
+                                    i++;
+                                }
+                            }
+
+                        }
+                    }
+                    
+                    // save profile
+                    Profile profileToSave = currentProfiles.stream().filter(x -> x.getName().equals(profileName)).findFirst().get();
+   
+                    if (newOrder != -1)
+                        outProfiles.add(newOrder, profileToSave);
+                    else
+                        outProfiles.add(0, profileToSave);
+                    
+                }
+            
+
+
+                     
+                outRoot.profiles = outProfiles;
+            }
 
             if (params.isMergeStyles())
                 outRoot.styles = ((Space) documents.get("DEFAULT")).getStyles();
