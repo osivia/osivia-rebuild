@@ -12,6 +12,9 @@
     <portlet:param name="count" value="${count + 1}"/>
 </portlet:actionURL>
 
+<portlet:actionURL name="setSession" var="setSessionURL">
+</portlet:actionURL>
+
 <portlet:actionURL name="startWindow" var="startWindowURL">
 </portlet:actionURL>
 
@@ -43,6 +46,8 @@
 
 <p>  user : ${user} </p>
 
+<p>  user : ${sessionDatas} </p>
+
 <p> <op:translate key="SAMPLE_MSG_1" /> <op:translate key="CUSTOMIZER_MSG_1" /></p>
 
 <div class="input-group">
@@ -57,7 +62,7 @@
        <a href="${startWindowURL}" class="btn btn-secondary">startWindow</a>
     </span>
       <span >
-       <a href="${pageURL}" class="btn btn-secondary">goToPageA</a>
+       <a href="${setSessionURL}" class="btn btn-secondary">setSession</a>
     </span>  
         <span >
        <a href="${throwExceptionURL}" class="btn btn-secondary">Exception</a>

@@ -126,6 +126,10 @@ public class SampleController implements PortletContextAware {
         
         request.setAttribute("user", request.getRemoteUser());
         
+        String sessionDatas = (String) request.getPortletSession(true).getAttribute("testSession");
+        if( sessionDatas != null)
+            request.setAttribute("sessionDatas OK!", sessionDatas);            
+        
         return "view-1";
     }
 
@@ -213,6 +217,20 @@ public class SampleController implements PortletContextAware {
     public void add(ActionRequest request, ActionResponse response, @RequestParam(name = "count") String count) {
         logger.info("SamplePortlet Add");
         response.setRenderParameter("count", count);
+    }
+    
+    
+    /**
+     * Action mapping
+     *
+     * @param request action request
+     * @param response action response
+     * @param count count request parameter
+     */
+    @ActionMapping(name = "setSession")
+    public void setSession(ActionRequest request, ActionResponse response) {
+        logger.info("SamplePortlet setSession");
+        request.getPortletSession(true).setAttribute("testSession", "Session data");
     }
 
 
