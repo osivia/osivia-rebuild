@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -106,7 +107,12 @@ public class SignOutInterceptor extends ServerInterceptor
    private void after(ServerInvocation invocation)
    {
       // Put the contexts that have been used during this invocation into the global set
+       
+       try  {
       ServerInvocationContext context = invocation.getServerContext();
+      
+     
+      
       HttpSession session = context.getClientRequest().getSession();
       Set contexts = (Set)session.getAttribute(KEY);
       if (contexts == null)
@@ -178,6 +184,41 @@ public class SignOutInterceptor extends ServerInterceptor
          // Set information about logout 
          req.setAttribute("org.jboss.portal.logout", "true");
       }
+      
+       } catch( Exception e)    {
+           ServerInvocationContext context = invocation.getServerContext();
+           String url = context.getClientRequest().getRequestURI();
+           Enumeration<String> names = context.getClientRequest().getParameterNames();
+           boolean resourceUrl = false;
+
+           boolean firstParameter = true;
+           while(names.hasMoreElements())   {
+               if( firstParameter == true) {
+                   url += "?";
+               }    else    {
+                   url += "&";
+               }
+               
+               String name = names.nextElement();
+               String value = context.getClientRequest().getParameter(name);
+               
+               if( "action".equals(name) && "f".equals(value)) {
+                   resourceUrl = true;
+               }
+               
+               url += name+ "=" + value;
+               
+           }
+           
+
+           if( resourceUrl == true && e instanceof IllegalStateException)   {
+               // Resource may be sent after a signout command
+               // So we can ignore this error (the session has already been deleted, so the work has yet been done)
+           }
+           else {
+               log.error("An error occured when invalidate the session url : "+ url + " message: "+ e.getMessage());
+           }
+       }
    }
 
    public static class Invalidation implements RequestDispatchCallback
