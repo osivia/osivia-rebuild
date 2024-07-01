@@ -1,5 +1,6 @@
 package org.osivia.portal.cms.portlets.edition.page.acls.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,19 @@ public class AclsForm {
     
  
     private List<String> profiles;
+    private List<String> unreferencedLdapRoles = new ArrayList<>();
+    
+    
+    public List<String> getUnreferencedLdapRoles() {
+        return unreferencedLdapRoles;
+    }
 
     
+    public void setUnreferencedLdapRoles(List<String> unreferencedLdapRoles) {
+        this.unreferencedLdapRoles = unreferencedLdapRoles;
+    }
+
+
     public List<String> getProfiles() {
         return profiles;
     }

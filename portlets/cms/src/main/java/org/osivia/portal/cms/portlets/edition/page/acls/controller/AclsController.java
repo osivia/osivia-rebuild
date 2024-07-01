@@ -181,8 +181,15 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
                         }
 
                     }
-
                 }
+                
+                for (String role : form.getUnreferencedLdapRoles()) {
+                   acls.add(GROUP_PREFIX + role);
+                }
+
+
+                
+                
 
                 ((AdvancedRepository) userRepository).setACL(document.getId().getInternalID(), acls);
             }
@@ -286,6 +293,7 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
 
             if (userRepository instanceof AdvancedRepository) {
                 List<String> formProfiles = new ArrayList<>();
+                List<String> unreferencedLdapRoles = new ArrayList<>();
 
                 List<String> acls = ((AdvancedRepository) userRepository).getACL(document.getId().getInternalID());
 
@@ -300,15 +308,22 @@ public class AclsController extends GenericPortlet implements PortletContextAwar
                     }
 
 
+                    boolean found = false;
                     for (Profile profile : profiles) {
                         if (StringUtils.equals(role, profile.getRole())) {
                             formProfiles.add(profile.getName());
+                            found = true;
                         }
+                    }
+                    
+                    if( !found) {
+                        unreferencedLdapRoles.add( role);
                     }
                }
 
 
                 form.setProfiles(formProfiles);
+                form.setUnreferencedLdapRoles(unreferencedLdapRoles);
             }
 
             return form;

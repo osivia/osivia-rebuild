@@ -29,6 +29,18 @@
 			   </div>
 			</c:forEach>
 		</div>
+		
+		<c:if test="${not empty form.unreferencedLdapRoles}">
+			<form:label path="profiles"><op:translate key="MODIFY_PAGE_ACLS_UNREFERENCED_PROFILE" /></form:label>
+			<div class="form-group">
+	            <c:forEach var="role" items="${form.unreferencedLdapRoles}">
+	                <div class="form-check">
+	                    <form:checkbox path="unreferencedLdapRoles" value="${role}" cssClass="form-check-input"/>
+	                    <form:label path="unreferencedLdapRoles" cssClass="form-check-label" >${role}</form:label>
+	               </div>
+	            </c:forEach>
+	        </div>
+	    </c:if>
 	</div>	
 
     <%--Buttons--%>
