@@ -284,13 +284,52 @@ $JQry(function () {
             const modalElements = propertyElement.querySelectorAll(".confirmation-modal");
             modalElements.forEach(modalElement => {
                 modalElement.addEventListener('show.bs.modal', event => {
+                    // check before confirmation
+                    var checkUrl = event.relatedTarget.dataset.checkUrl;
+                    
+                    let controlMsg = "OK";
+                    
+                    if(checkUrl != undefined)   {
+                        controlMsg = jQuery.ajax({
+                            async: false,
+                            cache: false,
+                            dataType: 'text',
+                            global: false,
+                            type: 'get',
+                            url: checkUrl,
+                            error: function () {
+                                return null;
+                            },
+                            success: function (data) {
+                                return data;
+                            }
+                        }).responseText;
+                    }
+                    
                     // Update form action
                     const form = modalElement.querySelector('form');
                     form.action = event.relatedTarget.dataset.confirmationUrl;
                     
-                    const message = modalElement.querySelector('.confirmationMessage');
-                    message.innerHTML = event.relatedTarget.dataset.confirmationMsg;
+                    const dialog = modalElement.querySelector('.modal-dialog');
+                    const title = modalElement.querySelector('.modal-title');
                     
+                    const confirmationTitle = modalElement.querySelector('.confirmationTitle');
+                    const message = modalElement.querySelector('.confirmationMessage');
+                    const button = modalElement.querySelector('.confirmationButton');      
+                                  
+                    if( controlMsg != "OK") {
+                        dialog.classList.add("modal-lg");
+                        confirmationTitle.innerHTML=title.getAttribute("data-error-title");
+                        message.innerHTML = controlMsg;
+                        button.classList.add("d-none");
+
+                    }
+                    else   {
+                        dialog.classList.remove("modal-lg");
+                        confirmationTitle.innerHTML=title.getAttribute("data-confirm-title");
+                        message.innerHTML = event.relatedTarget.dataset.confirmationMsg;
+                        button.classList.remove("d-none");
+                    }
                 });
             });
 

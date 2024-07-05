@@ -64,8 +64,8 @@
          <div class="modal-dialog">
              <div class="modal-content">
                  <div class="modal-header">
-                     <h5 class="modal-title">
-                         <span><op:translate key="MODIFY_SPACE_CONFIRM_DELETE_TITLE"/></span>
+                     <h5 class="modal-title" data-confirm-title="<op:translate key="MODIFY_SPACE_CONFIRM_DELETE_TITLE"/>"  data-error-title="<op:translate key="MODIFY_SPACE_CONFIRM_DELETE_ERROR_TITLE"/>">
+                         <span class="confirmationTitle"></span>
                      </h5>            
                  </div>
                  <div class="modal-body">
@@ -76,8 +76,9 @@
                              
                          </p>
      
-                         <div class="d-flex justify-content-center gap-2">
-                             <button type="button" class="btn btn-primary" onclick="confirmModalSubmit(this);">
+                         
+                         <div class="d-flex justify-content-center gap-2 ">
+                             <button type="button" class="btn btn-primary confirmationButton" onclick="confirmModalSubmit(this);">
                                  <span><op:translate key="MODIFY_SPACE_CONFIRM_DELETE"/></span>
                              </button>
      
@@ -85,6 +86,7 @@
                                  <span><op:translate key="CANCEL"/></span>
                              </button>
                          </div>
+                         
                      </form>
                  </div>
              </div>

@@ -50,10 +50,14 @@
                                             <portlet:param name="index" value="${status.index}" />
                                         </portlet:actionURL>
                                         
-                                        
+                                         <%--Check--%>
+			                             <portlet:resourceURL id="checkProfile" var="checkProfileUrl">
+			                                <portlet:param name="index" value="${status.index}" />
+			                             </portlet:resourceURL>
+                                                                               
                                        
 
-						                   <a href="javascript:" class="input-confirmation-modal btn  link-primary btn-sm mb-1 ml-1 " data-confirmation-url="${deleteProfileUrl}" data-confirmation-msg="<op:translate key='MODIFY_SPACE_CONFIRM_PROFILE_DELETE_MSG' args='${profile.name}' />" data-bs-toggle="modal" data-bs-target="#${namespace}-confirmation-modal">
+						                  <a href="javascript:" class="input-confirmation-modal btn  link-primary btn-sm mb-1 ml-1 " data-check-url="${checkProfileUrl}" data-confirmation-url="${deleteProfileUrl}" data-confirmation-msg="<op:translate key='MODIFY_SPACE_CONFIRM_PROFILE_DELETE_MSG' args='${profile.name}' />" data-bs-toggle="modal" data-bs-target="#${namespace}-confirmation-modal">
 						                       <i class="glyphicons glyphicons-basic-bin"></i>
                                              <strong class="d-none d-md-inline"><op:translate
                                                      key="MODIFY_PROFILE_DELETE_LABEL"/></strong>

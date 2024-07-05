@@ -1,22 +1,17 @@
 package org.osivia.portal.cms.portlets.edition.space.modify.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.StringBufferInputStream;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -24,43 +19,44 @@ import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONException;
 import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.CMSContext;
 import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.model.Document;
-import org.osivia.portal.api.cms.model.ModuleRef;
-import org.osivia.portal.api.cms.model.ModulesContainer;
+import org.osivia.portal.api.cms.model.NavigationItem;
 import org.osivia.portal.api.cms.model.Profile;
 import org.osivia.portal.api.cms.model.Space;
-import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
-import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.NativeRepository;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.cms.portlets.rename.controller.RenameForm;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,6 +83,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     @Autowired
     private CMSService cmsService;
 
+    
+    @Autowired
+    private IBundleFactory bundleFactory;
 
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
@@ -99,6 +98,8 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     protected static Log logger = LogFactory.getLog(ModifyController.class);
 
 
+    private static final String GROUP_PREFIX = "group:";
+    
     /**
      * Constructor.
      */
@@ -136,6 +137,77 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         }
 
         return "view";
+    }
+    
+    
+    
+    private void checkPageProfiles(PortalControllerContext portalControllerContext, AdvancedRepository userRepository, NavigationItem navItem, String role, List<NavigationItem> errorPages) throws JSONException, CMSException {
+        List<String> acls =  userRepository.getACL(navItem.getDocumentId().getInternalID());
+        if( acls.contains( GROUP_PREFIX + role)) {
+            errorPages.add(navItem);
+        }
+        
+        // Children
+        if (!navItem.getChildren().isEmpty()) {
+            for (NavigationItem child : navItem.getChildren()) {
+                this.checkPageProfiles(portalControllerContext, userRepository, child, role, errorPages);
+
+            }
+        }
+    }
+    
+    @ResourceMapping("checkProfile")
+    public void checkProfile(ResourceRequest request, ResourceResponse response, @ModelAttribute("form") ModifyForm form,
+            @RequestParam(value = "index", required = true) String index) throws PortletException {
+        
+        
+        int profileIndex = Integer.parseInt(index);
+        StringBuffer sbResponse = new StringBuffer();
+
+        try {
+
+                PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
+                Bundle bundle = this.bundleFactory.getBundle(portalCtx.getRequest().getLocale());
+                NavigationItem space = (NavigationItem) getSpace(portalCtx);
+                NativeRepository userRepository = getRepository(portalCtx);
+                
+
+                String ldapRole = form.getProfiles().get(profileIndex).getRole();
+                
+                               
+                List<NavigationItem> errorPages = new ArrayList<>();
+                checkPageProfiles(portalCtx, (AdvancedRepository) userRepository, space, ldapRole,errorPages);
+                
+                if(errorPages.size() > 0)   {
+                    sbResponse.append("<p>"+bundle.getString("MODIFY_SPACE_CONFIRM_DELETE_USED_PROFILE") + "</p>");
+                    sbResponse.append("<div class=\"m-3\">");
+                    for(int i=0; i< errorPages.size(); i++ ) {
+                        sbResponse.append("<div class=\"row\">");
+                        sbResponse.append("<span class=\"col-6 text-truncate\">"+errorPages.get(i).getTitle()+"</span>");
+                        sbResponse.append("<span class=\"col-6\">["+errorPages.get(i).getDocumentId().getInternalID()+"]</span>");
+                        sbResponse.append("</div>");
+                    }
+                    sbResponse.append("</div>");
+                }   else    {
+                    sbResponse.append("OK");
+                }
+ 
+
+
+            try {
+                response.getPortletOutputStream().write(sbResponse.toString().getBytes());
+            } finally {
+                response.getPortletOutputStream().close();
+            }
+        } catch (Exception e) {
+            if (!(e instanceof PortletException)) {
+                throw new PortletException(e);
+            } else {
+                throw ((PortletException) e);
+            }
+
+        }
+
     }
 
     @ActionMapping(name = "addProfile")
@@ -366,7 +438,6 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     }
     
     
-    
     private Document getDocument(PortalControllerContext portalCtx) throws CMSException {
 
         PortalWindow window = WindowFactory.getWindow(portalCtx.getRequest());
@@ -381,6 +452,36 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         return document;
     }
 
+    private NavigationItem getSpace(PortalControllerContext portalCtx) throws CMSException {
+
+        PortalWindow window = WindowFactory.getWindow(portalCtx.getRequest());
+        String spaceId = window.getProperty("osivia.space.id");
+
+
+        UniversalID id = new UniversalID(spaceId);
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+
+        NavigationItem space = cmsService.getCMSSession(cmsContext).getNavigationItem(id);
+
+        return space;
+    }
+
+    
+    private NativeRepository  getRepository(PortalControllerContext portalCtx) throws CMSException {
+
+        PortalWindow window = WindowFactory.getWindow(portalCtx.getRequest());
+        String spaceId = window.getProperty("osivia.space.id");
+
+
+        UniversalID id = new UniversalID(spaceId);
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+        
+        NativeRepository userRepository = cmsService.getUserRepository(cmsContext, id.getRepositoryName());
+
+        return userRepository;
+    }
 
     @Override
     public void setPortletContext(PortletContext portletContext) {

@@ -5,6 +5,8 @@ import javax.portlet.PortletConfig;
 import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
@@ -94,7 +96,12 @@ public class ModifyConfiguration implements PortletConfigAware {
         return Locator.getService(ILocaleService.class);
     }
     
-
+    @Bean
+    public IBundleFactory getBundleFactory() {
+        IInternationalizationService internationalizationService = Locator.getService( IInternationalizationService.MBEAN_NAME, IInternationalizationService.class);
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
+    }
+    
     
     
 }
