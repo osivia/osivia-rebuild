@@ -771,7 +771,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
                     status.setLiveSpace(BooleanUtils.isTrue(((Boolean) space.getProperties().get("osivia.connect.liveSpace"))));
 
                     if (status.isManageable()) {
-                        this.getSpaceConfiguration(portalControllerContext, ctrl, bundle, container, document, cmsContext, repository);
+                        Personnalization spacePersonnalization = cmsService.getCMSSession(cmsContext).getPersonnalization(document.getSpaceId());
+                       
+                        this.getSpaceConfiguration(portalControllerContext, ctrl, bundle, container, document, cmsContext, repository, spacePersonnalization);
                     }
 
                     if (getTemplateID(portalControllerContext, id, templatePath, cmsTemplatePath) == null) {
@@ -879,15 +881,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
         initCacheUrl.setParameter(ActionRequest.ACTION_NAME, "initCaches");
         this.addToolbarItem(dropdownMenu, initCacheUrl.toString(), bundle.getString("INIT_CACHES_ACTION"), "glyphicons glyphicons-basic-sync", false);
 
-        // Template
-        UniversalID templateID = getTemplateID(portalControllerContext, id, templatePath, cmsTemplatePath);
-        if (templateID != null) {
-            CMSContext cmsTemplateContext = ctrl.getCMSContext();
-            cmsTemplateContext.setPreview(false);
 
-            String url = portalUrlFactory.getViewContentUrl(portalControllerContext, cmsTemplateContext, templateID);
-            this.addToolbarItem(dropdownMenu, url, bundle.getString("MODIFY_PAGE_ACCESS_TO_TEMPLATE"), "glyphicons glyphicons-basic-thumbnails", false);
-        }
     }
 
 
@@ -919,23 +913,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
             dropdown.add(dropdownMenu);
 
 
-            // "${status.pageEdition && ( not status.supportPreview || status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
-            boolean hasPageSubtype = false;
-            for (String subType : personnalization.getSubTypes()) {
-                if (StringUtils.equalsIgnoreCase(subType, "Page"))
-                    hasPageSubtype = true;
-            }
 
-            if ((!repository.supportPreview() || cmsContext.isPreview()) && hasPageSubtype && portalControllerContext.getResponse() instanceof RenderResponse) {
-                
-                Map<String, String> properties = new HashMap<>();
-                ctrl.addContentRefToProperties(properties, "osivia.space.id", document.getSpaceId());
-
-
-                String createPageUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "CreationPagePortletInstance", properties, PortalUrlType.MODAL);
-                this.addToolbarItem(dropdownMenu, createPageUrl, bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true, "xl");
-
-            }
 
 
             if (document instanceof Space || document instanceof Page) {
@@ -1023,7 +1001,7 @@ public class EditionController implements PortletContextAware, ApplicationContex
     }
 
 
-    private void getSpaceConfiguration(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, CMSContext cmsContext, AdvancedRepository repository) throws PortalException {
+    private void getSpaceConfiguration(PortalControllerContext portalControllerContext, CMSController ctrl, Bundle bundle, Element toolbar, Document document, CMSContext cmsContext, AdvancedRepository repository,  Personnalization personnalization) throws PortalException {
         // Dropdown
         Element dropdown = DOM4JUtils.generateElement("li", "nav-item dropdown", null);
         toolbar.add(dropdown);
@@ -1065,6 +1043,26 @@ public class EditionController implements PortletContextAware, ApplicationContex
         ctrl.addContentRefToProperties(treeProperties, "osivia.browse.id", document.getId());
         String treeUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionTreeInstance", treeProperties, PortalUrlType.MODAL);
         this.addToolbarItem(dropdownMenu, treeUrl, bundle.getString("MODIFY_BROWSE_ACTION"), "glyphicons glyphicons-basic-list", true,"lg");
+        
+        
+        // "${status.pageEdition && ( not status.supportPreview || status.preview ) && fn:containsIgnoreCase(status.subtypes, 'page') }">
+        boolean hasPageSubtype = false;
+        for (String subType : personnalization.getSubTypes()) {
+            if (StringUtils.equalsIgnoreCase(subType, "Page"))
+                hasPageSubtype = true;
+        }
+
+        if ((!repository.supportPreview() || cmsContext.isPreview()) && hasPageSubtype && portalControllerContext.getResponse() instanceof RenderResponse) {
+            
+            Map<String, String> properties = new HashMap<>();
+            ctrl.addContentRefToProperties(properties, "osivia.space.id", document.getSpaceId());
+
+
+            String createPageUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "CreationPagePortletInstance", properties, PortalUrlType.MODAL);
+            this.addToolbarItem(dropdownMenu, createPageUrl, bundle.getString("MODIFY_PAGE_CREATE_ACTION"), "glyphicons glyphicons-basic-square-empty-plus", true, "xl");
+
+        }
+        
     }
 
     
