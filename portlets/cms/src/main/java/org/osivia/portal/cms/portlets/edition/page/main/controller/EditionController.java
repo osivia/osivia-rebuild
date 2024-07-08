@@ -893,6 +893,16 @@ public class EditionController implements PortletContextAware, ApplicationContex
 
     private void getEditionMenu(PortalControllerContext portalControllerContext, CMSController ctrl, EditionStatus status, Bundle bundle, Element toolbar, UniversalID id, CMSContext cmsContext, Document document, AdvancedRepository repository, Personnalization personnalization) throws PortalException {
         if (!repository.supportPreview() || cmsContext.isPreview()) {
+            
+            Document space = cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
+
+            List<String> unremovablePages = new ArrayList<>();
+            String defaultPage = (String) space.getProperties().get("portal.defaultPageId");
+            if( defaultPage != null)    {
+                unremovablePages.add(defaultPage);
+            }
+            unremovablePages.add("PUBLISH");
+            
             // Dropdown
             Element dropdown = DOM4JUtils.generateElement("li", "nav-item dropdown", null);
             toolbar.add(dropdown);
@@ -952,7 +962,9 @@ public class EditionController implements PortletContextAware, ApplicationContex
             this.addToolbarItem(dropdownMenu, renameUrl, bundle.getString("MODIFY_PAGE_RENAME_ACTION"), "glyphicons glyphicons-basic-text", true);
 
 
-            if (!id.getInternalID().equals("PUBLISH")) {
+            
+            
+            if (! unremovablePages.contains( id.getInternalID())) {
                 String deleteContentUrl;
                 properties = new HashMap<>();
                 ctrl.addContentRefToProperties(properties, "osivia.delete.id", id);
@@ -962,13 +974,15 @@ public class EditionController implements PortletContextAware, ApplicationContex
             }
 
 
-            if (document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace) {
-                if (status.isManageable()) {
-                    Map<String, String> aclsProperties = new HashMap<>();
-                    ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());
-
-                    String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
-                    this.addToolbarItem(dropdownMenu, aclsUrl, bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock", true);
+            if (! unremovablePages.contains( id.getInternalID())) {
+                if (document instanceof MemoryRepositoryPage || document instanceof MemoryRepositorySpace) {
+                    if (status.isManageable()) {
+                        Map<String, String> aclsProperties = new HashMap<>();
+                        ctrl.addContentRefToProperties(aclsProperties, "osivia.acls.id", document.getId());
+    
+                        String aclsUrl = portalUrlFactory.getStartPortletUrl(portalControllerContext, "EditionPageAclsPortletInstance", aclsProperties, PortalUrlType.MODAL);
+                        this.addToolbarItem(dropdownMenu, aclsUrl, bundle.getString("MODIFY_PAGE_ACLS_ACTION"), "glyphicons glyphicons-basic-lock", true);
+                    }
                 }
             }
 
