@@ -19,7 +19,7 @@
     <spring:bind path="profile.name">
         <div class="form-group required">
             <form:label path="profile.name"><op:translate key="MODIFY_PROFILE_NAME_LABEL" /></form:label>
-            <form:input path="profile.name" required="required" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
+            <form:input path="profile.name"  cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
             <form:errors path="profile.name" cssClass="invalid-feedback" />
         </div>
     </spring:bind>
@@ -34,7 +34,7 @@
     
     <spring:bind path="profile.url">
         <div class="form-group">
-            <form:label path="profile.url"><op:translate key="MODIFY_PROFILE_URL_LABEL" /></form:label>
+            <form:label path="profile.url"><op:translate key="MODIFY_PROFILE_HOME_PAGE_LABEL" /></form:label>
             <form:input path="profile.url" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
             <form:errors path="profile.url" cssClass="invalid-feedback" />
         </div>
