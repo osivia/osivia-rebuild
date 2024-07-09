@@ -2,6 +2,7 @@ package org.osivia.portal.api.ui.layout;
 
 import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 import java.util.List;
@@ -128,4 +129,14 @@ public interface LayoutItemsService {
      */
     boolean isDirty(PortalControllerContext portalControllerContext, Window window) throws PortalException;
 
+
+    /**
+     * Remove group in current page
+     * 
+     * @param portalControllerContext
+     * @param groupId
+     */
+
+
+    void removeGroup(PortalControllerContext portalControllerContext, UniversalID pageId, String groupId); 
 }

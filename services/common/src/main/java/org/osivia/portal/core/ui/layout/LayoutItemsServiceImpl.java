@@ -147,6 +147,67 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         return group;
     }
 
+    
+    @Override
+    public void removeGroup(PortalControllerContext portalControllerContext, UniversalID pageId, String groupId) {
+
+
+        if ((groupId != null) && (pageId != null)) {
+            // Page property
+            String property;
+
+            // Layout groups
+            List<LayoutGroupImpl> groups = this.getGroupsImpl(portalControllerContext);
+            if (CollectionUtils.isEmpty(groups)) {
+                groups = new ArrayList<>(1);
+            } else {
+                // Remove layout group
+                boolean removed = false;
+                Iterator<LayoutGroupImpl> iterator = groups.iterator();
+                while (!removed && iterator.hasNext()) {
+                    LayoutGroup next = iterator.next();
+                    if (StringUtils.equals(groupId, next.getId())) {
+                        iterator.remove();
+                        removed = true;
+                    }
+                }
+            }
+
+            
+
+            try {
+                // Page document
+                Document pageDocument = this.getPageDocument(portalControllerContext, pageId);
+                // Repository
+                AdvancedRepository repository = getRepository(portalControllerContext, pageDocument);
+
+                if( groups.size() > 0)  {
+                    // Container
+                    LayoutGroupsContainer container = new LayoutGroupsContainer();
+                    container.setGroups(groups);
+
+                    // JSON object mapper
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        property = mapper.writeValueAsString(container);
+                    } catch (JsonProcessingException e) {
+                        property = null;
+                        this.log.error(e.getLocalizedMessage());
+                    }
+                    // Update page
+                    pageDocument.getProperties().put(LAYOUT_GROUPS_PROPERTY, property);
+                
+                }   else    {
+                    pageDocument.getProperties().remove(LAYOUT_GROUPS_PROPERTY);
+                }
+                repository.updateDocument(pageDocument.getId().getInternalID(), (RepositoryDocument) pageDocument);
+            } catch (CMSException e) {
+                this.log.error(e);
+            }
+        }
+    }
+
+    
 
     @Override
     public void setGroup(PortalControllerContext portalControllerContext, LayoutGroup group) {

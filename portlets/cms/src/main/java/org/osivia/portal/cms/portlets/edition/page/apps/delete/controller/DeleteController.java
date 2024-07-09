@@ -34,6 +34,7 @@ import org.osivia.portal.api.cms.repository.model.shared.MemoryRepositoryPage;
 import org.osivia.portal.api.cms.repository.model.shared.RepositoryDocument;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -82,6 +83,12 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
     /** Portlet config. */
     @Autowired
     private PortletConfig portletConfig;
+    
+    /**
+     * Layout items service.
+     */
+    @Autowired
+    private LayoutItemsService layoutItemsService;
 
     /** The logger. */
     protected static Log logger = LogFactory.getLog(DeleteController.class);
@@ -176,13 +183,19 @@ public class DeleteController extends GenericPortlet implements PortletContextAw
 
             // Remove src module
             modules.remove(srcModule);
-
-
+                        
+            
             AdvancedRepository repository = TestRepositoryLocator.getTemplateRepository(cmsContext, id.getRepositoryName());
             if (repository instanceof AdvancedRepository) {
                 ((AdvancedRepository) repository).updateDocument(id.getInternalID(), (RepositoryDocument) document);
             }
-
+            
+            //  Remove group
+            String groupId = (String) srcModule.getProperties().get("layout.group.id");
+            if( StringUtils.isNotEmpty(groupId))   {
+                layoutItemsService.removeGroup(portalControllerContext, id, groupId);
+            }
+ 
         }
     }
 

@@ -9,6 +9,7 @@ import org.osivia.portal.api.locale.ILocaleService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.preview.IPreviewModeService;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -105,5 +106,8 @@ public class DeleteConfiguration implements PortletConfigAware {
     }
     
     
-    
+    @Bean
+    public LayoutItemsService getLayoutItemsService() {
+        return Locator.getService(LayoutItemsService.class);
+    }
 }
