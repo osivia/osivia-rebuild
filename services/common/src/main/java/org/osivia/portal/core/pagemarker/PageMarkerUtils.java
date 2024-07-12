@@ -167,10 +167,9 @@ public class PageMarkerUtils {
                         });
 
                         markers.remove(list.get(0).getViewState());
-                    } catch (ClassCastException e) {
+                    } catch (Exception e) {
                         // Déploiement à chaud
-                        markers = new LinkedHashMap<String, PageMarkerInfo>();
-                        controllerCtx.setAttribute(Scope.SESSION_SCOPE, "markers", markers);
+                        markers.clear();
                     }
                 }
                 markers.put(viewState, markerInfo);
@@ -406,38 +405,49 @@ public class PageMarkerUtils {
 
             Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
             
-            // Tri pour avoir les markers les plus récents
-            List<PageMarkerInfo> list = new LinkedList<PageMarkerInfo>(markers.values());
+            if( markers != null)    {
 
-            Collections.sort(list, new Comparator<PageMarkerInfo>() {
+                try {
+                
+                // Tri pour avoir les markers les plus récents
+                List<PageMarkerInfo> list = new LinkedList<PageMarkerInfo>(markers.values());
+    
 
-                public int compare(PageMarkerInfo o1, PageMarkerInfo o2) {
-                    if( o1.getLastTimeStamp() != null ) {
-                        if( o2.getLastTimeStamp() != null)  {
-                            return - o1.getLastTimeStamp().compareTo(o2.getLastTimeStamp());
-                        }   else    {
-                            return - 1;
+                
+                    Collections.sort(list, new Comparator<PageMarkerInfo>() {
+        
+                        public int compare(PageMarkerInfo o1, PageMarkerInfo o2) {
+                            if( o1.getLastTimeStamp() != null ) {
+                                if( o2.getLastTimeStamp() != null)  {
+                                    return - o1.getLastTimeStamp().compareTo(o2.getLastTimeStamp());
+                                }   else    {
+                                    return - 1;
+                                }
+                            } else  {
+                                if( o2.getLastTimeStamp() != null)  {
+                                    return 1;
+                                }   else    {
+                                    return 0;
+                                }
+                            }
                         }
-                    } else  {
-                        if( o2.getLastTimeStamp() != null)  {
-                            return 1;
-                        }   else    {
-                            return 0;
+                    });
+                
+                
+                    for( PageMarkerInfo info: list) {
+                        if( info.getPageId().toString(PortalObjectPath.CANONICAL_FORMAT).contains(pageName))    {
+                            //the user can manually refresh, no warn
+                            //logger.warn("non ajax request "+ requestPath);
+                            
+                            return info;
                         }
                     }
-                }
-            });
-            
-            
-            for( PageMarkerInfo info: list) {
-                if( info.getPageId().toString(PortalObjectPath.CANONICAL_FORMAT).contains(pageName))    {
-                    //the user can manually refresh, no warn
-                    //logger.warn("non ajax request "+ requestPath);
-                    
-                    return info;
+                } catch( Exception e)   {
+                    // An exception occured during concurrent access
+                    logger.error("getPageLastViewState " + e.getMessage());
+                    markers.clear();
                 }
             }
-
 
 
         return null;
