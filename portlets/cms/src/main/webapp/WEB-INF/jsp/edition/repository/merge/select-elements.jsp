@@ -84,7 +84,7 @@
     
     <%--Buttons--%>
     <div class="float-end">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" name="save" class="btn btn-primary">
             <span><op:translate key="MODIFY_REPOSITORY_MERGE_ELEMENT_SELECTIONS_VALIDATE_LABEL" /></span>
         </button>
     </div> 

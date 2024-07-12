@@ -54,7 +54,7 @@
 	  </c:if>     
     <%--Buttons--%>
     <div class="float-end">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button type="button" name="save" class="btn btn-secondary" data-bs-dismiss="modal">
             <span><op:translate key="CANCEL" /></span>
         </button>
 

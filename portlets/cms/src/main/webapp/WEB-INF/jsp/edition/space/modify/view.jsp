@@ -70,7 +70,7 @@
                  </div>
                  <div class="modal-body">
                      <form action="X"  method="post">
-                         <input type="submit" class="d-none">
+                         <input type="submit" name="save" class="d-none">
                          
                          <p class="confirmationMessage">
                              
@@ -78,7 +78,7 @@
      
                          
                          <div class="d-flex justify-content-center gap-2 ">
-                             <button type="button" class="btn btn-primary confirmationButton" onclick="confirmModalSubmit(this);">
+                             <button type="button"  class="btn btn-primary confirmationButton" onclick="confirmModalSubmit(this);">
                                  <span><op:translate key="MODIFY_SPACE_CONFIRM_DELETE"/></span>
                              </button>
      

@@ -49,7 +49,7 @@
             <span><op:translate key="CANCEL" /></span>
         </button>
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" name="save" class="btn btn-primary">
             <span><op:translate key="MODIFY_PAGE_ACLS_VALIDATE_ACTION" /></span>
         </button>
     </div>     

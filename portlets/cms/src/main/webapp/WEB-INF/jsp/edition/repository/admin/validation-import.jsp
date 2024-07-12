@@ -77,7 +77,7 @@
             </div>
             <div class="modal-body">
                 <form action="${confirmImportUrl}"  method="post">
-                    <input type="submit" class="d-none">
+                    <input type="submit" name="save"  class="d-none">
                     
                     <p>
                         ${form.checkedItems.confirmationMessage}
