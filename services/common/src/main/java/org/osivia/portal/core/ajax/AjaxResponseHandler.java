@@ -71,6 +71,7 @@ import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
@@ -244,6 +245,18 @@ public class AjaxResponseHandler implements ResponseHandler {
                 StateString contentState = pwr.getContentState();
                 WindowState windowState = pwr.getWindowState();
                 Mode mode = pwr.getMode();
+                
+                
+                // Mark specific changement states
+                if( commeand instanceof InvokePortletWindowActionCommand)   {
+                    InvokePortletWindowActionCommand actionCommand = (InvokePortletWindowActionCommand) commeand;
+                    ParametersStateString pss = (ParametersStateString) actionCommand.getInteractionState();
+                    if( "select".equals( pss.getValue("javax.portlet.action")))  {
+                        controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.stateTs" , System.currentTimeMillis());
+                    }
+                }
+                
+                
                 ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(pwr.getWindowId(), mode, windowState, contentState);
                 if (renderCmd != null) {
                     controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.actionForward", Boolean.TRUE);
@@ -1066,6 +1079,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                         
                         long endAjaxRequest = System.currentTimeMillis();
                         IPortalLogger.logger.info(endAjaxRequest - beginAjaxRequest);
+                        
+                        // Refresh page si specific changement state has occured
+                        // during the rendering phase
+                        Long stateTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.stateTs");
+                        if( stateTs != null)    {
+                            if(stateTs > beginAjaxRequest)  {
+                                    UpdatePageLocationResponse dresp = new UpdatePageLocationResponse("/refresh");
+                                    return new AjaxResponse(dresp);
+                            }
+                        }
                         
                         return new AjaxResponse(updatePage);
                     }
