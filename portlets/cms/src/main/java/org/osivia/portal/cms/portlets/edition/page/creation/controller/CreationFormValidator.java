@@ -55,6 +55,17 @@ public class CreationFormValidator implements Validator {
             errors.rejectValue("id", "MODIFY_PAGE_CREATION_ID_INVALID_START");
         }
             
+        // illegal characters : /\:*?<>!
+        String displayName = errors.getFieldValue("displayName").toString();
+        Pattern displayNamePattern = Pattern.compile("([^/\\\\:*?\\\"<>|])*");
+
+        if(!displayNamePattern.matcher(displayName).matches())   {
+            errors.rejectValue("displayName", "InvalidCharacter");
+        }
+        
+
+
+        
         
         
     }

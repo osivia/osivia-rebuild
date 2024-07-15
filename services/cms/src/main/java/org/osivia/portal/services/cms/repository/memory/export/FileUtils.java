@@ -689,7 +689,10 @@ public class FileUtils {
             ObjectWriter ow = om.writer();
             ow.writeValue(out, mergeOutDatas);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            if( e instanceof MergeException)
+                throw (MergeException) e;
+            else
+                throw new RuntimeException(e.getMessage(), e);
         }
 
 
