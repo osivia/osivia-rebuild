@@ -851,57 +851,27 @@ function updateResources(newHeaderResources, layout) {
 
 
             let parent = document.querySelector("head");
-/*
+
             if (parent) {
 
-                let removing = false;
                 let child = parent.firstChild;
                 let next = null;
                 // While we still have child elements to process...
                 while (child) {
-                    // If we're already removing, remember that
-                    let removeThis = removing;
                     // Before we remove anything, identify the next child to visit
                     next = child.nextSibling;
                     // Is this a comment node?
                     if (child.nodeType === Node.COMMENT_NODE) {
                         if (child.nodeValue.includes("portlets-begin")) {
-                            // It's the node that tells us to start removing:
-                            // Turn on our flag and also remove this node
-                            removing = true;
-                            removeThis = false;
                             section = true;
-                        } else if (child.nodeValue.includes("portlets-end")) {
-                            // It's the node that tells us to stop removing:
-                            // Turn off our flag, but do remove this node
-                            removing = false;
-                            removeThis = false;
-                        }
-                    }
-                    if (removeThis) {
-                        var remove = true;
-                        for (var iNewHeader = 0; iNewHeader < newHeaderResources.length; iNewHeader++) {
-                            var newHeader = newHeaderResources[iNewHeader];
-
-                            if (newHeader.tag == "LINK" && child.nodeName == "LINK") {
-                                if (location.origin + newHeader.href == child.href)
-                                    remove = false;
-                            }
-                            if (newHeader.tag == "SCRIPT" && child.nodeName == "SCRIPT") {
-                                if (location.origin + newHeader.src == child.src)
-                                    remove = false;
-                            }
-                        }
-
-                        if (remove)
-                            parent.removeChild(child);
+                        } 
                     }
 
                     // Move on to next child
                     child = next;
                 }
             }
-*/
+
             if (section == false) {
                 // Create portlet section
 
@@ -911,7 +881,7 @@ function updateResources(newHeaderResources, layout) {
                 parent.appendChild(commentEnd);
             }
 
-
+            
         }
 
 
