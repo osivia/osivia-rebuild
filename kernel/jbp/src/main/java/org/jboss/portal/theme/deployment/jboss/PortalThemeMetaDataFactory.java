@@ -25,6 +25,7 @@ package org.jboss.portal.theme.deployment.jboss;
 import org.jboss.portal.theme.metadata.PortalThemeMetaData;
 import org.jboss.portal.theme.metadata.ThemeLinkMetaData;
 import org.jboss.portal.theme.metadata.ThemeScriptMetaData;
+import org.jboss.portal.theme.metadata.ThemeStyleMetadata;
 import org.jboss.xb.binding.ObjectModelFactory;
 import org.jboss.xb.binding.UnmarshallingContext;
 import org.xml.sax.Attributes;
@@ -97,6 +98,12 @@ public class PortalThemeMetaDataFactory implements ObjectModelFactory
          link.setRel(attrs.getValue("rel"));
          return link;
       }
+      if ("style".equals(localName))
+      {
+         ThemeStyleMetadata style = new ThemeStyleMetadata();
+         style.setName(attrs.getValue("name"));
+         return style;
+      }      
       return null;
    }
 
@@ -116,5 +123,10 @@ public class PortalThemeMetaDataFactory implements ObjectModelFactory
    public void addChild(PortalThemeMetaData portalTheme, ThemeLinkMetaData link, UnmarshallingContext nav, String nsURI, String localName)
    {
       portalTheme.getLinks().add(link);
+   }
+
+   public void addChild(PortalThemeMetaData portalTheme, ThemeStyleMetadata style, UnmarshallingContext nav, String nsURI, String localName)
+   {
+      portalTheme.getStyles().add(style);
    }
 }

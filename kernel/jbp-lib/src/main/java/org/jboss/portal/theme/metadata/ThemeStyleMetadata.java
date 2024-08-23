@@ -22,68 +22,25 @@
  ******************************************************************************/
 package org.jboss.portal.theme.metadata;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * @author <a href="mailto:mholzner@novell.com">Martin Holzner</a>
- * @version $Revision: 8784 $
+ * @author Martin Holzner
+ * @author <a href="mailto:roy@jboss.org">Roy Russo</a>
  */
-public final class PortalThemeMetaData
+public final class ThemeStyleMetadata
 {
 
    /** . */
    private String name;
 
-   /** . */
-   private final List scripts = new ArrayList();
 
-   /** . */
-   private final List links = new ArrayList();
-   
-   /** . */
-   private final List styles = new ArrayList();
+    public String getName() {
+        return name;
+    }
+    
+    
+    public void setName(String name) {
+        this.name = name;
+    }
 
-   /** . */
-   private String className;
 
-   public PortalThemeMetaData()
-   {
-      className = "org.jboss.portal.theme.impl.WARTheme";
-   }
-
-   public String getName()
-   {
-      return name;
-   }
-
-   public void setName(String name)
-   {
-      this.name = name;
-   }
-
-   public String getClassName()
-   {
-      return className;
-   }
-
-   public void setClassName(String className)
-   {
-      this.className = className;
-   }
-
-   public List getScripts()
-   {
-      return scripts;
-   }
-
-   public List getLinks()
-   {
-      return links;
-   }
-   
-   public List getStyles()
-   {
-      return styles;
-   }
 }

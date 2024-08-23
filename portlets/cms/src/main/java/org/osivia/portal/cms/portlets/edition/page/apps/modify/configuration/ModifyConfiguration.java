@@ -1,5 +1,6 @@
 package org.osivia.portal.cms.portlets.edition.page.apps.modify.configuration;
 
+import org.jboss.portal.theme.ThemeService;
 import org.osivia.portal.api.apps.IAppsService;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.dynamic.IDynamicService;
@@ -114,5 +115,10 @@ public class ModifyConfiguration implements PortletConfigAware {
     public LayoutItemsService getLayoutItemsService() {
         return Locator.getService(LayoutItemsService.class);
     }
+    
+    @Bean
+    public ThemeService getThemeService() {
+        return Locator.getService("portal:service=ThemeService", ThemeService.class);
+    }    
 
 }

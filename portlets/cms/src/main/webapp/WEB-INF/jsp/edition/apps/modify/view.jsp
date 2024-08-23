@@ -63,7 +63,22 @@
             </c:otherwise>
         </c:choose>
     </div>
-
+    
+    <%--Styles not implemented --%>
+    <c:if test="${not empty form.unimplementedStyles}">
+	    <div class="mb-3">
+	        <form:label path="unimplementedStyles" cssClass="form-label"><op:translate key="MODIFY_PORTLET_UNIMPLEMENTED_STYLES"/></form:label>
+	           <div>
+	               <c:forEach var="style" items="${form.unimplementedStyles}" varStatus="status">
+	                   <div class="form-check form-check-inline">
+	                       <form:checkbox id="${namespace}-style-${status.index}" path="unimplementedStyles" value="${style}" cssClass="form-check-input"/>
+	                       <label for="${namespace}-style-${status.index}" class="form-check-label">${style}</label>
+	                   </div>
+	               </c:forEach>
+	           </div>
+	    </div>    
+    </c:if>
+    
     <%--Linked layout item--%>
     <c:if test="${not empty layoutGroups}">
         <div class="mb-3">

@@ -8,6 +8,10 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.theme.PortalTheme;
+import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.ThemeService;
+import org.jboss.portal.theme.metadata.ThemeStyleMetadata;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.apps.App;
 import org.osivia.portal.api.apps.IAppsService;
@@ -84,6 +88,9 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
     @Autowired
     IAppsService appServices;
+    
+    @Autowired
+    private ThemeService themeService;
 
     /**
      * The logger.
@@ -145,8 +152,11 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
             srcModule.getProperties().put("osivia.hideEmptyPortlet", "1");
         else
             srcModule.getProperties().remove("osivia.hideEmptyPortlet");
+        
+        List<String> styles =  form.getStyles(); 
+        styles.addAll(form.getUnimplementedStyles());
 
-        srcModule.getProperties().put("osivia.style", String.join(",", form.getStyles()));
+        srcModule.getProperties().put("osivia.style", String.join(",", styles));
 
         // Linked layout item identifier
         if( form.isSupportTabSelection())   {
@@ -216,23 +226,65 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
 
         return document;
     }
+    
 
-    private Space getTemplateSpace(PortalControllerContext portalCtx) throws CMSException {
-
-        Document document = getDocument(portalCtx);
-        document.getSpaceId();
+    private Document getDocument(PortalControllerContext portalCtx, UniversalID id) throws CMSException {
 
         CMSController ctrl = new CMSController(portalCtx);
         CMSContext cmsContext = ctrl.getCMSContext();
-        Space space = (Space) cmsService.getCMSSession(cmsContext).getDocument(document.getSpaceId());
-        UniversalID templateId = space.getTemplateId();
-        if (templateId != null) {
-            CMSContext cmsTemplateContext = ctrl.getCMSContext();
-            cmsTemplateContext.setPreview(false);
-            Page page = (Page) cmsService.getCMSSession(cmsTemplateContext).getDocument(templateId);
-            space = (Space) cmsService.getCMSSession(cmsTemplateContext).getDocument(page.getSpaceId());
+        Document document = cmsService.getCMSSession(cmsContext).getDocument(id);
+
+        return document;
+    }
+    
+    
+    private NavigationItem getNavigationItem(PortalControllerContext portalCtx) throws CMSException {
+        PortalWindow window = WindowFactory.getWindow(portalCtx.getRequest());
+        String navigationId = window.getProperty("osivia.navigationId");
+
+
+        UniversalID id = new UniversalID(navigationId);
+        CMSController ctrl = new CMSController(portalCtx);
+        CMSContext cmsContext = ctrl.getCMSContext();
+        NavigationItem document = cmsService.getCMSSession(cmsContext).getNavigationItem(id);
+
+        return document;
+    }
+    
+
+    private List<String> getPageStyles(PortalControllerContext portalCtx) throws CMSException {
+
+        List<String> styles = new ArrayList<>();
+        
+        NavigationItem navItem = getNavigationItem(portalCtx);
+        String themeId = null;
+        
+        
+        // Search theme in parent tree
+        while ( themeId == null && navItem != null)    {
+            Document document = getDocument(portalCtx, navItem.getDocumentId());
+            themeId = (String) document.getProperties().get(ThemeConstants.PORTAL_PROP_THEME);
+            
+            if( navItem.isRoot())
+                navItem = null;
+            else
+                navItem = navItem.getParent();
         }
-        return space;
+        
+        // Add style from theme
+        if( themeId != null) {
+            PortalTheme theme = themeService.getThemeById(themeId);
+            @SuppressWarnings("unchecked")
+            List<ThemeStyleMetadata> themeStyles = theme.getThemeInfo().getStyles();
+            for(ThemeStyleMetadata themeStyle : themeStyles)    {
+                styles.add( themeStyle.getName());
+            }
+        }
+        
+
+
+
+        return styles;
     }
 
 
@@ -323,8 +375,29 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
         form.setDisplayPanel(BooleanUtils.toBoolean(srcModule.getProperties().get("osivia.bootstrapPanelStyle")));
         form.setHideIfEmpty(StringUtils.equals(srcModule.getProperties().get("osivia.hideEmptyPortlet"), "1"));
 
-        String sStyles = StringUtils.defaultString(srcModule.getProperties().get("osivia.style"));
-        form.setStyles(Arrays.asList(sStyles.split(",")));
+        List<String> storedStyles = new ArrayList<>();
+        String sStoredStyles = StringUtils.defaultString(srcModule.getProperties().get("osivia.style"));
+        if( StringUtils.isNotEmpty(sStoredStyles))  {
+            storedStyles = Arrays.asList(sStoredStyles.split(","));
+        }
+        
+        List<String> styles = new ArrayList<>();
+        List<String> unimplementedStyles = new ArrayList<>();
+        List<String> themeStyles = getPageStyles(portalCtx);
+        
+        
+        for (String style : storedStyles) {
+           if( themeStyles.contains(style))    {
+                styles.add(style);
+            }   else    {
+                unimplementedStyles.add(style);
+            }
+        }
+        
+        form.setStyles(styles);
+        form.setUnimplementedStyles(unimplementedStyles);
+        
+       
 
         // Linked layout item identifier
         String linkedLayoutItemId = srcModule.getProperties().get(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
@@ -363,7 +436,7 @@ public class ModifyController extends GenericPortlet implements PortletContextAw
     @ModelAttribute("stylesList")
     public List<String> getStyles(PortletRequest request, PortletResponse response) throws Exception {
         PortalControllerContext portalCtx = new PortalControllerContext(this.portletContext, request, response);
-        return getTemplateSpace(portalCtx).getStyles();
+        return getPageStyles(portalCtx);
     }
 
 

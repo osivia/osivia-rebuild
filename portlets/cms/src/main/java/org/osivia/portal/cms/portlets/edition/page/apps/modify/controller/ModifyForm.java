@@ -19,6 +19,11 @@ public class ModifyForm {
     
    
     private List<String> styles;
+    private List<String> unimplementedStyles;
+    
+
+
+
     /**
      * Linked layout item identifier.
      */
@@ -101,6 +106,14 @@ public class ModifyForm {
     
     public void setProfiles(List<String> profiles) {
         this.profiles = profiles;
+    }
+    
+    public List<String> getUnimplementedStyles() {
+        return unimplementedStyles;
+    }
+    
+    public void setUnimplementedStyles(List<String> unimplementedStyles) {
+        this.unimplementedStyles = unimplementedStyles;
     }
 
 }

@@ -52,6 +52,9 @@ public final class ThemeInfo
 
    /** . */
    private final List links;
+   
+   /** . */
+   private final List styles;
 
    /** . */
    private final List elements;
@@ -65,6 +68,7 @@ public final class ThemeInfo
       // Initialise elements
       scripts = new ArrayList(meta.getScripts());
       links = new ArrayList(meta.getLinks());
+      styles = new ArrayList(meta.getStyles());
       for (int i = 0; i < scripts.size(); i++)
       {
          ThemeScriptMetaData scriptMD = (ThemeScriptMetaData)scripts.get(i);
@@ -132,6 +136,10 @@ public final class ThemeInfo
       return links;
    }
 
+   public List getStyles()
+   {
+      return styles;
+   }
    /**
     * Get all elements of this theme. <p>Elements of a theme are all the child nodes in the HEAD tag that are part of
     * this theme. A theme can currently have script and link tags
