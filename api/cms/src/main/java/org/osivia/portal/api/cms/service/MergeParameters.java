@@ -20,15 +20,6 @@ public class MergeParameters {
 
     List<String> pagesId;
     
-    public boolean isMergeStyles() {
-        return mergeStyles;
-    }
-    
-    public void setMergeStyles(boolean mergeStyles) {
-        this.mergeStyles = mergeStyles;
-    }
-    
-
     
     public List<String> getPagesId() {
         return pagesId;

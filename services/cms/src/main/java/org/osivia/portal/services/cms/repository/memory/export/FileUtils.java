@@ -152,7 +152,6 @@ public class FileUtils {
             MemoryRepositorySpace space = new MemoryRepositorySpace(repository, doc.id, doc.id, doc.templateId, children, doc.properties, doc.moduleRefs);
 
             space.setProfiles(doc.profiles);
-            space.setStyles(doc.styles);
 
             docToCreate = space;
         } else if (StringUtils.equals("folder", doc.type)) {
@@ -195,7 +194,6 @@ public class FileUtils {
             Space space = (Space) srcDoc;
             targetDoc.profiles = space.getProfiles();
             targetDoc.moduleRefs = space.getModuleRefs();
-            targetDoc.styles = ((Space) srcDoc).getStyles();
         }
 
 
@@ -682,8 +680,6 @@ public class FileUtils {
                 outRoot.profiles = outProfiles;
             }
 
-            if (params.isMergeStyles())
-                outRoot.styles = ((Space) documents.get("DEFAULT")).getStyles();
 
 
             ObjectWriter ow = om.writer();

@@ -24,7 +24,6 @@ public class RepositoryForm {
     private File fileToMerge;
     private File fileDownload;
     
-    boolean mergeStyles;
     private Set<String> mergedPages = new HashSet<String>();
     private Set<String> mergedProfiles = new HashSet<String>();
     
@@ -39,17 +38,6 @@ public class RepositoryForm {
     public void setMergedProfiles(Set<String> mergedProfiles) {
         this.mergedProfiles = mergedProfiles;
     }
-
-
-    public boolean isMergeStyles() {
-        return mergeStyles;
-    }
-
-   
-    public void setMergeStyles(boolean mergeStyles) {
-        this.mergeStyles = mergeStyles;
-    }
-    
 
 
 

@@ -28,10 +28,6 @@
 	   <%@ include file="profiles.jspf" %>	
 	</div>
 	
-	
-	<div  data-ajax-region-modified="portal-properties-administration-style-region">
-	   <%@ include file="styles.jspf" %>	
-	</div>
-	
+
 
 </form:form>

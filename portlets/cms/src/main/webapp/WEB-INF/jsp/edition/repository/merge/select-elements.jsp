@@ -21,18 +21,11 @@
 <form:form action="${submitUrl}" modelAttribute="form" >
     
     
-    <div class="row mt-5">
+    <div class="row mt-2">
 	    <div class="form-group col-md-6">
-			 <a class="no-ajax-link dropdown-toggle" data-bs-toggle="collapse" href="#${namespace}_collapseProfils" role="button" aria-expanded="false">
+			 <a class="no-ajax-link nav-link dropdown-toggle" data-bs-toggle="collapse" href="#${namespace}_collapseProfils" role="button" aria-expanded="true">
                 <op:translate key="MODIFY_REPOSITORY_MERGE_PROFILES_LABEL" />
              </a>
-	    </div>
-	    
-	    <div class="form-group col-md-6">
-	     <div class="form-check">
-	         <form:checkbox path="mergeStyles" cssClass="form-check-input" />
-	         <form:label path="mergeStyles" cssClass="form-check-label" ><op:translate key="MODIFY_REPOSITORY_MERGE_STYLES_LABEL" /></form:label>
-	      </div>
 	    </div>
     </div>
     
@@ -55,32 +48,40 @@
     
     
     
-    
-    <div class="row hr my-2">
-        <hr>
+     <div class="row mt-2">
+        <div class="form-group col-md-6">
+             <a class="no-ajax-link nav-link dropdown-toggle" data-bs-toggle="collapse" href="#${namespace}_collapsePages" role="button" aria-expanded="true">
+                <op:translate key="MODIFY_REPOSITORY_MERGE_PAGES_LABEL" />
+             </a>
+        </div>
     </div>
     
-
-    <c:forEach var="page" items="${pages}" varStatus="pageStatus">
-         <c:if test="${pageStatus.count %2 == 1}">
-                <div class="row mt-3">
-         </c:if>
-
-	          <div class="form-group col-md-6">
-	              <div class="form-check ">
-	                  <form:checkbox path="mergedPages" value="${page.key}" cssClass="form-check-input" />
-	                  <div class="d-flex w-100">
-	                     <div class="col-6 text-truncate ">${page.value}</div>
-	                     <div class="col-6 text-truncate text-muted">[${page.key}]</div>
-	                  </div>
-	               </div>
-	           </div>
-				      
-         <c:if test="${ (pageStatus.count %2 == 0) || (pageStatus.count == fn:length(pages))}">
-                </div>
-         </c:if>
-       
-    </c:forEach>
+     <div class="row mb-2">   
+        <div class="collapse" id="${namespace}_collapsePages">
+          <div class="card card-body">    
+ 		    <c:forEach var="page" items="${pages}" varStatus="pageStatus">
+		         <c:if test="${pageStatus.count %2 == 1}">
+		                <div class="row mt-3">
+		         </c:if>
+		
+			          <div class="form-group col-md-6">
+			              <div class="form-check ">
+			                  <form:checkbox path="mergedPages" value="${page.key}" cssClass="form-check-input" />
+			                  <div class="d-flex w-100">
+			                     <div class="col-6 text-truncate ">${page.value}</div>
+			                     <div class="col-6 text-truncate text-muted">[${page.key}]</div>
+			                  </div>
+			               </div>
+			           </div>
+						      
+		         <c:if test="${ (pageStatus.count %2 == 0) || (pageStatus.count == fn:length(pages))}">
+		                </div>
+		         </c:if>
+		       
+		    </c:forEach>
+          </div>
+        </div>
+     </div>		    
     
     <%--Buttons--%>
     <div class="float-end">

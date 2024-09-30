@@ -37,19 +37,13 @@
 	        <li class="nav-item">
 	                <a class="nav-link <c:if test="${empty tab or tab eq 'profiles'}">active</c:if>" href="${tabProfilesUrl}"><op:translate key="MODIFY_SPACE_PROFILES" /></a>
 	        </li>
-	
-	        <li class="nav-item">
-	                <a class="nav-link <c:if test="${tab eq 'styles'}">active</c:if>" href="${tabStylesUrl}"><op:translate key="MODIFY_SPACE_STYLES" /></a>
-	        </li>
+
 	    </ul> 
 	    
 	    
 	    <c:if test="${empty tab or tab eq 'profiles'}">
 	 	   		<%@ include file="profiles.jspf" %>	
 	    </c:if>
-	    <c:if test="${tab eq 'styles'}">
-			 	<%@ include file="styles.jspf" %>	
-		</c:if>
 		 
 		<input type="submit" class="d-none">
 		 

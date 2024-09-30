@@ -333,7 +333,6 @@ public class RepositoryController extends GenericPortlet implements PortletConte
             MergeParameters mergeParams = new MergeParameters();
             mergeParams.setPagesId(new ArrayList<>(form.getMergedPages()));
             mergeParams.setMergeProfiles(new ArrayList<>(form.getMergedProfiles()));
-            mergeParams.setMergeStyles(form.isMergeStyles());
             
             
             StreamableRepository repository = (StreamableRepository) cmsService.getUserRepository( cmsContext, repositoryName);
