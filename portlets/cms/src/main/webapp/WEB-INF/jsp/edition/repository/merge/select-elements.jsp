@@ -30,7 +30,7 @@
     </div>
     
      <div class="row">   
-        <div class="collapse" id="${namespace}_collapseProfils">
+        <div class="collapse show" id="${namespace}_collapseProfils">
 		  <div class="card card-body">
 		      <div class="row">
                 <c:forEach var="profile" items="${profiles}" varStatus="profileStatus">	
@@ -57,7 +57,7 @@
     </div>
     
      <div class="row mb-2">   
-        <div class="collapse" id="${namespace}_collapsePages">
+        <div class="collapse show" id="${namespace}_collapsePages">
           <div class="card card-body">    
  		    <c:forEach var="page" items="${pages}" varStatus="pageStatus">
 		         <c:if test="${pageStatus.count %2 == 1}">

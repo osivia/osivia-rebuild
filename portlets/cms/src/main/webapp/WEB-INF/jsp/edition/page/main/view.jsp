@@ -17,7 +17,7 @@
 <%--@elvariable id="status" type="org.osivia.portal.cms.portlets.edition.page.main.controller.EditionStatus"--%>
 <%--@elvariable id="form" type="org.osivia.portal.cms.portlets.edition.page.main.controller.EditionForm"--%>
 
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between me-3">
         <%--Home--%>
         <div class="d-flex text-truncate ">
             <div class="navbar navbar-expand">
@@ -82,15 +82,11 @@
         </div>
 
         
-        <div class="d-flex border-start flex-shrink-0 mx-1">
+        <div class="d-flex border-start flex-shrink-0 me-5">
             <div class="navbar navbar-expand">        
                 <%--Toolbar--%>
                 ${status.toolbar}
-                
-                 <form:form action="${submitUrl}" method="post" modelAttribute="form" cssClass="d-flex mx-3">
-                    <input id="${namespace}-update-locale" type="submit" name="update-locale" class="d-none">
-                    <form:select path="locale" items="${status.locales}" cssClass="form-select" data-change-submit="${namespace}-update-locale"/>
-                </form:form>                
+            
             </div>
         </div>
         

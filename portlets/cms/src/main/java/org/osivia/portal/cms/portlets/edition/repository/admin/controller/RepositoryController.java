@@ -144,8 +144,7 @@ public class RepositoryController extends GenericPortlet implements PortletConte
 
     
     
-    
-    
+   
     
     
     /**
@@ -363,28 +362,32 @@ public class RepositoryController extends GenericPortlet implements PortletConte
                 RepositoryBean repositoryBean = new RepositoryBean();
 
                 String repositoryName = ((BaseUserRepository) repository).getRepositoryName();
-           		boolean repositoryManager = cmsService.getCMSSession(new CMSContext(portalControllerContext)).isManager( repositoryName);
+                
+                if( StringUtils.equals(repositoryName, "nx") == false && StringUtils.equals(repositoryName, "templates") == false)  {
+                
+                    boolean repositoryManager = cmsService.getCMSSession(new CMSContext(portalControllerContext)).isManager( repositoryName);
            		
-           		if( repositoryManager)	{
-	                repositoryBean.setName( repositoryName);
-	                repositoryBean.setStreamable(repository instanceof StreamableRepository);
-	                
-	                if( repository instanceof StreamableRepository)    {
-	                    repositoryBean.setVersion(((StreamableRepository) repository).getVersion());
-	                }
-	                else
-	                    repositoryBean.setVersion(null);
-	                
-	                Map<String, String> properties = new HashMap<>();
-	                String title = bundle.getString("MODIFY_REPOSITORY_MERGE_LABEL");
-	                properties.put("osivia.repository.name", repositoryName);
-
-	                String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryMergePortletInstance", title, "EditionRepositoryMergePortletInstance", properties,
-	                        new HashMap<>());
-	                
-	                repositoryBean.setMergeUrl(manageRepositoriesUrl);
-	                formRepositories.add(repositoryBean);
-           		}
+               		if( repositoryManager)	{
+    	                repositoryBean.setName( repositoryName);
+    	                repositoryBean.setStreamable(repository instanceof StreamableRepository);
+    	                
+    	                if( repository instanceof StreamableRepository)    {
+    	                    repositoryBean.setVersion(((StreamableRepository) repository).getVersion());
+    	                }
+    	                else
+    	                    repositoryBean.setVersion(null);
+    	                
+    	                Map<String, String> properties = new HashMap<>();
+    	                String title = bundle.getString("MODIFY_REPOSITORY_MERGE_LABEL");
+    	                properties.put("osivia.repository.name", repositoryName);
+    
+    	                String manageRepositoriesUrl = portalUrlFactory.getStartPortletInNewPage(portalControllerContext, "EditionRepositoryMergePortletInstance", title, "EditionRepositoryMergePortletInstance", properties,
+    	                        new HashMap<>());
+    	                
+    	                repositoryBean.setMergeUrl(manageRepositoriesUrl);
+    	                formRepositories.add(repositoryBean);
+               		}
+                }
             }
         }
          

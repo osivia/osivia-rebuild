@@ -31,8 +31,13 @@
             
             <%@ include file="../include/validation-report.jspf" %>
             
-            <div  class="m-3 d-flex justify-content-center">
-                   <a href="javascript:" class="input-confirmation-modal btn btn-primary  no-ajax-link d-flex" data-bs-toggle="modal" data-bs-target="#${namespace}-confirmation-modal">
+            <div  class="m-3 d-flex justify-content-center gap-3">
+            
+                <a href="${cancelImportUrl}" class="btn btn-primary  no-ajax-link d-flex" >
+                     <op:translate key="MODIFY_REPOSITORY_IMPORT_RETURN" />
+               </a>
+
+                    <a href="javascript:" class="input-confirmation-modal btn btn-primary  no-ajax-link d-flex" data-bs-toggle="modal" data-bs-target="#${namespace}-confirmation-modal">
                         <op:translate key="MODIFY_REPOSITORY_IMPORT_FILE_LABEL" />
                   </a>
             </div>
