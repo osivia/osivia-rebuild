@@ -77,6 +77,9 @@ public class HAService implements IHAService{
                             if( logger.isDebugEnabled())    {
                                 logger.debug("receive init parameters");
                             }
+                            String notifTS = s.substring(CMS_NOTIFICATION.length());
+                            logger.info("Receive CMS refresh : "+ notifTS);
+                            
                             portalParametersTs = System.currentTimeMillis();
                         }
                         
@@ -172,8 +175,10 @@ public class HAService implements IHAService{
     @Override
     public void initPortalParameters() {
         portalParametersTs = System.currentTimeMillis();
+        
+        logger.info("Send CMS refresh : "+ portalParametersTs);
 
-        sendMsg(INIT_PARAMETERS, null);
+        sendMsg(INIT_PARAMETERS + portalParametersTs, null);
     }
     
     
