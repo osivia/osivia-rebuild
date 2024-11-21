@@ -65,6 +65,8 @@ import org.jboss.portal.core.controller.handler.ResponseHandler;
 import org.jboss.portal.core.controller.handler.ResponseHandlerException;
 import org.jboss.portal.core.controller.portlet.ControllerPageNavigationalState;
 import org.jboss.portal.core.controller.portlet.ControllerPortletControllerContext;
+import org.jboss.portal.core.model.instance.InstanceContainer;
+import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
@@ -89,6 +91,7 @@ import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.WindowContextFactory;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
+import org.jboss.portal.portlet.state.PropertyMap;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
@@ -115,6 +118,7 @@ import org.osivia.portal.api.cms.service.SpaceCacheBean;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.error.Debug;
+import org.osivia.portal.api.ha.IHAService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
@@ -145,6 +149,7 @@ import org.osivia.portal.core.theming.IPageHeaderResourceService;
 import org.osivia.portal.core.theming.RenderedRegions;
 import org.w3c.dom.Element;
 
+
 /**
  * todo:
  * <p/>
@@ -174,6 +179,10 @@ public class AjaxResponseHandler implements ResponseHandler {
     private PageService pageService;
     
     private IPreviewModeService previewModeService;
+    
+    private IHAService HAService;
+    
+    private InstanceContainer instanceContainer;
     
     private CMSEditionService CMSEditionService;
 
@@ -229,6 +238,22 @@ public class AjaxResponseHandler implements ResponseHandler {
 
     public void setPageHeaderResourceService(IPageHeaderResourceService pageHeaderResourceService) {
         this.pageHeaderResourceService = pageHeaderResourceService;
+    }
+    
+    /**
+     * 
+     * Setter for HAService.
+     * 
+     * @param hAService
+     */
+    public void setHAService(IHAService hAService) {
+        HAService = hAService;
+    }
+    
+    
+    public void setInstanceContainer(InstanceContainer instanceContainer)
+    {
+       this.instanceContainer = instanceContainer;
     }
 
     public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse) throws ResponseHandlerException {
@@ -542,6 +567,8 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // Contextual window that must be recalculated
                 // even if they have not changed
                 
+                
+                
                 for (PortalObject window : page.getChildren(PortalObject.WINDOW_MASK)) {
 
                     // Linked layout item
@@ -577,6 +604,28 @@ public class AjaxResponseHandler implements ResponseHandler {
                                         "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
                             }
                         }
+                    }
+                    
+                    // Check CMS reload caches
+                    if( portletInstance != null)    {
+                        InstanceDefinition instance = controllerContext.getController().getInstanceContainer().getDefinition(portletInstance);
+                        PropertyMap properties = instance.getProperties();
+                        if (properties != null) {
+                            List<String> cmsCachePropertties = properties.get("cms_cache_aware");
+                            if ((cmsCachePropertties != null) && (cmsCachePropertties.contains(String.valueOf(true)))) {
+                                Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
+                                        "osivia.ajax.visible.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+
+                                if (lastSentTs == null || (HAService.checkIfPortalParametersReloaded(lastSentTs) == false) ) {
+                                    if (!dirtyWindowIds.contains(window.getId())) {
+                                        dirtyWindowIds.add(window.getId());
+                                    }
+                                 // Needed for spring models
+                                 controllerContext.setAttribute(Scope.REQUEST_SCOPE,
+                                            "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
+                                }
+                            }
+                        }                        
                     }
                     
                     

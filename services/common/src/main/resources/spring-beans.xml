@@ -122,7 +122,8 @@
       <property name="PageHeaderResourceService" ref="osivia:service=PageHeaderResourceService"/> 
       <property name="PreviewModeService" ref="osivia:service=PreviewModeService"/>     
       <property name="CMSEditionService" ref="osivia:service=CMSEditionService"/>  
-      <property name="LayoutItemsService" ref="osivia:service=LayoutItemsService"/>        
+      <property name="LayoutItemsService" ref="osivia:service=LayoutItemsService"/> 
+      <property name="HAService" ref="osivia:service=HAService"/>     
    </bean>
     
     
