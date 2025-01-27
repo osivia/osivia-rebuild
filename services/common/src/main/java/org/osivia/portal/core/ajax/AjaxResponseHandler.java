@@ -609,23 +609,25 @@ public class AjaxResponseHandler implements ResponseHandler {
                     // Check CMS reload caches
                     if( portletInstance != null)    {
                         InstanceDefinition instance = controllerContext.getController().getInstanceContainer().getDefinition(portletInstance);
-                        PropertyMap properties = instance.getProperties();
-                        if (properties != null) {
-                            List<String> cmsCachePropertties = properties.get("cms_cache_aware");
-                            if ((cmsCachePropertties != null) && (cmsCachePropertties.contains(String.valueOf(true)))) {
-                                Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
-                                        "osivia.ajax.visible.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-
-                                if (lastSentTs == null || (HAService.checkIfPortalParametersReloaded(lastSentTs) == false) ) {
-                                    if (!dirtyWindowIds.contains(window.getId())) {
-                                        dirtyWindowIds.add(window.getId());
+                        if( instance != null)   {
+                            PropertyMap properties = instance.getProperties();
+                            if (properties != null) {
+                                List<String> cmsCachePropertties = properties.get("cms_cache_aware");
+                                if ((cmsCachePropertties != null) && (cmsCachePropertties.contains(String.valueOf(true)))) {
+                                    Long lastSentTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
+                                            "osivia.ajax.visible.ts." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+    
+                                    if (lastSentTs == null || (HAService.checkIfPortalParametersReloaded(lastSentTs) == false) ) {
+                                        if (!dirtyWindowIds.contains(window.getId())) {
+                                            dirtyWindowIds.add(window.getId());
+                                        }
+                                     // Needed for spring models
+                                     controllerContext.setAttribute(Scope.REQUEST_SCOPE,
+                                                "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
                                     }
-                                 // Needed for spring models
-                                 controllerContext.setAttribute(Scope.REQUEST_SCOPE,
-                                            "osivia.refreshWindow." + window.getId().toString(PortalObjectPath.SAFEST_FORMAT), Boolean.TRUE);
                                 }
                             }
-                        }                        
+                       }
                     }
                     
                     
