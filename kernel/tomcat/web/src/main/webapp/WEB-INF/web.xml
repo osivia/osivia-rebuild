@@ -7,7 +7,7 @@
     version="3.1">
 
     <display-name>OSIVIA Portal</display-name>
-    <description>OSIVIA Portal Tomcat 8 web application.</description>
+    <description>OSIVIA Portal Tomcat 9 web application.</description>
 
 
     <servlet>
