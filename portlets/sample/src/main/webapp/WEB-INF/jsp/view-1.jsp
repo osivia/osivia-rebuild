@@ -46,7 +46,7 @@
 
 <p>  user : ${user} </p>
 
-<p>  user : ${sessionDatas} </p>
+<p>  user : ${testSession} </p>
 
 <p> <op:translate key="SAMPLE_MSG_1" /> <op:translate key="CUSTOMIZER_MSG_1" /></p>
 

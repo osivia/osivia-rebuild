@@ -39,6 +39,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
@@ -128,7 +129,9 @@ public class SampleController implements PortletContextAware {
         
         String sessionDatas = (String) request.getPortletSession(true).getAttribute("testSession");
         if( sessionDatas != null)
-            request.setAttribute("sessionDatas OK!", sessionDatas);            
+            request.setAttribute("testSession",sessionDatas );   
+        else
+            request.setAttribute("testSession"," ???? ");  
         
         return "view-1";
     }
