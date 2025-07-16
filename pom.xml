@@ -156,7 +156,7 @@
 		<portlet-api.version>2.0</portlet-api.version>
         <el-api.version>1.0</el-api.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <apache.httpcomponents.version>4.1</apache.httpcomponents.version>      
+        <apache.httpcomponents.version>4.5.14</apache.httpcomponents.version>
         <quartz.version>1.5.2</quartz.version>
         <jgroups.version>4.2.20.Final</jgroups.version>		
         <!-- Java Melody -->
@@ -494,11 +494,6 @@
 	            <artifactId>httpclient</artifactId>
 	            <version>${apache.httpcomponents.version}</version>
 	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.httpcomponents</groupId>
-	            <artifactId>httpcore</artifactId>
-	            <version>${apache.httpcomponents.version}</version>
-	        </dependency>        
 
 
 			<!-- DOM -->

@@ -17,6 +17,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -74,6 +75,11 @@ public class OAuth2ClientService implements IOAuth2ClientService {
     public RestTemplate getPortalClientCredentialRestTemplate() {
         RestTemplate rest = new RestTemplate();
         rest.getInterceptors().add(interceptor);
+
+        // Request factory
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        rest.setRequestFactory(requestFactory);
+
         return rest;
     }
     
