@@ -33,5 +33,12 @@ public interface IOAuth2ClientService {
     RestTemplate getPortalClientCredentialRestTemplate();
 
 
+    /**
+     * Get portal generic RestTemplate
+     * @param timeout specific timeout
+     *
+     * @return
+     */
+    RestTemplate getPortalClientCredentialRestTemplate(int timeout);
   
 }

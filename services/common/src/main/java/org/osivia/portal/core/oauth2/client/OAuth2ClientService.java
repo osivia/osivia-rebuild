@@ -55,10 +55,14 @@ public class OAuth2ClientService implements IOAuth2ClientService {
     private static String OAUTH2_ACCESS_TOKEN_URI_KEY = "portal.security.oauth2.client.token-uri";
     private static String OAUTH2_SKIP_AUTHENTICATION = "portal.security.oauth2.skip";
     private static String OAUTH2_EXPIRATION_DELAY = "portal.security.oauth2.tokens.expiration";
+    private static String OAUTH2_REQUEST_TIMEOUT = "portal.security.oauth2.requests.timeout";
 
 
 
     private final int minExpirationDelay;
+
+    private final int defaultTimeout;
+
 
     private final Log log;
 
@@ -67,22 +71,33 @@ public class OAuth2ClientService implements IOAuth2ClientService {
 
         // force expiration delay (tests only)
         minExpirationDelay = Integer.getInteger(OAUTH2_EXPIRATION_DELAY, -1);
+        defaultTimeout = Integer.getInteger(OAUTH2_REQUEST_TIMEOUT, 30*1000);
+
     }
 
     @Autowired OAuth2AuthorizedClientInterceptor interceptor;
 
     @Override
     public RestTemplate getPortalClientCredentialRestTemplate() {
+
+        return getPortalClientCredentialRestTemplate(defaultTimeout);
+    }
+
+    @Override
+    public RestTemplate getPortalClientCredentialRestTemplate(int timeout) {
         RestTemplate rest = new RestTemplate();
         rest.getInterceptors().add(interceptor);
 
         // Request factory
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(timeout);
+        requestFactory.setReadTimeout(timeout);
+        requestFactory.setConnectionRequestTimeout(timeout);
         rest.setRequestFactory(requestFactory);
 
         return rest;
     }
-    
+
     @Bean
     OAuth2AuthorizedClientManager authorizeClientManager(ClientRegistrationRepository clients, OAuth2AuthorizedClientRepository authorizedClients) {
 
